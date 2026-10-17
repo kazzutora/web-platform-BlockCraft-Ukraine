@@ -1,0 +1,58 @@
+openapi: 3.0.3
+info:
+  title: BlockCraft API
+  version: 1.0.0
+  description: API of the BlockCraft Ukraine community platform.
+paths:
+  /api/v1/health:
+    get:
+      operationId: health
+      description: Checks that the database and Redis are reachable.
+      summary: Service health
+      tags:
+      - core
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'
+          description: ''
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'
+          description: ''
+components:
+  schemas:
+    CheckStatusEnum:
+      enum:
+      - ok
+      - error
+      type: string
+      description: |-
+        * `ok` - ok
+        * `error` - error
+    Health:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/CheckStatusEnum'
+        checks:
+          $ref: '#/components/schemas/HealthChecks'
+      required:
+      - checks
+      - status
+    HealthChecks:
+      type: object
+      properties:
+        database:
+          $ref: '#/components/schemas/CheckStatusEnum'
+        redis:
+          $ref: '#/components/schemas/CheckStatusEnum'
+      required:
+      - database
+      - redis

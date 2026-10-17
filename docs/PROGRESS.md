@@ -4,24 +4,24 @@ Claude Code читає цей файл на початку кожної зада
 
 ## Зараз
 
-- **Етап:** 0 — Фундамент
-- **Наступна задача:** 0.1
+- **Етап:** 0 — Фундамент (усі задачі реалізовано; лишилося побачити зелений CI на GitHub, рев'ю й злиття в `main`)
+- **Наступна задача:** 1.1 — після злиття `stage-00-foundation` у `main`
 - **Гілка:** `stage-00-foundation`
-- **Блокери:** немає
+- **Блокери:** на машині розробника ще немає GNU Make, Node.js 24 і pnpm (див. README → «Що потрібно встановити»)
 
 ## MVP (курсова)
 
 ### Етап 0 — Фундамент
-- [ ] 0.1 Монорепо, `.gitignore`, `.editorconfig`, README, `.env.example`
-- [ ] 0.2 Бекенд: uv, Django 5.2, налаштування dev/test/prod, `/api/v1/health`
-- [ ] 0.3 PostgreSQL, Redis, Celery worker + beat
-- [ ] 0.4 Фронтенд: Next.js 16, TS strict, Tailwind 4, ESLint, Prettier
-- [ ] 0.5 `docker-compose.yml` + Nginx
-- [ ] 0.6 Makefile
-- [ ] 0.7 pytest і Vitest, перші тести
-- [ ] 0.8 drf-spectacular, `/api/docs/`, `make api-types`
-- [ ] 0.9 pre-commit
-- [ ] 0.10 GitHub Actions CI
+- [x] 0.1 Монорепо, `.gitignore`, `.editorconfig`, README, `.env.example`
+- [x] 0.2 Бекенд: uv, Django 5.2, налаштування dev/test/prod, `/api/v1/health`
+- [x] 0.3 PostgreSQL, Redis, Celery worker + beat
+- [x] 0.4 Фронтенд: Next.js 16, TS strict, Tailwind 4, ESLint, Prettier
+- [x] 0.5 `docker-compose.yml` + Nginx
+- [x] 0.6 Makefile
+- [x] 0.7 pytest і Vitest, перші тести
+- [x] 0.8 drf-spectacular, `/api/docs/`, `make api-types`
+- [x] 0.9 pre-commit
+- [x] 0.10 GitHub Actions CI (кроки перевірено локально в чистих контейнерах; перший запуск на GitHub — після push)
 
 ### Етап 1 — Дизайн-система й каркас
 - [ ] 1.1 Токени, дві теми, шрифти
@@ -121,7 +121,20 @@ Claude Code читає цей файл на початку кожної зада
 - 2026-10-17 · — · Django 5.2 LTS замість 6.x · стабільність залежностей на весь термін курсової.
 - 2026-10-17 · — · Сесійна авторизація (allauth headless) на одному origin замість JWT · простіше й безпечніше для браузера.
 - 2026-10-17 · — · До етапу 11 файли зберігаються локально, далі — S3-сумісне сховище · менше сервісів у MVP.
+- 2026-10-18 · 0.1 · `.gitattributes` з `eol=lf` для всіх текстових файлів · на Windows увімкнено `core.autocrlf`, а скрипти й конфіги виконуються в Linux-контейнерах.
+- 2026-10-18 · 0.2 · Залежність `django-environ` · розбір `DATABASE_URL`, списків і булевих змінних без власного парсера.
+- 2026-10-18 · 0.2 · DRF за замовчуванням `IsAuthenticated`; публічні ендпоінти явно ставлять `AllowAny` · безпечне значення за замовчуванням.
+- 2026-10-18 · 0.2 · `ALLOWED_HOSTS` у `.env.example` містить `backend` · SSR-запити Next.js усередині Docker приходять з `Host: backend:8000`.
+- 2026-10-18 · 0.4 · Залишено налаштування шаблону Next.js 16.4: `cacheComponents` і `partialPrefetching`; `server-client.ts` викликає `connection()`, компоненти з даними API — у `<Suspense>` · сучасна модель рендерингу Next 16, статична оболонка + потокові дані.
+- 2026-10-18 · 0.4 · TypeScript 5.x, хоча вже вийшов 7.x · вимога специфікації й сумісність з `openapi-typescript` (peer `typescript ^5`).
+- 2026-10-18 · 0.5 · Hot reload у Docker на Windows — опитування через `watchOptions.pollIntervalMs` (змінна `WATCH_POLL_INTERVAL_MS` лише в docker-compose) · Turbopack ігнорує `WATCHPACK_POLLING`, а події змін файлів з диска Windows до контейнера не доходять.
+- 2026-10-18 · 0.5 · Nginx отримує адресу фронтенду зі змінної `FRONTEND_UPSTREAM` і резолвить upstream-и під час запиту · той самий конфіг працює і з фронтендом у Docker, і з `pnpm dev` на хості (`make up-local`).
+- 2026-10-18 · 0.6 · Рецепти Makefile сумісні з `sh` і `cmd.exe`; `FRONTEND_LOCAL=1` запускає команди фронтенду на хості · make на Windows може працювати без sh.
+- 2026-10-18 · 0.8 · `make api-types` експортує схему у `frontend/openapi.yaml` (комітиться), з неї генерується `schema.d.ts`; CI перевіряє актуальність обох · типи збираються без запущеного бекенду, експорт схеми потрібен і для курсової (9.7).
 
 ## Відомі проблеми й борг
 
-- (порожньо)
+- Dev-БД уже містить стандартні таблиці `auth` Django. На задачі 2.1 (кастомний `User`) перед першою міграцією `accounts` виконати `make reset-db`.
+- Swagger UI (`/api/docs/`) тягне ресурси з CDN jsdelivr (`swagger-ui-dist@latest`). Для CSP на етапі 8.6 — перейти на `drf-spectacular-sidecar` або дозволити CDN у політиці.
+- `make up-local` покладається на DNS Docker Desktop для `host.docker.internal`; на Linux-хості знадобиться інший спосіб (етап 9 не зачіпає — там прод без dev-фронтенду).
+- Хуки pre-commit для фронтенду потребують Node.js і pnpm на хості; до їх встановлення `pre-commit install` блокуватиме коміти зі змінами у `frontend/`.

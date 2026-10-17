@@ -58,6 +58,7 @@ Celery worker + beat ──> Modrinth API · Mojang API · Minecraft-серве�
 | djangorestframework | 3.16+ | REST API |
 | django-filter | актуальна | Фільтри каталогів |
 | drf-spectacular | актуальна | OpenAPI-схема, Swagger UI |
+| django-environ | актуальна | Налаштування з оточення: `DATABASE_URL`, списки, булеві значення |
 | django-allauth[socialaccount] | 65+ | Реєстрація, вхід, Discord/Google, headless-режим |
 | psycopg[binary] | 3.x | Драйвер PostgreSQL |
 | django-redis | актуальна | Кеш і сесії в Redis |
@@ -108,6 +109,7 @@ blockcraft/
 ├── docker-compose.yml         # dev
 ├── docker-compose.prod.yml    # prod (етап 9)
 ├── .env.example               # усі змінні з коментарями
+├── .gitattributes             # LF для всіх текстових файлів (скрипти виконуються в Linux-контейнерах)
 ├── .pre-commit-config.yaml
 ├── .github/workflows/ci.yml
 ├── docs/
@@ -141,6 +143,7 @@ blockcraft/
 │       └── community/         # Challenge — етап 13
 └── frontend/
     ├── package.json, pnpm-lock.yaml, next.config.ts, Dockerfile
+    ├── openapi.yaml           # експорт схеми бекенду (make api-types), джерело для schema.d.ts
     ├── public/illustrations/  # воксельні ілюстрації розділів
     ├── src/
     │   ├── app/               # маршрути App Router (див. розділ 7)
@@ -322,9 +325,9 @@ apps/<name>/
 Після MVP: `/packs`, `/packs/[slug]`, `/packs/new`, `/moments`, `/moments/[id]`, `/worlds`, `/worlds/[slug]`, `/challenges`, `/challenges/[slug]`, `/feed`, `/me/setup`, `/me/history`, `/me/servers/[slug]`, `/guides/[slug]`.
 
 ### 7.2 Доступ до API
-- `src/lib/api/schema.d.ts` — генерується командою `make api-types`; руками не редагувати.
+- `src/lib/api/schema.d.ts` — генерується командою `make api-types` з `frontend/openapi.yaml` (експорт схеми бекенду); руками не редагувати. CI перевіряє, що обидва файли актуальні.
 - `src/lib/api/client.ts` — `openapi-fetch` для браузера (`credentials: "include"`, CSRF-заголовок).
-- `src/lib/api/server-client.ts` — для Server Components: базова адреса `INTERNAL_API_URL`, пересилає cookie запиту.
+- `src/lib/api/server-client.ts` — для Server Components: базова адреса `INTERNAL_API_URL`, пересилає cookie запиту. Увімкнено Cache Components (`cacheComponents: true`), тому клієнт спершу викликає `connection()`: дані API рендеряться під час запиту, а компонент із запитом загортається в `<Suspense>`.
 - Query keys — у `src/lib/query-keys.ts`, один об'єкт на домен.
 - Мутації «Зберегти», «Лайк», «В колекцію» — оптимістичні з відкатом при помилці й тостом.
 
@@ -398,7 +401,7 @@ apps/<name>/
 ### Етап 0 — Фундамент (≈ 1 тиждень)
 **Мета:** порожній, але робочий скелет: `make up` піднімає все, тести й CI зелені.
 
-- **0.1** Монорепо: `.gitignore`, `.editorconfig`, `README.md`, `.env.example` з усіма змінними розділу 11.
+- **0.1** Монорепо: `.gitignore`, `.gitattributes`, `.editorconfig`, `README.md`, `.env.example` з усіма змінними розділу 11.
 - **0.2** Бекенд: uv-проєкт, Django 5.2, налаштування `base/dev/test/prod` через змінні оточення, `apps/core` з `GET /api/v1/health` (перевіряє БД і Redis).
 - **0.3** PostgreSQL, Redis (кеш + сесії), Celery worker + beat, тестова задача `core.ping`.
 - **0.4** Фронтенд: Next.js 16 + TS strict + Tailwind 4 + ESLint + Prettier; сторінка `/` показує статус `/api/v1/health`.
@@ -590,7 +593,7 @@ ENV=dev                         # dev | prod
 SITE_URL=http://localhost:8080
 SECRET_KEY=change-me
 DEBUG=1
-ALLOWED_HOSTS=localhost,127.0.0.1
+ALLOWED_HOSTS=localhost,127.0.0.1,backend   # backend — SSR-запити Next.js усередині Docker
 CSRF_TRUSTED_ORIGINS=http://localhost:8080
 
 # БД і кеш
@@ -621,6 +624,7 @@ MODRINTH_SYNC_LIMIT_MODS=300
 # Фронтенд
 NEXT_PUBLIC_SITE_URL=http://localhost:8080
 INTERNAL_API_URL=http://backend:8000
+FRONTEND_UPSTREAM=frontend:3000   # куди Nginx проксіює фронтенд; host.docker.internal:3000 для pnpm dev на хості
 
 # S3 (з етапу 11)
 S3_ENDPOINT_URL=

@@ -1,0 +1,44 @@
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+celerybeat-schedule*
+
+# Django
+backend/media/
+backend/staticfiles/
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+next-env.d.ts
+*.tsbuildinfo
+frontend/coverage/
+frontend/test-results/
+frontend/playwright-report/
+.pnpm-store/
+npm-debug.log*
+pnpm-debug.log*
+
+# IDE and local tools
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+.mcp.json
+CLAUDE.local.md
+.claude/settings.local.json

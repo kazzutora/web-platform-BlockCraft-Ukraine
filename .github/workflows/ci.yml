@@ -47,10 +47,11 @@ jobs:
       - run: uv run ruff check .
       - run: uv run ruff format --check .
       - run: uv run pytest --cov
-      - name: OpenAPI schema is up to date (run make api-types)
+      - name: API schemas are up to date (run make api-types)
         run: |
           uv run python manage.py spectacular --validate --fail-on-warn > ../frontend/openapi.yaml
-          git diff --exit-code -- ../frontend/openapi.yaml
+          uv run python manage.py export_allauth_schema > ../frontend/allauth-openapi.json
+          git diff --exit-code -- ../frontend/openapi.yaml ../frontend/allauth-openapi.json
 
   frontend:
     runs-on: ubuntu-latest
@@ -76,4 +77,4 @@ jobs:
       - name: API types are up to date (run make api-types)
         run: |
           pnpm api-types
-          git diff --exit-code -- src/lib/api/schema.d.ts
+          git diff --exit-code -- src/lib/api/schema.d.ts src/lib/api/allauth.d.ts

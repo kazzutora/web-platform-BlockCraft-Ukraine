@@ -48,6 +48,13 @@ pnpm dev               # сайт однаково відкривається н
 
 Команди фронтенду тоді запускай з `FRONTEND_LOCAL=1`, наприклад `make lint FRONTEND_LOCAL=1`.
 
+### Пошта й вхід через Discord / Google
+
+- У dev листи (підтвердження пошти, скидання пароля) не надсилаються, а друкуються в лог бекенду: `make logs` → посилання `http://localhost:8080/verify-email/…`.
+- Кнопки Discord і Google з'являються, щойно в `.env` заповнені `DISCORD_CLIENT_ID` / `DISCORD_CLIENT_SECRET` або `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` (після зміни — `make down && make up`). Redirect URI в налаштуваннях застосунку провайдера:
+  - Discord: `http://localhost:8080/accounts/discord/login/callback/`
+  - Google: `http://localhost:8080/accounts/google/login/callback/`
+
 ## Команди
 
 | Команда | Що робить |
@@ -57,7 +64,7 @@ pnpm dev               # сайт однаково відкривається н
 | `make migrate` / `make makemigrations` / `make createsuperuser` | Django management |
 | `make test` / `make test-back` / `make test-front` | pytest (з покриттям) і Vitest |
 | `make lint` / `make fmt` / `make typecheck` | ruff, ESLint, Prettier, `tsc --noEmit` |
-| `make api-types` | Експорт OpenAPI-схеми в `frontend/openapi.yaml` і генерація `frontend/src/lib/api/schema.d.ts` |
+| `make api-types` | Експорт схем API (`frontend/openapi.yaml`, `frontend/allauth-openapi.json`) і генерація типів `schema.d.ts` / `allauth.d.ts` у `frontend/src/lib/api/` |
 | `make reset-db` | Видалити й створити БД заново (міграції — під час старту бекенду) |
 | `make seed`, `make sync-mods` | Демо-дані (етап 9) і синхронізація з Modrinth (етап 3) |
 

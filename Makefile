@@ -29,7 +29,7 @@ help:
 	@echo migrate, makemigrations, createsuperuser
 	@echo test, test-back, test-front
 	@echo lint, fmt, typecheck
-	@echo api-types        - regenerate frontend/src/lib/api/schema.d.ts from the API schema
+	@echo api-types        - regenerate API types: schema.d.ts and allauth.d.ts in frontend/src/lib/api
 	@echo seed, sync-mods  - demo data / Modrinth sync
 	@echo reset-db         - drop and recreate the database, then migrate
 
@@ -94,6 +94,7 @@ typecheck:
 
 api-types:
 	$(COMPOSE) exec -T backend uv run python manage.py spectacular --validate --fail-on-warn > frontend/openapi.yaml
+	$(COMPOSE) exec -T backend uv run python manage.py export_allauth_schema > frontend/allauth-openapi.json
 	$(FRONT) pnpm api-types
 
 seed:

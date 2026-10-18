@@ -37,20 +37,24 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <QueryProvider>
             <ToastProvider>
               <AuthPromptProvider>
-                <a
-                  href="#main"
-                  className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:bg-primary-bg focus:px-4 focus:py-2 focus:text-primary-fg"
-                >
-                  {copy.skip}
-                </a>
-                <Header />
-                <main id="main" className="flex flex-1 flex-col">
-                  {children}
-                </main>
-                <Footer />
-                <Suspense fallback={<TabBarLinks />}>
-                  <MobileTabBar />
-                </Suspense>
+                {/* Modals mark their siblings aria-hidden; marking this always-hydrated wrapper
+                    instead of the tab bar (a later Suspense boundary) keeps hydration clean */}
+                <div className="flex flex-1 flex-col">
+                  <a
+                    href="#main"
+                    className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:bg-primary-bg focus:px-4 focus:py-2 focus:text-primary-fg"
+                  >
+                    {copy.skip}
+                  </a>
+                  <Header />
+                  <main id="main" className="flex flex-1 flex-col">
+                    {children}
+                  </main>
+                  <Footer />
+                  <Suspense fallback={<TabBarLinks />}>
+                    <MobileTabBar />
+                  </Suspense>
+                </div>
               </AuthPromptProvider>
             </ToastProvider>
           </QueryProvider>

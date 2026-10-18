@@ -3,9 +3,12 @@ import { notFound } from "next/navigation";
 import { DetailPage } from "@/components/layout/DetailPage";
 import { CardGrid } from "@/components/ui/CardGrid";
 import { Chip } from "@/components/ui/Chip";
-import { EmptyState } from "@/components/ui/EmptyState";
 import { Icon } from "@/components/ui/Icon";
 import { gameVersions as supportedVersions } from "@/features/game/labels";
+import { AddToCollection } from "@/features/library/AddToCollection";
+import { SaveToggle } from "@/features/library/SaveToggle";
+import { Comments } from "@/features/social/Comments";
+import { Reviews } from "@/features/social/Reviews";
 import { versionDescending } from "@/lib/versions";
 
 import { getGameProfile, getProject, getSimilar, getVersions } from "./api";
@@ -73,15 +76,25 @@ export async function ModDetail({ slug, searchParams }: ModDetailProps) {
           </div>
         }
         secondaryActions={
-          <a
-            href={project.modrinth_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 text-sm underline underline-offset-4"
-          >
-            <Icon name="external-link" size={16} />
-            {copy.modrinth}
-          </a>
+          <>
+            <SaveToggle
+              kind="mod"
+              id={project.slug}
+              saved={project.is_favorited}
+              count={project.favorites_count}
+              className="h-12"
+            />
+            <AddToCollection kind="mod" id={project.slug} />
+            <a
+              href={project.modrinth_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-sm underline underline-offset-4"
+            >
+              <Icon name="external-link" size={16} />
+              {copy.modrinth}
+            </a>
+          </>
         }
         tabsLabel={copy.tabsLabel}
         tabs={[
@@ -121,8 +134,17 @@ export async function ModDetail({ slug, searchParams }: ModDetailProps) {
           },
           {
             value: "reviews",
-            label: copy.tabs.reviews,
-            content: <EmptyState title={copy.reviewsSoon} illustration="empty" />,
+            label: project.rating_count
+              ? `${copy.tabs.reviews} · ${project.rating_count}`
+              : copy.tabs.reviews,
+            content: <Reviews kind="mod" id={project.slug} />,
+          },
+          {
+            value: "comments",
+            label: project.comments_count
+              ? `${copy.tabs.comments} · ${project.comments_count}`
+              : copy.tabs.comments,
+            content: <Comments kind="mod" id={project.slug} />,
           },
           {
             value: "similar",

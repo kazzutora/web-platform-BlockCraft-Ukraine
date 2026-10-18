@@ -2,6 +2,8 @@
 
 import { useId, useState } from "react";
 
+import { cn } from "@/lib/cn";
+
 import { Icon } from "./Icon";
 
 const copy = {
@@ -57,10 +59,10 @@ export function StarRatingInput({
                 onChange={() => select(star)}
                 className="sr-only"
               />
-              <Icon
-                name={star <= shown ? "star-filled" : "star"}
-                className={star <= shown ? "text-text" : "text-muted"}
-              />
+              {/* Both icons stay mounted and only toggle visibility: swapping the SVG under
+                  the pointer between mousedown and mouseup (hover, taps) swallows the click */}
+              <Icon name="star-filled" className={cn("text-text", star > shown && "hidden")} />
+              <Icon name="star" className={cn("text-muted", star <= shown && "hidden")} />
               <span className="sr-only">{copy.star(star)}</span>
             </label>
           );

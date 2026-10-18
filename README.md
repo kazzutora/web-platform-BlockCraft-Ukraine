@@ -66,7 +66,12 @@ pnpm dev               # сайт однаково відкривається н
 | `make lint` / `make fmt` / `make typecheck` | ruff, ESLint, Prettier, `tsc --noEmit` |
 | `make api-types` | Експорт схем API (`frontend/openapi.yaml`, `frontend/allauth-openapi.json`) і генерація типів `schema.d.ts` / `allauth.d.ts` у `frontend/src/lib/api/` |
 | `make reset-db` | Видалити й створити БД заново (міграції — під час старту бекенду) |
-| `make seed`, `make sync-mods` | Демо-дані (етап 9) і синхронізація з Modrinth (етап 3) |
+| `make sync-mods` | Синхронізація модів, ресурспаків і шейдерів з Modrinth |
+| `make seed` | Демо-дані: 20 гравців (пароль `Creeper-Aww-Man-2026`), скіни, сервери, колекції, відгуки; `--reset` — створити заново |
+| `make reindex` | Перебудувати пошуковий індекс Meilisearch |
+| `make er-diagram` | ER-діаграма моделей у Mermaid (`docs/coursework/er.md`) |
+
+e2e (Playwright): `ACCOUNT_EMAIL_VERIFICATION=none docker compose up -d`, `make seed`, далі тести з `e2e/` — див. джоб `e2e` у `.github/workflows/ci.yml`. Продакшн і деплой — [docs/deploy.md](docs/deploy.md).
 
 Один тест бекенду: `docker compose exec backend uv run pytest apps/core/tests/test_health.py -k redis`.
 
@@ -84,8 +89,9 @@ pre-commit install
 ```
 backend/     Django: config/ (налаштування base/dev/test/prod, Celery), apps/<name>/
 frontend/    Next.js: src/app (маршрути), src/features, src/components, src/lib/api
-infra/       Nginx-конфіги, скрипти
-docs/        Специфікація, прогрес, матеріали курсової
+infra/       Nginx (dev, prod, заголовки безпеки), скрипти TLS і резервних копій
+e2e/         Playwright: ключові сценарії
+docs/        Специфікація, прогрес, деплой, матеріали курсової (docs/coursework)
 ```
 
 Не є офіційним продуктом Minecraft. Не пов'язано з Mojang або Microsoft.

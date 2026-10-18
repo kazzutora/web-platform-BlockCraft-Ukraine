@@ -85,7 +85,7 @@ Celery worker + beat ──> Modrinth API · Mojang API · Minecraft-серве�
 | Tailwind CSS | 4.x | Стилі через токени |
 | @tanstack/react-query | 5.x | Запити, кеш, оптимістичні оновлення |
 | openapi-typescript + openapi-fetch | актуальна | Типізований клієнт API з OpenAPI-схеми |
-| react-hook-form + zod | актуальна | Форми й валідація |
+| react-hook-form + zod (+ @hookform/resolvers) | актуальна | Форми й валідація |
 | next-themes | актуальна | Світла/темна тема |
 | motion | актуальна | Анімації (колишній Framer Motion) |
 | radix-ui | актуальна | Доступні примітиви без стилів: Dialog, Sheet, Popover, Tabs, Toast |
@@ -203,8 +203,8 @@ apps/<name>/
 ### 5.2 Таблиці MVP
 
 **accounts**
-- `User` (AbstractUser, вхід за email): `email` (unique), `nickname` (unique, 3–24, `[a-zA-Z0-9_]`), `avatar`, `bio` (≤ 160), `mc_nickname` (nullable), `role` (user / trusted / moderator / admin), `xp`, `level`, `is_private`, `published_count`.
-- `GameProfile` (1:1): `game_version` (напр. "1.21.4"), `loader` (fabric / forge / neoforge / quilt / vanilla), `edition` (java / bedrock), `interests` (ArrayField: survival, building, tech, pvp, rp, …), `onboarding_done`.
+- `User` (AbstractUser без `username`/`first_name`/`last_name`, вхід за email): `email` (unique без урахування регістру), `nickname` (unique без урахування регістру, 3–24, `[a-zA-Z0-9_]`, не зарезервований і без заборонених слів), `avatar` (квадрат 256 px WebP), `bio` (≤ 160), `mc_nickname` (порожній рядок, якщо не вказано), `role` (user / trusted / moderator / admin), `xp`, `level`, `is_private`, `published_count`.
+- `GameProfile` (1:1): `game_version` (зі списку `apps/core/game.py`, напр. "26.3" або "1.21.11"), `loader` (fabric / forge / neoforge / quilt / vanilla), `edition` (java / bedrock), `interests` (ArrayField: survival, building, tech, pvp, rp, adventure, minigames, modded), `onboarding_done`.
 - `UserSettings` (1:1): `theme` (light / dark / system), `language` (uk / en), `notify_prefs` (JSON), `history_enabled`, `who_can_comment` (all / followers / nobody), `collections_visible`.
 - `Follow` (етап 14): `follower` → User, generic target (User / Collection / Server), unique.
 - `Badge`, `UserBadge` (етап 15).
@@ -265,7 +265,9 @@ apps/<name>/
 | Метод і шлях | Опис | Етап |
 | --- | --- | --- |
 | `GET /health` | Перевірка БД, Redis | 0 |
-| `GET/PATCH /me` | Поточний користувач | 2 |
+| `GET /csrf` | Ставить cookie `csrftoken` для заголовка `X-CSRFToken` | 2 |
+| `GET/PATCH /me` | Поточний користувач (PATCH: `bio`, `mc_nickname`, `is_private`) | 2 |
+| `PUT/DELETE /me/avatar` | Аватар (multipart, ≤ 2 МБ → квадрат 256 px WebP) | 2 |
 | `GET/PATCH /me/game-profile`, `GET/PATCH /me/settings` | Налаштування гри й акаунта | 2 |
 | `POST /me/onboarding` | Збереження онбордингу | 2 |
 | `GET /users/{nickname}` | Публічний профіль (з урахуванням приватності) | 2 |
@@ -328,6 +330,8 @@ apps/<name>/
 ### 7.2 Доступ до API
 - `src/lib/api/schema.d.ts` — генерується командою `make api-types` з `frontend/openapi.yaml` (експорт схеми бекенду); руками не редагувати. CI перевіряє, що обидва файли актуальні.
 - `src/lib/api/client.ts` — `openapi-fetch` для браузера (`credentials: "include"`, CSRF-заголовок).
+- `src/lib/api/auth-client.ts` — `openapi-fetch` для allauth headless з типами `allauth.d.ts` (генерується з `frontend/allauth-openapi.json`, `make api-types`).
+- `src/proxy.ts` — перенаправляє гостей з `/me/*`, `/welcome`, `/create` на `/login?next=…` і тримає читабельну cookie-підказку `bc_signed_in` (дзеркало HttpOnly `sessionid`), щоб клієнт не питав `/me` для гостей.
 - `src/lib/api/server-client.ts` — для Server Components: базова адреса `INTERNAL_API_URL`, пересилає cookie запиту. Увімкнено Cache Components (`cacheComponents: true`), тому клієнт спершу викликає `connection()`: дані API рендеряться під час запиту, а компонент із запитом загортається в `<Suspense>`.
 - Query keys — у `src/lib/query-keys.ts`, один об'єкт на домен.
 - Мутації «Зберегти», «Лайк», «В колекцію» — оптимістичні з відкатом при помилці й тостом.

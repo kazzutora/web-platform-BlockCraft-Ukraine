@@ -1,3 +1,6 @@
+
+
+
 # BlockCraft Ukraine — технічна специфікація
 
 Це головне джерело правди для розробки. Продуктовий опис (суть, сценарії, дизайн) — у документі «BlockCraft Ukraine — аналіз проєкту»; тут — як це будувати.
@@ -235,12 +238,12 @@ apps/<name>/
 - `ServerSnapshot`: `server`, `ts`, `is_online`, `players_online`, `players_max`, `latency_ms`, `version_name`. Індекс `(server, ts)`. Зберігаємо 30 днів сирих знімків (5 хв), далі — годинні агрегати (етап 17).
 
 **moderation**
-- `Report`: `reporter`, generic target, `reason` (inappropriate / spam / stolen / scam / other), `comment`, `status` (new / accepted / rejected), `handled_by`, `handled_at`.
+- `Report`: `reporter`, generic target, `reason` (inappropriate / spam / stolen / scam / other), `comment`, `status` (new / accepted / rejected), `auto_hidden`, `handled_by`, `handled_at`. Ціль — будь-який kind або коментар (`social.Comment`, не kind: у нього немає лічильників). Одна відкрита скарга на гравця й ціль.
 - `Sanction`: `user`, `type` (warning / publish_ban / ban), `until`, `reason`, `issued_by`.
-- `BannedWord`: `word`, `language`.
+- `BannedWord`: `word`, `language`, `is_root` (корінь шукається всередині слів, інакше — лише слово цілком). Початковий список — дата-міграція; кеш 5 хв, скидається при зміні. Нормалізація: регістр, цифри замість літер (латинські й кириличні), латинські двійники кириличних літер, «р о з д і л е н і» літери.
 
 **notifications**
-- `Notification`: `user`, `type`, `payload` (JSON), `is_read`, `created_at`. Індекс `(user, is_read, created_at)`.
+- `Notification`: `user`, `type` (approved / rejected / hidden / restored / reply / review / warning), `payload` (JSON: `kind`, `id`, `title`, `reason`, `actor`, `excerpt`), `is_read`, `created_at`. Індекс `(user, is_read, created_at)`. Типи `reply` і `review` можна вимкнути в `notify_prefs`.
 
 ### 5.3 Таблиці після MVP
 - **packs:** `Pack` (Authored, Publishable, Engagement: `title`, `slug`, `cover`, `summary`, `style_tags`, `game_version`, `loader`, `ram_min_gb`, `gpu_note`, `install_md`, `changelog_md`, `forked_from`), `PackItem` (`pack`, `version` → ProjectVersion, `is_required`, `added_as_dependency`).
@@ -267,7 +270,8 @@ apps/<name>/
 | --- | --- | --- |
 | `GET /health` | Перевірка БД, Redis | 0 |
 | `GET /csrf` | Ставить cookie `csrftoken` для заголовка `X-CSRFToken` | 2 |
-| `GET/PATCH /me` | Поточний користувач (PATCH: `bio`, `mc_nickname`, `is_private`) | 2 |
+| `GET/PATCH /me`, `DELETE /me?mode=anonymize\|delete&confirm=<нік>` | Поточний користувач (PATCH: `bio`, `mc_nickname`, `is_private`); DELETE — вихід з платформи: анонімізація (роботи лишаються під `deleted_{id}`) або видалення всього з перерахунком лічильників | 2/8 |
+| `GET /me/export` | Усі дані гравця одним JSON-файлом (вкладення) | 8 |
 | `PUT/DELETE /me/avatar` | Аватар (multipart, ≤ 2 МБ → квадрат 256 px WebP) | 2 |
 | `GET/PATCH /me/game-profile`, `GET/PATCH /me/settings` | Налаштування гри й акаунта | 2 |
 | `POST /me/onboarding` | Збереження онбордингу | 2 |
@@ -305,8 +309,8 @@ apps/<name>/
 | `GET /search?q=&kind=&page=` | Пошук `{q, groups: [{kind, total, results, next_page}]}`: без `kind` — по 5 у групі (mod, skin, server, collection), з `kind` — сторінка з 24; без Meilisearch — пошук за назвою в БД | 7 |
 | `GET /home` | `{for_you: {basis: profile\|popular, mods}, skin_of_week, servers_online, new_skins, new_servers}`; кешуються id на 5 хв, стан глядача — на кожен запит | 7 |
 | `GET /top?kind=mod\|skin\|server&period=week\|month\|all` | 24 найкращі: тиждень — `trend_score`, місяць — зважені події 30 днів, увесь час — рейтинг; заповнений лише список свого kind (`mods` / `skins` / `servers`) | 7 |
-| `POST /reports` | Скарга `{kind, id, reason, comment}` | 8 |
-| `GET /me/notifications`, `POST /me/notifications/read` | Сповіщення | 8 |
+| `POST /reports` | Скарга `{kind, id, reason, comment}` на будь-який kind з дією `report` або `kind=comment`; одна відкрита скарга від гравця на об'єкт, на свою роботу — `400 own_object`; scope `reports` 20/добу; 5 незалежних відкритих скарг ховають об'єкт | 8 |
+| `GET /me/notifications?page=`, `GET /me/notifications/unread`, `POST /me/notifications/read` (`{ids?}` — без ids усі) | Сповіщення `{unread_count, results, next_page}`; дзвіночок опитує `unread` раз на 60 с | 8 |
 | `GET /me/export`, `DELETE /me` | Експорт даних, видалення акаунта | 8 |
 
 Ендпоінти етапів 10–18 описуються в розділах відповідних етапів.

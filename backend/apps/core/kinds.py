@@ -60,10 +60,20 @@ class Kind:
 
 
 _registry: dict[str, Kind] = {}
+_listeners: list[Callable[[Kind], None]] = []
 
 
 def register(kind: Kind) -> None:
     _registry[kind.name] = kind
+    for listener in _listeners:
+        listener(kind)
+
+
+def on_register(listener: Callable[[Kind], None]) -> None:
+    """Calls `listener` for every kind, registered before or after (apps load in any order)."""
+    _listeners.append(listener)
+    for kind in _registry.values():
+        listener(kind)
 
 
 def all_kinds() -> list[Kind]:

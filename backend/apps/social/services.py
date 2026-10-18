@@ -1,11 +1,13 @@
 from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
 from django.db.models import Avg, Count, F, Model, Sum
+from django.db.models.functions import Greatest
 
 from apps.accounts.models import User, UserSettings
 from apps.core import kinds
 from apps.core.counters import bump
 from apps.core.exceptions import DomainError
+from apps.library.models import Collection, CollectionItem, Favorite
 
 from .models import Comment, Like, Review, ReviewVote
 
@@ -222,3 +224,22 @@ def toggle_pin(*, comment: Comment, user: User) -> Comment:
     comment.is_pinned = pinned
     comment.save(update_fields=["is_pinned"])
     return comment
+
+
+# Cleanup
+
+
+@transaction.atomic
+def forget_target(*, kind: kinds.Kind, object_id: int) -> None:
+    """Removes everything that points at a deleted object and fixes collection counters."""
+    target = {"content_type": kind.content_type, "object_id": object_id}
+    items = CollectionItem.objects.filter(**target)
+    for row in items.values("collection_id").annotate(n=Count("pk")).order_by():
+        Collection.objects.filter(pk=row["collection_id"]).update(
+            items_count=Greatest(F("items_count") - row["n"], 0)
+        )
+    items.delete()
+    Favorite.objects.filter(**target).delete()
+    Like.objects.filter(**target).delete()
+    Review.objects.filter(**target).delete()
+    Comment.objects.filter(**target).delete()

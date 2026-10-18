@@ -231,7 +231,7 @@ apps/<name>/
 - `Skin` (Authored, Publishable, Engagement): `title` (≤ 60), `file` (PNG), `preview` (PNG 2D-рендер), `model` (classic / slim), `dominant_color` (hex), `color_bucket` (red / orange / yellow / green / cyan / blue / purple / pink / brown / black / white / gray), `style_tags` (Array, до 3 зі списку `apps/skins/styles.py`: casual, ukrainian, fantasy, medieval, scifi, anime, horror, cute, mob, military, sport), `source` (upload / recolor), `parent` (FK Skin, nullable), `texture_hash` (SHA-256 пікселів: той самий скін двічі в одного автора не приймається), `is_current` (скін у профілі, один на автора).
 
 **servers**
-- `Server` (Authored як власник, Publishable, Engagement): `name`, `slug`, `host`, `port` (25565 за замовчуванням), `edition` (java / bedrock / both), `modes` (Array), `versions_label` (рядок, напр. "1.20–1.21"), `language` (uk / multi / …), `description` (≤ 500), `banner`, `discord_url`, `website_url`, `has_whitelist`, `is_verified`, `verify_code`, `last_online_at`.
+- `Server` (Authored як власник, Publishable, Engagement): `name`, `slug`, `host`, `port` (25565 за замовчуванням), `edition` (java / bedrock / both), `modes` (Array), `versions_label` (рядок, напр. "1.20–1.21"), `language` (uk / multi / …), `description` (≤ 500), `banner`, `discord_url`, `website_url`, `has_whitelist`, `is_verified`, `verify_code`, `last_online_at`, `ip_copies_count`. Банер — 1200×300 WebP (обрізка з PNG/JPEG/WebP ≤ 2 МБ). Режими — до 5 зі списку `apps/servers/choices.py`; мови — uk / multi / en. Зміна `host`, `port` чи `edition` скидає перевірку й видає новий код.
 - `ServerSnapshot`: `server`, `ts`, `is_online`, `players_online`, `players_max`, `latency_ms`, `version_name`. Індекс `(server, ts)`. Зберігаємо 30 днів сирих знімків (5 хв), далі — годинні агрегати (етап 17).
 
 **moderation**
@@ -296,10 +296,12 @@ apps/<name>/
 | `GET /skins/lookup?nickname=` | Скін гравця через Mojang → `{nickname, uuid, model, texture}` (`texture` — data URL PNG або null для стандартного скіна); `404 player_not_found`, `503 mojang_unavailable` | 5 |
 | `GET /me/skins` | Усі мої скіни з будь-яким статусом | 5 |
 | `PUT /me/skin` (`{skin_id}`), `DELETE /me/skin` | Скін у профілі | 5 |
-| `GET /servers`, `POST /servers`, `GET/PATCH/DELETE /servers/{slug}` | Сервери: фільтри `mode, edition, language, version, online, whitelist` | 6 |
-| `GET /servers/{slug}/stats?range=24h|7d` | Графік онлайну, аптайм | 6 |
-| `POST /servers/{slug}/verify` | Перевірка коду в MOTD | 6 |
-| `POST /servers/{slug}/copy-ip` | Лічильник копіювань (без авторизації, тротлінг) | 6 |
+| `GET /servers`, `POST /servers`, `GET/PATCH/DELETE /servers/{slug}` | Сервери: фільтри `mode` (через кому, будь-який), `edition` (java/bedrock включають both), `language`, `version`, `online`, `whitelist`, `author`, `q`; `sort=popular\|online\|new\|top`; поле `live` — статус із Redis (null до першого пінгу); `verify_code` бачить лише власник | 6 |
+| `GET /servers/{slug}/stats?range=24h\|7d` | `{range, uptime_percent, peak_players, points: [{ts, players, is_online}]}` | 6 |
+| `POST /servers/{slug}/verify` → 202, `GET /servers/{slug}/verify` | Перевірка коду в MOTD у Celery; GET повертає `state`: idle / checking / verified / missing / offline | 6 |
+| `PUT/DELETE /servers/{slug}/banner` | Банер (multipart) | 6 |
+| `POST /servers/{slug}/copy-ip` | Лічильник копіювань (без авторизації, scope `copy_ip` 60/год) | 6 |
+| `GET /me/servers` | Усі мої сервери з будь-яким статусом | 6 |
 | `GET /search?q=&kind=` | Пошук, результати згруповано за kind | 7 |
 | `GET /home` | Агрегат для головної (кеш 5 хв, персоналізований для авторизованих) | 7 |
 | `GET /top?kind=&period=week|month|all` | Топи | 7 |
@@ -321,6 +323,7 @@ apps/<name>/
 | `/skins`, `/skins/[id]`, `/skins/lookup` | SSR / клієнт для 3D | skinview3d через `dynamic(..., { ssr: false })` |
 | `/skins/new` | Клієнт, захищений | Форма завантаження з 3D-прев'ю |
 | `/servers`, `/servers/[slug]` | SSR | Графік — власний SVG-компонент |
+| `/servers/new`, `/servers/[slug]/edit` | Клієнт, захищені | Форма сервера; редагування — лише власник |
 | `/c/[id]` | SSR | Колекція |
 | `/u/[nickname]` | SSR | Профіль |
 | `/top` | SSR | |
@@ -375,6 +378,8 @@ apps/<name>/
 - Задача пінгує всі опубліковані сервери кожні 5 хв пачками з обмеженням паралельності (≈ 20).
 - Поточний статус — у Redis `server:status:{id}` (TTL 15 хв), знімок — у `ServerSnapshot`.
 - Верифікація: власник отримує код `bc-XXXXXX`, додає його в MOTD; задача `verify_server` шукає код у `status.motd`.
+- SSRF: форма відхиляє localhost, приватні, link-local, CGNAT, multicast IP і внутрішні домени (`.local`, `.internal`, …); перед кожним пінгом адреса (для Java — після SRV) резолвиться й пінгується, лише якщо всі IP публічні. Java з портом 25565 пінгується за іменем, щоб працювали SRV-записи.
+- Пінгуються опубліковані й ті, що на модерації; новий або перенесений сервер пінгується одразу (`servers.ping_server`). Коди форматування `§x` з назви версії прибираються.
 
 ### oEmbed (етап 11)
 - YouTube: `https://www.youtube.com/oembed?url=...&format=json`; TikTok: `https://www.tiktok.com/oembed?url=...`. Зберігаємо `title`, `thumbnail_url`, `html` не зберігаємо — плеєр рендеримо самі за id.
@@ -387,7 +392,8 @@ apps/<name>/
 | --- | --- | --- |
 | `mods.sync_popular` | щодня 03:00 | 3 |
 | `mods.sync_versions_for_tracked` | щодня 03:30 (моди, що є в обраному / завантаженнях / зборках) | 3 → 16 |
-| `servers.ping_all` | кожні 5 хв | 6 |
+| `servers.ping_all` | кожні 5 хв (пачки по 200, паралельно ≤ 20) | 6 |
+| `servers.ping_server`, `servers.verify_server` | на подію (додавання / «Перевірити») | 6 |
 | `servers.aggregate_hourly`, `servers.cleanup_snapshots` | щогодини / щодня 04:00 | 17 |
 | `social.recalc_scores` | щогодини :15 | 4 |
 | `social.recalc_trends` | щогодини :45 | 7 |

@@ -19,7 +19,7 @@ POSTGRES_DB ?= blockcraft
 .DEFAULT_GOAL := help
 
 .PHONY: help up up-local down logs ps sh-back sh-front migrate makemigrations createsuperuser \
-	test test-back test-front lint fmt typecheck api-types seed sync-mods reindex reset-db
+	test test-back test-front lint fmt typecheck api-types seed sync-mods reindex er-diagram reset-db
 
 help:
 	@echo up               - build and start everything, site at http://localhost:8080
@@ -103,6 +103,10 @@ seed:
 
 reindex:
 	$(MANAGE) reindex_search
+
+# ER diagram (Mermaid) for docs/coursework/er.md
+er-diagram:
+	$(MANAGE) er_diagram
 
 sync-mods:
 	$(MANAGE) sync_mods

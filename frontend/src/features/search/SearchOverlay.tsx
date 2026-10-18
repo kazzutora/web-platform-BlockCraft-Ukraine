@@ -119,7 +119,7 @@ export function SearchOverlay() {
             <Icon name="search" className="text-muted" />
             <input
               autoFocus
-              type="search"
+              type="text"
               role="combobox"
               aria-expanded={flat.length > 0}
               aria-controls={listId}

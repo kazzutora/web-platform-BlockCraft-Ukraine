@@ -88,10 +88,11 @@ Celery worker + beat ──> Modrinth API · Mojang API · Minecraft-серве�
 | react-hook-form + zod | актуальна | Форми й валідація |
 | next-themes | актуальна | Світла/темна тема |
 | motion | актуальна | Анімації (колишній Framer Motion) |
+| radix-ui | актуальна | Доступні примітиви без стилів: Dialog, Sheet, Popover, Tabs, Toast |
 | skinview3d | актуальна | 3D-перегляд скінів |
 | pixelarticons (або власні SVG) | актуальна | Піксельні іконки |
 
-Розробка: ESLint, Prettier, Vitest + Testing Library, Playwright (e2e з етапу 9).
+Розробка: ESLint, Prettier, Vitest + Testing Library (+ user-event), Playwright (e2e з етапу 9).
 
 ### Інфраструктура
 PostgreSQL 17, Redis 7, Meilisearch 1.x, Nginx, Docker + Docker Compose, GitHub Actions, VPS користувача (mvps.net).
@@ -332,7 +333,9 @@ apps/<name>/
 - Мутації «Зберегти», «Лайк», «В колекцію» — оптимістичні з відкатом при помилці й тостом.
 
 ### 7.3 Дизайн-система (коротко; деталі — у skill `design-system`)
-- Токени — CSS-змінні в `src/styles/tokens.css`, підключені в Tailwind 4 через `@theme`. Жодних «сирих» hex у компонентах.
+- Токени — CSS-змінні в `src/styles/tokens.css`, підключені в Tailwind 4 через `@theme`. Жодних «сирих» hex у компонентах. Стандартні палітра, радіуси й тіні Tailwind вимкнені (`--color-*: initial` тощо), тож класи на кшталт `bg-zinc-100` чи `rounded-lg` просто не існують. Tailwind сканує лише `src/` (`source("../")`).
+- Примітиви з поведінкою (Dialog, Sheet, Popover, Tabs, Toast) побудовані на `radix-ui`; іконки — `pixelarticons` (імпорт по одній, `pixelarticons/react/<Name>.js`), заповнена зірка — власна.
+- Апостроф в українських текстах інтерфейсу — типографський `’`.
 - Теми: світла «Папір» (за замовчуванням) і темна «Ніч», `next-themes`, атрибут `data-theme`.
 - Шрифти через `next/font/google`: Cormorant Garamond (заголовки, `subsets: ["latin","cyrillic"]`), Inter (текст).
 - Кути: `border-radius: 0` скрізь (виняток — аватари-кола не використовуємо; аватар теж квадрат).
@@ -405,7 +408,7 @@ apps/<name>/
 - **0.2** Бекенд: uv-проєкт, Django 5.2, налаштування `base/dev/test/prod` через змінні оточення, `apps/core` з `GET /api/v1/health` (перевіряє БД і Redis).
 - **0.3** PostgreSQL, Redis (кеш + сесії), Celery worker + beat, тестова задача `core.ping`.
 - **0.4** Фронтенд: Next.js 16 + TS strict + Tailwind 4 + ESLint + Prettier; сторінка `/` показує статус `/api/v1/health`.
-- **0.5** `docker-compose.yml`: `db`, `redis`, `meili`, `backend`, `worker`, `beat`, `frontend`, `nginx` (порт 8080). Hot reload для обох частин. Альтернатива для Windows: фронтенд локально через `pnpm dev`, решта в Docker — описати в README.
+- **0.5** `docker-compose.yml`: `db`, `redis`, `meili`, `backend`, `worker`, `beat`, `frontend`, `nginx` (порт 8080). Hot reload для обох частин. Альтернатива для Windows: фронтенд локально через `pnpm dev`, решта в Docker — описати в README. (На Windows-дисках hot reload фронтенду в Docker не працює — див. журнал рішень, етап 1.)
 - **0.6** `Makefile`: `up, down, logs, ps, sh-back, sh-front, migrate, makemigrations, createsuperuser, test, test-back, test-front, lint, fmt, typecheck, api-types, seed, sync-mods, reset-db`.
 - **0.7** Тести: pytest + pytest-django + factory-boy + coverage; Vitest + Testing Library; по одному тесту на health.
 - **0.8** drf-spectacular: `/api/schema/`, `/api/docs/`; `make api-types` генерує `frontend/src/lib/api/schema.d.ts`.

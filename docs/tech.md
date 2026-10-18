@@ -228,7 +228,7 @@ apps/<name>/
 - `library.Download` (з етапу 3): `user`, `project`, `version` (FK, nullable), `game_version`, `loader`, `created_at`.
 
 **skins**
-- `Skin` (Authored, Publishable, Engagement): `title` (≤ 60), `file` (PNG), `preview` (PNG 2D-рендер), `model` (classic / slim), `dominant_color` (hex), `color_bucket` (red / orange / yellow / green / cyan / blue / purple / pink / brown / black / white / gray), `style_tags` (Array, зі списку), `source` (upload / recolor), `parent` (FK Skin, nullable).
+- `Skin` (Authored, Publishable, Engagement): `title` (≤ 60), `file` (PNG), `preview` (PNG 2D-рендер), `model` (classic / slim), `dominant_color` (hex), `color_bucket` (red / orange / yellow / green / cyan / blue / purple / pink / brown / black / white / gray), `style_tags` (Array, до 3 зі списку `apps/skins/styles.py`: casual, ukrainian, fantasy, medieval, scifi, anime, horror, cute, mob, military, sport), `source` (upload / recolor), `parent` (FK Skin, nullable), `texture_hash` (SHA-256 пікселів: той самий скін двічі в одного автора не приймається), `is_current` (скін у профілі, один на автора).
 
 **servers**
 - `Server` (Authored як власник, Publishable, Engagement): `name`, `slug`, `host`, `port` (25565 за замовчуванням), `edition` (java / bedrock / both), `modes` (Array), `versions_label` (рядок, напр. "1.20–1.21"), `language` (uk / multi / …), `description` (≤ 500), `banner`, `discord_url`, `website_url`, `has_whitelist`, `is_verified`, `verify_code`, `last_online_at`.
@@ -271,8 +271,8 @@ apps/<name>/
 | `PUT/DELETE /me/avatar` | Аватар (multipart, ≤ 2 МБ → квадрат 256 px WebP) | 2 |
 | `GET/PATCH /me/game-profile`, `GET/PATCH /me/settings` | Налаштування гри й акаунта | 2 |
 | `POST /me/onboarding` | Збереження онбордингу | 2 |
-| `GET /users/{nickname}` | Публічний профіль (з урахуванням приватності) | 2 |
-| `GET /users/{nickname}/works?kind=` | Створене автором | 2/5 |
+| `GET /users/{nickname}` | Публічний профіль (з урахуванням приватності); `skin` — обраний опублікований скін або null | 2/5 |
+| `GET /skins?author={nickname}` | Створене автором (скіни); інші kind — фільтр `author` у своїх каталогах | 5 |
 | `GET /mods` | Каталог: `type, game_version, loader, category, gpu_load, q, sort` | 3 |
 | `GET /mods/{slug}` | Сторінка мода | 3 |
 | `GET /mods/{slug}/versions?game_version=&loader=` | Що встановити: `recommended` (реліз, інакше бета/альфа), залежності рекомендованої, `nearest_game_versions`, список версій | 3 |
@@ -290,9 +290,12 @@ apps/<name>/
 | `GET /reviews?kind=&id=&sort=helpful|new&page=`, `PUT /reviews` (upsert), `DELETE /reviews/{id}` | Відгуки: `summary` (середнє, розподіл зірок, `my_review`), `count`, `next_page`, `results` | 4 |
 | `POST /reviews/{id}/vote` | Корисно / не корисно (`{is_helpful}`; свій відгук — `400 own_review`) | 4 |
 | `GET /comments?kind=&id=&cursor=`, `POST /comments`, `PATCH/DELETE /comments/{id}`, `POST /comments/{id}/pin` | Коментарі: `pinned` (на першій сторінці), `results`, `next_cursor`, `can_comment`, `can_pin`, `comments_count` | 4 |
-| `GET /skins`, `POST /skins` (multipart), `GET/PATCH/DELETE /skins/{id}` | Скіни: фільтри `style, color, model, sort` | 5 |
-| `GET /skins/{id}/download` | PNG + лічильник | 5 |
-| `GET /skins/lookup?nickname=` | Скін гравця через Mojang | 5 |
+| `GET /skins`, `POST /skins` (multipart: `file`, `title`, `style_tags[]`, `model` — порожня = визначити), `GET/PATCH/DELETE /skins/{id}` | Скіни: фільтри `style` (через кому, будь-який), `color`, `model`, `author`, `q`, `sort=popular\|new\|top\|trend`; автор бачить свої неопубліковані | 5 |
+| `GET /skins/{id}/download` | PNG як вкладення + лічильник | 5 |
+| `GET /skins/{id}/similar` | Той самий колір або спільні стилі | 5 |
+| `GET /skins/lookup?nickname=` | Скін гравця через Mojang → `{nickname, uuid, model, texture}` (`texture` — data URL PNG або null для стандартного скіна); `404 player_not_found`, `503 mojang_unavailable` | 5 |
+| `GET /me/skins` | Усі мої скіни з будь-яким статусом | 5 |
+| `PUT /me/skin` (`{skin_id}`), `DELETE /me/skin` | Скін у профілі | 5 |
 | `GET /servers`, `POST /servers`, `GET/PATCH/DELETE /servers/{slug}` | Сервери: фільтри `mode, edition, language, version, online, whitelist` | 6 |
 | `GET /servers/{slug}/stats?range=24h|7d` | Графік онлайну, аптайм | 6 |
 | `POST /servers/{slug}/verify` | Перевірка коду в MOTD | 6 |
@@ -316,6 +319,7 @@ apps/<name>/
 | `/` | SSR | Головна |
 | `/mods`, `/mods/[slug]` | SSR | Фільтри в query string |
 | `/skins`, `/skins/[id]`, `/skins/lookup` | SSR / клієнт для 3D | skinview3d через `dynamic(..., { ssr: false })` |
+| `/skins/new` | Клієнт, захищений | Форма завантаження з 3D-прев'ю |
 | `/servers`, `/servers/[slug]` | SSR | Графік — власний SVG-компонент |
 | `/c/[id]` | SSR | Колекція |
 | `/u/[nickname]` | SSR | Профіль |
@@ -364,6 +368,7 @@ apps/<name>/
 - Нік → UUID: `GET https://api.mojang.com/users/profiles/minecraft/{nickname}`.
 - UUID → профіль із текстурою: `GET https://sessionserver.mojang.com/session/minecraft/profile/{uuid}` → `properties[0].value` (base64 JSON) → `textures.SKIN.url`, `metadata.model == "slim"`.
 - Кеш у Redis 10 хв (позитивний) і 2 хв (негативний, «не знайдено»). Тротлінг на нашому боці.
+- Текстуру завантажує бекенд (лише з `textures.minecraft.net`, по HTTPS), нормалізує до 64×64 і віддає як data URL — браузер не ходить до Mojang і не впирається в CORS; 429 і 5xx Mojang не кешуються.
 
 ### Minecraft-сервери
 - `mcstatus.JavaServer.async_lookup(host:port).async_status()` з таймаутом 3 с; Bedrock — `BedrockServer`.

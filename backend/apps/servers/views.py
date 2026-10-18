@@ -7,6 +7,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 
+from apps.core.cache import for_guests
 from apps.core.pagination import CatalogPagination
 from apps.core.schema import error_responses
 
@@ -94,11 +95,15 @@ class ServerViewSet(
         return Response(ServerDetailSerializer(server, context=context).data, status=status_code)
 
     def list(self, request: Request, *args, **kwargs) -> Response:
-        page = self.paginate_queryset(self.filter_queryset(self.get_queryset()))
-        context = {"request": request, "live": live_status.get_many(s.pk for s in page)}
-        return self.get_paginated_response(
-            ServerCardSerializer(page, many=True, context=context).data
-        )
+        def build() -> Response:
+            page = self.paginate_queryset(self.filter_queryset(self.get_queryset()))
+            context = {"request": request, "live": live_status.get_many(s.pk for s in page)}
+            return self.get_paginated_response(
+                ServerCardSerializer(page, many=True, context=context).data
+            )
+
+        # Guests share a page for a minute: the pings themselves come every five
+        return for_guests(request, build)
 
     def retrieve(self, request: Request, *args, **kwargs) -> Response:
         return self._detail(self.get_object())

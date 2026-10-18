@@ -77,7 +77,13 @@ class CollectionSerializer(serializers.ModelSerializer):
 
     def get_can_edit(self, collection: Collection) -> bool:
         request = self.context.get("request")
-        return bool(request) and can_edit(request.user, collection)
+        if not request or not request.user.is_authenticated:
+            return False
+        if collection.owner_id == request.user.pk:
+            return True
+        # Lists annotate it (library.views._with_collection_state); otherwise ask the database
+        annotated = getattr(collection, "viewer_is_editor", None)
+        return annotated if annotated is not None else can_edit(request.user, collection)
 
     def get_is_liked(self, collection: Collection) -> bool:
         return bool(getattr(collection, "is_liked", False))

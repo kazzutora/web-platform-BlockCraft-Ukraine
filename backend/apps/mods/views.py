@@ -7,6 +7,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 
+from apps.core.cache import GuestCachedListMixin
 from apps.core.exceptions import DomainError
 from apps.core.pagination import CatalogPagination
 from apps.core.schema import error_responses
@@ -36,7 +37,12 @@ LOADER_LABELS = {"fabric": "Fabric", "forge": "Forge", "neoforge": "NeoForge", "
         responses={200: ProjectDetailSerializer, **error_responses(404)},
     ),
 )
-class ModViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+class ModViewSet(
+    GuestCachedListMixin,
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    viewsets.GenericViewSet,
+):
     permission_classes = [AllowAny]
     lookup_field = "slug"
     pagination_class = CatalogPagination

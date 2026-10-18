@@ -90,6 +90,8 @@ class Project(TimeStamped, Publishable, Engagement):
         indexes = [
             GinIndex(fields=["game_versions"], name="mods_project_versions_gin"),
             GinIndex(fields=["loaders"], name="mods_project_loaders_gin"),
+            # The default catalog order: published, most downloaded first
+            models.Index(fields=["status", "-modrinth_downloads"], name="mods_project_status_dl"),
         ]
 
     def __str__(self) -> str:

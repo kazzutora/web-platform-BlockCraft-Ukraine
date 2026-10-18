@@ -230,3 +230,14 @@ def _ct(project) -> int:
     from django.contrib.contenttypes.models import ContentType
 
     return ContentType.objects.get_for_model(project).pk
+
+
+def test_public_list_has_no_n_plus_one_for_players(auth_client, django_assert_max_num_queries):
+    for _ in range(8):
+        CollectionFactory(visibility=Collection.Visibility.PUBLIC, items_count=1)
+
+    with django_assert_max_num_queries(6):
+        response = auth_client.get("/api/v1/collections")
+
+    assert len(response.json()["results"]) == 8
+    assert not any(item["can_edit"] for item in response.json()["results"])

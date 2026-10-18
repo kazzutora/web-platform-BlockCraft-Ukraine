@@ -43,6 +43,10 @@ def _with_collection_state(queryset, viewer):
     return queryset.annotate(
         is_liked=Exists(Like.objects.filter(user=viewer, **target)),
         is_favorited=Exists(Favorite.objects.filter(user=viewer, **target)),
+        # «can_edit» for every card in one query instead of one per collection
+        viewer_is_editor=Exists(
+            Collection.editors.through.objects.filter(collection=OuterRef("pk"), user=viewer)
+        ),
     )
 
 

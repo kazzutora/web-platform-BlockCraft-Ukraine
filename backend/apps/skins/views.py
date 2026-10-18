@@ -18,6 +18,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from apps.core.cache import GuestCachedListMixin
 from apps.core.exceptions import DomainError
 from apps.core.pagination import CatalogPagination
 from apps.core.schema import error_responses
@@ -68,6 +69,7 @@ SKIN_ID = OpenApiParameter("id", OpenApiTypes.INT, OpenApiParameter.PATH)
     ),
 )
 class SkinViewSet(
+    GuestCachedListMixin,
     mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
     mixins.CreateModelMixin,

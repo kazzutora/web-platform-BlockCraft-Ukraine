@@ -1,0 +1,12 @@
+{
+  "name": "blockcraft-e2e",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64.1"
+  },
+  "packageManager": "pnpm@12.14.0"
+}

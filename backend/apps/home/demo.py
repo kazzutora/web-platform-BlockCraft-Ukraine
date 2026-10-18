@@ -112,6 +112,7 @@ def remove() -> int:
     players = list(User.objects.filter(email__endswith=f"@{DEMO_DOMAIN}"))
     for player in players:
         privacy.delete(player)
+    Project.objects.filter(modrinth_id__startswith="DEMO").delete()
     return len(players)
 
 
@@ -295,9 +296,39 @@ def _library_and_social(
     return summary
 
 
+DEMO_MODS = [
+    ("demo-fast-render", "Швидкий рендер", "mod", "Більше FPS без зміни вигляду гри."),
+    ("demo-mini-map", "Мінікарта", "mod", "Карта в кутку екрана й мітки шляху."),
+    ("demo-inventory-sort", "Сортування інвентарю", "mod", "Одна клавіша — і скриня в порядку."),
+    ("demo-shaders-light", "Легкі шейдери", "shader", "Тіні й вода для слабких відеокарт."),
+    ("demo-pixel-pack", "Чіткі пікселі", "resourcepack", "Текстури 32×32 у стилі гри."),
+    ("demo-recipes", "Довідник рецептів", "mod", "Усі крафти під рукою."),
+]
+
+
+def _demo_mods(rng: random.Random) -> None:
+    """Stand-ins when Modrinth was never synced (CI, a fresh laptop): no files, no links."""
+    for index, (slug, title, project_type, summary) in enumerate(DEMO_MODS):
+        Project.objects.create(
+            modrinth_id=f"DEMO{index:04d}",
+            slug=slug,
+            title=title,
+            summary=summary,
+            summary_uk=summary,
+            project_type=project_type,
+            loaders=["fabric", "neoforge"] if project_type == "mod" else ["minecraft"],
+            game_versions=VERSIONS,
+            modrinth_downloads=rng.randint(10_000, 5_000_000),
+            status=Project.Status.PUBLISHED,
+            published_at=timezone.now() - timedelta(days=rng.randint(30, 600)),
+        )
+
+
 @transaction.atomic
 def create(*, seed: int = 42) -> Summary:
     rng = random.Random(seed)
+    if not Project.objects.published().exists():
+        _demo_mods(rng)
     players = _players(rng)
     made_skins = _skins(rng, players)
     servers = _servers(rng, players)

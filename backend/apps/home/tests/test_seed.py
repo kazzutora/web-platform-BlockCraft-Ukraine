@@ -41,3 +41,11 @@ def test_reset_replaces_the_demo_and_fixes_counters():
     project.refresh_from_db()
     assert project.favorites_count == 0
     assert not User.objects.filter(email__endswith=f"@{demo.DEMO_DOMAIN}").exists()
+
+
+def test_demo_mods_stand_in_when_nothing_is_synced():
+    demo.create()
+
+    assert Project.objects.published().filter(modrinth_id__startswith="DEMO").count() == 6
+    demo.remove()
+    assert not Project.objects.exists()

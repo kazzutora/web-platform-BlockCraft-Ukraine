@@ -6,6 +6,9 @@ x-backend: &backend
     context: ./backend
     target: dev
   env_file: .env
+  environment:
+    # `ACCOUNT_EMAIL_VERIFICATION=none docker compose up -d` for the e2e tests
+    ACCOUNT_EMAIL_VERIFICATION: ${ACCOUNT_EMAIL_VERIFICATION:-mandatory}
   volumes:
     - ./backend:/app
     - media:/app/media

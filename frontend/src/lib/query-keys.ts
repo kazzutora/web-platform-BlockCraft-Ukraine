@@ -23,6 +23,9 @@ export const queryKeys = {
     lookup: (nickname: string) =>
       [...queryKeys.skins.all, "lookup", nickname.toLowerCase()] as const,
   },
+  search: {
+    suggest: (q: string) => ["search", "suggest", q] as const,
+  },
   servers: {
     all: ["servers"] as const,
     catalog: (query: object) => [...queryKeys.servers.all, "catalog", query] as const,

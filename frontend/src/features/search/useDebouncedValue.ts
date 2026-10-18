@@ -1,0 +1,13 @@
+"use client";
+
+import { useEffect, useState } from "react";
+
+/** `value` after it stopped changing for `delay` ms (typing → one request, not ten). */
+export function useDebouncedValue<T>(value: T, delay: number): T {
+  const [debounced, setDebounced] = useState(value);
+  useEffect(() => {
+    const timer = window.setTimeout(() => setDebounced(value), delay);
+    return () => window.clearTimeout(timer);
+  }, [value, delay]);
+  return debounced;
+}

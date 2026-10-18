@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { IconLink } from "@/components/ui/IconLink";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { AccountArea } from "@/features/auth/AccountArea";
+import { SearchOverlay } from "@/features/search/SearchOverlay";
 
 import { Container } from "./Container";
 import { Logo } from "./Logo";
@@ -11,7 +12,7 @@ import { SectionLinks } from "./SectionLinks";
 import { SectionNav } from "./SectionNav";
 import { ThemeToggle } from "./ThemeToggle";
 
-const copy = { search: "Пошук", saved: "Обране" };
+const copy = { saved: "Обране" };
 
 /** Sections on the left, logo in the center, search / saved / account on the right. */
 export function Header() {
@@ -25,7 +26,7 @@ export function Header() {
         </div>
         <Logo />
         <div className="flex items-center justify-end gap-1">
-          <IconLink href="/search" icon="search" label={copy.search} />
+          <SearchOverlay />
           {/* Desktop-only actions; on phones they live in the menu and the tab bar */}
           <div className="hidden items-center gap-1 md:flex">
             <IconLink href="/me/saved" icon="bookmark" label={copy.saved} />

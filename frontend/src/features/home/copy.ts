@@ -1,0 +1,20 @@
+export const homeCopy = {
+  title: "Minecraft українською",
+  lead: "Моди під твою версію, скіни в 3D і сервери з живим онлайном — в одному місці.",
+  search: "Знайти мод, скін або сервер",
+  searchButton: "Шукати",
+  forYou: (version: string, loader: string) =>
+    `Для твоєї версії · ${[version, loader].filter(Boolean).join(" · ")}`,
+  popular: "Популярне цього тижня",
+  allMods: "Усі моди",
+  skinOfWeek: "Скін тижня",
+  skinBy: (author: string) => `від ${author}`,
+  openSkin: "Відкрити скін",
+  allSkins: "Усі скіни",
+  serversOnline: "Сервери онлайн зараз",
+  allServers: "Усі сервери",
+  noServers: "Зараз жоден сервер не відповідає. Зазирни пізніше.",
+  fresh: "Нове",
+  top: "Топи",
+  empty: "Тут скоро з’явиться контент спільноти.",
+};

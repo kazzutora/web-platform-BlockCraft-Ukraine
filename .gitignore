@@ -42,3 +42,6 @@ Thumbs.db
 .mcp.json
 CLAUDE.local.md
 .claude/settings.local.json
+
+# Database and media backups (infra/scripts/backup.sh)
+/backups/

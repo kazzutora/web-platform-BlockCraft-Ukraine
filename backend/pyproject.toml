@@ -12,6 +12,7 @@ dependencies = [
     "django-redis>=6.0",
     "djangorestframework>=3.16",
     "drf-spectacular>=0.28",
+    "gunicorn>=26.2",
     "httpx>=0.28",
     "markdown-it-py>=4.0",
     "mcstatus>=12.0",
@@ -20,6 +21,7 @@ dependencies = [
     "psycopg[binary]>=3.2",
     "pydantic>=2.11",
     "redis>=6.0",
+    "uvicorn-worker>=0.4",
 ]
 
 [dependency-groups]

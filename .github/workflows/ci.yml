@@ -4,6 +4,8 @@ on:
   push:
     branches: [main]
   pull_request:
+  # deploy.yml runs the same checks before a release
+  workflow_call:
 
 concurrency:
   group: ci-${{ github.ref }}

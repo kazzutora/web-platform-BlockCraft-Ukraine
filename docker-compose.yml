@@ -1,8 +1,10 @@
-# Development stack. Production setup: docker-compose.prod.yml (stage 9).
+# Development stack. Production: docker-compose.prod.yml (see docs/deploy.md).
 name: blockcraft
 
 x-backend: &backend
-  build: ./backend
+  build:
+    context: ./backend
+    target: dev
   env_file: .env
   volumes:
     - ./backend:/app
@@ -59,7 +61,9 @@ services:
     command: uv run celery -A config beat -l info -s /tmp/celerybeat-schedule
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      target: dev
     # Keeps the node_modules volume in sync with pnpm-lock.yaml after dependency changes
     command: sh -c "pnpm install --frozen-lockfile --store-dir /pnpm-store && pnpm dev"
     environment:

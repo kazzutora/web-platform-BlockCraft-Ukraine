@@ -1,0 +1,56 @@
+name: Deploy
+
+# A release tag (v0.9.0, v1.0.0, …) ships to the VPS after the full CI passes.
+# Repository secrets: DEPLOY_HOST, DEPLOY_USER, DEPLOY_PATH, DEPLOY_SSH_KEY and
+# DEPLOY_KNOWN_HOSTS (`ssh-keyscan -t ed25519 <host>` output, checked by hand once).
+on:
+  push:
+    tags: ["v*"]
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  checks:
+    uses: ./.github/workflows/ci.yml
+
+  deploy:
+    needs: checks
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: SSH key and the server fingerprint
+        env:
+          SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+
+      - name: Build and restart on the server
+        env:
+          HOST: ${{ secrets.DEPLOY_HOST }}
+          USER: ${{ secrets.DEPLOY_USER }}
+          APP_PATH: ${{ secrets.DEPLOY_PATH }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=yes "$USER@$HOST" \
+            "set -e; cd '$APP_PATH'
+             git fetch --tags --force && git checkout --force '$TAG'
+             docker compose -f docker-compose.prod.yml build
+             docker compose -f docker-compose.prod.yml run --rm static
+             docker compose -f docker-compose.prod.yml up -d --remove-orphans
+             docker image prune -f"
+
+      - name: The site answers
+        env:
+          SITE_URL: ${{ vars.SITE_URL }}
+        run: |
+          for attempt in 1 2 3 4 5 6; do
+            curl --fail --silent --show-error "$SITE_URL/api/v1/health" && exit 0
+            sleep 10
+          done
+          exit 1

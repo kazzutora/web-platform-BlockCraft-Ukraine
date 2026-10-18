@@ -1,0 +1,153 @@
+# Production stack for one VPS (docs/deploy.md). No bind-mounted code: images are built
+# from the repository; data lives in named volumes; Nginx terminates TLS (Let's Encrypt).
+name: blockcraft-prod
+
+x-backend: &backend
+  build:
+    context: ./backend
+    target: prod
+  image: blockcraft-backend:prod
+  env_file: .env
+  environment:
+    ENV: prod
+  volumes:
+    - media:/app/media
+  restart: unless-stopped
+  depends_on:
+    db:
+      condition: service_healthy
+    redis:
+      condition: service_healthy
+    meili:
+      condition: service_started
+
+services:
+  db:
+    image: postgres:17-alpine
+    env_file: .env
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./backups:/backups
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    command: redis-server --save 60 1 --loglevel warning
+    volumes:
+      - redisdata:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+
+  meili:
+    image: getmeili/meilisearch:v1.55
+    environment:
+      MEILI_ENV: production
+      MEILI_MASTER_KEY: ${MEILI_MASTER_KEY}
+      MEILI_NO_ANALYTICS: "true"
+    volumes:
+      - meilidata:/meili_data
+    restart: unless-stopped
+
+  backend:
+    <<: *backend
+    # Migrations run once per start; Gunicorn takes over afterwards
+    command: >-
+      sh -c "python manage.py migrate --noinput && exec gunicorn config.asgi:application
+      -k uvicorn_worker.UvicornWorker --bind 0.0.0.0:8000 --workers 3 --timeout 60
+      --access-logfile -"
+    volumes:
+      - media:/app/media
+      - static:/app/staticfiles-shared
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request as r; r.urlopen('http://localhost:8000/api/v1/health', timeout=4)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+
+  # Copies the collected static files into the volume Nginx serves from
+  static:
+    <<: *backend
+    command: sh -c "cp -r /app/staticfiles/. /app/staticfiles-shared/"
+    volumes:
+      - static:/app/staticfiles-shared
+    restart: "no"
+    depends_on: []
+
+  worker:
+    <<: *backend
+    command: celery -A config worker -l info --concurrency 2
+
+  beat:
+    <<: *backend
+    command: celery -A config beat -l info -s /tmp/celerybeat-schedule
+
+  frontend:
+    build:
+      context: ./frontend
+      target: prod
+      args:
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL}
+    image: blockcraft-frontend:prod
+    environment:
+      INTERNAL_API_URL: http://backend:8000
+      NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL}
+    restart: unless-stopped
+    depends_on:
+      - backend
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:3000/').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  nginx:
+    image: nginx:1.29-alpine
+    environment:
+      DOMAIN: ${DOMAIN}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./infra/nginx/prod.conf:/etc/nginx/templates/default.conf.template:ro
+      - ./infra/nginx/snippets:/etc/nginx/snippets:ro
+      - static:/var/www/static:ro
+      - media:/var/www/media:ro
+      - certbot-www:/var/www/certbot:ro
+      - letsencrypt:/etc/letsencrypt:ro
+    # Picks up renewed certificates every 6 hours
+    command: >-
+      /bin/sh -c "while :; do sleep 6h; nginx -s reload; done &
+      exec /docker-entrypoint.sh nginx -g 'daemon off;'"
+    restart: unless-stopped
+    depends_on:
+      - backend
+      - frontend
+
+  # Renews the certificate twice a day when it is close to expiry; Nginx reloads every 6 h
+  certbot:
+    image: certbot/certbot:v4.2.0
+    volumes:
+      - certbot-www:/var/www/certbot
+      - letsencrypt:/etc/letsencrypt
+    entrypoint: sh -c "trap exit TERM; while :; do certbot renew --webroot -w /var/www/certbot --quiet; sleep 12h & wait $${!}; done"
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  redisdata:
+  meilidata:
+  media:
+  static:
+  certbot-www:
+  letsencrypt:

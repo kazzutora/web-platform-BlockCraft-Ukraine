@@ -2,6 +2,7 @@
 
 import asyncio
 import logging
+import re
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass
 
@@ -13,6 +14,8 @@ from .choices import Edition
 logger = logging.getLogger(__name__)
 
 TIMEOUT = 3.0
+# «§f§lPaper» → «Paper»: colour and style codes of Minecraft text
+FORMATTING = re.compile(r"§[0-9a-fk-orx]", re.IGNORECASE)
 CONCURRENCY = 20
 
 
@@ -57,7 +60,7 @@ async def _java(host: str, port: int) -> PingResult:
         players_online=status.players.online,
         players_max=status.players.max,
         latency_ms=round(status.latency),
-        version_name=status.version.name[:64],
+        version_name=FORMATTING.sub("", status.version.name).strip()[:64],
         motd=status.motd.to_plain(),
     )
 
@@ -71,7 +74,7 @@ async def _bedrock(host: str, port: int) -> PingResult:
         players_online=status.players.online,
         players_max=status.players.max,
         latency_ms=round(status.latency),
-        version_name=status.version.name[:64],
+        version_name=FORMATTING.sub("", status.version.name).strip()[:64],
         motd=status.motd.to_plain(),
     )
 

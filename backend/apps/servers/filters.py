@@ -1,6 +1,8 @@
 import django_filters
 from django.db.models import F, Q, QuerySet
 from django.db.models.functions import Lower
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema_field
 
 from . import selectors
 from .choices import Edition, Language, Mode
@@ -58,6 +60,7 @@ class ServerFilter(django_filters.FilterSet):
     def filter_edition(self, queryset, name, value: str):
         return queryset.filter(edition__in=[value, Edition.BOTH])
 
+    @extend_schema_field(OpenApiTypes.BOOL)
     def filter_online(self, queryset, name, value: bool | None):
         if value is None:
             return queryset

@@ -154,3 +154,11 @@ def test_ping_all_task_is_scheduled_every_five_minutes(settings, monkeypatch):
     ServerFactory()
     cache.clear()
     assert ping_all.delay().get() == 0
+
+
+def test_formatting_codes_are_dropped_from_the_version(monkeypatch, public_dns):
+    answer = java_status()
+    answer.version.name = "§f§f§fWe support: §l1.20-1.21"
+    use_java(monkeypatch, answer=answer)
+
+    assert asyncio.run(clients.ping(target())).version_name == "We support: 1.20-1.21"

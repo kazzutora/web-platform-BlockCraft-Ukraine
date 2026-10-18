@@ -3750,8 +3750,7 @@ export interface operations {
                 language?: "en" | "multi" | "uk";
                 /** @description Mode slugs, comma-separated; any may match. */
                 mode?: string;
-                /** @description Online right now. */
-                online?: string;
+                online?: boolean;
                 /** @description A page number within the paginated result set. */
                 page?: number;
                 /** @description Number of results to return per page. */

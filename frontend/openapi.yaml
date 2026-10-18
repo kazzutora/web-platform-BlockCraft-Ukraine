@@ -1929,8 +1929,7 @@ paths:
       - in: query
         name: online
         schema:
-          type: string
-        description: Online right now.
+          type: boolean
       - name: page
         required: false
         in: query

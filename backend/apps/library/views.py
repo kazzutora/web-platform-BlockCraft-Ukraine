@@ -12,6 +12,8 @@ from apps.core.pagination import CatalogPagination
 from apps.core.schema import error_responses, paginated
 from apps.mods.models import Project
 from apps.mods.selectors import catalog
+from apps.skins.models import Skin
+from apps.skins.selectors import catalog as skins_catalog
 from apps.social.models import Like
 
 from . import selectors, services
@@ -116,6 +118,8 @@ class SavedView(APIView):
             game_version = query.validated_data.get("game_version")
             if game_version:
                 objects = objects.filter(game_versions__contains=[game_version])
+        elif kind.name == "skin":
+            objects = skins_catalog(user)
         else:
             objects = _with_collection_state(selectors.listed_collections(user), user)
 
@@ -134,6 +138,7 @@ class SavedView(APIView):
                     "id": kind.identifier(target),
                     "saved_at": favorite.created_at,
                     "mod": target if isinstance(target, Project) else None,
+                    "skin": target if isinstance(target, Skin) else None,
                     "collection": target if isinstance(target, Collection) else None,
                 }
             )

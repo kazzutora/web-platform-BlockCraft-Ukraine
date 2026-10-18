@@ -733,6 +733,7 @@ export interface components {
             /** Нотатка */
             readonly note: string;
             readonly mod: components["schemas"]["ProjectCard"] | null;
+            readonly skin: components["schemas"]["SkinCard"] | null;
         };
         CollectionWriteRequest: {
             title: string;
@@ -1282,6 +1283,7 @@ export interface components {
             /** Format: date-time */
             saved_at: string;
             mod: components["schemas"]["ProjectCard"] | null;
+            skin: components["schemas"]["SkinCard"] | null;
             collection: components["schemas"]["Collection"] | null;
         };
         /** @description Catalog card: the 2D preview (the texture until it is rendered), title, counters. */

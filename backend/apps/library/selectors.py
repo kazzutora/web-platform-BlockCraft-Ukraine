@@ -1,7 +1,10 @@
+from django.contrib.contenttypes.prefetch import GenericPrefetch
 from django.db.models import Exists, OuterRef, Prefetch, Q, QuerySet, Subquery
 from django.http import Http404
 
 from apps.core.kinds import Kind, Viewer
+from apps.mods.models import Project
+from apps.skins.models import Skin
 
 from .models import Collection, CollectionItem, Favorite
 
@@ -56,7 +59,16 @@ def get_collection(*, pk: int, viewer: Viewer, share_token: str = "") -> Collect
 
 
 def items_of(collection: Collection) -> QuerySet[CollectionItem]:
-    return collection.items.select_related("content_type").prefetch_related("target")
+    """Items with their targets and what their cards need, in a fixed number of queries."""
+    targets = GenericPrefetch(
+        "target",
+        [
+            Project.objects.prefetch_related("categories"),
+            Skin.objects.select_related("author"),
+            Collection.objects.all(),
+        ],
+    )
+    return collection.items.select_related("content_type").prefetch_related(targets)
 
 
 def public_collections(*, owner_nickname: str = "") -> QuerySet[Collection]:

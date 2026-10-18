@@ -5,13 +5,18 @@ from apps.accounts.serializers import UserBriefSerializer
 from apps.core import kinds
 from apps.mods.models import Project
 from apps.mods.serializers import ProjectCardSerializer
+from apps.skins.models import Skin
+from apps.skins.serializers import SkinCardSerializer
 
 from .models import Collection, CollectionItem
-from .selectors import can_edit
+from .selectors import PREVIEW_ITEMS, can_edit
 
 
 def thumbnail_of(target) -> str | None:
     """Image for collection previews; each kind exposes its own picture field."""
+    if isinstance(target, Skin):
+        image = target.preview or target.file
+        return image.url if image else None
     return getattr(target, "icon_url", None) or None
 
 
@@ -61,7 +66,13 @@ class CollectionSerializer(serializers.ModelSerializer):
     def get_preview(self, collection: Collection) -> list[str]:
         items = getattr(collection, "preview_items", None)
         if items is None:
-            items = list(collection.items.all()[:4])
+            # The detail view passes its prefetched items; anything else reads the first four
+            loaded = self.context.get("items")
+            items = (
+                loaded[:PREVIEW_ITEMS]
+                if loaded is not None
+                else collection.items.all()[:PREVIEW_ITEMS]
+            )
         return [url for item in items if (url := thumbnail_of(item.target))]
 
     def get_can_edit(self, collection: Collection) -> bool:
@@ -79,10 +90,11 @@ class CollectionItemSerializer(serializers.ModelSerializer):
     kind = serializers.SerializerMethodField()
     target_id = serializers.SerializerMethodField()
     mod = serializers.SerializerMethodField()
+    skin = serializers.SerializerMethodField()
 
     class Meta:
         model = CollectionItem
-        fields = ["id", "kind", "target_id", "position", "slot", "note", "mod"]
+        fields = ["id", "kind", "target_id", "position", "slot", "note", "mod", "skin"]
         read_only_fields = fields
 
     def _kind(self, item: CollectionItem) -> kinds.Kind:
@@ -99,6 +111,13 @@ class CollectionItemSerializer(serializers.ModelSerializer):
         target = item.target
         if isinstance(target, Project) and target.status == Project.Status.PUBLISHED:
             return ProjectCardSerializer(target, context=self.context).data
+        return None
+
+    @extend_schema_field(SkinCardSerializer(allow_null=True))
+    def get_skin(self, item: CollectionItem) -> dict | None:
+        target = item.target
+        if isinstance(target, Skin) and target.status == Skin.Status.PUBLISHED:
+            return SkinCardSerializer(target, context=self.context).data
         return None
 
 
@@ -176,4 +195,5 @@ class SavedItemSerializer(serializers.Serializer):
     id = serializers.CharField()
     saved_at = serializers.DateTimeField()
     mod = ProjectCardSerializer(allow_null=True)
+    skin = SkinCardSerializer(allow_null=True)
     collection = CollectionSerializer(allow_null=True)

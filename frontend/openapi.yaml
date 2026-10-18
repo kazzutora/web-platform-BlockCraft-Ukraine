@@ -2556,12 +2556,18 @@ components:
           - $ref: '#/components/schemas/ProjectCard'
           nullable: true
           readOnly: true
+        skin:
+          allOf:
+          - $ref: '#/components/schemas/SkinCard'
+          nullable: true
+          readOnly: true
       required:
       - id
       - kind
       - mod
       - note
       - position
+      - skin
       - slot
       - target_id
     CollectionWriteRequest:
@@ -3958,6 +3964,10 @@ components:
           allOf:
           - $ref: '#/components/schemas/ProjectCard'
           nullable: true
+        skin:
+          allOf:
+          - $ref: '#/components/schemas/SkinCard'
+          nullable: true
         collection:
           allOf:
           - $ref: '#/components/schemas/Collection'
@@ -3968,6 +3978,7 @@ components:
       - kind
       - mod
       - saved_at
+      - skin
     SkinCard:
       type: object
       description: 'Catalog card: the 2D preview (the texture until it is rendered),

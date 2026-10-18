@@ -331,3 +331,35 @@ def test_pending_current_skin_is_not_public_yet():
     client_for(author).put("/api/v1/me/skin", {"skin_id": skin.pk}, format="json")
 
     assert APIClient().get("/api/v1/users/Nova").json()["skin"] is None
+
+
+# Library
+
+
+def test_saved_skins_list(user, auth_client):
+    skin = SkinFactory(title="Мавка")
+    auth_client.post("/api/v1/favorites", {"kind": "skin", "id": skin.pk}, format="json")
+
+    results = auth_client.get("/api/v1/me/saved", {"kind": "skin"}).json()["results"]
+
+    assert [(item["kind"], item["skin"]["title"]) for item in results] == [("skin", "Мавка")]
+
+
+def test_skins_in_collections_show_cards_without_n_plus_one(
+    user, auth_client, django_assert_max_num_queries
+):
+    collection_id = auth_client.post(
+        "/api/v1/collections", {"title": "Скіни на вечір"}, format="json"
+    ).json()["id"]
+    for skin in SkinFactory.create_batch(5):
+        auth_client.post(
+            f"/api/v1/collections/{collection_id}/items",
+            {"kind": "skin", "id": skin.pk},
+            format="json",
+        )
+
+    with django_assert_max_num_queries(12):
+        body = auth_client.get(f"/api/v1/collections/{collection_id}").json()
+
+    assert all(item["skin"]["author"]["nickname"] for item in body["items"])
+    assert len(body["preview"]) == 4

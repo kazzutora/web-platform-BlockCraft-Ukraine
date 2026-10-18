@@ -10,3 +10,6 @@ EMAIL_BACKEND = "django.core.mail.backends.locmem.EmailBackend"
 
 CELERY_TASK_ALWAYS_EAGER = True
 CELERY_TASK_EAGER_PROPAGATES = True
+
+SEARCH_INDEXING = False
+MEILI_URL = "http://meili.test:7700"

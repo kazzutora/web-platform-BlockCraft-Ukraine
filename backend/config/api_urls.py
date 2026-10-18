@@ -6,6 +6,8 @@ urlpatterns = [
     path("", include("apps.mods.urls")),
     path("", include("apps.skins.urls")),
     path("", include("apps.servers.urls")),
+    path("", include("apps.search.urls")),
+    path("", include("apps.home.urls")),
     path("", include("apps.library.urls")),
     path("", include("apps.social.urls")),
 ]

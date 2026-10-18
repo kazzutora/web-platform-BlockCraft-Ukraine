@@ -13,6 +13,7 @@ SORTS = {
     "online": [F("live_players").desc(nulls_last=True), "-score"],
     "new": ["-published_at"],
     "top": ["-score", "-rating_count"],
+    "trend": ["-trend_score", "-score"],
 }
 
 

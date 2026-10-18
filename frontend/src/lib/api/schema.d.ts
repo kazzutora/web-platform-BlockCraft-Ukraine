@@ -228,6 +228,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/home": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Home page blocks. Which objects to show is cached for 5 minutes. */
+        get: operations["home"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/likes": {
         parameters: {
             query?: never;
@@ -557,6 +574,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Typo-tolerant search over mods, skins, servers and public collections: groups of 5, or with `kind` one page of 24. */
+        get: operations["search"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/servers": {
         parameters: {
             query?: never;
@@ -752,6 +786,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/top": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Week: trend; month: weighted events of 30 days; all: rating. 24 items. */
+        get: operations["top"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/users/{nickname}": {
         parameters: {
             query?: never;
@@ -798,6 +849,12 @@ export interface components {
              */
             banner: string;
         };
+        /**
+         * @description * `profile` - profile
+         *     * `popular` - popular
+         * @enum {string}
+         */
+        BasisEnum: "profile" | "popular";
         /** @enum {unknown} */
         BlankEnum: "";
         Category: {
@@ -966,6 +1023,18 @@ export interface components {
             favorited: boolean;
             favorites_count: number;
         };
+        ForYou: {
+            /**
+             * @description `profile`: for the player's version and loader; `popular`: this week's best.
+             *
+             *     * `profile` - profile
+             *     * `popular` - popular
+             */
+            basis: components["schemas"]["BasisEnum"];
+            game_version: string;
+            loader: string;
+            mods: components["schemas"]["ProjectCard"][];
+        };
         GalleryImage: {
             /** Format: uri */
             url: string;
@@ -1039,6 +1108,13 @@ export interface components {
         HealthChecks: {
             database: components["schemas"]["CheckStatusEnum"];
             redis: components["schemas"]["CheckStatusEnum"];
+        };
+        Home: {
+            for_you: components["schemas"]["ForYou"];
+            skin_of_week: components["schemas"]["SkinCard"] | null;
+            servers_online: components["schemas"]["ServerCard"][];
+            new_skins: components["schemas"]["SkinCard"][];
+            new_servers: components["schemas"]["ServerCard"][];
         };
         /**
          * @description * `survival` - Виживання
@@ -1503,6 +1579,32 @@ export interface components {
             skin: components["schemas"]["SkinCard"] | null;
             collection: components["schemas"]["Collection"] | null;
         };
+        SearchGroup: {
+            kind: string;
+            total: number;
+            results: components["schemas"]["SearchHit"][];
+            next_page: number | null;
+        };
+        /** @description One found object; the card fields depend on the kind and are null for the others. */
+        SearchHit: {
+            kind: string;
+            id: string;
+            title: string;
+            summary: string;
+            image: string | null;
+            project_type: string | null;
+            latest_game_version?: string | null;
+            loaders: string[];
+            author: string | null;
+            modes: string[];
+            color_bucket: string | null;
+            address?: string | null;
+            items_count?: number | null;
+        };
+        SearchResponse: {
+            q: string;
+            groups: components["schemas"]["SearchGroup"][];
+        };
         /** @description Catalog row: name, modes, address and live online from Redis (context `live`). */
         ServerCard: {
             readonly slug: string;
@@ -1766,6 +1868,14 @@ export interface components {
          * @enum {string}
          */
         ThemeEnum: "light" | "dark" | "system";
+        /** @description Exactly one list is filled: the one of the requested kind. */
+        Top: {
+            kind: string;
+            period: string;
+            mods: components["schemas"]["ProjectCard"][];
+            skins: components["schemas"]["SkinCard"][];
+            servers: components["schemas"]["ServerCard"][];
+        };
         /** @description Author shown next to reviews, comments and collections. */
         UserBrief: {
             /** Нік */
@@ -2656,6 +2766,25 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Health"];
+                };
+            };
+        };
+    };
+    home: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Home"];
                 };
             };
         };
@@ -3729,6 +3858,43 @@ export interface operations {
             };
         };
     };
+    search: {
+        parameters: {
+            query: {
+                /**
+                 * @description * `mod` - mod
+                 *     * `skin` - skin
+                 *     * `server` - server
+                 *     * `collection` - collection
+                 */
+                kind?: "mod" | "skin" | "server" | "collection";
+                page?: number;
+                q: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SearchResponse"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
     servers_list: {
         parameters: {
             query?: {
@@ -3761,8 +3927,9 @@ export interface operations {
                  *     * `online` - online
                  *     * `new` - new
                  *     * `top` - top
+                 *     * `trend` - trend
                  */
-                sort?: "new" | "online" | "popular" | "top";
+                sort?: "new" | "online" | "popular" | "top" | "trend";
                 version?: string;
                 whitelist?: boolean;
             };
@@ -4550,6 +4717,46 @@ export interface operations {
                 };
             };
             503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    top: {
+        parameters: {
+            query?: {
+                /**
+                 * @description * `mod` - mod
+                 *     * `skin` - skin
+                 *     * `server` - server
+                 */
+                kind?: "mod" | "skin" | "server";
+                /**
+                 * @description * `week` - week
+                 *     * `month` - month
+                 *     * `all` - all
+                 */
+                period?: "week" | "month" | "all";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Top"];
+                };
+            };
+            400: {
                 headers: {
                     [name: string]: unknown;
                 };

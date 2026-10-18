@@ -1,13 +1,17 @@
+from collections import defaultdict
+from datetime import timedelta
+
 from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
-from django.db.models import Avg, Count, F, Model, Sum
-from django.db.models.functions import Greatest
+from django.db.models import Avg, Count, F, FloatField, Func, Model, QuerySet, Sum
+from django.db.models.functions import Exp, Greatest
+from django.utils import timezone
 
 from apps.accounts.models import User, UserSettings
 from apps.core import kinds
 from apps.core.counters import bump
 from apps.core.exceptions import DomainError
-from apps.library.models import Collection, CollectionItem, Favorite
+from apps.library.models import Collection, CollectionItem, Download, Favorite
 
 from .models import Comment, Like, Review, ReviewVote
 
@@ -114,6 +118,63 @@ def recalc_scores() -> dict[str, int]:
             if obj is not None:
                 obj.score = (BAYES_WEIGHT * mean + row["total"]) / (BAYES_WEIGHT + row["n"])
         model._base_manager.bulk_update(objects.values(), ["score"], batch_size=500)
+        updated[kind.name] = len(objects)
+    return updated
+
+
+# Trends: trend = Σ w · e^(−age_hours / 48) over the last 14 days (docs/tech.md, 9)
+
+TREND_WINDOW = timedelta(days=14)
+TREND_DECAY_HOURS = 48
+TREND_WEIGHTS = {"like": 1.0, "favorite": 2.0, "download": 0.5, "review": 3.0}
+
+
+def _decayed_sum(queryset: QuerySet, *, group_by: str, weight: float, now) -> dict[int, float]:
+    epoch = Func(
+        F("created_at"),
+        function="EXTRACT",
+        template="EXTRACT(EPOCH FROM %(expressions)s)",
+        output_field=FloatField(),
+    )
+    decay = Exp((epoch - now.timestamp()) / (TREND_DECAY_HOURS * 3600.0))
+    rows = (
+        queryset.filter(created_at__gte=now - TREND_WINDOW)
+        .values(group_by)
+        .annotate(trend=Sum(decay, output_field=FloatField()))
+        .order_by()
+    )
+    return {row[group_by]: weight * row["trend"] for row in rows}
+
+
+def recalc_trends(*, now=None) -> dict[str, int]:
+    """Recent likes, saves, downloads and reviews; older events fade out."""
+    now = now or timezone.now()
+    updated: dict[str, int] = {}
+    for kind in kinds.all_kinds():
+        target = {"content_type": kind.content_type}
+        trends: dict[int, float] = defaultdict(float)
+        sources = [
+            (Like.objects.filter(**target), "object_id", TREND_WEIGHTS["like"]),
+            (Favorite.objects.filter(**target), "object_id", TREND_WEIGHTS["favorite"]),
+            (
+                Review.objects.filter(**target, status=Review.Status.PUBLISHED),
+                "object_id",
+                TREND_WEIGHTS["review"],
+            ),
+        ]
+        if kind.name == "mod":
+            sources.append((Download.objects.all(), "project_id", TREND_WEIGHTS["download"]))
+        for queryset, group_by, weight in sources:
+            for pk, value in _decayed_sum(
+                queryset, group_by=group_by, weight=weight, now=now
+            ).items():
+                trends[pk] += value
+        model = kind.model
+        model._base_manager.exclude(pk__in=trends).exclude(trend_score=0).update(trend_score=0)
+        objects = model._base_manager.in_bulk(list(trends))
+        for pk, obj in objects.items():
+            obj.trend_score = round(trends[pk], 4)
+        model._base_manager.bulk_update(objects.values(), ["trend_score"], batch_size=500)
         updated[kind.name] = len(objects)
     return updated
 

@@ -19,7 +19,7 @@ POSTGRES_DB ?= blockcraft
 .DEFAULT_GOAL := help
 
 .PHONY: help up up-local down logs ps sh-back sh-front migrate makemigrations createsuperuser \
-	test test-back test-front lint fmt typecheck api-types seed sync-mods reset-db
+	test test-back test-front lint fmt typecheck api-types seed sync-mods reindex reset-db
 
 help:
 	@echo up               - build and start everything, site at http://localhost:8080
@@ -31,6 +31,7 @@ help:
 	@echo lint, fmt, typecheck
 	@echo api-types        - regenerate API types: schema.d.ts and allauth.d.ts in frontend/src/lib/api
 	@echo seed, sync-mods  - demo data / Modrinth sync
+	@echo reindex          - rebuild the Meilisearch index
 	@echo reset-db         - drop and recreate the database, then migrate
 
 .env:
@@ -99,6 +100,9 @@ api-types:
 
 seed:
 	@echo make seed arrives in stage 9, task 9.4
+
+reindex:
+	$(MANAGE) reindex_search
 
 sync-mods:
 	$(MANAGE) sync_mods

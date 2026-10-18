@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     "apps.mods",
     "apps.skins",
     "apps.servers",
+    "apps.search",
+    "apps.home",
 ]
 
 MIDDLEWARE = [
@@ -243,7 +245,17 @@ CELERY_BEAT_SCHEDULE: dict[str, dict] = {
     },
     "social-recalc-scores": {"task": "social.recalc_scores", "schedule": crontab(minute=15)},
     "servers-ping-all": {"task": "servers.ping_all", "schedule": crontab(minute="*/5")},
+    "social-recalc-trends": {"task": "social.recalc_trends", "schedule": crontab(minute=45)},
+    "search-reindex-all": {"task": "search.reindex_all", "schedule": crontab(hour=5, minute=0)},
 }
+
+# Search (Meilisearch)
+
+MEILI_URL = env("MEILI_URL", default="http://meili:7700")
+MEILI_MASTER_KEY = env("MEILI_MASTER_KEY", default="")
+SEARCH_INDEX = env("SEARCH_INDEX", default="content")
+# Signals queue index updates; tests switch it off and mock the search engine
+SEARCH_INDEXING = env.bool("SEARCH_INDEXING", default=True)
 
 # Modrinth
 

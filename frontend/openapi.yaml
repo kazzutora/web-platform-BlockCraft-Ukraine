@@ -4249,7 +4249,7 @@ components:
           readOnly: true
         type:
           allOf:
-          - $ref: '#/components/schemas/TypeEnum'
+          - $ref: '#/components/schemas/NotificationTypeEnum'
           readOnly: true
         payload:
           $ref: '#/components/schemas/NotificationPayload'
@@ -4281,6 +4281,24 @@ components:
           type: string
         excerpt:
           type: string
+    NotificationTypeEnum:
+      enum:
+      - approved
+      - rejected
+      - hidden
+      - restored
+      - reply
+      - review
+      - warning
+      type: string
+      description: |-
+        * `approved` - Роботу опубліковано
+        * `rejected` - Роботу відхилено
+        * `hidden` - Роботу приховано після скарг
+        * `restored` - Роботу повернуто
+        * `reply` - Відповідь на коментар
+        * `review` - Новий відгук
+        * `warning` - Попередження
     NotificationsPage:
       type: object
       properties:
@@ -5968,24 +5986,6 @@ components:
       - period
       - servers
       - skins
-    TypeEnum:
-      enum:
-      - approved
-      - rejected
-      - hidden
-      - restored
-      - reply
-      - review
-      - warning
-      type: string
-      description: |-
-        * `approved` - Роботу опубліковано
-        * `rejected` - Роботу відхилено
-        * `hidden` - Роботу приховано після скарг
-        * `restored` - Роботу повернуто
-        * `reply` - Відповідь на коментар
-        * `review` - Новий відгук
-        * `warning` - Попередження
     Unread:
       type: object
       properties:

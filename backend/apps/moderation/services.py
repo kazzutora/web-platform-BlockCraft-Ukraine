@@ -99,7 +99,7 @@ def report(*, reporter: User, kind: str, identifier: str, reason: str, comment: 
             )
     except IntegrityError as error:
         raise DomainError(
-            code="already_reported", message="Ти вже поскаржився — модератори розглянуть."
+            code="already_reported", message="Скаргу вже надіслано — модератори розглянуть."
         ) from error
     open_reports = _open_reports(target)
     if open_reports.values("reporter").distinct().count() >= AUTO_HIDE_REPORTS:

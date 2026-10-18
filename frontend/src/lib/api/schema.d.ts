@@ -1344,7 +1344,7 @@ export interface components {
         };
         Notification: {
             readonly id: number;
-            readonly type: components["schemas"]["TypeEnum"];
+            readonly type: components["schemas"]["NotificationTypeEnum"];
             payload: components["schemas"]["NotificationPayload"];
             readonly is_read: boolean;
             /** Format: date-time */
@@ -1358,6 +1358,17 @@ export interface components {
             actor?: string;
             excerpt?: string;
         };
+        /**
+         * @description * `approved` - Роботу опубліковано
+         *     * `rejected` - Роботу відхилено
+         *     * `hidden` - Роботу приховано після скарг
+         *     * `restored` - Роботу повернуто
+         *     * `reply` - Відповідь на коментар
+         *     * `review` - Новий відгук
+         *     * `warning` - Попередження
+         * @enum {string}
+         */
+        NotificationTypeEnum: "approved" | "rejected" | "hidden" | "restored" | "reply" | "review" | "warning";
         NotificationsPage: {
             unread_count: number;
             results: components["schemas"]["Notification"][];
@@ -2013,17 +2024,6 @@ export interface components {
             skins: components["schemas"]["SkinCard"][];
             servers: components["schemas"]["ServerCard"][];
         };
-        /**
-         * @description * `approved` - Роботу опубліковано
-         *     * `rejected` - Роботу відхилено
-         *     * `hidden` - Роботу приховано після скарг
-         *     * `restored` - Роботу повернуто
-         *     * `reply` - Відповідь на коментар
-         *     * `review` - Новий відгук
-         *     * `warning` - Попередження
-         * @enum {string}
-         */
-        TypeEnum: "approved" | "rejected" | "hidden" | "restored" | "reply" | "review" | "warning";
         Unread: {
             unread_count: number;
         };

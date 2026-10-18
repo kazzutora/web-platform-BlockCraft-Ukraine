@@ -235,6 +235,7 @@ SPECTACULAR_SETTINGS = {
         # Reports also accept comments, which are not a kind
         "KindEnum": ["collection", "mod", "skin", "server"],
         "ReportKindEnum": ["collection", "mod", "skin", "server", "comment"],
+        "NotificationTypeEnum": "apps.notifications.models.Notification.Type",
     },
 }
 

@@ -192,7 +192,7 @@ apps/<name>/
 | `moment` | moments.Moment (етап 11) | id | Like |
 | `world` | worlds.World (етап 12) | slug | Review 1–5 |
 
-`apps/core/kinds.py` містить реєстр `kind → модель`, функцію `resolve(kind, id_or_slug)` і перелік дозволених дій для кожного kind. Узагальнені зв'язки зберігаються через `content_type` + `object_id` (GenericForeignKey) з індексом `(content_type, object_id)`.
+`apps/core/kinds.py` містить реєстр `kind → модель`: кожен застосунок реєструє свої kind у `AppConfig.ready()` (`Kind`: модель, поле-ідентифікатор `slug`/`pk`, тип оцінки `review`/`like`, дозволені дії, поле власника, функція видимих глядачу об'єктів). `resolve(kind, id, viewer=, action=)` повертає об'єкт, якщо глядач його бачить (інакше 404), і перевіряє дію (`400 action_not_allowed`); невідомий kind — `400 unknown_kind`. Узагальнені зв'язки — абстрактна модель `GenericTarget` (`content_type` + `object_id`, GenericForeignKey) з індексом `(content_type, object_id)`. Лічильники `Engagement` змінюються лише через `core.counters.bump()` (`F() + delta`, не нижче нуля).
 
 **Абстрактні міксини:**
 - `TimeStamped`: `created_at`, `updated_at`.
@@ -211,15 +211,15 @@ apps/<name>/
 
 **library**
 - `Favorite`: `user`, generic target, `created_at`. Unique `(user, content_type, object_id)`.
-- `Collection` (TimeStamped, Engagement частково): `owner`, `title` (≤ 80), `description` (≤ 200), `visibility` (private / link / public), `share_token` (для «за посиланням»), `is_setup`, `editors` M2M → User.
-- `CollectionItem`: `collection`, generic target, `position`, `slot` (для сетапу: version / loader / pack / mod / resourcepack / shader / skin / server), `note` (≤ 140). Unique `(collection, content_type, object_id)`.
+- `Collection` (TimeStamped, Engagement частково): `owner`, `title` (≤ 80), `description` (≤ 200), `visibility` (private / link / public), `share_token` (для «за посиланням»), `is_setup`, `editors` M2M → User (≤ 10), `copied_from` (FK Collection, nullable), `items_count`.
+- `CollectionItem`: `collection`, generic target, `position`, `slot` (для сетапу: version / loader / pack / mod / resourcepack / shader / skin / server), `note` (≤ 140), `added_by` (власник або редактор). Unique `(collection, content_type, object_id)`.
 - `ViewHistory`, `Download` (етап 16; `Download` створюється вже з етапу 3 для відстеження оновлень).
 
 **social**
 - `Like`: `user`, generic target. Unique.
-- `Review`: `user`, generic target, `stars` (1–5), `text` (≤ 1000, nullable), `helpful_count`, `status`. Unique `(user, target)`. Для `server` — не частіше разу на 30 днів (оновлення існуючого).
+- `Review` (TimeStamped): `user`, generic target, `stars` (1–5, CHECK), `text` (≤ 1000, порожній рядок — без тексту), `helpful_count`, `status` (published / hidden). Unique `(user, target)`. Для `server` — не частіше разу на 30 днів (оновлення існуючого).
 - `ReviewVote`: `user`, `review`, `is_helpful`. Unique.
-- `Comment` (Publishable): `user`, generic target, `parent` (nullable, лише 1 рівень), `body` (≤ 1000), `is_pinned`.
+- `Comment` (TimeStamped, Publishable): `user`, generic target, `parent` (nullable, лише 1 рівень), `body` (≤ 1000), `is_pinned` (один на об'єкт), `is_deleted` (коментар із відповідями після видалення лишається як «Коментар видалено»).
 
 **mods**
 - `Category`: `slug`, `name_uk`, `project_type`.
@@ -258,7 +258,7 @@ apps/<name>/
 - Пагінація каталогів: `?page=&page_size=` (за замовчуванням 24, максимум 60). Стрічки й коментарі — cursor-пагінація.
 - Сортування: `?sort=popular|new|updated|top|trend`.
 - Помилки: `{"detail": str, "code": str, "fields": {field: [str]}}` — єдиний формат через `core.exceptions.handler`.
-- Тротлінг (DRF scopes): `uploads` 20/год, `comments` 30/год, `reviews` 20/добу, `reports` 20/добу, `lookup` 30/хв, `anon` 120/хв.
+- Тротлінг (DRF scopes): `uploads` 20/год, `comments` 30/год, `reviews` 20/добу, `reports` 20/добу, `lookup` 30/хв, `anon` 120/хв. На ендпоінтах, де той самий шлях і читає, і пише (`/reviews`, `/comments`), scope рахує лише запис (`core.throttling.WriteScopedRateThrottle`), читання — під загальними лімітами.
 - Об'єкти у відповідях каталогу містять поля стану для поточного користувача: `is_favorited`, `is_liked`, `my_review_stars` (null для гостя).
 - Generic-дії приймають пару `{kind, id}`, де `id` — slug або числовий id згідно з kinds-реєстром.
 
@@ -280,16 +280,16 @@ apps/<name>/
 | `GET /mods/{slug}/download?game_version=&loader=&version=` | Підбір файлу (або точна версія) → 302 на file_url, лічильник + запис `Download`; 404 `no_version` з `nearest_game_versions` | 3 |
 | `POST /mods/suggest` | Запропонувати мод за посиланням Modrinth → 202, імпорт у Celery зі статусом `pending` | 3 |
 | `GET /categories?type=` | Категорії | 3 |
-| `POST /favorites`, `DELETE /favorites` | `{kind, id}` | 4 |
-| `GET /me/saved?kind=&game_version=` | Обране | 4 |
+| `POST /favorites` (тіло `{kind, id}`), `DELETE /favorites?kind=&id=` | Обране → `{favorited, favorites_count}` | 4 |
+| `GET /me/saved?kind=&game_version=` | Обране (картка об'єкта в полі з назвою kind) | 4 |
 | `GET/POST /collections`, `GET/PATCH/DELETE /collections/{id}` | Колекції (`?share_token=` для доступу за посиланням) | 4 |
 | `POST /collections/{id}/items`, `DELETE /collections/{id}/items/{item_id}`, `POST /collections/{id}/reorder` | Елементи | 4 |
 | `POST /collections/{id}/copy` | Скопіювати собі | 4 |
-| `GET /me/collections` | Мої колекції (для поповера «Додати в колекцію» — з прапорцем `contains` для `{kind,id}`) | 4 |
-| `POST/DELETE /likes` | `{kind, id}` | 4 |
-| `GET /reviews?kind=&id=&sort=helpful|new`, `PUT /reviews` (upsert), `DELETE /reviews/{id}` | Відгуки | 4 |
-| `POST /reviews/{id}/vote` | Корисно / не корисно | 4 |
-| `GET /comments?kind=&id=`, `POST /comments`, `PATCH/DELETE /comments/{id}`, `POST /comments/{id}/pin` | Коментарі | 4 |
+| `GET /me/collections?kind=&id=` | Мої колекції й ті, де я редактор (для поповера «Додати в колекцію» — `contains` і `item_id` для `{kind,id}`) | 4 |
+| `POST /likes` (тіло `{kind, id}`), `DELETE /likes?kind=&id=` | Лайк → `{liked, likes_count}` | 4 |
+| `GET /reviews?kind=&id=&sort=helpful|new&page=`, `PUT /reviews` (upsert), `DELETE /reviews/{id}` | Відгуки: `summary` (середнє, розподіл зірок, `my_review`), `count`, `next_page`, `results` | 4 |
+| `POST /reviews/{id}/vote` | Корисно / не корисно (`{is_helpful}`; свій відгук — `400 own_review`) | 4 |
+| `GET /comments?kind=&id=&cursor=`, `POST /comments`, `PATCH/DELETE /comments/{id}`, `POST /comments/{id}/pin` | Коментарі: `pinned` (на першій сторінці), `results`, `next_cursor`, `can_comment`, `can_pin`, `comments_count` | 4 |
 | `GET /skins`, `POST /skins` (multipart), `GET/PATCH/DELETE /skins/{id}` | Скіни: фільтри `style, color, model, sort` | 5 |
 | `GET /skins/{id}/download` | PNG + лічильник | 5 |
 | `GET /skins/lookup?nickname=` | Скін гравця через Mojang | 5 |

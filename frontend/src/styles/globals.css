@@ -33,6 +33,18 @@
   --color-tag-skins: var(--tag-skins);
   --color-tag-servers: var(--tag-servers);
   --color-tag-moments: var(--tag-moments);
+  --color-swatch-red: var(--swatch-red);
+  --color-swatch-orange: var(--swatch-orange);
+  --color-swatch-yellow: var(--swatch-yellow);
+  --color-swatch-green: var(--swatch-green);
+  --color-swatch-cyan: var(--swatch-cyan);
+  --color-swatch-blue: var(--swatch-blue);
+  --color-swatch-purple: var(--swatch-purple);
+  --color-swatch-pink: var(--swatch-pink);
+  --color-swatch-brown: var(--swatch-brown);
+  --color-swatch-black: var(--swatch-black);
+  --color-swatch-white: var(--swatch-white);
+  --color-swatch-gray: var(--swatch-gray);
 
   --font-serif: var(--font-cormorant), "Times New Roman", serif;
   --font-sans: var(--font-inter), system-ui, sans-serif;

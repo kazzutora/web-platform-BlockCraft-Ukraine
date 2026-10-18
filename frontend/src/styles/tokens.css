@@ -24,6 +24,20 @@
   --tag-skins: #c2803a;
   --tag-servers: #2f8fa3;
   --tag-moments: #b3402f;
+
+  /* skin colour filter: the colours themselves, the same in both themes */
+  --swatch-red: #c62f2f;
+  --swatch-orange: #e07b22;
+  --swatch-yellow: #e8c62c;
+  --swatch-green: #3f9a3c;
+  --swatch-cyan: #2aa7b3;
+  --swatch-blue: #2f5ed1;
+  --swatch-purple: #7d42c2;
+  --swatch-pink: #e05aa8;
+  --swatch-brown: #7a4a24;
+  --swatch-black: #141414;
+  --swatch-white: #f7f7f7;
+  --swatch-gray: #8a8a8a;
 }
 
 [data-theme="dark"] {

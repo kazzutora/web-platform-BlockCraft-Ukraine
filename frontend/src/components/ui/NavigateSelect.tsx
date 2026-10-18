@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 
-import { Select } from "@/components/ui/Select";
+import { Select } from "./Select";
 
 type NavigateSelectProps = {
   label: string;

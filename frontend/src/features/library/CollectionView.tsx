@@ -20,6 +20,7 @@ import { useToast } from "@/components/ui/useToast";
 import { useMe } from "@/features/auth/useMe";
 import { useRequireAuth } from "@/features/auth/useRequireAuth";
 import { ModCard } from "@/features/mods/ModCard";
+import { SkinCard } from "@/features/skins/SkinCard";
 import { Comments } from "@/features/social/Comments";
 import { api } from "@/lib/api/client";
 import { plural } from "@/lib/plural";
@@ -324,6 +325,8 @@ function Items({ collection }: { collection: CollectionDetail }) {
         <div key={item.id} className="flex flex-col gap-2">
           {item.mod ? (
             <ModCard project={item.mod} />
+          ) : item.skin ? (
+            <SkinCard skin={item.skin} />
           ) : (
             <p className="border border-line p-4 text-sm text-muted">{copy.unknownItem}</p>
           )}

@@ -12,6 +12,7 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { Tabs } from "@/components/ui/Tabs";
 import { useMe } from "@/features/auth/useMe";
 import { ModCard } from "@/features/mods/ModCard";
+import { SkinCard } from "@/features/skins/SkinCard";
 import { api } from "@/lib/api/client";
 import { queryKeys } from "@/lib/query-keys";
 
@@ -19,7 +20,10 @@ import { CollectionCard } from "./CollectionCard";
 import { libraryCopy } from "./copy";
 
 const copy = libraryCopy.saved;
-type SavedKind = "mod" | "collection";
+type SavedKind = "mod" | "skin" | "collection";
+
+const browseHref: Record<SavedKind, string> = { mod: "/mods", skin: "/skins", collection: "/mods" };
+const emptyArt = { mod: "mods", skin: "skins", collection: "packs" } as const;
 
 function SavedList({ kind, gameVersion }: { kind: SavedKind; gameVersion: string }) {
   const saved = useQuery({
@@ -49,8 +53,8 @@ function SavedList({ kind, gameVersion }: { kind: SavedKind; gameVersion: string
     return (
       <EmptyState
         title={copy.empty[kind]}
-        illustration={kind === "mod" ? "mods" : "packs"}
-        action={<ButtonLink href="/mods">{copy.browse[kind]}</ButtonLink>}
+        illustration={emptyArt[kind]}
+        action={<ButtonLink href={browseHref[kind]}>{copy.browse[kind]}</ButtonLink>}
       />
     );
   }
@@ -59,6 +63,8 @@ function SavedList({ kind, gameVersion }: { kind: SavedKind; gameVersion: string
       {items.map((item) =>
         item.mod ? (
           <ModCard key={item.id} project={item.mod} />
+        ) : item.skin ? (
+          <SkinCard key={item.id} skin={item.skin} />
         ) : item.collection ? (
           <CollectionCard key={item.id} collection={item.collection} />
         ) : null,
@@ -96,6 +102,11 @@ export function SavedTabs() {
               <SavedList kind="mod" gameVersion={gameVersion} />
             </div>
           ),
+        },
+        {
+          value: "skin",
+          label: copy.tabs.skin,
+          content: <SavedList kind="skin" gameVersion="" />,
         },
         {
           value: "collection",

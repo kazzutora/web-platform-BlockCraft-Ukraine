@@ -5,7 +5,7 @@ import { SESSION_HINT_COOKIE } from "@/lib/session-hint";
 const SESSION_COOKIE = "sessionid";
 
 /** Pages for signed-in users; guests go to /login and come back afterwards. */
-const PROTECTED = [/^\/me(\/|$)/, /^\/welcome$/, /^\/create(\/|$)/];
+const PROTECTED = [/^\/me(\/|$)/, /^\/welcome$/, /^\/create(\/|$)/, /^\/skins\/new$/];
 /** Pages that make no sense once signed in. */
 const GUEST_ONLY = [/^\/login$/, /^\/register$/];
 

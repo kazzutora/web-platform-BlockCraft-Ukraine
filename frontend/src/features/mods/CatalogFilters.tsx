@@ -4,7 +4,7 @@ import { gameVersions, loaderOptions } from "@/features/game/labels";
 
 import { modsCopy } from "./copy";
 import { type ModFilters, catalogHref, toggle } from "./filters";
-import { NavigateSelect } from "./NavigateSelect";
+import { NavigateSelect } from "@/components/ui/NavigateSelect";
 import { type Category, projectTypes } from "./types";
 
 const copy = modsCopy.filters;

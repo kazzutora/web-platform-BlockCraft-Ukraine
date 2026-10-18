@@ -80,6 +80,8 @@ export const authCopy = {
   menu: {
     open: "Меню акаунта",
     profile: "Мій профіль",
+    collections: "Мої колекції",
+    works: "Мої скіни",
     settings: "Налаштування",
     logout: "Вийти",
     login: "Увійти",

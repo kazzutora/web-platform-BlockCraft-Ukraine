@@ -14,6 +14,7 @@ dependencies = [
     "drf-spectacular>=0.28",
     "httpx>=0.28",
     "markdown-it-py>=4.0",
+    "mcstatus>=12.0",
     "nh3>=0.3",
     "pillow>=12.0",
     "psycopg[binary]>=3.2",

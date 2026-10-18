@@ -341,6 +341,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/me/servers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description All my servers, any status. */
+        get: operations["me_servers_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/me/settings": {
         parameters: {
             query?: never;
@@ -540,6 +557,116 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/servers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Catalog of published servers
+         * @description No PUT on the server itself: edits are PATCH, PUT is the banner upload.
+         */
+        get: operations["servers_list"];
+        put?: never;
+        /** @description A new author's first three works wait for moderation (`pending`). */
+        post: operations["servers_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/servers/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Published servers for everyone; the owner also sees pending ones. */
+        get: operations["servers_retrieve"];
+        put?: never;
+        post?: never;
+        /** @description No PUT on the server itself: edits are PATCH, PUT is the banner upload. */
+        delete: operations["servers_delete"];
+        options?: never;
+        head?: never;
+        /** @description Changing host, port or edition resets the verification. */
+        patch: operations["servers_update"];
+        trace?: never;
+    };
+    "/api/v1/servers/{slug}/banner": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** @description No PUT on the server itself: edits are PATCH, PUT is the banner upload. */
+        put: operations["servers_banner_upload"];
+        post?: never;
+        /** @description No PUT on the server itself: edits are PATCH, PUT is the banner upload. */
+        delete: operations["servers_banner_delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/servers/{slug}/copy-ip": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Counts «Скопіювати IP»; anyone may call it, rate-limited. */
+        post: operations["servers_copy_ip"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/servers/{slug}/stats": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description 24h: every 5-minute ping; 7d: hourly averages. Uptime in %. */
+        get: operations["servers_stats"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/servers/{slug}/verify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Outcome of the latest MOTD check. */
+        get: operations["servers_verification"];
+        put?: never;
+        /** @description Queues a check of the MOTD for the code; poll GET for the outcome. */
+        post: operations["servers_verify"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/skins": {
         parameters: {
             query?: never;
@@ -663,6 +790,13 @@ export interface components {
         AvatarUploadRequest: {
             /** Format: binary */
             avatar: string;
+        };
+        BannerUploadRequest: {
+            /**
+             * Format: binary
+             * @description PNG, JPEG or WebP up to 2 MB; cropped to 1200×300.
+             */
+            banner: string;
         };
         /** @enum {unknown} */
         BlankEnum: "";
@@ -918,13 +1052,17 @@ export interface components {
          * @enum {string}
          */
         InterestsEnum: "survival" | "building" | "tech" | "pvp" | "rp" | "adventure" | "minigames" | "modded";
+        IpCopies: {
+            ip_copies_count: number;
+        };
         /**
          * @description * `collection` - collection
          *     * `mod` - mod
          *     * `skin` - skin
+         *     * `server` - server
          * @enum {string}
          */
-        KindEnum: "collection" | "mod" | "skin";
+        KindEnum: "collection" | "mod" | "skin" | "server";
         /**
          * @description * `uk` - Українська
          *     * `en` - English
@@ -936,6 +1074,16 @@ export interface components {
             id: string;
             liked: boolean;
             likes_count: number;
+        };
+        /** @description Result of the latest ping (every 5 minutes); null when there is none yet. */
+        LiveStatus: {
+            is_online: boolean;
+            players_online: number;
+            players_max: number;
+            latency_ms: number | null;
+            version_name: string;
+            /** Format: date-time */
+            checked_at: string;
         };
         /**
          * @description * `fabric` - Fabric
@@ -984,6 +1132,20 @@ export interface components {
          * @enum {string}
          */
         ModelEnum: "classic" | "slim";
+        /**
+         * @description * `survival` - Виживання
+         *     * `smp` - SMP
+         *     * `creative` - Творчий
+         *     * `anarchy` - Анархія
+         *     * `rp` - Рольова гра
+         *     * `minigames` - Мініігри
+         *     * `skyblock` - SkyBlock
+         *     * `pvp` - PvP
+         *     * `modded` - З модами
+         *     * `hardcore` - Хардкор
+         * @enum {string}
+         */
+        ModesEnum: "survival" | "smp" | "creative" | "anarchy" | "rp" | "minigames" | "skyblock" | "pvp" | "modded" | "hardcore";
         MyCollection: {
             readonly id: number;
             /** Назва */
@@ -1056,6 +1218,36 @@ export interface components {
             previous: string | null;
             results: components["schemas"]["SavedItem"][];
         };
+        PaginatedServerCardList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["ServerCard"][];
+        };
+        PaginatedServerDetailList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["ServerDetail"][];
+        };
         PaginatedSkinCardList: {
             /** @example 123 */
             count: number;
@@ -1107,6 +1299,22 @@ export interface components {
             mc_nickname?: string | null;
             /** Закритий профіль */
             is_private?: boolean;
+        };
+        PatchedServerWriteRequest: {
+            name?: string;
+            /** @description play.example.com, an IP or host:port */
+            host?: string;
+            /** @description Empty: 25565 (Java) or 19132 (Bedrock). */
+            port?: number | null;
+            edition?: components["schemas"]["ServerEditionEnum"];
+            modes?: components["schemas"]["ModesEnum"][];
+            versions_label?: string;
+            language?: components["schemas"]["ServerLanguageEnum"];
+            description?: string;
+            discord_url?: string;
+            website_url?: string;
+            /** @default false */
+            has_whitelist: boolean;
         };
         PatchedSkinUpdateRequest: {
             title?: string;
@@ -1227,6 +1435,15 @@ export interface components {
             date_joined: string | null;
             skin: components["schemas"]["ProfileSkin"] | null;
         };
+        /**
+         * @description * `draft` - Чернетка
+         *     * `pending` - На модерації
+         *     * `published` - Опубліковано
+         *     * `rejected` - Відхилено
+         *     * `hidden` - Приховано
+         * @enum {string}
+         */
+        PublishStatusEnum: "draft" | "pending" | "published" | "rejected" | "hidden";
         ReorderRequest: {
             item_ids: number[];
         };
@@ -1286,6 +1503,112 @@ export interface components {
             skin: components["schemas"]["SkinCard"] | null;
             collection: components["schemas"]["Collection"] | null;
         };
+        /** @description Catalog row: name, modes, address and live online from Redis (context `live`). */
+        ServerCard: {
+            readonly slug: string;
+            /** Назва */
+            readonly name: string;
+            readonly address: string;
+            /** Видання */
+            readonly edition: components["schemas"]["ServerEditionEnum"];
+            readonly modes: components["schemas"]["ModesEnum"][];
+            /** Версії */
+            readonly versions_label: string;
+            /** Мова */
+            readonly language: components["schemas"]["ServerLanguageEnum"];
+            /** Вайтліст */
+            readonly has_whitelist: boolean;
+            /** Перевірено */
+            readonly is_verified: boolean;
+            readonly banner_url: string | null;
+            /** Format: double */
+            readonly rating_avg: number;
+            readonly rating_count: number;
+            readonly favorites_count: number;
+            readonly is_favorited: boolean;
+            readonly my_review_stars: number | null;
+            readonly live: components["schemas"]["LiveStatus"] | null;
+        };
+        /** @description Catalog row: name, modes, address and live online from Redis (context `live`). */
+        ServerDetail: {
+            readonly slug: string;
+            /** Назва */
+            readonly name: string;
+            readonly address: string;
+            /** Видання */
+            readonly edition: components["schemas"]["ServerEditionEnum"];
+            readonly modes: components["schemas"]["ModesEnum"][];
+            /** Версії */
+            readonly versions_label: string;
+            /** Мова */
+            readonly language: components["schemas"]["ServerLanguageEnum"];
+            /** Вайтліст */
+            readonly has_whitelist: boolean;
+            /** Перевірено */
+            readonly is_verified: boolean;
+            readonly banner_url: string | null;
+            /** Format: double */
+            readonly rating_avg: number;
+            readonly rating_count: number;
+            readonly favorites_count: number;
+            readonly is_favorited: boolean;
+            readonly my_review_stars: number | null;
+            readonly live: components["schemas"]["LiveStatus"] | null;
+            /** Адреса */
+            readonly host: string;
+            /** Порт */
+            readonly port: number;
+            /** Опис */
+            readonly description: string;
+            /** Format: uri */
+            readonly discord_url: string;
+            /** Format: uri */
+            readonly website_url: string;
+            readonly author: components["schemas"]["UserBrief"];
+            readonly comments_count: number;
+            readonly ip_copies_count: number;
+            /** Format: date-time */
+            readonly last_online_at: string | null;
+            /** Статус */
+            readonly status: components["schemas"]["PublishStatusEnum"];
+            /** Причина відхилення */
+            readonly rejection_reason: string;
+            readonly is_mine: boolean;
+            /** @description Only the owner sees the code for the MOTD. */
+            readonly verify_code: string | null;
+            /** Format: date-time */
+            readonly created_at: string;
+        };
+        /**
+         * @description * `java` - Java
+         *     * `bedrock` - Bedrock
+         *     * `both` - Java і Bedrock
+         * @enum {string}
+         */
+        ServerEditionEnum: "java" | "bedrock" | "both";
+        /**
+         * @description * `uk` - Українська
+         *     * `multi` - Кілька мов
+         *     * `en` - Англійська
+         * @enum {string}
+         */
+        ServerLanguageEnum: "uk" | "multi" | "en";
+        ServerWriteRequest: {
+            name: string;
+            /** @description play.example.com, an IP or host:port */
+            host: string;
+            /** @description Empty: 25565 (Java) or 19132 (Bedrock). */
+            port?: number | null;
+            edition: components["schemas"]["ServerEditionEnum"];
+            modes: components["schemas"]["ModesEnum"][];
+            versions_label?: string;
+            language: components["schemas"]["ServerLanguageEnum"];
+            description?: string;
+            discord_url?: string;
+            website_url?: string;
+            /** @default false */
+            has_whitelist: boolean;
+        };
         /** @description Catalog card: the 2D preview (the texture until it is rendered), title, counters. */
         SkinCard: {
             readonly id: number;
@@ -1328,7 +1651,7 @@ export interface components {
             readonly is_favorited: boolean;
             readonly is_liked: boolean;
             /** Статус */
-            readonly status: components["schemas"]["SkinDetailStatusEnum"];
+            readonly status: components["schemas"]["PublishStatusEnum"];
             /** Причина відхилення */
             readonly rejection_reason: string;
             /**
@@ -1346,15 +1669,6 @@ export interface components {
              */
             readonly published_at: string | null;
         };
-        /**
-         * @description * `draft` - Чернетка
-         *     * `pending` - На модерації
-         *     * `published` - Опубліковано
-         *     * `rejected` - Відхилено
-         *     * `hidden` - Приховано
-         * @enum {string}
-         */
-        SkinDetailStatusEnum: "draft" | "pending" | "published" | "rejected" | "hidden";
         SkinUploadRequest: {
             /**
              * Format: binary
@@ -1384,6 +1698,29 @@ export interface components {
          * @enum {string}
          */
         SlotEnum: "version" | "loader" | "pack" | "mod" | "resourcepack" | "shader" | "skin" | "server";
+        /**
+         * @description * `idle` - idle
+         *     * `checking` - checking
+         *     * `verified` - verified
+         *     * `missing` - missing
+         *     * `offline` - offline
+         * @enum {string}
+         */
+        StateEnum: "idle" | "checking" | "verified" | "missing" | "offline";
+        Stats: {
+            range: string;
+            /** Format: double */
+            uptime_percent: number | null;
+            peak_players: number;
+            points: components["schemas"]["StatsPoint"][];
+        };
+        StatsPoint: {
+            /** Format: date-time */
+            ts: string;
+            /** Format: double */
+            players: number;
+            is_online: boolean;
+        };
         /**
          * @description * `casual` - Повсякденний
          *     * `fantasy` - Фентезі
@@ -1445,6 +1782,9 @@ export interface components {
             history_enabled?: boolean;
             who_can_comment?: components["schemas"]["WhoCanCommentEnum"];
             collections_visible?: boolean;
+        };
+        Verification: {
+            state: components["schemas"]["StateEnum"];
         };
         /**
          * @description * `release` - Реліз
@@ -1917,8 +2257,9 @@ export interface operations {
                  * @description * `collection` - collection
                  *     * `mod` - mod
                  *     * `skin` - skin
+                 *     * `server` - server
                  */
-                kind: "collection" | "mod" | "skin";
+                kind: "collection" | "mod" | "skin" | "server";
             };
             header?: never;
             path?: never;
@@ -2248,8 +2589,9 @@ export interface operations {
                  * @description * `collection` - collection
                  *     * `mod` - mod
                  *     * `skin` - skin
+                 *     * `server` - server
                  */
-                kind: "collection" | "mod" | "skin";
+                kind: "collection" | "mod" | "skin" | "server";
             };
             header?: never;
             path?: never;
@@ -2375,8 +2717,9 @@ export interface operations {
                  * @description * `collection` - collection
                  *     * `mod` - mod
                  *     * `skin` - skin
+                 *     * `server` - server
                  */
-                kind: "collection" | "mod" | "skin";
+                kind: "collection" | "mod" | "skin" | "server";
             };
             header?: never;
             path?: never;
@@ -2700,8 +3043,9 @@ export interface operations {
                  * @description * `collection` - collection
                  *     * `mod` - mod
                  *     * `skin` - skin
+                 *     * `server` - server
                  */
-                kind?: "collection" | "mod" | "skin";
+                kind?: "collection" | "mod" | "skin" | "server";
             };
             header?: never;
             path?: never;
@@ -2731,6 +3075,30 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    me_servers_list: {
+        parameters: {
+            query?: {
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedServerDetailList"];
                 };
             };
         };
@@ -3159,8 +3527,9 @@ export interface operations {
                  * @description * `collection` - collection
                  *     * `mod` - mod
                  *     * `skin` - skin
+                 *     * `server` - server
                  */
-                kind: "collection" | "mod" | "skin";
+                kind: "collection" | "mod" | "skin" | "server";
                 page?: number;
                 /**
                  * @description * `helpful` - helpful
@@ -3343,6 +3712,481 @@ export interface operations {
                 };
             };
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    servers_list: {
+        parameters: {
+            query?: {
+                /** @description Owner nickname. */
+                author?: string;
+                /**
+                 * @description `java` and `bedrock` include servers for both.
+                 *
+                 *     * `java` - Java
+                 *     * `bedrock` - Bedrock
+                 *     * `both` - Java і Bedrock
+                 */
+                edition?: "bedrock" | "both" | "java";
+                /**
+                 * @description * `uk` - Українська
+                 *     * `multi` - Кілька мов
+                 *     * `en` - Англійська
+                 */
+                language?: "en" | "multi" | "uk";
+                /** @description Mode slugs, comma-separated; any may match. */
+                mode?: string;
+                /** @description Online right now. */
+                online?: string;
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+                q?: string;
+                /**
+                 * @description * `popular` - popular
+                 *     * `online` - online
+                 *     * `new` - new
+                 *     * `top` - top
+                 */
+                sort?: "new" | "online" | "popular" | "top";
+                version?: string;
+                whitelist?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedServerCardList"];
+                };
+            };
+        };
+    };
+    servers_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ServerWriteRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ServerWriteRequest"];
+                "multipart/form-data": components["schemas"]["ServerWriteRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServerDetail"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    servers_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServerDetail"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    servers_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    servers_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedServerWriteRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedServerWriteRequest"];
+                "multipart/form-data": components["schemas"]["PatchedServerWriteRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServerDetail"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    servers_banner_upload: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["BannerUploadRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServerDetail"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    servers_banner_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServerDetail"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    servers_copy_ip: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IpCopies"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    servers_stats: {
+        parameters: {
+            query?: {
+                /**
+                 * @description * `24h` - 24h
+                 *     * `7d` - 7d
+                 */
+                range?: "24h" | "7d";
+            };
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Stats"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    servers_verification: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Verification"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    servers_verify: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Verification"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };

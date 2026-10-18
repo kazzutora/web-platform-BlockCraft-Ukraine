@@ -438,12 +438,14 @@ paths:
           - collection
           - mod
           - skin
+          - server
           type: string
           minLength: 1
         description: |-
           * `collection` - collection
           * `mod` - mod
           * `skin` - skin
+          * `server` - server
         required: true
       tags:
       - comments
@@ -731,12 +733,14 @@ paths:
           - collection
           - mod
           - skin
+          - server
           type: string
           minLength: 1
         description: |-
           * `collection` - collection
           * `mod` - mod
           * `skin` - skin
+          * `server` - server
         required: true
       tags:
       - favorites
@@ -850,12 +854,14 @@ paths:
           - collection
           - mod
           - skin
+          - server
           type: string
           minLength: 1
         description: |-
           * `collection` - collection
           * `mod` - mod
           * `skin` - skin
+          * `server` - server
         required: true
       tags:
       - likes
@@ -1136,6 +1142,7 @@ paths:
           - collection
           - mod
           - skin
+          - server
           type: string
           default: mod
           minLength: 1
@@ -1143,6 +1150,7 @@ paths:
           * `collection` - collection
           * `mod` - mod
           * `skin` - skin
+          * `server` - server
       tags:
       - me
       security:
@@ -1165,6 +1173,34 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiError'
+          description: ''
+  /api/v1/me/servers:
+    get:
+      operationId: me_servers_list
+      description: All my servers, any status.
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - me
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedServerDetailList'
           description: ''
   /api/v1/me/settings:
     get:
@@ -1655,12 +1691,14 @@ paths:
           - collection
           - mod
           - skin
+          - server
           type: string
           minLength: 1
         description: |-
           * `collection` - collection
           * `mod` - mod
           * `skin` - skin
+          * `server` - server
         required: true
       - in: query
         name: page
@@ -1833,6 +1871,492 @@ paths:
                 $ref: '#/components/schemas/ApiError'
           description: ''
         '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+  /api/v1/servers:
+    get:
+      operationId: servers_list
+      description: 'No PUT on the server itself: edits are PATCH, PUT is the banner
+        upload.'
+      summary: Catalog of published servers
+      parameters:
+      - in: query
+        name: author
+        schema:
+          type: string
+        description: Owner nickname.
+      - in: query
+        name: edition
+        schema:
+          type: string
+          enum:
+          - bedrock
+          - both
+          - java
+        description: |-
+          `java` and `bedrock` include servers for both.
+
+          * `java` - Java
+          * `bedrock` - Bedrock
+          * `both` - Java і Bedrock
+      - in: query
+        name: language
+        schema:
+          type: string
+          title: Мова
+          enum:
+          - en
+          - multi
+          - uk
+        description: |-
+          * `uk` - Українська
+          * `multi` - Кілька мов
+          * `en` - Англійська
+      - in: query
+        name: mode
+        schema:
+          type: string
+        description: Mode slugs, comma-separated; any may match.
+      - in: query
+        name: online
+        schema:
+          type: string
+        description: Online right now.
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: q
+        schema:
+          type: string
+      - in: query
+        name: sort
+        schema:
+          type: string
+          enum:
+          - new
+          - online
+          - popular
+          - top
+        description: |-
+          * `popular` - popular
+          * `online` - online
+          * `new` - new
+          * `top` - top
+      - in: query
+        name: version
+        schema:
+          type: string
+      - in: query
+        name: whitelist
+        schema:
+          type: boolean
+      tags:
+      - servers
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedServerCardList'
+          description: ''
+    post:
+      operationId: servers_create
+      description: A new author's first three works wait for moderation (`pending`).
+      tags:
+      - servers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServerWriteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ServerWriteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ServerWriteRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerDetail'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+  /api/v1/servers/{slug}:
+    get:
+      operationId: servers_retrieve
+      description: Published servers for everyone; the owner also sees pending ones.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - servers
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerDetail'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+    patch:
+      operationId: servers_update
+      description: Changing host, port or edition resets the verification.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - servers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedServerWriteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedServerWriteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedServerWriteRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerDetail'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+    delete:
+      operationId: servers_delete
+      description: 'No PUT on the server itself: edits are PATCH, PUT is the banner
+        upload.'
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - servers
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+  /api/v1/servers/{slug}/banner:
+    put:
+      operationId: servers_banner_upload
+      description: 'No PUT on the server itself: edits are PATCH, PUT is the banner
+        upload.'
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - servers
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BannerUploadRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerDetail'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+    delete:
+      operationId: servers_banner_delete
+      description: 'No PUT on the server itself: edits are PATCH, PUT is the banner
+        upload.'
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - servers
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerDetail'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+  /api/v1/servers/{slug}/copy-ip:
+    post:
+      operationId: servers_copy_ip
+      description: Counts «Скопіювати IP»; anyone may call it, rate-limited.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - servers
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IpCopies'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '429':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+  /api/v1/servers/{slug}/stats:
+    get:
+      operationId: servers_stats
+      description: '24h: every 5-minute ping; 7d: hourly averages. Uptime in %.'
+      parameters:
+      - in: query
+        name: range
+        schema:
+          enum:
+          - 24h
+          - 7d
+          type: string
+          default: 24h
+          minLength: 1
+        description: |-
+          * `24h` - 24h
+          * `7d` - 7d
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - servers
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Stats'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+  /api/v1/servers/{slug}/verify:
+    get:
+      operationId: servers_verification
+      description: Outcome of the latest MOTD check.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - servers
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Verification'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+    post:
+      operationId: servers_verify
+      description: Queues a check of the MOTD for the code; poll GET for the outcome.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - servers
+      security:
+      - cookieAuth: []
+      responses:
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Verification'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '403':
           content:
             application/json:
               schema:
@@ -2330,6 +2854,15 @@ components:
           format: binary
       required:
       - avatar
+    BannerUploadRequest:
+      type: object
+      properties:
+        banner:
+          type: string
+          format: binary
+          description: PNG, JPEG or WebP up to 2 MB; cropped to 1200×300.
+      required:
+      - banner
     BlankEnum:
       enum:
       - ''
@@ -3008,16 +3541,25 @@ components:
         * `adventure` - Пригоди
         * `minigames` - Мініігри
         * `modded` - Моди й зборки
+    IpCopies:
+      type: object
+      properties:
+        ip_copies_count:
+          type: integer
+      required:
+      - ip_copies_count
     KindEnum:
       enum:
       - collection
       - mod
       - skin
+      - server
       type: string
       description: |-
         * `collection` - collection
         * `mod` - mod
         * `skin` - skin
+        * `server` - server
     LanguageEnum:
       enum:
       - uk
@@ -3042,6 +3584,32 @@ components:
       - kind
       - liked
       - likes_count
+    LiveStatus:
+      type: object
+      description: Result of the latest ping (every 5 minutes); null when there is
+        none yet.
+      properties:
+        is_online:
+          type: boolean
+        players_online:
+          type: integer
+        players_max:
+          type: integer
+        latency_ms:
+          type: integer
+          nullable: true
+        version_name:
+          type: string
+        checked_at:
+          type: string
+          format: date-time
+      required:
+      - checked_at
+      - is_online
+      - latency_ms
+      - players_max
+      - players_online
+      - version_name
     LoaderEnum:
       enum:
       - fabric
@@ -3152,6 +3720,30 @@ components:
       description: |-
         * `classic` - Класична (Стів)
         * `slim` - Тонкі руки (Алекс)
+    ModesEnum:
+      enum:
+      - survival
+      - smp
+      - creative
+      - anarchy
+      - rp
+      - minigames
+      - skyblock
+      - pvp
+      - modded
+      - hardcore
+      type: string
+      description: |-
+        * `survival` - Виживання
+        * `smp` - SMP
+        * `creative` - Творчий
+        * `anarchy` - Анархія
+        * `rp` - Рольова гра
+        * `minigames` - Мініігри
+        * `skyblock` - SkyBlock
+        * `pvp` - PvP
+        * `modded` - З модами
+        * `hardcore` - Хардкор
     MyCollection:
       type: object
       properties:
@@ -3347,6 +3939,52 @@ components:
       - next
       - previous
       - results
+    PaginatedServerCardList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ServerCard'
+    PaginatedServerDetailList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ServerDetail'
     PaginatedSkinCardList:
       type: object
       required:
@@ -3451,6 +4089,53 @@ components:
         is_private:
           type: boolean
           title: Закритий профіль
+    PatchedServerWriteRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 60
+        host:
+          type: string
+          minLength: 1
+          description: play.example.com, an IP or host:port
+          maxLength: 260
+        port:
+          type: integer
+          nullable: true
+          description: 'Empty: 25565 (Java) or 19132 (Bedrock).'
+        edition:
+          $ref: '#/components/schemas/ServerEditionEnum'
+        modes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ModesEnum'
+          maxItems: 5
+          minItems: 1
+        versions_label:
+          type: string
+          maxLength: 32
+        language:
+          $ref: '#/components/schemas/ServerLanguageEnum'
+        description:
+          type: string
+          maxLength: 500
+        discord_url:
+          oneOf:
+          - type: string
+            format: uri
+          - type: string
+            maxLength: 0
+        website_url:
+          oneOf:
+          - type: string
+            format: uri
+          - type: string
+            maxLength: 0
+        has_whitelist:
+          type: boolean
+          default: false
     PatchedSkinUpdateRequest:
       type: object
       properties:
@@ -3809,6 +4494,20 @@ components:
       - mc_nickname
       - nickname
       - skin
+    PublishStatusEnum:
+      enum:
+      - draft
+      - pending
+      - published
+      - rejected
+      - hidden
+      type: string
+      description: |-
+        * `draft` - Чернетка
+        * `pending` - На модерації
+        * `published` - Опубліковано
+        * `rejected` - Відхилено
+        * `hidden` - Приховано
     ReorderRequest:
       type: object
       properties:
@@ -3974,6 +4673,321 @@ components:
       - mod
       - saved_at
       - skin
+    ServerCard:
+      type: object
+      description: 'Catalog row: name, modes, address and live online from Redis (context
+        `live`).'
+      properties:
+        slug:
+          type: string
+          readOnly: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        name:
+          type: string
+          readOnly: true
+          title: Назва
+        address:
+          type: string
+          readOnly: true
+        edition:
+          allOf:
+          - $ref: '#/components/schemas/ServerEditionEnum'
+          readOnly: true
+          title: Видання
+        modes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ModesEnum'
+          readOnly: true
+        versions_label:
+          type: string
+          readOnly: true
+          title: Версії
+        language:
+          allOf:
+          - $ref: '#/components/schemas/ServerLanguageEnum'
+          readOnly: true
+          title: Мова
+        has_whitelist:
+          type: boolean
+          readOnly: true
+          title: Вайтліст
+        is_verified:
+          type: boolean
+          readOnly: true
+          title: Перевірено
+        banner_url:
+          type: string
+          nullable: true
+          readOnly: true
+        rating_avg:
+          type: number
+          format: double
+          readOnly: true
+        rating_count:
+          type: integer
+          readOnly: true
+        favorites_count:
+          type: integer
+          readOnly: true
+        is_favorited:
+          type: boolean
+          readOnly: true
+        my_review_stars:
+          type: integer
+          nullable: true
+          readOnly: true
+        live:
+          allOf:
+          - $ref: '#/components/schemas/LiveStatus'
+          nullable: true
+          readOnly: true
+      required:
+      - address
+      - banner_url
+      - edition
+      - favorites_count
+      - has_whitelist
+      - is_favorited
+      - is_verified
+      - language
+      - live
+      - modes
+      - my_review_stars
+      - name
+      - rating_avg
+      - rating_count
+      - slug
+      - versions_label
+    ServerDetail:
+      type: object
+      description: 'Catalog row: name, modes, address and live online from Redis (context
+        `live`).'
+      properties:
+        slug:
+          type: string
+          readOnly: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        name:
+          type: string
+          readOnly: true
+          title: Назва
+        address:
+          type: string
+          readOnly: true
+        edition:
+          allOf:
+          - $ref: '#/components/schemas/ServerEditionEnum'
+          readOnly: true
+          title: Видання
+        modes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ModesEnum'
+          readOnly: true
+        versions_label:
+          type: string
+          readOnly: true
+          title: Версії
+        language:
+          allOf:
+          - $ref: '#/components/schemas/ServerLanguageEnum'
+          readOnly: true
+          title: Мова
+        has_whitelist:
+          type: boolean
+          readOnly: true
+          title: Вайтліст
+        is_verified:
+          type: boolean
+          readOnly: true
+          title: Перевірено
+        banner_url:
+          type: string
+          nullable: true
+          readOnly: true
+        rating_avg:
+          type: number
+          format: double
+          readOnly: true
+        rating_count:
+          type: integer
+          readOnly: true
+        favorites_count:
+          type: integer
+          readOnly: true
+        is_favorited:
+          type: boolean
+          readOnly: true
+        my_review_stars:
+          type: integer
+          nullable: true
+          readOnly: true
+        live:
+          allOf:
+          - $ref: '#/components/schemas/LiveStatus'
+          nullable: true
+          readOnly: true
+        host:
+          type: string
+          readOnly: true
+          title: Адреса
+        port:
+          type: integer
+          readOnly: true
+          title: Порт
+        description:
+          type: string
+          readOnly: true
+          title: Опис
+        discord_url:
+          type: string
+          format: uri
+          readOnly: true
+        website_url:
+          type: string
+          format: uri
+          readOnly: true
+        author:
+          allOf:
+          - $ref: '#/components/schemas/UserBrief'
+          readOnly: true
+        comments_count:
+          type: integer
+          readOnly: true
+        ip_copies_count:
+          type: integer
+          readOnly: true
+        last_online_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/PublishStatusEnum'
+          readOnly: true
+          title: Статус
+        rejection_reason:
+          type: string
+          readOnly: true
+          title: Причина відхилення
+        is_mine:
+          type: boolean
+          readOnly: true
+        verify_code:
+          type: string
+          nullable: true
+          description: Only the owner sees the code for the MOTD.
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - address
+      - author
+      - banner_url
+      - comments_count
+      - created_at
+      - description
+      - discord_url
+      - edition
+      - favorites_count
+      - has_whitelist
+      - host
+      - ip_copies_count
+      - is_favorited
+      - is_mine
+      - is_verified
+      - language
+      - last_online_at
+      - live
+      - modes
+      - my_review_stars
+      - name
+      - port
+      - rating_avg
+      - rating_count
+      - rejection_reason
+      - slug
+      - status
+      - verify_code
+      - versions_label
+      - website_url
+    ServerEditionEnum:
+      enum:
+      - java
+      - bedrock
+      - both
+      type: string
+      description: |-
+        * `java` - Java
+        * `bedrock` - Bedrock
+        * `both` - Java і Bedrock
+    ServerLanguageEnum:
+      enum:
+      - uk
+      - multi
+      - en
+      type: string
+      description: |-
+        * `uk` - Українська
+        * `multi` - Кілька мов
+        * `en` - Англійська
+    ServerWriteRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 60
+        host:
+          type: string
+          minLength: 1
+          description: play.example.com, an IP or host:port
+          maxLength: 260
+        port:
+          type: integer
+          nullable: true
+          description: 'Empty: 25565 (Java) or 19132 (Bedrock).'
+        edition:
+          $ref: '#/components/schemas/ServerEditionEnum'
+        modes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ModesEnum'
+          maxItems: 5
+          minItems: 1
+        versions_label:
+          type: string
+          maxLength: 32
+        language:
+          $ref: '#/components/schemas/ServerLanguageEnum'
+        description:
+          type: string
+          maxLength: 500
+        discord_url:
+          oneOf:
+          - type: string
+            format: uri
+          - type: string
+            maxLength: 0
+        website_url:
+          oneOf:
+          - type: string
+            format: uri
+          - type: string
+            maxLength: 0
+        has_whitelist:
+          type: boolean
+          default: false
+      required:
+      - edition
+      - host
+      - language
+      - modes
+      - name
     SkinCard:
       type: object
       description: 'Catalog card: the 2D preview (the texture until it is rendered),
@@ -4105,7 +5119,7 @@ components:
           readOnly: true
         status:
           allOf:
-          - $ref: '#/components/schemas/SkinDetailStatusEnum'
+          - $ref: '#/components/schemas/PublishStatusEnum'
           readOnly: true
           title: Статус
         rejection_reason:
@@ -4155,20 +5169,6 @@ components:
       - style_tags
       - texture_url
       - title
-    SkinDetailStatusEnum:
-      enum:
-      - draft
-      - pending
-      - published
-      - rejected
-      - hidden
-      type: string
-      description: |-
-        * `draft` - Чернетка
-        * `pending` - На модерації
-        * `published` - Опубліковано
-        * `rejected` - Відхилено
-        * `hidden` - Приховано
     SkinUploadRequest:
       type: object
       properties:
@@ -4217,6 +5217,55 @@ components:
         * `shader` - Шейдер
         * `skin` - Скін
         * `server` - Сервер
+    StateEnum:
+      enum:
+      - idle
+      - checking
+      - verified
+      - missing
+      - offline
+      type: string
+      description: |-
+        * `idle` - idle
+        * `checking` - checking
+        * `verified` - verified
+        * `missing` - missing
+        * `offline` - offline
+    Stats:
+      type: object
+      properties:
+        range:
+          type: string
+        uptime_percent:
+          type: number
+          format: double
+          nullable: true
+        peak_players:
+          type: integer
+        points:
+          type: array
+          items:
+            $ref: '#/components/schemas/StatsPoint'
+      required:
+      - peak_players
+      - points
+      - range
+      - uptime_percent
+    StatsPoint:
+      type: object
+      properties:
+        ts:
+          type: string
+          format: date-time
+        players:
+          type: number
+          format: double
+        is_online:
+          type: boolean
+      required:
+      - is_online
+      - players
+      - ts
     StyleTagsEnum:
       enum:
       - casual
@@ -4342,6 +5391,13 @@ components:
           $ref: '#/components/schemas/WhoCanCommentEnum'
         collections_visible:
           type: boolean
+    Verification:
+      type: object
+      properties:
+        state:
+          $ref: '#/components/schemas/StateEnum'
+      required:
+      - state
     VersionTypeEnum:
       enum:
       - release

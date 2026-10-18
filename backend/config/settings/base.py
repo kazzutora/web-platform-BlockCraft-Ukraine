@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     "apps.social",
     "apps.mods",
     "apps.skins",
+    "apps.servers",
 ]
 
 MIDDLEWARE = [
@@ -202,6 +203,7 @@ REST_FRAMEWORK = {
         "reviews": "20/day",
         "reports": "20/day",
         "lookup": "30/min",
+        "copy_ip": "60/hour",
     },
     # Nginx (and Next.js for SSR) set X-Forwarded-For; throttles count the real client
     "NUM_PROXIES": 1,
@@ -216,6 +218,12 @@ SPECTACULAR_SETTINGS = {
     "SCHEMA_PATH_PREFIX": r"/api/v1",
     "ENUM_NAME_OVERRIDES": {
         "CheckStatusEnum": ["ok", "error"],
+        # Same field names with different choices in several apps
+        "EditionEnum": "apps.core.game.Edition",
+        "ServerEditionEnum": "apps.servers.choices.Edition",
+        "LanguageEnum": "apps.accounts.models.UserSettings.Language",
+        "ServerLanguageEnum": "apps.servers.choices.Language",
+        "PublishStatusEnum": "apps.core.models.Publishable.Status",
     },
 }
 
@@ -234,6 +242,7 @@ CELERY_BEAT_SCHEDULE: dict[str, dict] = {
         "schedule": crontab(hour=3, minute=30),
     },
     "social-recalc-scores": {"task": "social.recalc_scores", "schedule": crontab(minute=15)},
+    "servers-ping-all": {"task": "servers.ping_all", "schedule": crontab(minute="*/5")},
 }
 
 # Modrinth

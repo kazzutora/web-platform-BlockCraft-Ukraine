@@ -58,6 +58,9 @@ def upsert_review(
 ) -> tuple[Review, bool]:
     """One review per player and object: a second one updates the first."""
     kind_obj, target = kinds.resolve(kind, identifier, viewer=user, action="review")
+    owner = kind_obj.owner_of(target)
+    if owner is not None and owner.pk == user.pk:
+        raise DomainError(code="own_object", message="Власний проєкт оцінити не можна.")
     review, created = Review.objects.update_or_create(
         user=user,
         content_type=kind_obj.content_type,

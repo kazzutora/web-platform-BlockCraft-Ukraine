@@ -82,6 +82,7 @@ services:
       FRONTEND_UPSTREAM: ${FRONTEND_UPSTREAM:-frontend:3000}
     volumes:
       - ./infra/nginx/dev.conf:/etc/nginx/templates/default.conf.template:ro
+      - ./infra/nginx/snippets:/etc/nginx/snippets:ro
       - media:/var/www/media:ro
     depends_on:
       - backend

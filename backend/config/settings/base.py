@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     "apps.servers",
     "apps.search",
     "apps.home",
+    "apps.notifications",
+    "apps.moderation",
 ]
 
 MIDDLEWARE = [
@@ -173,6 +175,10 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
+# Uploads are at most a 2 MB banner or avatar; Nginx stops anything over 5 MB earlier
+DATA_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024
+FILE_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Email
@@ -226,6 +232,9 @@ SPECTACULAR_SETTINGS = {
         "LanguageEnum": "apps.accounts.models.UserSettings.Language",
         "ServerLanguageEnum": "apps.servers.choices.Language",
         "PublishStatusEnum": "apps.core.models.Publishable.Status",
+        # Reports also accept comments, which are not a kind
+        "KindEnum": ["collection", "mod", "skin", "server"],
+        "ReportKindEnum": ["collection", "mod", "skin", "server", "comment"],
     },
 }
 
@@ -247,6 +256,10 @@ CELERY_BEAT_SCHEDULE: dict[str, dict] = {
     "servers-ping-all": {"task": "servers.ping_all", "schedule": crontab(minute="*/5")},
     "social-recalc-trends": {"task": "social.recalc_trends", "schedule": crontab(minute=45)},
     "search-reindex-all": {"task": "search.reindex_all", "schedule": crontab(hour=5, minute=0)},
+    "moderation-lift-expired-bans": {
+        "task": "moderation.lift_expired_bans",
+        "schedule": crontab(minute=5),
+    },
 }
 
 # Search (Meilisearch)

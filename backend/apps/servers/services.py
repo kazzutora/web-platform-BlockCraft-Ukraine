@@ -14,6 +14,8 @@ from apps.core import publishing
 from apps.core.counters import bump
 from apps.core.exceptions import DomainError
 from apps.core.text import slug_from
+from apps.moderation import services as moderation
+from apps.moderation import words
 
 from . import clients, status, validators
 from .choices import DEFAULT_PORTS, MAX_MODES
@@ -72,6 +74,8 @@ def _queue_ping(server: Server) -> None:
 
 @transaction.atomic
 def create_server(*, author: User, data: dict) -> Server:
+    moderation.ensure_can_publish(author)
+    words.check(name=data["name"], description=data.get("description", ""))
     host, port = clean_address(host=data["host"], port=data.get("port"), edition=data["edition"])
     if Server.objects.filter(host=host, port=port).exists():
         raise _field_error("host", "Цей сервер уже є в каталозі.", code="server_exists")
@@ -118,6 +122,7 @@ def update_server(*, server: Server, user: User, data: dict) -> Server:
     if "modes" in data:
         server.modes = clean_modes(data["modes"])
         changed.append("modes")
+    words.check(name=data.get("name", ""), description=data.get("description", ""))
     for field in ("versions_label", "description", "name"):
         if field in data:
             setattr(server, field, data[field].strip())

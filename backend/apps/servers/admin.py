@@ -1,16 +1,12 @@
-from django.contrib import admin, messages
-from django.db.models import QuerySet
-from django.http import HttpRequest
+from django.contrib import admin
 
-from apps.core import publishing
+from apps.moderation.admin_actions import PublicationModerationMixin
 
 from .models import Server
 
-DEFAULT_REJECTION = "Сервер не відповідає правилам каталогу."
-
 
 @admin.register(Server)
-class ServerAdmin(admin.ModelAdmin):
+class ServerAdmin(PublicationModerationMixin, admin.ModelAdmin):
     list_display = [
         "name",
         "address",
@@ -33,16 +29,3 @@ class ServerAdmin(admin.ModelAdmin):
         "comments_count",
         "published_at",
     ]
-    actions = ["approve_servers", "reject_servers"]
-
-    @admin.action(description="Схвалити й опублікувати")
-    def approve_servers(self, request: HttpRequest, queryset: QuerySet[Server]) -> None:
-        for server in queryset:
-            publishing.set_status(server, Server.Status.PUBLISHED)
-        self.message_user(request, f"Опубліковано: {queryset.count()}", messages.SUCCESS)
-
-    @admin.action(description="Відхилити (стандартна причина)")
-    def reject_servers(self, request: HttpRequest, queryset: QuerySet[Server]) -> None:
-        for server in queryset:
-            publishing.set_status(server, Server.Status.REJECTED, reason=DEFAULT_REJECTION)
-        self.message_user(request, f"Відхилено: {queryset.count()}", messages.SUCCESS)

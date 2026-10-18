@@ -9,6 +9,8 @@ from apps.accounts.models import User
 from apps.core import publishing
 from apps.core.counters import bump
 from apps.core.exceptions import DomainError
+from apps.moderation import services as moderation
+from apps.moderation import words
 
 from . import textures
 from .models import Skin
@@ -51,6 +53,8 @@ def upload_skin(
     model: str = "",
 ) -> Skin:
     """Checks the PNG, detects model and colour; the 2D preview is rendered in Celery."""
+    moderation.ensure_can_publish(author)
+    words.check(title=title)
     try:
         analysis = textures.analyse(upload, size=upload.size, model=model)
     except textures.SkinTextureError as error:
@@ -90,6 +94,7 @@ def update_skin(
     _check_author(skin, user)
     fields = ["updated_at"]
     if title is not None:
+        words.check(title=title)
         skin.title = title.strip()
         fields.append("title")
     if style_tags is not None:
@@ -159,13 +164,13 @@ def clear_current(*, user: User) -> None:
 # Moderation (admin actions until stage 8)
 
 
-def approve(*, skin: Skin) -> Skin:
-    publishing.set_status(skin, Skin.Status.PUBLISHED)
+def approve(*, skin: Skin, moderator: User | None = None) -> Skin:
+    moderation.approve(obj=skin, moderator=moderator)
     return skin
 
 
-def reject(*, skin: Skin, reason: str) -> Skin:
-    publishing.set_status(skin, Skin.Status.REJECTED, reason=reason)
+def reject(*, skin: Skin, reason: str, moderator: User | None = None) -> Skin:
+    moderation.reject(obj=skin, reason=reason, moderator=moderator)
     if skin.is_current:
         skin.is_current = False
         skin.save(update_fields=["is_current"])

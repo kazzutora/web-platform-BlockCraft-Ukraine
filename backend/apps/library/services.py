@@ -6,6 +6,7 @@ from apps.accounts.models import User
 from apps.core import kinds
 from apps.core.counters import bump
 from apps.core.exceptions import DomainError
+from apps.moderation import words
 
 from .models import Collection, CollectionItem, Favorite
 
@@ -63,6 +64,7 @@ def create_collection(
     description: str = "",
     visibility: str = Collection.Visibility.PRIVATE,
 ) -> Collection:
+    words.check(title=title, description=description)
     return Collection.objects.create(
         owner=owner, title=title, description=description, visibility=visibility
     )
@@ -74,6 +76,7 @@ def update_collection(*, collection: Collection, user: User, data: dict) -> Coll
         raise DomainError(
             code="forbidden", message="Редакторів призначає лише власник.", status=403
         )
+    words.check(title=data.get("title", ""), description=data.get("description", ""))
     for name in ("title", "description", "visibility"):
         if name in data:
             setattr(collection, name, data[name])

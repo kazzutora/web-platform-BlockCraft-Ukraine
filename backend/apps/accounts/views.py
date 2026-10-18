@@ -1,5 +1,10 @@
+import json
+
+from django.contrib.auth import logout
+from django.http import HttpResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie
+from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser
@@ -8,11 +13,13 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from apps.core.exceptions import DomainError
 from apps.core.schema import error_responses
 
-from . import selectors, services
+from . import privacy, selectors, services
 from .serializers import (
     AvatarUploadSerializer,
+    DeleteAccountQuerySerializer,
     GameProfileSerializer,
     MeSerializer,
     MeUpdateSerializer,
@@ -59,6 +66,45 @@ class MeView(APIView):
         serializer.is_valid(raise_exception=True)
         services.update_account(user=request.user, data=serializer.validated_data)
         return _me(request)
+
+    @extend_schema(
+        operation_id="me_delete",
+        parameters=[DeleteAccountQuerySerializer],
+        responses={204: None, **error_responses(400, 401)},
+        description="Leaves the platform: the nickname must be typed again to confirm.",
+    )
+    def delete(self, request: Request) -> Response:
+        query = DeleteAccountQuerySerializer(data=request.query_params)
+        query.is_valid(raise_exception=True)
+        user = request.user
+        if query.validated_data["confirm"].strip().lower() != user.nickname.lower():
+            message = "Введи свій нік, щоб підтвердити."
+            raise DomainError(
+                code="confirm_mismatch", message=message, fields={"confirm": [message]}
+            )
+        logout(request)
+        if query.validated_data["mode"] == "delete":
+            privacy.delete(user)
+        else:
+            privacy.anonymize(user)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class MeExportView(APIView):
+    permission_classes = [IsAuthenticated]
+    throttle_scope = "uploads"
+
+    @extend_schema(
+        operation_id="me_export",
+        responses={(200, "application/json"): OpenApiTypes.OBJECT, **error_responses(401)},
+        description="Everything we keep about the player, as a downloadable JSON file.",
+    )
+    def get(self, request: Request) -> HttpResponse:
+        data = json.dumps(privacy.export(request.user), ensure_ascii=False, indent=2)
+        response = HttpResponse(data, content_type="application/json; charset=utf-8")
+        name = f"blockcraft-{request.user.nickname}.json"
+        response["Content-Disposition"] = f'attachment; filename="{name}"'
+        return response
 
 
 class MeGameProfileView(APIView):

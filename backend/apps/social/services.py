@@ -12,6 +12,10 @@ from apps.core import kinds
 from apps.core.counters import bump
 from apps.core.exceptions import DomainError
 from apps.library.models import Collection, CollectionItem, Download, Favorite
+from apps.moderation import services as moderation
+from apps.moderation import words
+from apps.notifications.models import Notification
+from apps.notifications.services import notify
 
 from .models import Comment, Like, Review, ReviewVote
 
@@ -65,6 +69,8 @@ def upsert_review(
     owner = kind_obj.owner_of(target)
     if owner is not None and owner.pk == user.pk:
         raise DomainError(code="own_object", message="Власний проєкт оцінити не можна.")
+    moderation.ensure_can_publish(user)
+    words.check(text=text)
     review, created = Review.objects.update_or_create(
         user=user,
         content_type=kind_obj.content_type,
@@ -72,6 +78,14 @@ def upsert_review(
         defaults={"stars": stars, "text": text.strip()},
     )
     recompute_rating(content_type=kind_obj.content_type, object_id=target.pk)
+    if created:
+        notify(
+            user=owner,
+            type=Notification.Type.REVIEW,
+            target=target,
+            actor=user.nickname,
+            excerpt=review.text,
+        )
     return review, created
 
 
@@ -206,6 +220,8 @@ def add_comment(
     kind_obj, target = kinds.resolve(kind, identifier, viewer=user, action="comment")
     if not can_comment(user=user, kind=kind_obj, target=target):
         raise DomainError(code="comments_closed", message="Автор закрив коментарі.", status=403)
+    moderation.ensure_can_publish(user)
+    words.check(body=body)
     parent = None
     if parent_id is not None:
         parent = Comment.objects.filter(
@@ -230,6 +246,14 @@ def add_comment(
         status=Comment.Status.PUBLISHED,
     )
     bump(target, "comments_count", 1)
+    if parent is not None and parent.user_id != user.pk:
+        notify(
+            user=parent.user,
+            type=Notification.Type.REPLY,
+            target=target,
+            actor=user.nickname,
+            excerpt=comment.body,
+        )
     return comment
 
 
@@ -238,6 +262,7 @@ def edit_comment(*, comment: Comment, user: User, body: str) -> Comment:
         raise DomainError(
             code="forbidden", message="Редагувати можна лише свій коментар.", status=403
         )
+    words.check(body=body)
     comment.body = body.strip()
     comment.save(update_fields=["body", "updated_at"])
     return comment
@@ -307,3 +332,24 @@ def forget_target(*, kind: kinds.Kind, object_id: int) -> None:
     Like.objects.filter(**target).delete()
     Review.objects.filter(**target).delete()
     Comment.objects.filter(**target).delete()
+
+
+def recount_targets(targets: set[tuple[int, int]]) -> None:
+    """Exact favorite, like, comment and review counters of these (content type, id) pairs.
+
+    For deletions that bypass the services, e.g. a player who deletes the account.
+    """
+    for content_type_id, object_id in targets:
+        content_type = ContentType.objects.get_for_id(content_type_id)
+        model = content_type.model_class()
+        if model is None or not model._base_manager.filter(pk=object_id).exists():
+            continue
+        target = {"content_type_id": content_type_id, "object_id": object_id}
+        model._base_manager.filter(pk=object_id).update(
+            favorites_count=Favorite.objects.filter(**target).count(),
+            likes_count=Like.objects.filter(**target).count(),
+            comments_count=Comment.objects.filter(
+                **target, status=Comment.Status.PUBLISHED, is_deleted=False
+            ).count(),
+        )
+        recompute_rating(content_type=content_type, object_id=object_id)

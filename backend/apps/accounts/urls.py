@@ -5,6 +5,7 @@ from . import views
 urlpatterns = [
     path("csrf", views.CsrfView.as_view(), name="csrf"),
     path("me", views.MeView.as_view(), name="me"),
+    path("me/export", views.MeExportView.as_view(), name="me-export"),
     path("me/game-profile", views.MeGameProfileView.as_view(), name="me-game-profile"),
     path("me/settings", views.MeSettingsView.as_view(), name="me-settings"),
     path("me/onboarding", views.OnboardingView.as_view(), name="me-onboarding"),

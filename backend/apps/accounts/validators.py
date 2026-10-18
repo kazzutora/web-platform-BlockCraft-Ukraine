@@ -3,12 +3,14 @@ import re
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 
+from apps.moderation import words
+
 NICKNAME_MIN_LENGTH = 3
 NICKNAME_MAX_LENGTH = 24
 NICKNAME_PATTERN = r"^[a-zA-Z0-9_]+$"
 
 # Names that would impersonate the team or Minecraft itself, or clash with routes.
-# Stage 8 adds the BannedWord list on top of this.
+# The BannedWord list (moderation) applies on top of this.
 RESERVED_NICKNAMES = frozenset(
     {
         "admin", "administrator", "moderator", "mod", "support", "help", "staff", "system",
@@ -46,7 +48,7 @@ def validate_nickname_allowed(value: str) -> None:
     if normalized in RESERVED_NICKNAMES:
         raise ValidationError("Цей нік зарезервовано. Обери інший.", code="reserved_nickname")
     squashed = re.sub(r"[_0-9]", "", normalized)
-    if any(fragment in squashed for fragment in BANNED_FRAGMENTS):
+    if any(fragment in squashed for fragment in BANNED_FRAGMENTS) or words.find_banned(squashed):
         raise ValidationError("Нік містить недопустиме слово.", code="banned_nickname")
 
 

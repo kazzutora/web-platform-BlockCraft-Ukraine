@@ -6,6 +6,9 @@ from apps.accounts.validators import nickname_validators
 
 from .factories import UserFactory
 
+# Nicknames are checked against the BannedWord table too
+pytestmark = pytest.mark.django_db
+
 
 def validate(value: str) -> None:
     for validator in nickname_validators:

@@ -8,6 +8,7 @@ from django.db import transaction
 from PIL import Image, ImageOps, UnidentifiedImageError
 
 from apps.core.exceptions import DomainError
+from apps.moderation import words
 
 from .models import GameProfile, User, UserSettings
 
@@ -31,6 +32,7 @@ def _apply(instance: Any, data: dict[str, Any], allowed: set[str]) -> list[str]:
 
 
 def update_account(*, user: User, data: dict[str, Any]) -> User:
+    words.check(bio=data.get("bio", ""))
     changed = _apply(user, data, {"bio", "mc_nickname", "is_private"})
     if changed:
         user.save(update_fields=changed)

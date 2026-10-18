@@ -154,3 +154,11 @@ class UserBriefSerializer(serializers.ModelSerializer):
     @extend_schema_field(serializers.CharField(allow_null=True))
     def get_avatar_url(self, user: User) -> str | None:
         return avatar_url(user)
+
+
+class DeleteAccountQuerySerializer(serializers.Serializer):
+    mode = serializers.ChoiceField(
+        choices=["anonymize", "delete"],
+        help_text="`anonymize`: keep the content under a placeholder name; `delete`: remove all.",
+    )
+    confirm = serializers.CharField(help_text="The nickname, typed again.")

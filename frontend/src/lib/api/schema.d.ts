@@ -271,7 +271,8 @@ export interface paths {
         get: operations["me_retrieve"];
         put?: never;
         post?: never;
-        delete?: never;
+        /** @description Leaves the platform: the nickname must be typed again to confirm. */
+        delete: operations["me_delete"];
         options?: never;
         head?: never;
         patch: operations["me_update"];
@@ -309,6 +310,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/me/export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Everything we keep about the player, as a downloadable JSON file. */
+        get: operations["me_export"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/me/game-profile": {
         parameters: {
             query?: never;
@@ -323,6 +341,55 @@ export interface paths {
         options?: never;
         head?: never;
         patch: operations["me_game_profile_update"];
+        trace?: never;
+    };
+    "/api/v1/me/notifications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["me_notifications"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/notifications/read": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["me_notifications_read"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/notifications/unread": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description The bell asks this every 60 seconds. */
+        get: operations["me_notifications_unread"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/v1/me/onboarding": {
@@ -518,6 +585,23 @@ export interface paths {
         put?: never;
         /** @description Queue a Modrinth project for import; it waits for moderation. */
         post: operations["mods_suggest"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/reports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description A report on any reportable kind or a comment; five open ones hide the object. */
+        post: operations["reports_create"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1177,6 +1261,10 @@ export interface components {
             /** @description data:image/png;base64 URL; null for a default skin. */
             texture: string | null;
         };
+        MarkReadRequest: {
+            /** @description Empty: all of them. */
+            ids?: number[];
+        };
         Me: {
             readonly id: number;
             /** Format: email */
@@ -1253,6 +1341,27 @@ export interface components {
                 [key: string]: string[];
             };
             nearest_game_versions: string[];
+        };
+        Notification: {
+            readonly id: number;
+            readonly type: components["schemas"]["TypeEnum"];
+            payload: components["schemas"]["NotificationPayload"];
+            readonly is_read: boolean;
+            /** Format: date-time */
+            readonly created_at: string;
+        };
+        NotificationPayload: {
+            kind?: string;
+            id?: string;
+            title?: string;
+            reason?: string;
+            actor?: string;
+            excerpt?: string;
+        };
+        NotificationsPage: {
+            unread_count: number;
+            results: components["schemas"]["Notification"][];
+            next_page: number | null;
         };
         /** @enum {unknown} */
         NullEnum: null;
@@ -1520,9 +1629,37 @@ export interface components {
          * @enum {string}
          */
         PublishStatusEnum: "draft" | "pending" | "published" | "rejected" | "hidden";
+        /**
+         * @description * `inappropriate` - Неприйнятний вміст
+         *     * `spam` - Спам або реклама
+         *     * `stolen` - Чужа робота
+         *     * `scam` - Шахрайство
+         *     * `other` - Інше
+         * @enum {string}
+         */
+        ReasonEnum: "inappropriate" | "spam" | "stolen" | "scam" | "other";
         ReorderRequest: {
             item_ids: number[];
         };
+        ReportCreateRequest: {
+            kind: components["schemas"]["ReportKindEnum"];
+            id: string;
+            reason: components["schemas"]["ReasonEnum"];
+            comment?: string;
+        };
+        ReportCreated: {
+            id: number;
+            status: string;
+        };
+        /**
+         * @description * `collection` - collection
+         *     * `mod` - mod
+         *     * `skin` - skin
+         *     * `server` - server
+         *     * `comment` - comment
+         * @enum {string}
+         */
+        ReportKindEnum: "collection" | "mod" | "skin" | "server" | "comment";
         Review: {
             readonly id: number;
             readonly user: components["schemas"]["UserBrief"];
@@ -1875,6 +2012,20 @@ export interface components {
             mods: components["schemas"]["ProjectCard"][];
             skins: components["schemas"]["SkinCard"][];
             servers: components["schemas"]["ServerCard"][];
+        };
+        /**
+         * @description * `approved` - Роботу опубліковано
+         *     * `rejected` - Роботу відхилено
+         *     * `hidden` - Роботу приховано після скарг
+         *     * `restored` - Роботу повернуто
+         *     * `reply` - Відповідь на коментар
+         *     * `review` - Новий відгук
+         *     * `warning` - Попередження
+         * @enum {string}
+         */
+        TypeEnum: "approved" | "rejected" | "hidden" | "restored" | "reply" | "review" | "warning";
+        Unread: {
+            unread_count: number;
         };
         /** @description Author shown next to reviews, comments and collections. */
         UserBrief: {
@@ -2917,6 +3068,50 @@ export interface operations {
             };
         };
     };
+    me_delete: {
+        parameters: {
+            query: {
+                /** @description The nickname, typed again. */
+                confirm: string;
+                /**
+                 * @description `anonymize`: keep the content under a placeholder name; `delete`: remove all.
+                 *
+                 *     * `anonymize` - anonymize
+                 *     * `delete` - delete
+                 */
+                mode: "anonymize" | "delete";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
     me_update: {
         parameters: {
             query?: never;
@@ -3055,6 +3250,35 @@ export interface operations {
             };
         };
     };
+    me_export: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
     me_game_profile_retrieve: {
         parameters: {
             query?: never;
@@ -3111,6 +3335,103 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    me_notifications: {
+        parameters: {
+            query?: {
+                page?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotificationsPage"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    me_notifications_read: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["MarkReadRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["MarkReadRequest"];
+                "multipart/form-data": components["schemas"]["MarkReadRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Unread"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    me_notifications_unread: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Unread"];
                 };
             };
             401: {
@@ -3639,6 +3960,63 @@ export interface operations {
                 };
             };
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    reports_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReportCreateRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ReportCreateRequest"];
+                "multipart/form-data": components["schemas"]["ReportCreateRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReportCreated"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };

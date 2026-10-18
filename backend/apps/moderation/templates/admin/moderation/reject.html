@@ -1,0 +1,17 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+<form method="post">
+  {% csrf_token %}
+  <p>Буде відхилено:</p>
+  <ul>
+    {% for obj in objects %}
+      <li>{{ obj }}<input type="hidden" name="{{ action_checkbox_name }}" value="{{ obj.pk }}"></li>
+    {% endfor %}
+  </ul>
+  {{ form.as_p }}
+  <input type="hidden" name="action" value="{{ action }}">
+  <input type="hidden" name="apply" value="1">
+  <input type="submit" value="Відхилити">
+</form>
+{% endblock %}

@@ -964,6 +964,50 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiError'
           description: ''
+    delete:
+      operationId: me_delete
+      description: 'Leaves the platform: the nickname must be typed again to confirm.'
+      parameters:
+      - in: query
+        name: confirm
+        schema:
+          type: string
+          minLength: 1
+        description: The nickname, typed again.
+        required: true
+      - in: query
+        name: mode
+        schema:
+          enum:
+          - anonymize
+          - delete
+          type: string
+          minLength: 1
+        description: |-
+          `anonymize`: keep the content under a placeholder name; `delete`: remove all.
+
+          * `anonymize` - anonymize
+          * `delete` - delete
+        required: true
+      tags:
+      - me
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
   /api/v1/me/avatar:
     put:
       operationId: me_avatar_upload
@@ -1047,6 +1091,28 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiError'
           description: ''
+  /api/v1/me/export:
+    get:
+      operationId: me_export
+      description: Everything we keep about the player, as a downloadable JSON file.
+      tags:
+      - me
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
   /api/v1/me/game-profile:
     get:
       operationId: me_game_profile_retrieve
@@ -1096,6 +1162,91 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiError'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+  /api/v1/me/notifications:
+    get:
+      operationId: me_notifications
+      parameters:
+      - in: query
+        name: page
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+      tags:
+      - me
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationsPage'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+  /api/v1/me/notifications/read:
+    post:
+      operationId: me_notifications_read
+      tags:
+      - me
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MarkReadRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MarkReadRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MarkReadRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unread'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+  /api/v1/me/notifications/unread:
+    get:
+      operationId: me_notifications_unread
+      description: The bell asks this every 60 seconds.
+      tags:
+      - me
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unread'
           description: ''
         '401':
           content:
@@ -1682,6 +1833,58 @@ paths:
                 $ref: '#/components/schemas/ApiError'
           description: ''
         '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+  /api/v1/reports:
+    post:
+      operationId: reports_create
+      description: A report on any reportable kind or a comment; five open ones hide
+        the object.
+      tags:
+      - reports
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReportCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ReportCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ReportCreateRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportCreated'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '429':
           content:
             application/json:
               schema:
@@ -3825,6 +4028,14 @@ components:
       - nickname
       - texture
       - uuid
+    MarkReadRequest:
+      type: object
+      properties:
+        ids:
+          type: array
+          items:
+            type: integer
+          description: 'Empty: all of them.'
     Me:
       type: object
       properties:
@@ -4030,6 +4241,62 @@ components:
       - detail
       - fields
       - nearest_game_versions
+    Notification:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        type:
+          allOf:
+          - $ref: '#/components/schemas/TypeEnum'
+          readOnly: true
+        payload:
+          $ref: '#/components/schemas/NotificationPayload'
+        is_read:
+          type: boolean
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - is_read
+      - payload
+      - type
+    NotificationPayload:
+      type: object
+      properties:
+        kind:
+          type: string
+        id:
+          type: string
+        title:
+          type: string
+        reason:
+          type: string
+        actor:
+          type: string
+        excerpt:
+          type: string
+    NotificationsPage:
+      type: object
+      properties:
+        unread_count:
+          type: integer
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Notification'
+        next_page:
+          type: integer
+          nullable: true
+      required:
+      - next_page
+      - results
+      - unread_count
     NullEnum:
       enum:
       - null
@@ -4688,6 +4955,20 @@ components:
         * `published` - Опубліковано
         * `rejected` - Відхилено
         * `hidden` - Приховано
+    ReasonEnum:
+      enum:
+      - inappropriate
+      - spam
+      - stolen
+      - scam
+      - other
+      type: string
+      description: |-
+        * `inappropriate` - Неприйнятний вміст
+        * `spam` - Спам або реклама
+        * `stolen` - Чужа робота
+        * `scam` - Шахрайство
+        * `other` - Інше
     ReorderRequest:
       type: object
       properties:
@@ -4698,6 +4979,48 @@ components:
           maxItems: 500
       required:
       - item_ids
+    ReportCreateRequest:
+      type: object
+      properties:
+        kind:
+          $ref: '#/components/schemas/ReportKindEnum'
+        id:
+          type: string
+          minLength: 1
+          maxLength: 96
+        reason:
+          $ref: '#/components/schemas/ReasonEnum'
+        comment:
+          type: string
+          maxLength: 500
+      required:
+      - id
+      - kind
+      - reason
+    ReportCreated:
+      type: object
+      properties:
+        id:
+          type: integer
+        status:
+          type: string
+      required:
+      - id
+      - status
+    ReportKindEnum:
+      enum:
+      - collection
+      - mod
+      - skin
+      - server
+      - comment
+      type: string
+      description: |-
+        * `collection` - collection
+        * `mod` - mod
+        * `skin` - skin
+        * `server` - server
+        * `comment` - comment
     Review:
       type: object
       properties:
@@ -5645,6 +5968,31 @@ components:
       - period
       - servers
       - skins
+    TypeEnum:
+      enum:
+      - approved
+      - rejected
+      - hidden
+      - restored
+      - reply
+      - review
+      - warning
+      type: string
+      description: |-
+        * `approved` - Роботу опубліковано
+        * `rejected` - Роботу відхилено
+        * `hidden` - Роботу приховано після скарг
+        * `restored` - Роботу повернуто
+        * `reply` - Відповідь на коментар
+        * `review` - Новий відгук
+        * `warning` - Попередження
+    Unread:
+      type: object
+      properties:
+        unread_count:
+          type: integer
+      required:
+      - unread_count
     UserBrief:
       type: object
       description: Author shown next to reviews, comments and collections.

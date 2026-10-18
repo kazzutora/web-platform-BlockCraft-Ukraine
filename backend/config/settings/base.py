@@ -19,22 +19,37 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.sites",
+    "django.contrib.postgres",
     "rest_framework",
     "drf_spectacular",
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.discord",
+    "allauth.socialaccount.providers.google",
+    "allauth.headless",
     "apps.core",
+    "apps.accounts",
 ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
+
+# Site name and domain are used in emails (core migration 0001 fills them from SITE_URL)
+SITE_ID = 1
+SITE_NAME = "BlockCraft Ukraine"
 
 TEMPLATES = [
     {
@@ -70,7 +85,63 @@ CACHES = {
 
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 
-# Auth
+# Auth: email + password and Discord / Google through allauth headless (browser client).
+# The SPA talks to /_allauth/browser/v1/…; Django keeps the session cookie on our origin.
+
+AUTH_USER_MODEL = "accounts.User"
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
+]
+
+ACCOUNT_ADAPTER = "apps.accounts.adapters.AccountAdapter"
+ACCOUNT_USER_MODEL_USERNAME_FIELD = "nickname"
+ACCOUNT_LOGIN_METHODS = {"email"}
+ACCOUNT_SIGNUP_FIELDS = ["email*", "username*", "password1*"]
+ACCOUNT_USERNAME_MIN_LENGTH = 3
+ACCOUNT_USERNAME_VALIDATORS = "apps.accounts.validators.nickname_validators"
+ACCOUNT_PRESERVE_USERNAME_CASING = True
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
+ACCOUNT_LOGOUT_ON_PASSWORD_CHANGE = False
+ACCOUNT_EMAIL_SUBJECT_PREFIX = "BlockCraft · "
+
+HEADLESS_ONLY = True
+HEADLESS_CLIENTS = ("browser",)
+HEADLESS_SERVE_SPECIFICATION = True
+HEADLESS_FRONTEND_URLS = {
+    "account_confirm_email": f"{SITE_URL}/verify-email/{{key}}",
+    "account_reset_password": f"{SITE_URL}/password-reset",
+    "account_reset_password_from_key": f"{SITE_URL}/password-reset/{{key}}",
+    "account_signup": f"{SITE_URL}/register",
+    "socialaccount_login_error": f"{SITE_URL}/login?error=social",
+}
+
+
+def _oauth_apps(client_id: str, secret: str) -> list[dict[str, str]]:
+    # A provider shows up on the sign-in page only when its keys are configured
+    return [{"client_id": client_id, "secret": secret, "key": ""}] if client_id else []
+
+
+SOCIALACCOUNT_PROVIDERS = {
+    "discord": {
+        "APPS": _oauth_apps(
+            env("DISCORD_CLIENT_ID", default=""), env("DISCORD_CLIENT_SECRET", default="")
+        ),
+        "SCOPE": ["identify", "email"],
+    },
+    "google": {
+        "APPS": _oauth_apps(
+            env("GOOGLE_CLIENT_ID", default=""), env("GOOGLE_CLIENT_SECRET", default="")
+        ),
+        "SCOPE": ["profile", "email"],
+        "AUTH_PARAMS": {"access_type": "online"},
+    },
+}
+SOCIALACCOUNT_EMAIL_AUTHENTICATION = True
+SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True
+SOCIALACCOUNT_STORE_TOKENS = False
 
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
@@ -113,6 +184,21 @@ REST_FRAMEWORK = {
         "rest_framework.renderers.JSONRenderer",
     ],
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "EXCEPTION_HANDLER": "apps.core.exceptions.handler",
+    "DEFAULT_THROTTLE_CLASSES": [
+        "rest_framework.throttling.AnonRateThrottle",
+        "rest_framework.throttling.ScopedRateThrottle",
+    ],
+    "DEFAULT_THROTTLE_RATES": {
+        "anon": "120/min",
+        "uploads": "20/hour",
+        "comments": "30/hour",
+        "reviews": "20/day",
+        "reports": "20/day",
+        "lookup": "30/min",
+    },
+    # Nginx (and Next.js for SSR) set X-Forwarded-For; throttles count the real client
+    "NUM_PROXIES": 1,
 }
 
 SPECTACULAR_SETTINGS = {

@@ -1,6 +1,8 @@
 """Abstract building blocks for content models (see docs/tech.md, 5.1)."""
 
 from django.conf import settings
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
 
 
@@ -58,6 +60,17 @@ class Engagement(models.Model):
     rating_count = models.PositiveIntegerField(default=0)
     score = models.FloatField("рейтинг (байєсівський)", default=0, db_index=True)
     trend_score = models.FloatField("тренд", default=0, db_index=True)
+
+    class Meta:
+        abstract = True
+
+
+class GenericTarget(models.Model):
+    """`content_type` + `object_id` of any registered kind (see apps/core/kinds.py)."""
+
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, related_name="+")
+    object_id = models.PositiveBigIntegerField()
+    target = GenericForeignKey("content_type", "object_id")
 
     class Meta:
         abstract = True

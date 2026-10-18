@@ -31,6 +31,632 @@ paths:
                 items:
                   $ref: '#/components/schemas/Category'
           description: ''
+  /api/v1/collections:
+    get:
+      operationId: collections_list
+      description: Public collections; with `owner` — the ones shown on their profile.
+      parameters:
+      - in: query
+        name: owner
+        schema:
+          type: string
+        description: Nickname of the owner
+      tags:
+      - collections
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedCollectionList'
+          description: ''
+    post:
+      operationId: collections_create
+      tags:
+      - collections
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CollectionWriteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CollectionWriteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CollectionWriteRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CollectionDetail'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+  /api/v1/collections/{id}:
+    get:
+      operationId: collections_retrieve
+      description: Shared lookups for collection endpoints; no HTTP methods of its
+        own.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      - in: query
+        name: share_token
+        schema:
+          type: string
+        description: Token from the share link
+      tags:
+      - collections
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CollectionDetail'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+    patch:
+      operationId: collections_update
+      description: Shared lookups for collection endpoints; no HTTP methods of its
+        own.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - collections
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCollectionWriteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedCollectionWriteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedCollectionWriteRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CollectionDetail'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+    delete:
+      operationId: collections_delete
+      description: Shared lookups for collection endpoints; no HTTP methods of its
+        own.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - collections
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+  /api/v1/collections/{id}/copy:
+    post:
+      operationId: collections_copy
+      description: Shared lookups for collection endpoints; no HTTP methods of its
+        own.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      - in: query
+        name: share_token
+        schema:
+          type: string
+      tags:
+      - collections
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CollectionDetail'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+  /api/v1/collections/{id}/items:
+    post:
+      operationId: collections_items_add
+      description: Shared lookups for collection endpoints; no HTTP methods of its
+        own.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - collections
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddItemRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AddItemRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AddItemRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CollectionDetail'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+  /api/v1/collections/{id}/items/{item_id}:
+    delete:
+      operationId: collections_items_remove
+      description: Shared lookups for collection endpoints; no HTTP methods of its
+        own.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: item_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - collections
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CollectionDetail'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+  /api/v1/collections/{id}/reorder:
+    post:
+      operationId: collections_reorder
+      description: Shared lookups for collection endpoints; no HTTP methods of its
+        own.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - collections
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReorderRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ReorderRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ReorderRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CollectionDetail'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+  /api/v1/comments:
+    get:
+      operationId: comments_list
+      description: Top-level comments with replies; the first page also brings the
+        pinned one.
+      parameters:
+      - in: query
+        name: cursor
+        schema:
+          type: string
+      - in: query
+        name: id
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 96
+        required: true
+      - in: query
+        name: kind
+        schema:
+          enum:
+          - collection
+          - mod
+          type: string
+          minLength: 1
+        description: |-
+          * `collection` - collection
+          * `mod` - mod
+        required: true
+      tags:
+      - comments
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommentsPage'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+    post:
+      operationId: comments_create
+      description: GET for everyone, writes for signed-in users with a write-only
+        throttle scope.
+      tags:
+      - comments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommentCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CommentCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CommentCreateRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '429':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+  /api/v1/comments/{id}:
+    patch:
+      operationId: comments_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - comments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCommentUpdateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedCommentUpdateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedCommentUpdateRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+    delete:
+      operationId: comments_delete
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - comments
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+  /api/v1/comments/{id}/pin:
+    post:
+      operationId: comments_pin
+      description: Pins or unpins a top-level comment; one pinned comment per object.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - comments
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
   /api/v1/csrf:
     get:
       operationId: csrf
@@ -42,6 +668,101 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/v1/favorites:
+    post:
+      operationId: favorites_add
+      tags:
+      - favorites
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TargetRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TargetRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TargetRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FavoriteState'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+    delete:
+      operationId: favorites_remove
+      parameters:
+      - in: query
+        name: id
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 96
+        required: true
+      - in: query
+        name: kind
+        schema:
+          enum:
+          - collection
+          - mod
+          type: string
+          minLength: 1
+        description: |-
+          * `collection` - collection
+          * `mod` - mod
+        required: true
+      tags:
+      - favorites
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FavoriteState'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
   /api/v1/health:
     get:
       operationId: health
@@ -63,6 +784,101 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Health'
+          description: ''
+  /api/v1/likes:
+    post:
+      operationId: likes_add
+      tags:
+      - likes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TargetQueryRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TargetQueryRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TargetQueryRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LikeState'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+    delete:
+      operationId: likes_remove
+      parameters:
+      - in: query
+        name: id
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 96
+        required: true
+      - in: query
+        name: kind
+        schema:
+          enum:
+          - collection
+          - mod
+          type: string
+          minLength: 1
+        description: |-
+          * `collection` - collection
+          * `mod` - mod
+        required: true
+      tags:
+      - likes
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LikeState'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
           description: ''
   /api/v1/me:
     get:
@@ -171,6 +987,38 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiError'
           description: ''
+  /api/v1/me/collections:
+    get:
+      operationId: me_collections
+      parameters:
+      - in: query
+        name: id
+        schema:
+          type: string
+      - in: query
+        name: kind
+        schema:
+          type: string
+        description: 'With `id`: mark collections holding it'
+      tags:
+      - me
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MyCollection'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
   /api/v1/me/game-profile:
     get:
       operationId: me_game_profile_retrieve
@@ -251,6 +1099,52 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GameProfile'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+  /api/v1/me/saved:
+    get:
+      operationId: me_saved
+      description: The player's favorites of one kind, newest first; mods can be filtered
+        by version.
+      parameters:
+      - in: query
+        name: game_version
+        schema:
+          type: string
+          maxLength: 32
+      - in: query
+        name: kind
+        schema:
+          enum:
+          - collection
+          - mod
+          type: string
+          default: mod
+          minLength: 1
+        description: |-
+          * `collection` - collection
+          * `mod` - mod
+      tags:
+      - me
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSavedItemList'
           description: ''
         '400':
           content:
@@ -639,6 +1533,213 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiError'
           description: ''
+  /api/v1/reviews:
+    get:
+      operationId: reviews_list
+      description: GET for everyone, writes for signed-in users with a write-only
+        throttle scope.
+      parameters:
+      - in: query
+        name: id
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 96
+        required: true
+      - in: query
+        name: kind
+        schema:
+          enum:
+          - collection
+          - mod
+          type: string
+          minLength: 1
+        description: |-
+          * `collection` - collection
+          * `mod` - mod
+        required: true
+      - in: query
+        name: page
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+      - in: query
+        name: sort
+        schema:
+          enum:
+          - helpful
+          - new
+          type: string
+          default: helpful
+          minLength: 1
+        description: |-
+          * `helpful` - helpful
+          * `new` - new
+      tags:
+      - reviews
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReviewsPage'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+    put:
+      operationId: reviews_upsert
+      description: Creates the player's review or updates it (one per object).
+      tags:
+      - reviews
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewUpsertRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ReviewUpsertRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ReviewUpsertRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+          description: ''
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '429':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+  /api/v1/reviews/{id}:
+    delete:
+      operationId: reviews_delete
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - reviews
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+  /api/v1/reviews/{id}/vote:
+    post:
+      operationId: reviews_vote
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - reviews
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewVoteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ReviewVoteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ReviewVoteRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
   /api/v1/users/{nickname}:
     get:
       operationId: users_retrieve
@@ -668,6 +1769,26 @@ paths:
           description: ''
 components:
   schemas:
+    AddItemRequest:
+      type: object
+      description: '`{kind, id}`: id is a slug or a number depending on the kind.'
+      properties:
+        kind:
+          $ref: '#/components/schemas/KindEnum'
+        id:
+          type: string
+          minLength: 1
+          maxLength: 96
+        note:
+          type: string
+          maxLength: 140
+        slot:
+          oneOf:
+          - $ref: '#/components/schemas/SlotEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+      required:
+      - id
+      - kind
     ApiError:
       type: object
       description: Shape of every error response (see core.exceptions.handler).
@@ -724,6 +1845,363 @@ components:
       description: |-
         * `ok` - ok
         * `error` - error
+    Collection:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          readOnly: true
+          title: Назва
+        description:
+          type: string
+          readOnly: true
+          title: Опис
+        visibility:
+          allOf:
+          - $ref: '#/components/schemas/VisibilityEnum'
+          readOnly: true
+        owner:
+          allOf:
+          - $ref: '#/components/schemas/UserBrief'
+          readOnly: true
+        items_count:
+          type: integer
+          readOnly: true
+        likes_count:
+          type: integer
+          readOnly: true
+        favorites_count:
+          type: integer
+          readOnly: true
+        is_setup:
+          type: boolean
+          readOnly: true
+        preview:
+          type: array
+          items:
+            type: string
+            format: uri
+          readOnly: true
+        can_edit:
+          type: boolean
+          readOnly: true
+        is_liked:
+          type: boolean
+          readOnly: true
+        is_favorited:
+          type: boolean
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - can_edit
+      - created_at
+      - description
+      - favorites_count
+      - id
+      - is_favorited
+      - is_liked
+      - is_setup
+      - items_count
+      - likes_count
+      - owner
+      - preview
+      - title
+      - updated_at
+      - visibility
+    CollectionDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          readOnly: true
+          title: Назва
+        description:
+          type: string
+          readOnly: true
+          title: Опис
+        visibility:
+          allOf:
+          - $ref: '#/components/schemas/VisibilityEnum'
+          readOnly: true
+        owner:
+          allOf:
+          - $ref: '#/components/schemas/UserBrief'
+          readOnly: true
+        items_count:
+          type: integer
+          readOnly: true
+        likes_count:
+          type: integer
+          readOnly: true
+        favorites_count:
+          type: integer
+          readOnly: true
+        is_setup:
+          type: boolean
+          readOnly: true
+        preview:
+          type: array
+          items:
+            type: string
+            format: uri
+          readOnly: true
+        can_edit:
+          type: boolean
+          readOnly: true
+        is_liked:
+          type: boolean
+          readOnly: true
+        is_favorited:
+          type: boolean
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CollectionItem'
+          readOnly: true
+        share_token:
+          type: string
+          nullable: true
+          readOnly: true
+        editors:
+          type: array
+          items:
+            type: string
+          readOnly: true
+      required:
+      - can_edit
+      - created_at
+      - description
+      - editors
+      - favorites_count
+      - id
+      - is_favorited
+      - is_liked
+      - is_setup
+      - items
+      - items_count
+      - likes_count
+      - owner
+      - preview
+      - share_token
+      - title
+      - updated_at
+      - visibility
+    CollectionItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        kind:
+          type: string
+          readOnly: true
+        target_id:
+          type: string
+          readOnly: true
+        position:
+          type: integer
+          readOnly: true
+        slot:
+          allOf:
+          - $ref: '#/components/schemas/SlotEnum'
+          readOnly: true
+        note:
+          type: string
+          readOnly: true
+          title: Нотатка
+        mod:
+          allOf:
+          - $ref: '#/components/schemas/ProjectCard'
+          nullable: true
+          readOnly: true
+      required:
+      - id
+      - kind
+      - mod
+      - note
+      - position
+      - slot
+      - target_id
+    CollectionWriteRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 80
+        description:
+          type: string
+          maxLength: 200
+        visibility:
+          $ref: '#/components/schemas/VisibilityEnum'
+        editors:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 24
+          maxItems: 10
+      required:
+      - title
+    Comment:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        user:
+          allOf:
+          - $ref: '#/components/schemas/UserBrief'
+          readOnly: true
+        body:
+          type: string
+          readOnly: true
+        is_deleted:
+          type: boolean
+          readOnly: true
+        is_pinned:
+          type: boolean
+          readOnly: true
+        is_edited:
+          type: boolean
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        can_edit:
+          type: boolean
+          readOnly: true
+        can_delete:
+          type: boolean
+          readOnly: true
+        replies:
+          type: array
+          items:
+            $ref: '#/components/schemas/CommentReply'
+          readOnly: true
+      required:
+      - body
+      - can_delete
+      - can_edit
+      - created_at
+      - id
+      - is_deleted
+      - is_edited
+      - is_pinned
+      - replies
+      - user
+    CommentCreateRequest:
+      type: object
+      properties:
+        kind:
+          $ref: '#/components/schemas/KindEnum'
+        id:
+          type: string
+          minLength: 1
+          maxLength: 96
+        body:
+          type: string
+          minLength: 1
+          maxLength: 1000
+        parent:
+          type: integer
+          nullable: true
+      required:
+      - body
+      - id
+      - kind
+    CommentReply:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        user:
+          allOf:
+          - $ref: '#/components/schemas/UserBrief'
+          readOnly: true
+        body:
+          type: string
+          readOnly: true
+        is_deleted:
+          type: boolean
+          readOnly: true
+        is_pinned:
+          type: boolean
+          readOnly: true
+        is_edited:
+          type: boolean
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        can_edit:
+          type: boolean
+          readOnly: true
+        can_delete:
+          type: boolean
+          readOnly: true
+      required:
+      - body
+      - can_delete
+      - can_edit
+      - created_at
+      - id
+      - is_deleted
+      - is_edited
+      - is_pinned
+      - user
+    CommentsPage:
+      type: object
+      properties:
+        can_comment:
+          type: boolean
+        can_pin:
+          type: boolean
+        comments_count:
+          type: integer
+        pinned:
+          type: array
+          items:
+            $ref: '#/components/schemas/Comment'
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Comment'
+        next_cursor:
+          type: string
+          nullable: true
+      required:
+      - can_comment
+      - can_pin
+      - comments_count
+      - next_cursor
+      - pinned
+      - results
     Dependency:
       type: object
       properties:
@@ -783,6 +2261,22 @@ components:
       description: |-
         * `java` - Java
         * `bedrock` - Bedrock
+    FavoriteState:
+      type: object
+      properties:
+        kind:
+          type: string
+        id:
+          type: string
+        favorited:
+          type: boolean
+        favorites_count:
+          type: integer
+      required:
+      - favorited
+      - favorites_count
+      - id
+      - kind
     GalleryImage:
       type: object
       properties:
@@ -958,6 +2452,14 @@ components:
         * `adventure` - Пригоди
         * `minigames` - Мініігри
         * `modded` - Моди й зборки
+    KindEnum:
+      enum:
+      - collection
+      - mod
+      type: string
+      description: |-
+        * `collection` - collection
+        * `mod` - mod
     LanguageEnum:
       enum:
       - uk
@@ -966,6 +2468,22 @@ components:
       description: |-
         * `uk` - Українська
         * `en` - English
+    LikeState:
+      type: object
+      properties:
+        kind:
+          type: string
+        id:
+          type: string
+        liked:
+          type: boolean
+        likes_count:
+          type: integer
+      required:
+      - id
+      - kind
+      - liked
+      - likes_count
     LoaderEnum:
       enum:
       - fabric
@@ -996,6 +2514,7 @@ components:
           title: Нік
         avatar_url:
           type: string
+          nullable: true
           readOnly: true
         bio:
           type: string
@@ -1046,6 +2565,90 @@ components:
       - published_count
       - role
       - xp
+    MyCollection:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          readOnly: true
+          title: Назва
+        description:
+          type: string
+          readOnly: true
+          title: Опис
+        visibility:
+          allOf:
+          - $ref: '#/components/schemas/VisibilityEnum'
+          readOnly: true
+        owner:
+          allOf:
+          - $ref: '#/components/schemas/UserBrief'
+          readOnly: true
+        items_count:
+          type: integer
+          readOnly: true
+        likes_count:
+          type: integer
+          readOnly: true
+        favorites_count:
+          type: integer
+          readOnly: true
+        is_setup:
+          type: boolean
+          readOnly: true
+        preview:
+          type: array
+          items:
+            type: string
+            format: uri
+          readOnly: true
+        can_edit:
+          type: boolean
+          readOnly: true
+        is_liked:
+          type: boolean
+          readOnly: true
+        is_favorited:
+          type: boolean
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        contains:
+          type: boolean
+          readOnly: true
+        item_id:
+          type: integer
+          nullable: true
+          description: Item of the requested object in this collection, to remove
+            it again.
+          readOnly: true
+      required:
+      - can_edit
+      - contains
+      - created_at
+      - description
+      - favorites_count
+      - id
+      - is_favorited
+      - is_liked
+      - is_setup
+      - item_id
+      - items_count
+      - likes_count
+      - owner
+      - preview
+      - title
+      - updated_at
+      - visibility
     NoVersionError:
       type: object
       properties:
@@ -1087,6 +2690,28 @@ components:
           items:
             $ref: '#/components/schemas/InterestsEnum'
           maxItems: 8
+    PaginatedCollectionList:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          format: uri
+          nullable: true
+        previous:
+          type: string
+          format: uri
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Collection'
+      required:
+      - count
+      - next
+      - previous
+      - results
     PaginatedProjectCardList:
       type: object
       required:
@@ -1110,6 +2735,54 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ProjectCard'
+    PaginatedSavedItemList:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          format: uri
+          nullable: true
+        previous:
+          type: string
+          format: uri
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/SavedItem'
+      required:
+      - count
+      - next
+      - previous
+      - results
+    PatchedCollectionWriteRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 80
+        description:
+          type: string
+          maxLength: 200
+        visibility:
+          $ref: '#/components/schemas/VisibilityEnum'
+        editors:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 24
+          maxItems: 10
+    PatchedCommentUpdateRequest:
+      type: object
+      properties:
+        body:
+          type: string
+          minLength: 1
+          maxLength: 1000
     PatchedGameProfileRequest:
       type: object
       properties:
@@ -1211,13 +2884,26 @@ components:
         rating_count:
           type: integer
           readOnly: true
+        favorites_count:
+          type: integer
+          readOnly: true
+        is_favorited:
+          type: boolean
+          readOnly: true
+        my_review_stars:
+          type: integer
+          nullable: true
+          readOnly: true
       required:
       - categories
       - downloads
+      - favorites_count
       - gpu_load
       - icon_url
+      - is_favorited
       - latest_game_version
       - loaders
+      - my_review_stars
       - project_type
       - rating_avg
       - rating_count
@@ -1279,6 +2965,16 @@ components:
         rating_count:
           type: integer
           readOnly: true
+        favorites_count:
+          type: integer
+          readOnly: true
+        is_favorited:
+          type: boolean
+          readOnly: true
+        my_review_stars:
+          type: integer
+          nullable: true
+          readOnly: true
         summary_en:
           type: string
           readOnly: true
@@ -1315,6 +3011,9 @@ components:
         needs_translation:
           type: boolean
           readOnly: true
+        comments_count:
+          type: integer
+          readOnly: true
         published_at:
           type: string
           format: date-time
@@ -1328,16 +3027,20 @@ components:
       required:
       - body_html
       - categories
+      - comments_count
       - downloads
+      - favorites_count
       - gallery
       - game_versions
       - gpu_load
       - icon_url
       - id
+      - is_favorited
       - latest_game_version
       - license
       - loaders
       - modrinth_url
+      - my_review_stars
       - needs_translation
       - project_type
       - published_at
@@ -1439,6 +3142,129 @@ components:
       - level
       - mc_nickname
       - nickname
+    ReorderRequest:
+      type: object
+      properties:
+        item_ids:
+          type: array
+          items:
+            type: integer
+          maxItems: 500
+      required:
+      - item_ids
+    Review:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        user:
+          allOf:
+          - $ref: '#/components/schemas/UserBrief'
+          readOnly: true
+        stars:
+          type: integer
+          readOnly: true
+        text:
+          type: string
+          readOnly: true
+        helpful_count:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        is_mine:
+          type: boolean
+          readOnly: true
+        my_vote:
+          type: boolean
+          nullable: true
+          description: 'True: «корисно», False: «не корисно», null: no vote (annotated
+            by the view).'
+          readOnly: true
+      required:
+      - created_at
+      - helpful_count
+      - id
+      - is_mine
+      - my_vote
+      - stars
+      - text
+      - updated_at
+      - user
+    ReviewSummary:
+      type: object
+      properties:
+        rating_avg:
+          type: number
+          format: double
+        rating_count:
+          type: integer
+        distribution:
+          type: object
+          additionalProperties:
+            type: integer
+        my_review:
+          allOf:
+          - $ref: '#/components/schemas/Review'
+          nullable: true
+      required:
+      - distribution
+      - my_review
+      - rating_avg
+      - rating_count
+    ReviewUpsertRequest:
+      type: object
+      properties:
+        kind:
+          $ref: '#/components/schemas/KindEnum'
+        id:
+          type: string
+          minLength: 1
+          maxLength: 96
+        stars:
+          type: integer
+          maximum: 5
+          minimum: 1
+        text:
+          type: string
+          maxLength: 1000
+      required:
+      - id
+      - kind
+      - stars
+    ReviewVoteRequest:
+      type: object
+      properties:
+        is_helpful:
+          type: boolean
+      required:
+      - is_helpful
+    ReviewsPage:
+      type: object
+      properties:
+        summary:
+          $ref: '#/components/schemas/ReviewSummary'
+        count:
+          type: integer
+        next_page:
+          type: integer
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Review'
+      required:
+      - count
+      - next_page
+      - results
+      - summary
     RoleEnum:
       enum:
       - user
@@ -1451,6 +3277,51 @@ components:
         * `trusted` - Довірений автор
         * `moderator` - Модератор
         * `admin` - Адміністратор
+    SavedItem:
+      type: object
+      description: One saved object; exactly one of the kind fields is filled.
+      properties:
+        kind:
+          type: string
+        id:
+          type: string
+        saved_at:
+          type: string
+          format: date-time
+        mod:
+          allOf:
+          - $ref: '#/components/schemas/ProjectCard'
+          nullable: true
+        collection:
+          allOf:
+          - $ref: '#/components/schemas/Collection'
+          nullable: true
+      required:
+      - collection
+      - id
+      - kind
+      - mod
+      - saved_at
+    SlotEnum:
+      enum:
+      - version
+      - loader
+      - pack
+      - mod
+      - resourcepack
+      - shader
+      - skin
+      - server
+      type: string
+      description: |-
+        * `version` - Версія
+        * `loader` - Лоадер
+        * `pack` - Зборка
+        * `mod` - Мод
+        * `resourcepack` - Ресурспак
+        * `shader` - Шейдер
+        * `skin` - Скін
+        * `server` - Сервер
     SuggestRequest:
       type: object
       properties:
@@ -1479,6 +3350,31 @@ components:
       description: |-
         * `queued` - queued
         * `exists` - exists
+    TargetQueryRequest:
+      type: object
+      properties:
+        kind:
+          $ref: '#/components/schemas/KindEnum'
+        id:
+          type: string
+          minLength: 1
+          maxLength: 96
+      required:
+      - id
+      - kind
+    TargetRequest:
+      type: object
+      description: '`{kind, id}`: id is a slug or a number depending on the kind.'
+      properties:
+        kind:
+          $ref: '#/components/schemas/KindEnum'
+        id:
+          type: string
+          minLength: 1
+          maxLength: 96
+      required:
+      - id
+      - kind
     ThemeEnum:
       enum:
       - light
@@ -1489,6 +3385,25 @@ components:
         * `light` - Світла
         * `dark` - Темна
         * `system` - Як у системі
+    UserBrief:
+      type: object
+      description: Author shown next to reviews, comments and collections.
+      properties:
+        nickname:
+          type: string
+          readOnly: true
+          title: Нік
+        avatar_url:
+          type: string
+          nullable: true
+          readOnly: true
+        level:
+          type: integer
+          readOnly: true
+      required:
+      - avatar_url
+      - level
+      - nickname
     UserSettings:
       type: object
       properties:
@@ -1547,6 +3462,16 @@ components:
       - nearest_game_versions
       - recommended
       - versions
+    VisibilityEnum:
+      enum:
+      - private
+      - link
+      - public
+      type: string
+      description: |-
+        * `private` - Лише я
+        * `link` - За посиланням
+        * `public` - Усі
     WhoCanCommentEnum:
       enum:
       - all

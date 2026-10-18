@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     "apps.core",
     "apps.accounts",
     "apps.library",
+    "apps.social",
     "apps.mods",
 ]
 
@@ -231,6 +232,7 @@ CELERY_BEAT_SCHEDULE: dict[str, dict] = {
         "task": "mods.sync_versions_for_tracked",
         "schedule": crontab(hour=3, minute=30),
     },
+    "social-recalc-scores": {"task": "social.recalc_scores", "schedule": crontab(minute=15)},
 }
 
 # Modrinth

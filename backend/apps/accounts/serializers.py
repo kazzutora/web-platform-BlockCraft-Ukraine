@@ -1,6 +1,5 @@
 import re
 
-from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
@@ -60,7 +59,7 @@ class MeSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = fields
 
-    @extend_schema_field(OpenApiTypes.STR)
+    @extend_schema_field(serializers.CharField(allow_null=True))
     def get_avatar_url(self, user: User) -> str | None:
         return avatar_url(user)
 
@@ -126,3 +125,18 @@ class PublicProfileSerializer(serializers.Serializer):
             "date_joined": user.date_joined if full else None,
         }
         return cls(data)
+
+
+class UserBriefSerializer(serializers.ModelSerializer):
+    """Author shown next to reviews, comments and collections."""
+
+    avatar_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ["nickname", "avatar_url", "level"]
+        read_only_fields = fields
+
+    @extend_schema_field(serializers.CharField(allow_null=True))
+    def get_avatar_url(self, user: User) -> str | None:
+        return avatar_url(user)

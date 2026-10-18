@@ -1,9 +1,12 @@
 from dataclasses import dataclass
 
+from django.contrib.auth.models import AnonymousUser
 from django.db.models import Case, IntegerField, QuerySet, Value, When
 from django.http import Http404
 
+from apps.core.kinds import Viewer, get_kind
 from apps.core.versions import is_release, latest_release, nearest_versions
+from apps.social.selectors import with_viewer_state
 
 from .models import Project, ProjectType, ProjectVersion
 
@@ -11,13 +14,15 @@ from .models import Project, ProjectType, ProjectVersion
 LOADER_AWARE_TYPES = {ProjectType.MOD}
 
 
-def catalog() -> QuerySet[Project]:
-    return Project.objects.published().prefetch_related("categories")
+def catalog(viewer: Viewer | None = None) -> QuerySet[Project]:
+    """Published projects with the viewer's favorite/review state annotated."""
+    queryset = Project.objects.published().prefetch_related("categories")
+    return with_viewer_state(queryset, viewer=viewer or AnonymousUser(), kind=get_kind("mod"))
 
 
-def get_project(*, slug: str) -> Project:
+def get_project(*, slug: str, viewer: Viewer | None = None) -> Project:
     try:
-        return catalog().get(slug=slug)
+        return catalog(viewer).get(slug=slug)
     except Project.DoesNotExist as error:
         raise Http404 from error
 
@@ -94,11 +99,11 @@ def dependencies_of(version: ProjectVersion | None) -> list[DependencyInfo]:
     ]
 
 
-def similar(*, project: Project, limit: int = 8) -> QuerySet[Project]:
+def similar(*, project: Project, viewer: Viewer | None = None, limit: int = 8) -> QuerySet[Project]:
     """Same type, sharing categories, most downloaded first."""
     categories = project.categories.all()
     return (
-        catalog()
+        catalog(viewer)
         .filter(project_type=project.project_type, categories__in=categories)
         .exclude(pk=project.pk)
         .distinct()

@@ -46,13 +46,13 @@ class ModViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gene
     throttle_scope: str | None = None
 
     def get_queryset(self):
-        return selectors.catalog()
+        return selectors.catalog(self.request.user)
 
     def get_serializer_class(self):
         return ProjectDetailSerializer if self.action == "retrieve" else ProjectCardSerializer
 
     def get_object(self) -> Project:
-        return selectors.get_project(slug=self.kwargs["slug"])
+        return selectors.get_project(slug=self.kwargs["slug"], viewer=self.request.user)
 
     @extend_schema(
         operation_id="mods_versions",
@@ -151,7 +151,7 @@ class ModViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gene
     @action(detail=True, methods=["get"], pagination_class=None)
     def similar(self, request: Request, slug: str) -> Response:
         project = self.get_object()
-        cards = selectors.similar(project=project)
+        cards = selectors.similar(project=project, viewer=request.user)
         return Response(ProjectCardSerializer(cards, many=True).data)
 
     @extend_schema(

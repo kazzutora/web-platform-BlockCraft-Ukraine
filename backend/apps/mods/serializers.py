@@ -21,6 +21,9 @@ class ProjectCardSerializer(serializers.ModelSerializer):
     latest_game_version = serializers.SerializerMethodField()
     downloads = serializers.SerializerMethodField()
     categories = CategorySerializer(many=True, read_only=True)
+    # Viewer state from social.selectors.with_viewer_state (false/null for guests)
+    is_favorited = serializers.SerializerMethodField()
+    my_review_stars = serializers.SerializerMethodField()
 
     class Meta:
         model = Project
@@ -37,8 +40,17 @@ class ProjectCardSerializer(serializers.ModelSerializer):
             "gpu_load",
             "rating_avg",
             "rating_count",
+            "favorites_count",
+            "is_favorited",
+            "my_review_stars",
         ]
         read_only_fields = fields
+
+    def get_is_favorited(self, project: Project) -> bool:
+        return bool(getattr(project, "is_favorited", False))
+
+    def get_my_review_stars(self, project: Project) -> int | None:
+        return getattr(project, "my_review_stars", None)
 
     def get_summary(self, project: Project) -> str:
         return project.summary_uk or project.summary
@@ -76,6 +88,7 @@ class ProjectDetailSerializer(ProjectCardSerializer):
             "source_url",
             "modrinth_url",
             "needs_translation",
+            "comments_count",
             "published_at",
             "updated_at",
         ]

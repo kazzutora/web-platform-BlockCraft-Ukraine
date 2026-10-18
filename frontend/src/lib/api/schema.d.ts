@@ -20,6 +20,161 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/collections": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Public collections; with `owner` — the ones shown on their profile. */
+        get: operations["collections_list"];
+        put?: never;
+        post: operations["collections_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/collections/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Shared lookups for collection endpoints; no HTTP methods of its own. */
+        get: operations["collections_retrieve"];
+        put?: never;
+        post?: never;
+        /** @description Shared lookups for collection endpoints; no HTTP methods of its own. */
+        delete: operations["collections_delete"];
+        options?: never;
+        head?: never;
+        /** @description Shared lookups for collection endpoints; no HTTP methods of its own. */
+        patch: operations["collections_update"];
+        trace?: never;
+    };
+    "/api/v1/collections/{id}/copy": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Shared lookups for collection endpoints; no HTTP methods of its own. */
+        post: operations["collections_copy"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/collections/{id}/items": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Shared lookups for collection endpoints; no HTTP methods of its own. */
+        post: operations["collections_items_add"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/collections/{id}/items/{item_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** @description Shared lookups for collection endpoints; no HTTP methods of its own. */
+        delete: operations["collections_items_remove"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/collections/{id}/reorder": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Shared lookups for collection endpoints; no HTTP methods of its own. */
+        post: operations["collections_reorder"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/comments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Top-level comments with replies; the first page also brings the pinned one. */
+        get: operations["comments_list"];
+        put?: never;
+        /** @description GET for everyone, writes for signed-in users with a write-only throttle scope. */
+        post: operations["comments_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/comments/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["comments_delete"];
+        options?: never;
+        head?: never;
+        patch: operations["comments_update"];
+        trace?: never;
+    };
+    "/api/v1/comments/{id}/pin": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Pins or unpins a top-level comment; one pinned comment per object. */
+        post: operations["comments_pin"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/csrf": {
         parameters: {
             query?: never;
@@ -32,6 +187,22 @@ export interface paths {
         put?: never;
         post?: never;
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/favorites": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["favorites_add"];
+        delete: operations["favorites_remove"];
         options?: never;
         head?: never;
         patch?: never;
@@ -52,6 +223,22 @@ export interface paths {
         put?: never;
         post?: never;
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/likes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["likes_add"];
+        delete: operations["likes_remove"];
         options?: never;
         head?: never;
         patch?: never;
@@ -89,6 +276,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/me/collections": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["me_collections"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/me/game-profile": {
         parameters: {
             query?: never;
@@ -115,6 +318,23 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["me_onboarding"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/saved": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description The player's favorites of one kind, newest first; mods can be filtered by version. */
+        get: operations["me_saved"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -236,6 +456,56 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/reviews": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description GET for everyone, writes for signed-in users with a write-only throttle scope. */
+        get: operations["reviews_list"];
+        /** @description Creates the player's review or updates it (one per object). */
+        put: operations["reviews_upsert"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/reviews/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["reviews_delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/reviews/{id}/vote": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["reviews_vote"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/users/{nickname}": {
         parameters: {
             query?: never;
@@ -256,6 +526,13 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** @description `{kind, id}`: id is a slug or a number depending on the kind. */
+        AddItemRequest: {
+            kind: components["schemas"]["KindEnum"];
+            id: string;
+            note?: string;
+            slot?: components["schemas"]["SlotEnum"] | components["schemas"]["BlankEnum"];
+        };
         /** @description Shape of every error response (see core.exceptions.handler). */
         ApiError: {
             detail: string;
@@ -283,6 +560,106 @@ export interface components {
          * @enum {string}
          */
         CheckStatusEnum: "ok" | "error";
+        Collection: {
+            readonly id: number;
+            /** Назва */
+            readonly title: string;
+            /** Опис */
+            readonly description: string;
+            readonly visibility: components["schemas"]["VisibilityEnum"];
+            readonly owner: components["schemas"]["UserBrief"];
+            readonly items_count: number;
+            readonly likes_count: number;
+            readonly favorites_count: number;
+            readonly is_setup: boolean;
+            readonly preview: string[];
+            readonly can_edit: boolean;
+            readonly is_liked: boolean;
+            readonly is_favorited: boolean;
+            /** Format: date-time */
+            readonly created_at: string;
+            /** Format: date-time */
+            readonly updated_at: string;
+        };
+        CollectionDetail: {
+            readonly id: number;
+            /** Назва */
+            readonly title: string;
+            /** Опис */
+            readonly description: string;
+            readonly visibility: components["schemas"]["VisibilityEnum"];
+            readonly owner: components["schemas"]["UserBrief"];
+            readonly items_count: number;
+            readonly likes_count: number;
+            readonly favorites_count: number;
+            readonly is_setup: boolean;
+            readonly preview: string[];
+            readonly can_edit: boolean;
+            readonly is_liked: boolean;
+            readonly is_favorited: boolean;
+            /** Format: date-time */
+            readonly created_at: string;
+            /** Format: date-time */
+            readonly updated_at: string;
+            readonly items: components["schemas"]["CollectionItem"][];
+            readonly share_token: string | null;
+            readonly editors: string[];
+        };
+        CollectionItem: {
+            readonly id: number;
+            readonly kind: string;
+            readonly target_id: string;
+            readonly position: number;
+            readonly slot: components["schemas"]["SlotEnum"];
+            /** Нотатка */
+            readonly note: string;
+            readonly mod: components["schemas"]["ProjectCard"] | null;
+        };
+        CollectionWriteRequest: {
+            title: string;
+            description?: string;
+            visibility?: components["schemas"]["VisibilityEnum"];
+            editors?: string[];
+        };
+        Comment: {
+            readonly id: number;
+            readonly user: components["schemas"]["UserBrief"];
+            readonly body: string;
+            readonly is_deleted: boolean;
+            readonly is_pinned: boolean;
+            readonly is_edited: boolean;
+            /** Format: date-time */
+            readonly created_at: string;
+            readonly can_edit: boolean;
+            readonly can_delete: boolean;
+            readonly replies: components["schemas"]["CommentReply"][];
+        };
+        CommentCreateRequest: {
+            kind: components["schemas"]["KindEnum"];
+            id: string;
+            body: string;
+            parent?: number | null;
+        };
+        CommentReply: {
+            readonly id: number;
+            readonly user: components["schemas"]["UserBrief"];
+            readonly body: string;
+            readonly is_deleted: boolean;
+            readonly is_pinned: boolean;
+            readonly is_edited: boolean;
+            /** Format: date-time */
+            readonly created_at: string;
+            readonly can_edit: boolean;
+            readonly can_delete: boolean;
+        };
+        CommentsPage: {
+            can_comment: boolean;
+            can_pin: boolean;
+            comments_count: number;
+            pinned: components["schemas"]["Comment"][];
+            results: components["schemas"]["Comment"][];
+            next_cursor: string | null;
+        };
         Dependency: {
             project_id: string;
             dependency_type: components["schemas"]["DependencyTypeEnum"];
@@ -310,6 +687,12 @@ export interface components {
          * @enum {string}
          */
         EditionEnum: "java" | "bedrock";
+        FavoriteState: {
+            kind: string;
+            id: string;
+            favorited: boolean;
+            favorites_count: number;
+        };
         GalleryImage: {
             /** Format: uri */
             url: string;
@@ -397,11 +780,23 @@ export interface components {
          */
         InterestsEnum: "survival" | "building" | "tech" | "pvp" | "rp" | "adventure" | "minigames" | "modded";
         /**
+         * @description * `collection` - collection
+         *     * `mod` - mod
+         * @enum {string}
+         */
+        KindEnum: "collection" | "mod";
+        /**
          * @description * `uk` - Українська
          *     * `en` - English
          * @enum {string}
          */
         LanguageEnum: "uk" | "en";
+        LikeState: {
+            kind: string;
+            id: string;
+            liked: boolean;
+            likes_count: number;
+        };
         /**
          * @description * `fabric` - Fabric
          *     * `forge` - Forge
@@ -417,7 +812,7 @@ export interface components {
             readonly email: string;
             /** Нік */
             readonly nickname: string;
-            readonly avatar_url: string;
+            readonly avatar_url: string | null;
             /** Про себе */
             readonly bio: string;
             /** Нік у Minecraft */
@@ -436,6 +831,30 @@ export interface components {
             readonly date_joined: string;
             readonly game_profile: components["schemas"]["GameProfile"];
         };
+        MyCollection: {
+            readonly id: number;
+            /** Назва */
+            readonly title: string;
+            /** Опис */
+            readonly description: string;
+            readonly visibility: components["schemas"]["VisibilityEnum"];
+            readonly owner: components["schemas"]["UserBrief"];
+            readonly items_count: number;
+            readonly likes_count: number;
+            readonly favorites_count: number;
+            readonly is_setup: boolean;
+            readonly preview: string[];
+            readonly can_edit: boolean;
+            readonly is_liked: boolean;
+            readonly is_favorited: boolean;
+            /** Format: date-time */
+            readonly created_at: string;
+            /** Format: date-time */
+            readonly updated_at: string;
+            readonly contains: boolean;
+            /** @description Item of the requested object in this collection, to remove it again. */
+            readonly item_id: number | null;
+        };
         NoVersionError: {
             detail: string;
             code: string;
@@ -451,6 +870,14 @@ export interface components {
             edition?: components["schemas"]["EditionEnum"];
             interests?: components["schemas"]["InterestsEnum"][];
         };
+        PaginatedCollectionList: {
+            count: number;
+            /** Format: uri */
+            next: string | null;
+            /** Format: uri */
+            previous: string | null;
+            results: components["schemas"]["Collection"][];
+        };
         PaginatedProjectCardList: {
             /** @example 123 */
             count: number;
@@ -465,6 +892,23 @@ export interface components {
              */
             previous?: string | null;
             results: components["schemas"]["ProjectCard"][];
+        };
+        PaginatedSavedItemList: {
+            count: number;
+            /** Format: uri */
+            next: string | null;
+            /** Format: uri */
+            previous: string | null;
+            results: components["schemas"]["SavedItem"][];
+        };
+        PatchedCollectionWriteRequest: {
+            title?: string;
+            description?: string;
+            visibility?: components["schemas"]["VisibilityEnum"];
+            editors?: string[];
+        };
+        PatchedCommentUpdateRequest: {
+            body?: string;
         };
         PatchedGameProfileRequest: {
             game_version?: components["schemas"]["GameVersionEnum"] | components["schemas"]["BlankEnum"];
@@ -507,6 +951,9 @@ export interface components {
             /** Format: double */
             readonly rating_avg: number;
             readonly rating_count: number;
+            readonly favorites_count: number;
+            readonly is_favorited: boolean;
+            readonly my_review_stars: number | null;
         };
         /** @description Catalog card: one image, title, one line of metadata. */
         ProjectDetail: {
@@ -527,6 +974,9 @@ export interface components {
             /** Format: double */
             readonly rating_avg: number;
             readonly rating_count: number;
+            readonly favorites_count: number;
+            readonly is_favorited: boolean;
+            readonly my_review_stars: number | null;
             readonly summary_en: string;
             /**
              * Короткий опис українською
@@ -542,6 +992,7 @@ export interface components {
             readonly source_url: string;
             readonly modrinth_url: string;
             readonly needs_translation: boolean;
+            readonly comments_count: number;
             /**
              * Опубліковано
              * Format: date-time
@@ -580,6 +1031,47 @@ export interface components {
             /** Format: date-time */
             date_joined: string | null;
         };
+        ReorderRequest: {
+            item_ids: number[];
+        };
+        Review: {
+            readonly id: number;
+            readonly user: components["schemas"]["UserBrief"];
+            readonly stars: number;
+            readonly text: string;
+            readonly helpful_count: number;
+            /** Format: date-time */
+            readonly created_at: string;
+            /** Format: date-time */
+            readonly updated_at: string;
+            readonly is_mine: boolean;
+            /** @description True: «корисно», False: «не корисно», null: no vote (annotated by the view). */
+            readonly my_vote: boolean | null;
+        };
+        ReviewSummary: {
+            /** Format: double */
+            rating_avg: number;
+            rating_count: number;
+            distribution: {
+                [key: string]: number;
+            };
+            my_review: components["schemas"]["Review"] | null;
+        };
+        ReviewUpsertRequest: {
+            kind: components["schemas"]["KindEnum"];
+            id: string;
+            stars: number;
+            text?: string;
+        };
+        ReviewVoteRequest: {
+            is_helpful: boolean;
+        };
+        ReviewsPage: {
+            summary: components["schemas"]["ReviewSummary"];
+            count: number;
+            next_page: number | null;
+            results: components["schemas"]["Review"][];
+        };
         /**
          * @description * `user` - Гравець
          *     * `trusted` - Довірений автор
@@ -588,6 +1080,27 @@ export interface components {
          * @enum {string}
          */
         RoleEnum: "user" | "trusted" | "moderator" | "admin";
+        /** @description One saved object; exactly one of the kind fields is filled. */
+        SavedItem: {
+            kind: string;
+            id: string;
+            /** Format: date-time */
+            saved_at: string;
+            mod: components["schemas"]["ProjectCard"] | null;
+            collection: components["schemas"]["Collection"] | null;
+        };
+        /**
+         * @description * `version` - Версія
+         *     * `loader` - Лоадер
+         *     * `pack` - Зборка
+         *     * `mod` - Мод
+         *     * `resourcepack` - Ресурспак
+         *     * `shader` - Шейдер
+         *     * `skin` - Скін
+         *     * `server` - Сервер
+         * @enum {string}
+         */
+        SlotEnum: "version" | "loader" | "pack" | "mod" | "resourcepack" | "shader" | "skin" | "server";
         SuggestRequest: {
             /** @description Link to the project on Modrinth or its slug. */
             url: string;
@@ -602,6 +1115,15 @@ export interface components {
          * @enum {string}
          */
         SuggestResponseStatusEnum: "queued" | "exists";
+        TargetQueryRequest: {
+            kind: components["schemas"]["KindEnum"];
+            id: string;
+        };
+        /** @description `{kind, id}`: id is a slug or a number depending on the kind. */
+        TargetRequest: {
+            kind: components["schemas"]["KindEnum"];
+            id: string;
+        };
         /**
          * @description * `light` - Світла
          *     * `dark` - Темна
@@ -609,6 +1131,13 @@ export interface components {
          * @enum {string}
          */
         ThemeEnum: "light" | "dark" | "system";
+        /** @description Author shown next to reviews, comments and collections. */
+        UserBrief: {
+            /** Нік */
+            readonly nickname: string;
+            readonly avatar_url: string | null;
+            readonly level: number;
+        };
         UserSettings: {
             theme?: components["schemas"]["ThemeEnum"];
             language?: components["schemas"]["LanguageEnum"];
@@ -635,6 +1164,13 @@ export interface components {
             nearest_game_versions: string[];
             versions: components["schemas"]["ProjectVersion"][];
         };
+        /**
+         * @description * `private` - Лише я
+         *     * `link` - За посиланням
+         *     * `public` - Усі
+         * @enum {string}
+         */
+        VisibilityEnum: "private" | "link" | "public";
         /**
          * @description * `all` - Усі
          *     * `followers` - Лише підписники
@@ -673,6 +1209,671 @@ export interface operations {
             };
         };
     };
+    collections_list: {
+        parameters: {
+            query?: {
+                /** @description Nickname of the owner */
+                owner?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedCollectionList"];
+                };
+            };
+        };
+    };
+    collections_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CollectionWriteRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["CollectionWriteRequest"];
+                "multipart/form-data": components["schemas"]["CollectionWriteRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CollectionDetail"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    collections_retrieve: {
+        parameters: {
+            query?: {
+                /** @description Token from the share link */
+                share_token?: string;
+            };
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CollectionDetail"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    collections_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    collections_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedCollectionWriteRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedCollectionWriteRequest"];
+                "multipart/form-data": components["schemas"]["PatchedCollectionWriteRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CollectionDetail"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    collections_copy: {
+        parameters: {
+            query?: {
+                share_token?: string;
+            };
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CollectionDetail"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    collections_items_add: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AddItemRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["AddItemRequest"];
+                "multipart/form-data": components["schemas"]["AddItemRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CollectionDetail"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    collections_items_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+                item_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CollectionDetail"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    collections_reorder: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReorderRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ReorderRequest"];
+                "multipart/form-data": components["schemas"]["ReorderRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CollectionDetail"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    comments_list: {
+        parameters: {
+            query: {
+                cursor?: string;
+                id: string;
+                /**
+                 * @description * `collection` - collection
+                 *     * `mod` - mod
+                 */
+                kind: "collection" | "mod";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommentsPage"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    comments_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CommentCreateRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["CommentCreateRequest"];
+                "multipart/form-data": components["schemas"]["CommentCreateRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Comment"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    comments_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    comments_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedCommentUpdateRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedCommentUpdateRequest"];
+                "multipart/form-data": components["schemas"]["PatchedCommentUpdateRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Comment"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    comments_pin: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Comment"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
     csrf: {
         parameters: {
             query?: never;
@@ -688,6 +1889,105 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    favorites_add: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TargetRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["TargetRequest"];
+                "multipart/form-data": components["schemas"]["TargetRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FavoriteState"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    favorites_remove: {
+        parameters: {
+            query: {
+                id: string;
+                /**
+                 * @description * `collection` - collection
+                 *     * `mod` - mod
+                 */
+                kind: "collection" | "mod";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FavoriteState"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
             };
         };
     };
@@ -714,6 +2014,105 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Health"];
+                };
+            };
+        };
+    };
+    likes_add: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TargetQueryRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["TargetQueryRequest"];
+                "multipart/form-data": components["schemas"]["TargetQueryRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LikeState"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    likes_remove: {
+        parameters: {
+            query: {
+                id: string;
+                /**
+                 * @description * `collection` - collection
+                 *     * `mod` - mod
+                 */
+                kind: "collection" | "mod";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LikeState"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
                 };
             };
         };
@@ -852,6 +2251,37 @@ export interface operations {
             };
         };
     };
+    me_collections: {
+        parameters: {
+            query?: {
+                id?: string;
+                /** @description With `id`: mark collections holding it */
+                kind?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyCollection"][];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
     me_game_profile_retrieve: {
         parameters: {
             query?: never;
@@ -941,6 +2371,48 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["GameProfile"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    me_saved: {
+        parameters: {
+            query?: {
+                game_version?: string;
+                /**
+                 * @description * `collection` - collection
+                 *     * `mod` - mod
+                 */
+                kind?: "collection" | "mod";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedSavedItemList"];
                 };
             };
             400: {
@@ -1261,6 +2733,214 @@ export interface operations {
                 };
             };
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    reviews_list: {
+        parameters: {
+            query: {
+                id: string;
+                /**
+                 * @description * `collection` - collection
+                 *     * `mod` - mod
+                 */
+                kind: "collection" | "mod";
+                page?: number;
+                /**
+                 * @description * `helpful` - helpful
+                 *     * `new` - new
+                 */
+                sort?: "helpful" | "new";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReviewsPage"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    reviews_upsert: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReviewUpsertRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ReviewUpsertRequest"];
+                "multipart/form-data": components["schemas"]["ReviewUpsertRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Review"];
+                };
+            };
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Review"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    reviews_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    reviews_vote: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReviewVoteRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ReviewVoteRequest"];
+                "multipart/form-data": components["schemas"]["ReviewVoteRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Review"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };

@@ -4,6 +4,33 @@ info:
   version: 1.0.0
   description: API of the BlockCraft Ukraine community platform.
 paths:
+  /api/v1/categories:
+    get:
+      operationId: categories_list
+      parameters:
+      - in: query
+        name: type
+        schema:
+          type: string
+          enum:
+          - mod
+          - resourcepack
+          - shader
+        description: Project type
+      tags:
+      - categories
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+          description: ''
   /api/v1/csrf:
     get:
       operationId: csrf
@@ -293,6 +320,325 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiError'
           description: ''
+  /api/v1/mods:
+    get:
+      operationId: mods_list
+      summary: Catalog of mods, packs and shaders
+      parameters:
+      - in: query
+        name: category
+        schema:
+          type: string
+        description: Category slugs, comma-separated; all must match.
+      - in: query
+        name: game_version
+        schema:
+          type: string
+      - in: query
+        name: gpu_load
+        schema:
+          type: string
+          title: Навантаження на GPU
+          enum:
+          - heavy
+          - light
+          - medium
+        description: |-
+          * `light` - Легкий
+          * `medium` - Середній
+          * `heavy` - Важкий
+      - in: query
+        name: loader
+        schema:
+          type: string
+        description: Applies to mods; resource packs and shaders pass.
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: q
+        schema:
+          type: string
+      - in: query
+        name: sort
+        schema:
+          type: string
+          enum:
+          - new
+          - popular
+          - top
+          - trend
+          - updated
+        description: |-
+          * `popular` - popular
+          * `new` - new
+          * `updated` - updated
+          * `top` - top
+          * `trend` - trend
+      - in: query
+        name: type
+        schema:
+          type: string
+          enum:
+          - mod
+          - resourcepack
+          - shader
+        description: |-
+          * `mod` - Мод
+          * `resourcepack` - Ресурспак
+          * `shader` - Шейдер
+      tags:
+      - mods
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedProjectCardList'
+          description: ''
+  /api/v1/mods/{slug}:
+    get:
+      operationId: mods_retrieve
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - mods
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectDetail'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+  /api/v1/mods/{slug}/download:
+    get:
+      operationId: mods_download
+      description: Redirects to the file on Modrinth and counts the download.
+      parameters:
+      - in: query
+        name: game_version
+        schema:
+          type: string
+          maxLength: 32
+      - in: query
+        name: loader
+        schema:
+          type: string
+          maxLength: 32
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      - in: query
+        name: version
+        schema:
+          type: string
+          maxLength: 16
+        description: Exact Modrinth version id.
+      tags:
+      - mods
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '302':
+          description: No response body
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoVersionError'
+          description: ''
+  /api/v1/mods/{slug}/similar:
+    get:
+      operationId: mods_similar
+      parameters:
+      - in: query
+        name: category
+        schema:
+          type: string
+        description: Category slugs, comma-separated; all must match.
+      - in: query
+        name: game_version
+        schema:
+          type: string
+      - in: query
+        name: gpu_load
+        schema:
+          type: string
+          title: Навантаження на GPU
+          enum:
+          - heavy
+          - light
+          - medium
+        description: |-
+          * `light` - Легкий
+          * `medium` - Середній
+          * `heavy` - Важкий
+      - in: query
+        name: loader
+        schema:
+          type: string
+        description: Applies to mods; resource packs and shaders pass.
+      - in: query
+        name: q
+        schema:
+          type: string
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      - in: query
+        name: sort
+        schema:
+          type: string
+          enum:
+          - new
+          - popular
+          - top
+          - trend
+          - updated
+        description: |-
+          * `popular` - popular
+          * `new` - new
+          * `updated` - updated
+          * `top` - top
+          * `trend` - trend
+      - in: query
+        name: type
+        schema:
+          type: string
+          enum:
+          - mod
+          - resourcepack
+          - shader
+        description: |-
+          * `mod` - Мод
+          * `resourcepack` - Ресурспак
+          * `shader` - Шейдер
+      tags:
+      - mods
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProjectCard'
+          description: ''
+  /api/v1/mods/{slug}/versions:
+    get:
+      operationId: mods_versions
+      parameters:
+      - in: query
+        name: game_version
+        schema:
+          type: string
+          maxLength: 32
+      - in: query
+        name: loader
+        schema:
+          type: string
+          maxLength: 32
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - mods
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Versions'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+  /api/v1/mods/suggest:
+    post:
+      operationId: mods_suggest
+      description: Queue a Modrinth project for import; it waits for moderation.
+      tags:
+      - mods
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SuggestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SuggestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SuggestRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuggestResponse'
+          description: ''
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuggestResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
   /api/v1/users/{nickname}:
     get:
       operationId: users_retrieve
@@ -351,6 +697,25 @@ components:
     BlankEnum:
       enum:
       - ''
+    Category:
+      type: object
+      properties:
+        slug:
+          type: string
+          maxLength: 64
+          pattern: ^[-a-zA-Z0-9_]+$
+        name:
+          type: string
+        project_type:
+          $ref: '#/components/schemas/ProjectTypeEnum'
+        header:
+          type: string
+          title: Група
+          maxLength: 32
+      required:
+      - name
+      - project_type
+      - slug
     CheckStatusEnum:
       enum:
       - ok
@@ -359,6 +724,57 @@ components:
       description: |-
         * `ok` - ok
         * `error` - error
+    Dependency:
+      type: object
+      properties:
+        project_id:
+          type: string
+        dependency_type:
+          $ref: '#/components/schemas/DependencyTypeEnum'
+        project:
+          allOf:
+          - $ref: '#/components/schemas/DependencyProject'
+          nullable: true
+      required:
+      - dependency_type
+      - project
+      - project_id
+    DependencyProject:
+      type: object
+      properties:
+        slug:
+          type: string
+          readOnly: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        title:
+          type: string
+          readOnly: true
+          title: Назва
+        icon_url:
+          type: string
+          format: uri
+          readOnly: true
+        project_type:
+          allOf:
+          - $ref: '#/components/schemas/ProjectTypeEnum'
+          readOnly: true
+      required:
+      - icon_url
+      - project_type
+      - slug
+      - title
+    DependencyTypeEnum:
+      enum:
+      - required
+      - optional
+      - incompatible
+      - embedded
+      type: string
+      description: |-
+        * `required` - required
+        * `optional` - optional
+        * `incompatible` - incompatible
+        * `embedded` - embedded
     EditionEnum:
       enum:
       - java
@@ -367,6 +783,20 @@ components:
       description: |-
         * `java` - Java
         * `bedrock` - Bedrock
+    GalleryImage:
+      type: object
+      properties:
+        url:
+          type: string
+          format: uri
+        title:
+          type: string
+        featured:
+          type: boolean
+      required:
+      - featured
+      - title
+      - url
     GameProfile:
       type: object
       properties:
@@ -478,6 +908,16 @@ components:
         * `1.16` - 1.16
         * `1.12.2` - 1.12.2
         * `1.8.9` - 1.8.9
+    GpuLoadEnum:
+      enum:
+      - light
+      - medium
+      - heavy
+      type: string
+      description: |-
+        * `light` - Легкий
+        * `medium` - Середній
+        * `heavy` - Важкий
     Health:
       type: object
       properties:
@@ -606,6 +1046,28 @@ components:
       - published_count
       - role
       - xp
+    NoVersionError:
+      type: object
+      properties:
+        detail:
+          type: string
+        code:
+          type: string
+        fields:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        nearest_game_versions:
+          type: array
+          items:
+            type: string
+      required:
+      - code
+      - detail
+      - fields
+      - nearest_game_versions
     OnboardingRequest:
       type: object
       description: 'Everything is optional: the player may skip onboarding.'
@@ -625,6 +1087,29 @@ components:
           items:
             $ref: '#/components/schemas/InterestsEnum'
           maxItems: 8
+    PaginatedProjectCardList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProjectCard'
     PatchedGameProfileRequest:
       type: object
       properties:
@@ -674,6 +1159,254 @@ components:
           $ref: '#/components/schemas/WhoCanCommentEnum'
         collections_visible:
           type: boolean
+    ProjectCard:
+      type: object
+      description: 'Catalog card: one image, title, one line of metadata.'
+      properties:
+        slug:
+          type: string
+          readOnly: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        title:
+          type: string
+          readOnly: true
+          title: Назва
+        summary:
+          type: string
+          readOnly: true
+        project_type:
+          allOf:
+          - $ref: '#/components/schemas/ProjectTypeEnum'
+          readOnly: true
+        icon_url:
+          type: string
+          format: uri
+          readOnly: true
+        loaders:
+          type: array
+          items:
+            type: string
+            maxLength: 32
+          readOnly: true
+        latest_game_version:
+          type: string
+          readOnly: true
+        categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/Category'
+          readOnly: true
+        downloads:
+          type: integer
+          readOnly: true
+        gpu_load:
+          allOf:
+          - $ref: '#/components/schemas/GpuLoadEnum'
+          readOnly: true
+          title: Навантаження на GPU
+        rating_avg:
+          type: number
+          format: double
+          readOnly: true
+        rating_count:
+          type: integer
+          readOnly: true
+      required:
+      - categories
+      - downloads
+      - gpu_load
+      - icon_url
+      - latest_game_version
+      - loaders
+      - project_type
+      - rating_avg
+      - rating_count
+      - slug
+      - summary
+      - title
+    ProjectDetail:
+      type: object
+      description: 'Catalog card: one image, title, one line of metadata.'
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        slug:
+          type: string
+          readOnly: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        title:
+          type: string
+          readOnly: true
+          title: Назва
+        summary:
+          type: string
+          readOnly: true
+        project_type:
+          allOf:
+          - $ref: '#/components/schemas/ProjectTypeEnum'
+          readOnly: true
+        icon_url:
+          type: string
+          format: uri
+          readOnly: true
+        loaders:
+          type: array
+          items:
+            type: string
+            maxLength: 32
+          readOnly: true
+        latest_game_version:
+          type: string
+          readOnly: true
+        categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/Category'
+          readOnly: true
+        downloads:
+          type: integer
+          readOnly: true
+        gpu_load:
+          allOf:
+          - $ref: '#/components/schemas/GpuLoadEnum'
+          readOnly: true
+          title: Навантаження на GPU
+        rating_avg:
+          type: number
+          format: double
+          readOnly: true
+        rating_count:
+          type: integer
+          readOnly: true
+        summary_en:
+          type: string
+          readOnly: true
+        summary_uk:
+          type: string
+          readOnly: true
+          title: Короткий опис українською
+          description: Пишуть модератори й спільнота; показується замість англійського.
+        body_html:
+          type: string
+          readOnly: true
+          title: Опис (HTML, очищений)
+        gallery:
+          type: array
+          items:
+            $ref: '#/components/schemas/GalleryImage'
+          readOnly: true
+        game_versions:
+          type: array
+          items:
+            type: string
+            maxLength: 32
+          readOnly: true
+        license:
+          type: string
+          readOnly: true
+        source_url:
+          type: string
+          format: uri
+          readOnly: true
+        modrinth_url:
+          type: string
+          readOnly: true
+        needs_translation:
+          type: boolean
+          readOnly: true
+        published_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+          title: Опубліковано
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - body_html
+      - categories
+      - downloads
+      - gallery
+      - game_versions
+      - gpu_load
+      - icon_url
+      - id
+      - latest_game_version
+      - license
+      - loaders
+      - modrinth_url
+      - needs_translation
+      - project_type
+      - published_at
+      - rating_avg
+      - rating_count
+      - slug
+      - source_url
+      - summary
+      - summary_en
+      - summary_uk
+      - title
+      - updated_at
+    ProjectTypeEnum:
+      enum:
+      - mod
+      - resourcepack
+      - shader
+      type: string
+      description: |-
+        * `mod` - Мод
+        * `resourcepack` - Ресурспак
+        * `shader` - Шейдер
+    ProjectVersion:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+          readOnly: true
+        version_number:
+          type: string
+          readOnly: true
+        version_type:
+          allOf:
+          - $ref: '#/components/schemas/VersionTypeEnum'
+          readOnly: true
+        game_versions:
+          type: array
+          items:
+            type: string
+            maxLength: 32
+          readOnly: true
+        loaders:
+          type: array
+          items:
+            type: string
+            maxLength: 32
+          readOnly: true
+        file_name:
+          type: string
+          readOnly: true
+        file_size:
+          type: integer
+          readOnly: true
+        released_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - file_name
+      - file_size
+      - game_versions
+      - id
+      - loaders
+      - name
+      - released_at
+      - version_number
+      - version_type
     PublicProfile:
       type: object
       description: For closed profiles everything except the nickname is null.
@@ -718,6 +1451,34 @@ components:
         * `trusted` - Довірений автор
         * `moderator` - Модератор
         * `admin` - Адміністратор
+    SuggestRequest:
+      type: object
+      properties:
+        url:
+          type: string
+          minLength: 1
+          description: Link to the project on Modrinth or its slug.
+          maxLength: 300
+      required:
+      - url
+    SuggestResponse:
+      type: object
+      properties:
+        slug:
+          type: string
+        status:
+          $ref: '#/components/schemas/SuggestResponseStatusEnum'
+      required:
+      - slug
+      - status
+    SuggestResponseStatusEnum:
+      enum:
+      - queued
+      - exists
+      type: string
+      description: |-
+        * `queued` - queued
+        * `exists` - exists
     ThemeEnum:
       enum:
       - light
@@ -745,6 +1506,47 @@ components:
           $ref: '#/components/schemas/WhoCanCommentEnum'
         collections_visible:
           type: boolean
+    VersionTypeEnum:
+      enum:
+      - release
+      - beta
+      - alpha
+      type: string
+      description: |-
+        * `release` - Реліз
+        * `beta` - Бета
+        * `alpha` - Альфа
+    Versions:
+      type: object
+      description: What to install for the requested game version and loader.
+      properties:
+        game_version:
+          type: string
+        loader:
+          type: string
+        recommended:
+          allOf:
+          - $ref: '#/components/schemas/ProjectVersion'
+          nullable: true
+        dependencies:
+          type: array
+          items:
+            $ref: '#/components/schemas/Dependency'
+        nearest_game_versions:
+          type: array
+          items:
+            type: string
+        versions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProjectVersion'
+      required:
+      - dependencies
+      - game_version
+      - loader
+      - nearest_game_versions
+      - recommended
+      - versions
     WhoCanCommentEnum:
       enum:
       - all

@@ -4,6 +4,22 @@
  */
 
 export interface paths {
+    "/api/v1/categories": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["categories_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/csrf": {
         parameters: {
             query?: never;
@@ -121,6 +137,105 @@ export interface paths {
         patch: operations["me_settings_update"];
         trace?: never;
     };
+    "/api/v1/mods": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Catalog of mods, packs and shaders */
+        get: operations["mods_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/mods/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["mods_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/mods/{slug}/download": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Redirects to the file on Modrinth and counts the download. */
+        get: operations["mods_download"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/mods/{slug}/similar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["mods_similar"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/mods/{slug}/versions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["mods_versions"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/mods/suggest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Queue a Modrinth project for import; it waits for moderation. */
+        post: operations["mods_suggest"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/users/{nickname}": {
         parameters: {
             query?: never;
@@ -155,18 +270,52 @@ export interface components {
         };
         /** @enum {unknown} */
         BlankEnum: "";
+        Category: {
+            slug: string;
+            name: string;
+            project_type: components["schemas"]["ProjectTypeEnum"];
+            /** Група */
+            header?: string;
+        };
         /**
          * @description * `ok` - ok
          *     * `error` - error
          * @enum {string}
          */
         CheckStatusEnum: "ok" | "error";
+        Dependency: {
+            project_id: string;
+            dependency_type: components["schemas"]["DependencyTypeEnum"];
+            project: components["schemas"]["DependencyProject"] | null;
+        };
+        DependencyProject: {
+            readonly slug: string;
+            /** Назва */
+            readonly title: string;
+            /** Format: uri */
+            readonly icon_url: string;
+            readonly project_type: components["schemas"]["ProjectTypeEnum"];
+        };
+        /**
+         * @description * `required` - required
+         *     * `optional` - optional
+         *     * `incompatible` - incompatible
+         *     * `embedded` - embedded
+         * @enum {string}
+         */
+        DependencyTypeEnum: "required" | "optional" | "incompatible" | "embedded";
         /**
          * @description * `java` - Java
          *     * `bedrock` - Bedrock
          * @enum {string}
          */
         EditionEnum: "java" | "bedrock";
+        GalleryImage: {
+            /** Format: uri */
+            url: string;
+            title: string;
+            featured: boolean;
+        };
         GameProfile: {
             game_version?: components["schemas"]["GameVersionEnum"] | components["schemas"]["BlankEnum"];
             loader?: components["schemas"]["LoaderEnum"] | components["schemas"]["BlankEnum"];
@@ -220,6 +369,13 @@ export interface components {
          * @enum {string}
          */
         GameVersionEnum: "26.3" | "26.2" | "26.1.2" | "26.1.1" | "26.1" | "1.21.11" | "1.21.10" | "1.21.9" | "1.21.8" | "1.21.7" | "1.21.6" | "1.21.5" | "1.21.4" | "1.21.3" | "1.21.2" | "1.21.1" | "1.21" | "1.20.6" | "1.20.5" | "1.20.4" | "1.20.3" | "1.20.2" | "1.20.1" | "1.20" | "1.19.4" | "1.19.3" | "1.19.2" | "1.19.1" | "1.19" | "1.18.2" | "1.18.1" | "1.18" | "1.17.1" | "1.17" | "1.16.5" | "1.16.4" | "1.16.3" | "1.16.2" | "1.16.1" | "1.16" | "1.12.2" | "1.8.9";
+        /**
+         * @description * `light` - Легкий
+         *     * `medium` - Середній
+         *     * `heavy` - Важкий
+         * @enum {string}
+         */
+        GpuLoadEnum: "light" | "medium" | "heavy";
         Health: {
             status: components["schemas"]["CheckStatusEnum"];
             checks: components["schemas"]["HealthChecks"];
@@ -280,12 +436,35 @@ export interface components {
             readonly date_joined: string;
             readonly game_profile: components["schemas"]["GameProfile"];
         };
+        NoVersionError: {
+            detail: string;
+            code: string;
+            fields: {
+                [key: string]: string[];
+            };
+            nearest_game_versions: string[];
+        };
         /** @description Everything is optional: the player may skip onboarding. */
         OnboardingRequest: {
             game_version?: components["schemas"]["GameVersionEnum"] | components["schemas"]["BlankEnum"];
             loader?: components["schemas"]["LoaderEnum"] | components["schemas"]["BlankEnum"];
             edition?: components["schemas"]["EditionEnum"];
             interests?: components["schemas"]["InterestsEnum"][];
+        };
+        PaginatedProjectCardList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["ProjectCard"][];
         };
         PatchedGameProfileRequest: {
             game_version?: components["schemas"]["GameVersionEnum"] | components["schemas"]["BlankEnum"];
@@ -310,6 +489,86 @@ export interface components {
             who_can_comment?: components["schemas"]["WhoCanCommentEnum"];
             collections_visible?: boolean;
         };
+        /** @description Catalog card: one image, title, one line of metadata. */
+        ProjectCard: {
+            readonly slug: string;
+            /** Назва */
+            readonly title: string;
+            readonly summary: string;
+            readonly project_type: components["schemas"]["ProjectTypeEnum"];
+            /** Format: uri */
+            readonly icon_url: string;
+            readonly loaders: string[];
+            readonly latest_game_version: string;
+            readonly categories: components["schemas"]["Category"][];
+            readonly downloads: number;
+            /** Навантаження на GPU */
+            readonly gpu_load: components["schemas"]["GpuLoadEnum"];
+            /** Format: double */
+            readonly rating_avg: number;
+            readonly rating_count: number;
+        };
+        /** @description Catalog card: one image, title, one line of metadata. */
+        ProjectDetail: {
+            readonly id: number;
+            readonly slug: string;
+            /** Назва */
+            readonly title: string;
+            readonly summary: string;
+            readonly project_type: components["schemas"]["ProjectTypeEnum"];
+            /** Format: uri */
+            readonly icon_url: string;
+            readonly loaders: string[];
+            readonly latest_game_version: string;
+            readonly categories: components["schemas"]["Category"][];
+            readonly downloads: number;
+            /** Навантаження на GPU */
+            readonly gpu_load: components["schemas"]["GpuLoadEnum"];
+            /** Format: double */
+            readonly rating_avg: number;
+            readonly rating_count: number;
+            readonly summary_en: string;
+            /**
+             * Короткий опис українською
+             * @description Пишуть модератори й спільнота; показується замість англійського.
+             */
+            readonly summary_uk: string;
+            /** Опис (HTML, очищений) */
+            readonly body_html: string;
+            readonly gallery: components["schemas"]["GalleryImage"][];
+            readonly game_versions: string[];
+            readonly license: string;
+            /** Format: uri */
+            readonly source_url: string;
+            readonly modrinth_url: string;
+            readonly needs_translation: boolean;
+            /**
+             * Опубліковано
+             * Format: date-time
+             */
+            readonly published_at: string | null;
+            /** Format: date-time */
+            readonly updated_at: string;
+        };
+        /**
+         * @description * `mod` - Мод
+         *     * `resourcepack` - Ресурспак
+         *     * `shader` - Шейдер
+         * @enum {string}
+         */
+        ProjectTypeEnum: "mod" | "resourcepack" | "shader";
+        ProjectVersion: {
+            id: string;
+            readonly name: string;
+            readonly version_number: string;
+            readonly version_type: components["schemas"]["VersionTypeEnum"];
+            readonly game_versions: string[];
+            readonly loaders: string[];
+            readonly file_name: string;
+            readonly file_size: number;
+            /** Format: date-time */
+            readonly released_at: string;
+        };
         /** @description For closed profiles everything except the nickname is null. */
         PublicProfile: {
             nickname: string;
@@ -329,6 +588,20 @@ export interface components {
          * @enum {string}
          */
         RoleEnum: "user" | "trusted" | "moderator" | "admin";
+        SuggestRequest: {
+            /** @description Link to the project on Modrinth or its slug. */
+            url: string;
+        };
+        SuggestResponse: {
+            slug: string;
+            status: components["schemas"]["SuggestResponseStatusEnum"];
+        };
+        /**
+         * @description * `queued` - queued
+         *     * `exists` - exists
+         * @enum {string}
+         */
+        SuggestResponseStatusEnum: "queued" | "exists";
         /**
          * @description * `light` - Світла
          *     * `dark` - Темна
@@ -347,6 +620,22 @@ export interface components {
             collections_visible?: boolean;
         };
         /**
+         * @description * `release` - Реліз
+         *     * `beta` - Бета
+         *     * `alpha` - Альфа
+         * @enum {string}
+         */
+        VersionTypeEnum: "release" | "beta" | "alpha";
+        /** @description What to install for the requested game version and loader. */
+        Versions: {
+            game_version: string;
+            loader: string;
+            recommended: components["schemas"]["ProjectVersion"] | null;
+            dependencies: components["schemas"]["Dependency"][];
+            nearest_game_versions: string[];
+            versions: components["schemas"]["ProjectVersion"][];
+        };
+        /**
          * @description * `all` - Усі
          *     * `followers` - Лише підписники
          *     * `nobody` - Ніхто
@@ -362,6 +651,28 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    categories_list: {
+        parameters: {
+            query?: {
+                /** @description Project type */
+                type?: "mod" | "resourcepack" | "shader";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Category"][];
+                };
+            };
+        };
+    };
     csrf: {
         parameters: {
             query?: never;
@@ -698,6 +1009,247 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["UserSettings"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    mods_list: {
+        parameters: {
+            query?: {
+                /** @description Category slugs, comma-separated; all must match. */
+                category?: string;
+                game_version?: string;
+                /**
+                 * @description * `light` - Легкий
+                 *     * `medium` - Середній
+                 *     * `heavy` - Важкий
+                 */
+                gpu_load?: "heavy" | "light" | "medium";
+                /** @description Applies to mods; resource packs and shaders pass. */
+                loader?: string;
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+                q?: string;
+                /**
+                 * @description * `popular` - popular
+                 *     * `new` - new
+                 *     * `updated` - updated
+                 *     * `top` - top
+                 *     * `trend` - trend
+                 */
+                sort?: "new" | "popular" | "top" | "trend" | "updated";
+                /**
+                 * @description * `mod` - Мод
+                 *     * `resourcepack` - Ресурспак
+                 *     * `shader` - Шейдер
+                 */
+                type?: "mod" | "resourcepack" | "shader";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedProjectCardList"];
+                };
+            };
+        };
+    };
+    mods_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProjectDetail"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    mods_download: {
+        parameters: {
+            query?: {
+                game_version?: string;
+                loader?: string;
+                /** @description Exact Modrinth version id. */
+                version?: string;
+            };
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            302: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NoVersionError"];
+                };
+            };
+        };
+    };
+    mods_similar: {
+        parameters: {
+            query?: {
+                /** @description Category slugs, comma-separated; all must match. */
+                category?: string;
+                game_version?: string;
+                /**
+                 * @description * `light` - Легкий
+                 *     * `medium` - Середній
+                 *     * `heavy` - Важкий
+                 */
+                gpu_load?: "heavy" | "light" | "medium";
+                /** @description Applies to mods; resource packs and shaders pass. */
+                loader?: string;
+                q?: string;
+                /**
+                 * @description * `popular` - popular
+                 *     * `new` - new
+                 *     * `updated` - updated
+                 *     * `top` - top
+                 *     * `trend` - trend
+                 */
+                sort?: "new" | "popular" | "top" | "trend" | "updated";
+                /**
+                 * @description * `mod` - Мод
+                 *     * `resourcepack` - Ресурспак
+                 *     * `shader` - Шейдер
+                 */
+                type?: "mod" | "resourcepack" | "shader";
+            };
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProjectCard"][];
+                };
+            };
+        };
+    };
+    mods_versions: {
+        parameters: {
+            query?: {
+                game_version?: string;
+                loader?: string;
+            };
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Versions"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    mods_suggest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SuggestRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["SuggestRequest"];
+                "multipart/form-data": components["schemas"]["SuggestRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuggestResponse"];
+                };
+            };
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuggestResponse"];
                 };
             };
             400: {

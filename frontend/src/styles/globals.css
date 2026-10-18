@@ -97,6 +97,102 @@
   text-transform: uppercase;
 }
 
+/* Rendered descriptions: HTML sanitized on the server (mods from Modrinth) */
+@utility rich-text {
+  max-width: var(--container-prose);
+  overflow-wrap: anywhere;
+  & > * + * {
+    margin-top: 1em;
+  }
+  & h1,
+  & h2,
+  & h3 {
+    font-family: var(--font-serif);
+    font-weight: 500;
+    line-height: 1.15;
+    margin-top: 1.5em;
+  }
+  & h1 {
+    font-size: 2rem;
+  }
+  & h2 {
+    font-size: 1.625rem;
+  }
+  & h3 {
+    font-size: 1.25rem;
+  }
+  & h4,
+  & h5,
+  & h6 {
+    font-weight: 600;
+    margin-top: 1.25em;
+  }
+  & a {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  & ul {
+    list-style: square;
+    padding-left: 1.25em;
+  }
+  & ol {
+    list-style: decimal;
+    padding-left: 1.5em;
+  }
+  & img {
+    display: inline-block;
+    max-width: 100%;
+    height: auto;
+  }
+  & code {
+    font-family: var(--font-mono);
+    font-size: 0.875em;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    padding: 0 0.25em;
+  }
+  & pre {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    padding: 1em;
+    overflow-x: auto;
+  }
+  & pre code {
+    border: 0;
+    padding: 0;
+  }
+  & blockquote {
+    border-left: 2px solid var(--line);
+    padding-left: 1em;
+    color: var(--text-muted);
+  }
+  & table {
+    display: block;
+    overflow-x: auto;
+    border-collapse: collapse;
+  }
+  & th,
+  & td {
+    border: 1px solid var(--line);
+    padding: 0.4em 0.75em;
+  }
+  & hr {
+    border-color: var(--line);
+  }
+  & details {
+    border: 1px solid var(--line);
+    padding: 0.75em 1em;
+  }
+  & summary {
+    cursor: pointer;
+    font-weight: 500;
+  }
+  & [align="center"],
+  & center {
+    text-align: center;
+  }
+}
+
 @utility no-scrollbar {
   scrollbar-width: none;
   &::-webkit-scrollbar {

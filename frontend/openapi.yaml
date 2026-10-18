@@ -1984,8 +1984,7 @@ paths:
       - in: path
         name: id
         schema:
-          type: string
-          pattern: ^\d+$
+          type: integer
         required: true
       tags:
       - skins
@@ -2011,8 +2010,7 @@ paths:
       - in: path
         name: id
         schema:
-          type: string
-          pattern: ^\d+$
+          type: integer
         required: true
       tags:
       - skins
@@ -2066,8 +2064,7 @@ paths:
       - in: path
         name: id
         schema:
-          type: string
-          pattern: ^\d+$
+          type: integer
         required: true
       tags:
       - skins
@@ -2102,8 +2099,7 @@ paths:
       - in: path
         name: id
         schema:
-          type: string
-          pattern: ^\d+$
+          type: integer
         required: true
       tags:
       - skins
@@ -2167,8 +2163,7 @@ paths:
       - in: path
         name: id
         schema:
-          type: string
-          pattern: ^\d+$
+          type: integer
         required: true
       - in: query
         name: model

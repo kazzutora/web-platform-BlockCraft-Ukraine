@@ -4,7 +4,12 @@ from django.http import FileResponse
 from django.utils.text import get_valid_filename
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.types import OpenApiTypes
-from drf_spectacular.utils import OpenApiResponse, extend_schema, extend_schema_view
+from drf_spectacular.utils import (
+    OpenApiParameter,
+    OpenApiResponse,
+    extend_schema,
+    extend_schema_view,
+)
 from rest_framework import generics, mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.parsers import FormParser, MultiPartParser
@@ -32,12 +37,15 @@ from .serializers import (
 
 WRITE_ACTIONS = {"create", "partial_update", "destroy"}
 THROTTLE_SCOPES = {"create": "uploads", "lookup": "lookup"}
+# The router regex hides the type of the pk from drf-spectacular
+SKIN_ID = OpenApiParameter("id", OpenApiTypes.INT, OpenApiParameter.PATH)
 
 
 @extend_schema_view(
     list=extend_schema(operation_id="skins_list", summary="Catalog of published skins"),
     retrieve=extend_schema(
         operation_id="skins_retrieve",
+        parameters=[SKIN_ID],
         responses={200: SkinDetailSerializer, **error_responses(404)},
         description="Published skins for everyone; the author also sees pending and rejected.",
     ),
@@ -49,11 +57,14 @@ THROTTLE_SCOPES = {"create": "uploads", "lookup": "lookup"}
     ),
     partial_update=extend_schema(
         operation_id="skins_update",
+        parameters=[SKIN_ID],
         request=SkinUpdateSerializer,
         responses={200: SkinDetailSerializer, **error_responses(400, 401, 403, 404)},
     ),
     destroy=extend_schema(
-        operation_id="skins_delete", responses={204: None, **error_responses(401, 403, 404)}
+        operation_id="skins_delete",
+        parameters=[SKIN_ID],
+        responses={204: None, **error_responses(401, 403, 404)},
     ),
 )
 class SkinViewSet(
@@ -122,6 +133,7 @@ class SkinViewSet(
 
     @extend_schema(
         operation_id="skins_download",
+        parameters=[SKIN_ID],
         responses={
             (200, "image/png"): OpenApiResponse(OpenApiTypes.BINARY, description="Skin PNG"),
             **error_responses(404),
@@ -139,7 +151,11 @@ class SkinViewSet(
             content_type="image/png",
         )
 
-    @extend_schema(operation_id="skins_similar", responses={200: SkinCardSerializer(many=True)})
+    @extend_schema(
+        operation_id="skins_similar",
+        parameters=[SKIN_ID],
+        responses={200: SkinCardSerializer(many=True)},
+    )
     @action(detail=True, methods=["get"], pagination_class=None)
     def similar(self, request: Request, pk: str) -> Response:
         skin = self.get_object()

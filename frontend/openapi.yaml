@@ -437,11 +437,13 @@ paths:
           enum:
           - collection
           - mod
+          - skin
           type: string
           minLength: 1
         description: |-
           * `collection` - collection
           * `mod` - mod
+          * `skin` - skin
         required: true
       tags:
       - comments
@@ -728,11 +730,13 @@ paths:
           enum:
           - collection
           - mod
+          - skin
           type: string
           minLength: 1
         description: |-
           * `collection` - collection
           * `mod` - mod
+          * `skin` - skin
         required: true
       tags:
       - favorites
@@ -845,11 +849,13 @@ paths:
           enum:
           - collection
           - mod
+          - skin
           type: string
           minLength: 1
         description: |-
           * `collection` - collection
           * `mod` - mod
+          * `skin` - skin
         required: true
       tags:
       - likes
@@ -1129,12 +1135,14 @@ paths:
           enum:
           - collection
           - mod
+          - skin
           type: string
           default: mod
           minLength: 1
         description: |-
           * `collection` - collection
           * `mod` - mod
+          * `skin` - skin
       tags:
       - me
       security:
@@ -1213,6 +1221,100 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiError'
+          description: ''
+  /api/v1/me/skin:
+    put:
+      operationId: me_skin_set
+      description: The skin shown in my profile.
+      tags:
+      - me
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CurrentSkinRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CurrentSkinRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CurrentSkinRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SkinDetail'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+    delete:
+      operationId: me_skin_clear
+      tags:
+      - me
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+  /api/v1/me/skins:
+    get:
+      operationId: me_skins_list
+      description: All my skins, any status.
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - me
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSkinDetailList'
           description: ''
   /api/v1/mods:
     get:
@@ -1552,11 +1654,13 @@ paths:
           enum:
           - collection
           - mod
+          - skin
           type: string
           minLength: 1
         description: |-
           * `collection` - collection
           * `mod` - mod
+          * `skin` - skin
         required: true
       - in: query
         name: page
@@ -1735,6 +1839,422 @@ paths:
                 $ref: '#/components/schemas/ApiError'
           description: ''
         '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+  /api/v1/skins:
+    get:
+      operationId: skins_list
+      summary: Catalog of published skins
+      parameters:
+      - in: query
+        name: author
+        schema:
+          type: string
+        description: Author nickname.
+      - in: query
+        name: color
+        schema:
+          type: string
+          title: Колір
+          enum:
+          - black
+          - blue
+          - brown
+          - cyan
+          - gray
+          - green
+          - orange
+          - pink
+          - purple
+          - red
+          - white
+          - yellow
+        description: |-
+          * `red` - Червоний
+          * `orange` - Помаранчевий
+          * `yellow` - Жовтий
+          * `green` - Зелений
+          * `cyan` - Бірюзовий
+          * `blue` - Синій
+          * `purple` - Фіолетовий
+          * `pink` - Рожевий
+          * `brown` - Коричневий
+          * `black` - Чорний
+          * `white` - Білий
+          * `gray` - Сірий
+      - in: query
+        name: model
+        schema:
+          type: string
+          title: Модель
+          enum:
+          - classic
+          - slim
+        description: |-
+          * `classic` - Класична (Стів)
+          * `slim` - Тонкі руки (Алекс)
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: q
+        schema:
+          type: string
+      - in: query
+        name: sort
+        schema:
+          type: string
+          enum:
+          - new
+          - popular
+          - top
+          - trend
+        description: |-
+          * `popular` - popular
+          * `new` - new
+          * `top` - top
+          * `trend` - trend
+      - in: query
+        name: style
+        schema:
+          type: string
+        description: Style slugs, comma-separated; any may match.
+      tags:
+      - skins
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSkinCardList'
+          description: ''
+    post:
+      operationId: skins_create
+      description: A new author's first three skins wait for moderation (`pending`).
+      tags:
+      - skins
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SkinUploadRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SkinDetail'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+  /api/v1/skins/{id}:
+    get:
+      operationId: skins_retrieve
+      description: Published skins for everyone; the author also sees pending and
+        rejected.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      tags:
+      - skins
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SkinDetail'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+    patch:
+      operationId: skins_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      tags:
+      - skins
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedSkinUpdateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedSkinUpdateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedSkinUpdateRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SkinDetail'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+    delete:
+      operationId: skins_delete
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      tags:
+      - skins
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+  /api/v1/skins/{id}/download:
+    get:
+      operationId: skins_download
+      description: The PNG as an attachment; counts the download.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      tags:
+      - skins
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+          description: Skin PNG
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+  /api/v1/skins/{id}/similar:
+    get:
+      operationId: skins_similar
+      parameters:
+      - in: query
+        name: author
+        schema:
+          type: string
+        description: Author nickname.
+      - in: query
+        name: color
+        schema:
+          type: string
+          title: Колір
+          enum:
+          - black
+          - blue
+          - brown
+          - cyan
+          - gray
+          - green
+          - orange
+          - pink
+          - purple
+          - red
+          - white
+          - yellow
+        description: |-
+          * `red` - Червоний
+          * `orange` - Помаранчевий
+          * `yellow` - Жовтий
+          * `green` - Зелений
+          * `cyan` - Бірюзовий
+          * `blue` - Синій
+          * `purple` - Фіолетовий
+          * `pink` - Рожевий
+          * `brown` - Коричневий
+          * `black` - Чорний
+          * `white` - Білий
+          * `gray` - Сірий
+      - in: path
+        name: id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: query
+        name: model
+        schema:
+          type: string
+          title: Модель
+          enum:
+          - classic
+          - slim
+        description: |-
+          * `classic` - Класична (Стів)
+          * `slim` - Тонкі руки (Алекс)
+      - in: query
+        name: q
+        schema:
+          type: string
+      - in: query
+        name: sort
+        schema:
+          type: string
+          enum:
+          - new
+          - popular
+          - top
+          - trend
+        description: |-
+          * `popular` - popular
+          * `new` - new
+          * `top` - top
+          * `trend` - trend
+      - in: query
+        name: style
+        schema:
+          type: string
+        description: Style slugs, comma-separated; any may match.
+      tags:
+      - skins
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SkinCard'
+          description: ''
+  /api/v1/skins/lookup:
+    get:
+      operationId: skins_lookup
+      description: A Java player's skin via Mojang, cached for 10 minutes (2 for unknown).
+      parameters:
+      - in: query
+        name: nickname
+        schema:
+          type: string
+          minLength: 1
+          pattern: ^[A-Za-z0-9_]{3,16}$
+        required: true
+      tags:
+      - skins
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LookupResult'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '503':
           content:
             application/json:
               schema:
@@ -2065,6 +2585,34 @@ components:
           maxItems: 10
       required:
       - title
+    ColorBucketEnum:
+      enum:
+      - red
+      - orange
+      - yellow
+      - green
+      - cyan
+      - blue
+      - purple
+      - pink
+      - brown
+      - black
+      - white
+      - gray
+      type: string
+      description: |-
+        * `red` - Червоний
+        * `orange` - Помаранчевий
+        * `yellow` - Жовтий
+        * `green` - Зелений
+        * `cyan` - Бірюзовий
+        * `blue` - Синій
+        * `purple` - Фіолетовий
+        * `pink` - Рожевий
+        * `brown` - Коричневий
+        * `black` - Чорний
+        * `white` - Білий
+        * `gray` - Сірий
     Comment:
       type: object
       properties:
@@ -2202,6 +2750,13 @@ components:
       - next_cursor
       - pinned
       - results
+    CurrentSkinRequest:
+      type: object
+      properties:
+        skin_id:
+          type: integer
+      required:
+      - skin_id
     Dependency:
       type: object
       properties:
@@ -2456,10 +3011,12 @@ components:
       enum:
       - collection
       - mod
+      - skin
       type: string
       description: |-
         * `collection` - collection
         * `mod` - mod
+        * `skin` - skin
     LanguageEnum:
       enum:
       - uk
@@ -2498,6 +3055,27 @@ components:
         * `neoforge` - NeoForge
         * `quilt` - Quilt
         * `vanilla` - Vanilla
+    LookupResult:
+      type: object
+      properties:
+        nickname:
+          type: string
+        uuid:
+          type: string
+        model:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/ModelEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        texture:
+          type: string
+          nullable: true
+          description: data:image/png;base64 URL; null for a default skin.
+      required:
+      - model
+      - nickname
+      - texture
+      - uuid
     Me:
       type: object
       properties:
@@ -2565,6 +3143,14 @@ components:
       - published_count
       - role
       - xp
+    ModelEnum:
+      enum:
+      - classic
+      - slim
+      type: string
+      description: |-
+        * `classic` - Класична (Стів)
+        * `slim` - Тонкі руки (Алекс)
     MyCollection:
       type: object
       properties:
@@ -2671,6 +3257,9 @@ components:
       - detail
       - fields
       - nearest_game_versions
+    NullEnum:
+      enum:
+      - null
     OnboardingRequest:
       type: object
       description: 'Everything is optional: the player may skip onboarding.'
@@ -2757,6 +3346,52 @@ components:
       - next
       - previous
       - results
+    PaginatedSkinCardList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/SkinCard'
+    PaginatedSkinDetailList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/SkinDetail'
     PatchedCollectionWriteRequest:
       type: object
       properties:
@@ -2815,6 +3450,19 @@ components:
         is_private:
           type: boolean
           title: Закритий профіль
+    PatchedSkinUpdateRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 60
+        style_tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/StyleTagsEnum'
+        model:
+          $ref: '#/components/schemas/ModelEnum'
     PatchedUserSettingsRequest:
       type: object
       properties:
@@ -2832,6 +3480,19 @@ components:
           $ref: '#/components/schemas/WhoCanCommentEnum'
         collections_visible:
           type: boolean
+    ProfileSkin:
+      type: object
+      properties:
+        id:
+          type: integer
+        texture_url:
+          type: string
+        model:
+          type: string
+      required:
+      - id
+      - model
+      - texture_url
     ProjectCard:
       type: object
       description: 'Catalog card: one image, title, one line of metadata.'
@@ -3134,6 +3795,10 @@ components:
           type: string
           format: date-time
           nullable: true
+        skin:
+          allOf:
+          - $ref: '#/components/schemas/ProfileSkin'
+          nullable: true
       required:
       - avatar_url
       - bio
@@ -3142,6 +3807,7 @@ components:
       - level
       - mc_nickname
       - nickname
+      - skin
     ReorderRequest:
       type: object
       properties:
@@ -3302,6 +3968,229 @@ components:
       - kind
       - mod
       - saved_at
+    SkinCard:
+      type: object
+      description: 'Catalog card: the 2D preview (the texture until it is rendered),
+        title, counters.'
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          readOnly: true
+          title: Назва
+        author:
+          allOf:
+          - $ref: '#/components/schemas/UserBrief'
+          readOnly: true
+        model:
+          allOf:
+          - $ref: '#/components/schemas/ModelEnum'
+          readOnly: true
+          title: Модель
+        texture_url:
+          type: string
+          readOnly: true
+        preview_url:
+          type: string
+          nullable: true
+          readOnly: true
+        dominant_color:
+          type: string
+          readOnly: true
+          title: Домінантний колір
+        color_bucket:
+          allOf:
+          - $ref: '#/components/schemas/ColorBucketEnum'
+          readOnly: true
+          title: Колір
+        style_tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/StyleTagsEnum'
+          readOnly: true
+        likes_count:
+          type: integer
+          readOnly: true
+        favorites_count:
+          type: integer
+          readOnly: true
+        downloads_count:
+          type: integer
+          readOnly: true
+        is_favorited:
+          type: boolean
+          readOnly: true
+        is_liked:
+          type: boolean
+          readOnly: true
+      required:
+      - author
+      - color_bucket
+      - dominant_color
+      - downloads_count
+      - favorites_count
+      - id
+      - is_favorited
+      - is_liked
+      - likes_count
+      - model
+      - preview_url
+      - style_tags
+      - texture_url
+      - title
+    SkinDetail:
+      type: object
+      description: 'Catalog card: the 2D preview (the texture until it is rendered),
+        title, counters.'
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          readOnly: true
+          title: Назва
+        author:
+          allOf:
+          - $ref: '#/components/schemas/UserBrief'
+          readOnly: true
+        model:
+          allOf:
+          - $ref: '#/components/schemas/ModelEnum'
+          readOnly: true
+          title: Модель
+        texture_url:
+          type: string
+          readOnly: true
+        preview_url:
+          type: string
+          nullable: true
+          readOnly: true
+        dominant_color:
+          type: string
+          readOnly: true
+          title: Домінантний колір
+        color_bucket:
+          allOf:
+          - $ref: '#/components/schemas/ColorBucketEnum'
+          readOnly: true
+          title: Колір
+        style_tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/StyleTagsEnum'
+          readOnly: true
+        likes_count:
+          type: integer
+          readOnly: true
+        favorites_count:
+          type: integer
+          readOnly: true
+        downloads_count:
+          type: integer
+          readOnly: true
+        is_favorited:
+          type: boolean
+          readOnly: true
+        is_liked:
+          type: boolean
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/SkinDetailStatusEnum'
+          readOnly: true
+          title: Статус
+        rejection_reason:
+          type: string
+          readOnly: true
+          title: Причина відхилення
+        is_current:
+          type: boolean
+          readOnly: true
+          default: false
+          title: Поточний у профілі
+        is_mine:
+          type: boolean
+          readOnly: true
+        comments_count:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        published_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+          title: Опубліковано
+      required:
+      - author
+      - color_bucket
+      - comments_count
+      - created_at
+      - dominant_color
+      - downloads_count
+      - favorites_count
+      - id
+      - is_current
+      - is_favorited
+      - is_liked
+      - is_mine
+      - likes_count
+      - model
+      - preview_url
+      - published_at
+      - rejection_reason
+      - status
+      - style_tags
+      - texture_url
+      - title
+    SkinDetailStatusEnum:
+      enum:
+      - draft
+      - pending
+      - published
+      - rejected
+      - hidden
+      type: string
+      description: |-
+        * `draft` - Чернетка
+        * `pending` - На модерації
+        * `published` - Опубліковано
+        * `rejected` - Відхилено
+        * `hidden` - Приховано
+    SkinUploadRequest:
+      type: object
+      properties:
+        file:
+          type: string
+          format: binary
+          description: PNG 64×64 or 64×32, up to 100 KB.
+        title:
+          type: string
+          minLength: 1
+          maxLength: 60
+        style_tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/StyleTagsEnum'
+        model:
+          default: ''
+          description: |-
+            Empty: detected from the texture.
+
+            * `classic` - Класична (Стів)
+            * `slim` - Тонкі руки (Алекс)
+          oneOf:
+          - $ref: '#/components/schemas/ModelEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+      required:
+      - file
+      - title
     SlotEnum:
       enum:
       - version
@@ -3322,6 +4211,32 @@ components:
         * `shader` - Шейдер
         * `skin` - Скін
         * `server` - Сервер
+    StyleTagsEnum:
+      enum:
+      - casual
+      - fantasy
+      - medieval
+      - scifi
+      - anime
+      - horror
+      - cute
+      - mob
+      - military
+      - sport
+      - ukrainian
+      type: string
+      description: |-
+        * `casual` - Повсякденний
+        * `fantasy` - Фентезі
+        * `medieval` - Середньовіччя
+        * `scifi` - Наукова фантастика
+        * `anime` - Аніме
+        * `horror` - Жахи
+        * `cute` - Милий
+        * `mob` - Моби
+        * `military` - Військовий
+        * `sport` - Спорт
+        * `ukrainian` - Український
     SuggestRequest:
       type: object
       properties:

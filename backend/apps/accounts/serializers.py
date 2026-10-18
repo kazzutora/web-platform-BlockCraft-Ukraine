@@ -102,6 +102,12 @@ class UserSettingsSerializer(serializers.ModelSerializer):
         ]
 
 
+class ProfileSkinSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    texture_url = serializers.CharField()
+    model = serializers.CharField()
+
+
 class PublicProfileSerializer(serializers.Serializer):
     """For closed profiles everything except the nickname is null."""
 
@@ -112,10 +118,18 @@ class PublicProfileSerializer(serializers.Serializer):
     mc_nickname = serializers.CharField(allow_null=True)
     level = serializers.IntegerField(allow_null=True)
     date_joined = serializers.DateTimeField(allow_null=True)
+    #: The published skin the player picked; null — show the skin of `mc_nickname` if any
+    skin = ProfileSkinSerializer(allow_null=True)
 
     @classmethod
     def from_user(cls, user: User, *, full: bool) -> "PublicProfileSerializer":
+        from apps.skins.selectors import current_skin_of
+
+        skin = current_skin_of(user) if full else None
         data = {
+            "skin": {"id": skin.pk, "texture_url": skin.file.url, "model": skin.model}
+            if skin
+            else None,
             "nickname": user.nickname,
             "is_private": user.is_private,
             "avatar_url": avatar_url(user) if full else None,

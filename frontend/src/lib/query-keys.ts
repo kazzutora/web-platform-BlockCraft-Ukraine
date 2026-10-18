@@ -23,6 +23,11 @@ export const queryKeys = {
     lookup: (nickname: string) =>
       [...queryKeys.skins.all, "lookup", nickname.toLowerCase()] as const,
   },
+  notifications: {
+    all: ["notifications"] as const,
+    unread: () => [...queryKeys.notifications.all, "unread"] as const,
+    list: () => [...queryKeys.notifications.all, "list"] as const,
+  },
   search: {
     suggest: (q: string) => ["search", "suggest", q] as const,
   },

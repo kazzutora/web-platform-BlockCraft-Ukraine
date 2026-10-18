@@ -10,6 +10,7 @@ import { AddToCollection } from "@/features/library/AddToCollection";
 import { LikeButton } from "@/features/library/LikeButton";
 import { SaveToggle } from "@/features/library/SaveToggle";
 import { formatCount } from "@/features/mods/format";
+import { ReportButton } from "@/features/moderation/ReportButton";
 import { Comments } from "@/features/social/Comments";
 
 import { downloadUrl, getSimilar, getSkin } from "./api";
@@ -87,6 +88,7 @@ export async function SkinDetail({ id }: { id: number }) {
               </>
             )}
             {skin.is_mine && <SkinOwnerActions skin={skin} />}
+            {published && !skin.is_mine && <ReportButton kind="skin" id={identifier} />}
           </>
         }
         tabsLabel={copy.tabsLabel}

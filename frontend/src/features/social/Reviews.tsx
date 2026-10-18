@@ -18,7 +18,7 @@ import { useRequireAuth } from "@/features/auth/useRequireAuth";
 import type { Kind } from "@/features/library/types";
 import { formatDate } from "@/features/mods/format";
 import { api } from "@/lib/api/client";
-import { fieldErrors } from "@/lib/api/errors";
+import { fieldErrors, generalError } from "@/lib/api/errors";
 import type { components } from "@/lib/api/schema";
 import { cn } from "@/lib/cn";
 import { queryKeys } from "@/lib/query-keys";
@@ -160,7 +160,7 @@ function ReviewForm({ kind, id, mine }: { kind: Kind; id: string; mine: Review |
     },
     onError: (error) => {
       const fields = fieldErrors(error);
-      setErrors(Object.keys(fields).length ? fields : { root: copy.error });
+      setErrors(Object.keys(fields).length ? fields : { root: generalError(error, copy.error) });
     },
   });
 

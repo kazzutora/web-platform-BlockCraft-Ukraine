@@ -9,6 +9,7 @@ import { Icon } from "@/components/ui/Icon";
 import { Tabs } from "@/components/ui/Tabs";
 import { AddToCollection } from "@/features/library/AddToCollection";
 import { SaveToggle } from "@/features/library/SaveToggle";
+import { ReportButton } from "@/features/moderation/ReportButton";
 import { Comments } from "@/features/social/Comments";
 import { Reviews } from "@/features/social/Reviews";
 import { cn } from "@/lib/cn";
@@ -93,6 +94,7 @@ export async function ServerDetail({ slug }: { slug: string }) {
                 </>
               )}
               {server.is_mine && <ServerOwnerActions slug={server.slug} />}
+              {published && !server.is_mine && <ReportButton kind="server" id={server.slug} />}
             </div>
           </div>
           <OnlineCounter live={server.live} />

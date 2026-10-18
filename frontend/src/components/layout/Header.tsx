@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { IconLink } from "@/components/ui/IconLink";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { AccountArea } from "@/features/auth/AccountArea";
+import { NotificationBell } from "@/features/notifications/NotificationBell";
 import { SearchOverlay } from "@/features/search/SearchOverlay";
 
 import { Container } from "./Container";
@@ -30,6 +31,7 @@ export function Header() {
           {/* Desktop-only actions; on phones they live in the menu and the tab bar */}
           <div className="hidden items-center gap-1 md:flex">
             <IconLink href="/me/saved" icon="bookmark" label={copy.saved} />
+            <NotificationBell />
             <ThemeToggle />
             <Suspense fallback={<Skeleton className="size-8" />}>
               <AccountArea />

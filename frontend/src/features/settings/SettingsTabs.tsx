@@ -6,7 +6,9 @@ import { useMe } from "@/features/auth/useMe";
 
 import { AppearancePanel } from "./AppearancePanel";
 import { settingsCopy } from "./copy";
+import { DataPanel } from "./DataPanel";
 import { GamePanel } from "./GamePanel";
+import { NotificationsPanel } from "./NotificationsPanel";
 import { PrivacyPanel } from "./PrivacyPanel";
 import { ProfilePanel } from "./ProfilePanel";
 import { SecurityPanel } from "./SecurityPanel";
@@ -36,7 +38,13 @@ export function SettingsTabs() {
           label: copy.privacy,
           content: <PrivacyPanel me={me} settings={settings} />,
         },
+        {
+          value: "notifications",
+          label: copy.notifications,
+          content: <NotificationsPanel settings={settings} />,
+        },
         { value: "security", label: copy.security, content: <SecurityPanel me={me} /> },
+        { value: "data", label: copy.data, content: <DataPanel me={me} /> },
       ]}
     />
   );

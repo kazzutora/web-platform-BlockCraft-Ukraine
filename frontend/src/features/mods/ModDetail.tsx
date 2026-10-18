@@ -7,6 +7,7 @@ import { Icon } from "@/components/ui/Icon";
 import { gameVersions as supportedVersions } from "@/features/game/labels";
 import { AddToCollection } from "@/features/library/AddToCollection";
 import { SaveToggle } from "@/features/library/SaveToggle";
+import { ReportButton } from "@/features/moderation/ReportButton";
 import { Comments } from "@/features/social/Comments";
 import { Reviews } from "@/features/social/Reviews";
 import { versionDescending } from "@/lib/versions";
@@ -94,6 +95,7 @@ export async function ModDetail({ slug, searchParams }: ModDetailProps) {
               <Icon name="external-link" size={16} />
               {copy.modrinth}
             </a>
+            <ReportButton kind="mod" id={project.slug} />
           </>
         }
         tabsLabel={copy.tabsLabel}

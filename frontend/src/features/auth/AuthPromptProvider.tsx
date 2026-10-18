@@ -7,7 +7,7 @@ import { Dialog } from "@/components/ui/Dialog";
 
 import { authCopy } from "./copy";
 import { rememberPendingAction } from "./pending-action";
-import { useMe } from "./useMe";
+import { useMe, useSessionHint } from "./useMe";
 
 const copy = authCopy.prompt;
 
@@ -22,11 +22,14 @@ export const AuthPromptContext = createContext<RequireAuth | null>(null);
  */
 export function AuthPromptProvider({ children }: { children: ReactNode }) {
   const { me } = useMe();
+  const hinted = useSessionHint();
+  // The session cookie hint is known at once; /me may still be loading after a quick click
+  const signedIn = Boolean(me) || hinted === true;
   const [returnTo, setReturnTo] = useState<string | null>(null);
 
   const requireAuth = useCallback<RequireAuth>(
     (action, options) => {
-      if (me) {
+      if (signedIn) {
         action?.();
         return true;
       }
@@ -35,7 +38,7 @@ export function AuthPromptProvider({ children }: { children: ReactNode }) {
       setReturnTo(here);
       return false;
     },
-    [me],
+    [signedIn],
   );
   const next = encodeURIComponent(returnTo ?? "/");
   const close = () => setReturnTo(null);

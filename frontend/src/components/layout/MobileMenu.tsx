@@ -45,9 +45,18 @@ export function MobileMenu() {
           >
             {copy.profile}
           </Link>
-          <Link href="/me/settings" onClick={close} className="flex h-11 items-center text-sm">
-            {copy.settings}
-          </Link>
+          {(
+            [
+              ["/me/notifications", copy.notifications],
+              ["/me/collections", copy.collections],
+              ["/me/works", copy.works],
+              ["/me/settings", copy.settings],
+            ] as const
+          ).map(([href, label]) => (
+            <Link key={href} href={href} onClick={close} className="flex h-11 items-center text-sm">
+              {label}
+            </Link>
+          ))}
           <button
             type="button"
             onClick={() => {

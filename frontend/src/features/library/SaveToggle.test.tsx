@@ -11,7 +11,10 @@ import { SaveToggle } from "./SaveToggle";
 
 const session = vi.hoisted(() => ({ me: null as { nickname: string } | null }));
 
-vi.mock("@/features/auth/useMe", () => ({ useMe: () => ({ me: session.me }) }));
+vi.mock("@/features/auth/useMe", () => ({
+  useMe: () => ({ me: session.me }),
+  useSessionHint: () => session.me !== null,
+}));
 vi.mock("@/lib/api/client", () => ({ api: { POST: vi.fn(), DELETE: vi.fn() } }));
 
 const post = vi.mocked(api.POST);

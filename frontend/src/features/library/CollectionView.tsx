@@ -20,6 +20,7 @@ import { useToast } from "@/components/ui/useToast";
 import { useMe } from "@/features/auth/useMe";
 import { useRequireAuth } from "@/features/auth/useRequireAuth";
 import { ModCard } from "@/features/mods/ModCard";
+import { ReportButton } from "@/features/moderation/ReportButton";
 import { SkinCard } from "@/features/skins/SkinCard";
 import { Comments } from "@/features/social/Comments";
 import { api } from "@/lib/api/client";
@@ -259,6 +260,7 @@ function VisitorActions({
             id={String(collection.id)}
             saved={collection.is_favorited}
           />
+          <ReportButton kind="collection" id={String(collection.id)} />
         </>
       )}
     </>

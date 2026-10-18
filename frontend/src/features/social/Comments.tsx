@@ -12,10 +12,11 @@ import { Textarea } from "@/components/ui/Textarea";
 import { useToast } from "@/components/ui/useToast";
 import { useMe } from "@/features/auth/useMe";
 import { useRequireAuth } from "@/features/auth/useRequireAuth";
+import { ReportButton } from "@/features/moderation/ReportButton";
 import type { Kind } from "@/features/library/types";
 import { formatDate } from "@/features/mods/format";
 import { api } from "@/lib/api/client";
-import { generalError } from "@/lib/api/errors";
+import { fieldErrors, generalError } from "@/lib/api/errors";
 import type { components } from "@/lib/api/schema";
 import { queryKeys } from "@/lib/query-keys";
 
@@ -111,7 +112,7 @@ function CommentForm({
       await onSubmit(body.trim());
       setBody("");
     } catch (failure) {
-      setError(generalError(failure, copy.error));
+      setError(fieldErrors(failure).body ?? generalError(failure, copy.error));
     } finally {
       setBusy(false);
     }
@@ -315,6 +316,9 @@ function CommentBody({
             >
               {copy.delete}
             </Button>
+          )}
+          {!comment.can_edit && !comment.is_deleted && (
+            <ReportButton kind="comment" id={String(comment.id)} compact />
           )}
         </div>
       )}

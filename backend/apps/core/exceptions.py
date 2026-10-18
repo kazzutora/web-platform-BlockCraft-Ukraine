@@ -23,12 +23,15 @@ class DomainError(Exception):
         message: str,
         fields: dict[str, list[str]] | None = None,
         status: int = status.HTTP_400_BAD_REQUEST,
+        extra: dict[str, Any] | None = None,
     ) -> None:
         super().__init__(message)
         self.code = code
         self.message = message
         self.fields = fields or {}
         self.status = status
+        # Extra top-level keys for this error, e.g. nearest_game_versions
+        self.extra = extra or {}
 
 
 def _flatten(errors: Any, prefix: str = "") -> dict[str, list[str]]:
@@ -51,7 +54,8 @@ def _flatten(errors: Any, prefix: str = "") -> dict[str, list[str]]:
 def handler(exc: Exception, context: dict[str, Any]) -> Response | None:
     if isinstance(exc, DomainError):
         return Response(
-            {"detail": exc.message, "code": exc.code, "fields": exc.fields}, status=exc.status
+            {"detail": exc.message, "code": exc.code, "fields": exc.fields, **exc.extra},
+            status=exc.status,
         )
     if isinstance(exc, DjangoValidationError):
         exc = exceptions.ValidationError(as_serializer_error(exc))

@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import environ
+from celery.schedules import crontab
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
@@ -22,6 +23,7 @@ INSTALLED_APPS = [
     "django.contrib.sites",
     "django.contrib.postgres",
     "rest_framework",
+    "django_filters",
     "drf_spectacular",
     "allauth",
     "allauth.account",
@@ -31,6 +33,8 @@ INSTALLED_APPS = [
     "allauth.headless",
     "apps.core",
     "apps.accounts",
+    "apps.library",
+    "apps.mods",
 ]
 
 MIDDLEWARE = [
@@ -221,4 +225,22 @@ CELERY_TIMEZONE = TIME_ZONE
 CELERY_TASK_TIME_LIMIT = 5 * 60
 CELERY_TASK_SOFT_TIME_LIMIT = 4 * 60
 CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
-CELERY_BEAT_SCHEDULE: dict[str, dict] = {}
+CELERY_BEAT_SCHEDULE: dict[str, dict] = {
+    "mods-sync-popular": {"task": "mods.sync_popular", "schedule": crontab(hour=3, minute=0)},
+    "mods-sync-versions-for-tracked": {
+        "task": "mods.sync_versions_for_tracked",
+        "schedule": crontab(hour=3, minute=30),
+    },
+}
+
+# Modrinth
+
+MODRINTH_USER_AGENT = env(
+    "MODRINTH_USER_AGENT", default="blockcraft-ua/1.0 (contact: you@example.com)"
+)
+# Projects and versions are synced for the releases listed in apps/core/game.py
+MODRINTH_SYNC_LIMITS = {
+    "mod": env.int("MODRINTH_SYNC_LIMIT_MODS", default=300),
+    "resourcepack": env.int("MODRINTH_SYNC_LIMIT_RESOURCEPACKS", default=100),
+    "shader": env.int("MODRINTH_SYNC_LIMIT_SHADERS", default=100),
+}

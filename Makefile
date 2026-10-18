@@ -101,7 +101,7 @@ seed:
 	@echo make seed arrives in stage 9, task 9.4
 
 sync-mods:
-	@echo make sync-mods arrives in stage 3, task 3.3
+	$(MANAGE) sync_mods
 
 reset-db:
 	$(COMPOSE) stop backend worker beat

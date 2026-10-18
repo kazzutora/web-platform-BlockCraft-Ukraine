@@ -5,6 +5,7 @@ import { getHealth } from "./api";
 
 vi.mock("next/headers", () => ({
   cookies: async () => ({ toString: () => "" }),
+  headers: async () => new Headers(),
 }));
 vi.mock("next/server", () => ({ connection: async () => undefined }));
 

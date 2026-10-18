@@ -4,6 +4,23 @@
  */
 
 export interface paths {
+    "/api/v1/csrf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Sets the `csrftoken` cookie that the browser sends back in `X-CSRFToken`. */
+        get: operations["csrf"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/health": {
         parameters: {
             query?: never;
@@ -24,16 +41,185 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["me_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["me_update"];
+        trace?: never;
+    };
+    "/api/v1/me/avatar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["me_avatar_upload"];
+        post?: never;
+        delete: operations["me_avatar_delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/game-profile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["me_game_profile_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["me_game_profile_update"];
+        trace?: never;
+    };
+    "/api/v1/me/onboarding": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["me_onboarding"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["me_settings_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["me_settings_update"];
+        trace?: never;
+    };
+    "/api/v1/users/{nickname}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["users_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** @description Shape of every error response (see core.exceptions.handler). */
+        ApiError: {
+            detail: string;
+            code: string;
+            fields: {
+                [key: string]: string[];
+            };
+        };
+        AvatarUploadRequest: {
+            /** Format: binary */
+            avatar: string;
+        };
+        /** @enum {unknown} */
+        BlankEnum: "";
         /**
          * @description * `ok` - ok
          *     * `error` - error
          * @enum {string}
          */
         CheckStatusEnum: "ok" | "error";
+        /**
+         * @description * `java` - Java
+         *     * `bedrock` - Bedrock
+         * @enum {string}
+         */
+        EditionEnum: "java" | "bedrock";
+        GameProfile: {
+            game_version?: components["schemas"]["GameVersionEnum"] | components["schemas"]["BlankEnum"];
+            loader?: components["schemas"]["LoaderEnum"] | components["schemas"]["BlankEnum"];
+            edition?: components["schemas"]["EditionEnum"];
+            interests?: components["schemas"]["InterestsEnum"][];
+            readonly onboarding_done: boolean;
+        };
+        /**
+         * @description * `26.3` - 26.3
+         *     * `26.2` - 26.2
+         *     * `26.1.2` - 26.1.2
+         *     * `26.1.1` - 26.1.1
+         *     * `26.1` - 26.1
+         *     * `1.21.11` - 1.21.11
+         *     * `1.21.10` - 1.21.10
+         *     * `1.21.9` - 1.21.9
+         *     * `1.21.8` - 1.21.8
+         *     * `1.21.7` - 1.21.7
+         *     * `1.21.6` - 1.21.6
+         *     * `1.21.5` - 1.21.5
+         *     * `1.21.4` - 1.21.4
+         *     * `1.21.3` - 1.21.3
+         *     * `1.21.2` - 1.21.2
+         *     * `1.21.1` - 1.21.1
+         *     * `1.21` - 1.21
+         *     * `1.20.6` - 1.20.6
+         *     * `1.20.5` - 1.20.5
+         *     * `1.20.4` - 1.20.4
+         *     * `1.20.3` - 1.20.3
+         *     * `1.20.2` - 1.20.2
+         *     * `1.20.1` - 1.20.1
+         *     * `1.20` - 1.20
+         *     * `1.19.4` - 1.19.4
+         *     * `1.19.3` - 1.19.3
+         *     * `1.19.2` - 1.19.2
+         *     * `1.19.1` - 1.19.1
+         *     * `1.19` - 1.19
+         *     * `1.18.2` - 1.18.2
+         *     * `1.18.1` - 1.18.1
+         *     * `1.18` - 1.18
+         *     * `1.17.1` - 1.17.1
+         *     * `1.17` - 1.17
+         *     * `1.16.5` - 1.16.5
+         *     * `1.16.4` - 1.16.4
+         *     * `1.16.3` - 1.16.3
+         *     * `1.16.2` - 1.16.2
+         *     * `1.16.1` - 1.16.1
+         *     * `1.16` - 1.16
+         *     * `1.12.2` - 1.12.2
+         *     * `1.8.9` - 1.8.9
+         * @enum {string}
+         */
+        GameVersionEnum: "26.3" | "26.2" | "26.1.2" | "26.1.1" | "26.1" | "1.21.11" | "1.21.10" | "1.21.9" | "1.21.8" | "1.21.7" | "1.21.6" | "1.21.5" | "1.21.4" | "1.21.3" | "1.21.2" | "1.21.1" | "1.21" | "1.20.6" | "1.20.5" | "1.20.4" | "1.20.3" | "1.20.2" | "1.20.1" | "1.20" | "1.19.4" | "1.19.3" | "1.19.2" | "1.19.1" | "1.19" | "1.18.2" | "1.18.1" | "1.18" | "1.17.1" | "1.17" | "1.16.5" | "1.16.4" | "1.16.3" | "1.16.2" | "1.16.1" | "1.16" | "1.12.2" | "1.8.9";
         Health: {
             status: components["schemas"]["CheckStatusEnum"];
             checks: components["schemas"]["HealthChecks"];
@@ -42,6 +228,131 @@ export interface components {
             database: components["schemas"]["CheckStatusEnum"];
             redis: components["schemas"]["CheckStatusEnum"];
         };
+        /**
+         * @description * `survival` - Виживання
+         *     * `building` - Будівництво
+         *     * `tech` - Техніка й редстоун
+         *     * `pvp` - PvP
+         *     * `rp` - Рольова гра
+         *     * `adventure` - Пригоди
+         *     * `minigames` - Мініігри
+         *     * `modded` - Моди й зборки
+         * @enum {string}
+         */
+        InterestsEnum: "survival" | "building" | "tech" | "pvp" | "rp" | "adventure" | "minigames" | "modded";
+        /**
+         * @description * `uk` - Українська
+         *     * `en` - English
+         * @enum {string}
+         */
+        LanguageEnum: "uk" | "en";
+        /**
+         * @description * `fabric` - Fabric
+         *     * `forge` - Forge
+         *     * `neoforge` - NeoForge
+         *     * `quilt` - Quilt
+         *     * `vanilla` - Vanilla
+         * @enum {string}
+         */
+        LoaderEnum: "fabric" | "forge" | "neoforge" | "quilt" | "vanilla";
+        Me: {
+            readonly id: number;
+            /** Format: email */
+            readonly email: string;
+            /** Нік */
+            readonly nickname: string;
+            readonly avatar_url: string;
+            /** Про себе */
+            readonly bio: string;
+            /** Нік у Minecraft */
+            readonly mc_nickname: string;
+            /** Роль */
+            readonly role: components["schemas"]["RoleEnum"];
+            readonly level: number;
+            readonly xp: number;
+            /** Закритий профіль */
+            readonly is_private: boolean;
+            readonly published_count: number;
+            /**
+             * Дата приєднання
+             * Format: date-time
+             */
+            readonly date_joined: string;
+            readonly game_profile: components["schemas"]["GameProfile"];
+        };
+        /** @description Everything is optional: the player may skip onboarding. */
+        OnboardingRequest: {
+            game_version?: components["schemas"]["GameVersionEnum"] | components["schemas"]["BlankEnum"];
+            loader?: components["schemas"]["LoaderEnum"] | components["schemas"]["BlankEnum"];
+            edition?: components["schemas"]["EditionEnum"];
+            interests?: components["schemas"]["InterestsEnum"][];
+        };
+        PatchedGameProfileRequest: {
+            game_version?: components["schemas"]["GameVersionEnum"] | components["schemas"]["BlankEnum"];
+            loader?: components["schemas"]["LoaderEnum"] | components["schemas"]["BlankEnum"];
+            edition?: components["schemas"]["EditionEnum"];
+            interests?: components["schemas"]["InterestsEnum"][];
+        };
+        PatchedMeUpdateRequest: {
+            /** Про себе */
+            bio?: string;
+            mc_nickname?: string | null;
+            /** Закритий профіль */
+            is_private?: boolean;
+        };
+        PatchedUserSettingsRequest: {
+            theme?: components["schemas"]["ThemeEnum"];
+            language?: components["schemas"]["LanguageEnum"];
+            notify_prefs?: {
+                [key: string]: boolean;
+            };
+            history_enabled?: boolean;
+            who_can_comment?: components["schemas"]["WhoCanCommentEnum"];
+            collections_visible?: boolean;
+        };
+        /** @description For closed profiles everything except the nickname is null. */
+        PublicProfile: {
+            nickname: string;
+            is_private: boolean;
+            avatar_url: string | null;
+            bio: string | null;
+            mc_nickname: string | null;
+            level: number | null;
+            /** Format: date-time */
+            date_joined: string | null;
+        };
+        /**
+         * @description * `user` - Гравець
+         *     * `trusted` - Довірений автор
+         *     * `moderator` - Модератор
+         *     * `admin` - Адміністратор
+         * @enum {string}
+         */
+        RoleEnum: "user" | "trusted" | "moderator" | "admin";
+        /**
+         * @description * `light` - Світла
+         *     * `dark` - Темна
+         *     * `system` - Як у системі
+         * @enum {string}
+         */
+        ThemeEnum: "light" | "dark" | "system";
+        UserSettings: {
+            theme?: components["schemas"]["ThemeEnum"];
+            language?: components["schemas"]["LanguageEnum"];
+            notify_prefs?: {
+                [key: string]: boolean;
+            };
+            history_enabled?: boolean;
+            who_can_comment?: components["schemas"]["WhoCanCommentEnum"];
+            collections_visible?: boolean;
+        };
+        /**
+         * @description * `all` - Усі
+         *     * `followers` - Лише підписники
+         *     * `nobody` - Ніхто
+         * @enum {string}
+         */
+        WhoCanCommentEnum: "all" | "followers" | "nobody";
     };
     responses: never;
     parameters: never;
@@ -51,6 +362,24 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    csrf: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     health: {
         parameters: {
             query?: never;
@@ -74,6 +403,346 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Health"];
+                };
+            };
+        };
+    };
+    me_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Me"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    me_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedMeUpdateRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedMeUpdateRequest"];
+                "multipart/form-data": components["schemas"]["PatchedMeUpdateRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Me"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    me_avatar_upload: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["AvatarUploadRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Me"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    me_avatar_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Me"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    me_game_profile_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GameProfile"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    me_game_profile_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedGameProfileRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedGameProfileRequest"];
+                "multipart/form-data": components["schemas"]["PatchedGameProfileRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GameProfile"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    me_onboarding: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["OnboardingRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["OnboardingRequest"];
+                "multipart/form-data": components["schemas"]["OnboardingRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GameProfile"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    me_settings_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserSettings"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    me_settings_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedUserSettingsRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedUserSettingsRequest"];
+                "multipart/form-data": components["schemas"]["PatchedUserSettingsRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserSettings"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    users_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                nickname: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublicProfile"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
                 };
             };
         };

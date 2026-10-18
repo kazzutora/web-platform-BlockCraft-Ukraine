@@ -1,0 +1,53 @@
+export const settingsCopy = {
+  title: "Налаштування",
+  tabs: {
+    label: "Розділи налаштувань",
+    profile: "Профіль",
+    game: "Гра",
+    appearance: "Вигляд",
+    privacy: "Приватність",
+    security: "Безпека",
+  },
+  save: "Зберегти",
+  saved: "Збережено",
+  error: "Не вдалося зберегти. Спробуй ще раз.",
+  profile: {
+    avatar: "Аватар",
+    avatarHint: "PNG, JPEG, WebP або GIF до 2 МБ. Обріжемо до квадрата.",
+    upload: "Завантажити",
+    remove: "Прибрати",
+    bio: "Про себе",
+    bioHint: "До 160 символів.",
+    mcNickname: "Нік у Minecraft",
+    mcNicknameHint: "Підтягнемо твій скін за ніком (етап 5).",
+    nickname: "Нік",
+  },
+  appearance: {
+    theme: "Тема",
+    themes: [
+      { value: "light" as const, label: "Світла" },
+      { value: "dark" as const, label: "Темна" },
+      { value: "system" as const, label: "Як у системі" },
+    ],
+    language: "Мова",
+    languageHint: "Англійська версія з’явиться пізніше.",
+  },
+  privacy: {
+    isPrivate: "Закритий профіль",
+    isPrivateHint: "Інші бачитимуть лише твій нік.",
+    whoCanComment: "Хто може коментувати мої роботи",
+    commentPolicies: [
+      { value: "all" as const, label: "Усі" },
+      { value: "followers" as const, label: "Лише підписники" },
+      { value: "nobody" as const, label: "Ніхто" },
+    ],
+    collectionsVisible: "Показувати мої колекції в профілі",
+    historyEnabled: "Зберігати історію переглядів",
+  },
+  security: {
+    email: "Email",
+    changePassword: "Зміна пароля",
+    submit: "Змінити пароль",
+    changed: "Пароль змінено",
+  },
+};

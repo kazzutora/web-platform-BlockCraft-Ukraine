@@ -4,6 +4,17 @@ info:
   version: 1.0.0
   description: API of the BlockCraft Ukraine community platform.
 paths:
+  /api/v1/csrf:
+    get:
+      operationId: csrf
+      description: Sets the `csrftoken` cookie that the browser sends back in `X-CSRFToken`.
+      tags:
+      - auth
+      security:
+      - {}
+      responses:
+        '204':
+          description: No response body
   /api/v1/health:
     get:
       operationId: health
@@ -26,8 +37,320 @@ paths:
               schema:
                 $ref: '#/components/schemas/Health'
           description: ''
+  /api/v1/me:
+    get:
+      operationId: me_retrieve
+      tags:
+      - me
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Me'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+    patch:
+      operationId: me_update
+      tags:
+      - me
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedMeUpdateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedMeUpdateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedMeUpdateRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Me'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+  /api/v1/me/avatar:
+    put:
+      operationId: me_avatar_upload
+      tags:
+      - me
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AvatarUploadRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Me'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+    delete:
+      operationId: me_avatar_delete
+      tags:
+      - me
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Me'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+  /api/v1/me/game-profile:
+    get:
+      operationId: me_game_profile_retrieve
+      tags:
+      - me
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GameProfile'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+    patch:
+      operationId: me_game_profile_update
+      tags:
+      - me
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedGameProfileRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedGameProfileRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedGameProfileRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GameProfile'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+  /api/v1/me/onboarding:
+    post:
+      operationId: me_onboarding
+      tags:
+      - me
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OnboardingRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OnboardingRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OnboardingRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GameProfile'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+  /api/v1/me/settings:
+    get:
+      operationId: me_settings_retrieve
+      tags:
+      - me
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSettings'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+    patch:
+      operationId: me_settings_update
+      tags:
+      - me
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUserSettingsRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUserSettingsRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUserSettingsRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSettings'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+  /api/v1/users/{nickname}:
+    get:
+      operationId: users_retrieve
+      parameters:
+      - in: path
+        name: nickname
+        schema:
+          type: string
+        required: true
+      tags:
+      - users
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicProfile'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
 components:
   schemas:
+    ApiError:
+      type: object
+      description: Shape of every error response (see core.exceptions.handler).
+      properties:
+        detail:
+          type: string
+        code:
+          type: string
+        fields:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+      required:
+      - code
+      - detail
+      - fields
+    AvatarUploadRequest:
+      type: object
+      properties:
+        avatar:
+          type: string
+          format: binary
+      required:
+      - avatar
+    BlankEnum:
+      enum:
+      - ''
     CheckStatusEnum:
       enum:
       - ok
@@ -36,6 +359,125 @@ components:
       description: |-
         * `ok` - ok
         * `error` - error
+    EditionEnum:
+      enum:
+      - java
+      - bedrock
+      type: string
+      description: |-
+        * `java` - Java
+        * `bedrock` - Bedrock
+    GameProfile:
+      type: object
+      properties:
+        game_version:
+          oneOf:
+          - $ref: '#/components/schemas/GameVersionEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        loader:
+          oneOf:
+          - $ref: '#/components/schemas/LoaderEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        edition:
+          $ref: '#/components/schemas/EditionEnum'
+        interests:
+          type: array
+          items:
+            $ref: '#/components/schemas/InterestsEnum'
+          maxItems: 8
+        onboarding_done:
+          type: boolean
+          readOnly: true
+      required:
+      - onboarding_done
+    GameVersionEnum:
+      enum:
+      - '26.3'
+      - '26.2'
+      - 26.1.2
+      - 26.1.1
+      - '26.1'
+      - 1.21.11
+      - 1.21.10
+      - 1.21.9
+      - 1.21.8
+      - 1.21.7
+      - 1.21.6
+      - 1.21.5
+      - 1.21.4
+      - 1.21.3
+      - 1.21.2
+      - 1.21.1
+      - '1.21'
+      - 1.20.6
+      - 1.20.5
+      - 1.20.4
+      - 1.20.3
+      - 1.20.2
+      - 1.20.1
+      - '1.20'
+      - 1.19.4
+      - 1.19.3
+      - 1.19.2
+      - 1.19.1
+      - '1.19'
+      - 1.18.2
+      - 1.18.1
+      - '1.18'
+      - 1.17.1
+      - '1.17'
+      - 1.16.5
+      - 1.16.4
+      - 1.16.3
+      - 1.16.2
+      - 1.16.1
+      - '1.16'
+      - 1.12.2
+      - 1.8.9
+      type: string
+      description: |-
+        * `26.3` - 26.3
+        * `26.2` - 26.2
+        * `26.1.2` - 26.1.2
+        * `26.1.1` - 26.1.1
+        * `26.1` - 26.1
+        * `1.21.11` - 1.21.11
+        * `1.21.10` - 1.21.10
+        * `1.21.9` - 1.21.9
+        * `1.21.8` - 1.21.8
+        * `1.21.7` - 1.21.7
+        * `1.21.6` - 1.21.6
+        * `1.21.5` - 1.21.5
+        * `1.21.4` - 1.21.4
+        * `1.21.3` - 1.21.3
+        * `1.21.2` - 1.21.2
+        * `1.21.1` - 1.21.1
+        * `1.21` - 1.21
+        * `1.20.6` - 1.20.6
+        * `1.20.5` - 1.20.5
+        * `1.20.4` - 1.20.4
+        * `1.20.3` - 1.20.3
+        * `1.20.2` - 1.20.2
+        * `1.20.1` - 1.20.1
+        * `1.20` - 1.20
+        * `1.19.4` - 1.19.4
+        * `1.19.3` - 1.19.3
+        * `1.19.2` - 1.19.2
+        * `1.19.1` - 1.19.1
+        * `1.19` - 1.19
+        * `1.18.2` - 1.18.2
+        * `1.18.1` - 1.18.1
+        * `1.18` - 1.18
+        * `1.17.1` - 1.17.1
+        * `1.17` - 1.17
+        * `1.16.5` - 1.16.5
+        * `1.16.4` - 1.16.4
+        * `1.16.3` - 1.16.3
+        * `1.16.2` - 1.16.2
+        * `1.16.1` - 1.16.1
+        * `1.16` - 1.16
+        * `1.12.2` - 1.12.2
+        * `1.8.9` - 1.8.9
     Health:
       type: object
       properties:
@@ -56,3 +498,265 @@ components:
       required:
       - database
       - redis
+    InterestsEnum:
+      enum:
+      - survival
+      - building
+      - tech
+      - pvp
+      - rp
+      - adventure
+      - minigames
+      - modded
+      type: string
+      description: |-
+        * `survival` - Виживання
+        * `building` - Будівництво
+        * `tech` - Техніка й редстоун
+        * `pvp` - PvP
+        * `rp` - Рольова гра
+        * `adventure` - Пригоди
+        * `minigames` - Мініігри
+        * `modded` - Моди й зборки
+    LanguageEnum:
+      enum:
+      - uk
+      - en
+      type: string
+      description: |-
+        * `uk` - Українська
+        * `en` - English
+    LoaderEnum:
+      enum:
+      - fabric
+      - forge
+      - neoforge
+      - quilt
+      - vanilla
+      type: string
+      description: |-
+        * `fabric` - Fabric
+        * `forge` - Forge
+        * `neoforge` - NeoForge
+        * `quilt` - Quilt
+        * `vanilla` - Vanilla
+    Me:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        email:
+          type: string
+          format: email
+          readOnly: true
+        nickname:
+          type: string
+          readOnly: true
+          title: Нік
+        avatar_url:
+          type: string
+          readOnly: true
+        bio:
+          type: string
+          readOnly: true
+          title: Про себе
+        mc_nickname:
+          type: string
+          readOnly: true
+          title: Нік у Minecraft
+        role:
+          allOf:
+          - $ref: '#/components/schemas/RoleEnum'
+          readOnly: true
+          title: Роль
+        level:
+          type: integer
+          readOnly: true
+        xp:
+          type: integer
+          readOnly: true
+        is_private:
+          type: boolean
+          readOnly: true
+          title: Закритий профіль
+        published_count:
+          type: integer
+          readOnly: true
+        date_joined:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Дата приєднання
+        game_profile:
+          allOf:
+          - $ref: '#/components/schemas/GameProfile'
+          readOnly: true
+      required:
+      - avatar_url
+      - bio
+      - date_joined
+      - email
+      - game_profile
+      - id
+      - is_private
+      - level
+      - mc_nickname
+      - nickname
+      - published_count
+      - role
+      - xp
+    OnboardingRequest:
+      type: object
+      description: 'Everything is optional: the player may skip onboarding.'
+      properties:
+        game_version:
+          oneOf:
+          - $ref: '#/components/schemas/GameVersionEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        loader:
+          oneOf:
+          - $ref: '#/components/schemas/LoaderEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        edition:
+          $ref: '#/components/schemas/EditionEnum'
+        interests:
+          type: array
+          items:
+            $ref: '#/components/schemas/InterestsEnum'
+          maxItems: 8
+    PatchedGameProfileRequest:
+      type: object
+      properties:
+        game_version:
+          oneOf:
+          - $ref: '#/components/schemas/GameVersionEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        loader:
+          oneOf:
+          - $ref: '#/components/schemas/LoaderEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        edition:
+          $ref: '#/components/schemas/EditionEnum'
+        interests:
+          type: array
+          items:
+            $ref: '#/components/schemas/InterestsEnum'
+          maxItems: 8
+    PatchedMeUpdateRequest:
+      type: object
+      properties:
+        bio:
+          type: string
+          title: Про себе
+          maxLength: 160
+        mc_nickname:
+          type: string
+          nullable: true
+          maxLength: 16
+        is_private:
+          type: boolean
+          title: Закритий профіль
+    PatchedUserSettingsRequest:
+      type: object
+      properties:
+        theme:
+          $ref: '#/components/schemas/ThemeEnum'
+        language:
+          $ref: '#/components/schemas/LanguageEnum'
+        notify_prefs:
+          type: object
+          additionalProperties:
+            type: boolean
+        history_enabled:
+          type: boolean
+        who_can_comment:
+          $ref: '#/components/schemas/WhoCanCommentEnum'
+        collections_visible:
+          type: boolean
+    PublicProfile:
+      type: object
+      description: For closed profiles everything except the nickname is null.
+      properties:
+        nickname:
+          type: string
+        is_private:
+          type: boolean
+        avatar_url:
+          type: string
+          nullable: true
+        bio:
+          type: string
+          nullable: true
+        mc_nickname:
+          type: string
+          nullable: true
+        level:
+          type: integer
+          nullable: true
+        date_joined:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - avatar_url
+      - bio
+      - date_joined
+      - is_private
+      - level
+      - mc_nickname
+      - nickname
+    RoleEnum:
+      enum:
+      - user
+      - trusted
+      - moderator
+      - admin
+      type: string
+      description: |-
+        * `user` - Гравець
+        * `trusted` - Довірений автор
+        * `moderator` - Модератор
+        * `admin` - Адміністратор
+    ThemeEnum:
+      enum:
+      - light
+      - dark
+      - system
+      type: string
+      description: |-
+        * `light` - Світла
+        * `dark` - Темна
+        * `system` - Як у системі
+    UserSettings:
+      type: object
+      properties:
+        theme:
+          $ref: '#/components/schemas/ThemeEnum'
+        language:
+          $ref: '#/components/schemas/LanguageEnum'
+        notify_prefs:
+          type: object
+          additionalProperties:
+            type: boolean
+        history_enabled:
+          type: boolean
+        who_can_comment:
+          $ref: '#/components/schemas/WhoCanCommentEnum'
+        collections_visible:
+          type: boolean
+    WhoCanCommentEnum:
+      enum:
+      - all
+      - followers
+      - nobody
+      type: string
+      description: |-
+        * `all` - Усі
+        * `followers` - Лише підписники
+        * `nobody` - Ніхто
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid

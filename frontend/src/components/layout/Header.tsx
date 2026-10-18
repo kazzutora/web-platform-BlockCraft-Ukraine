@@ -1,13 +1,17 @@
-import { ButtonLink } from "@/components/ui/ButtonLink";
+import { Suspense } from "react";
+
 import { IconLink } from "@/components/ui/IconLink";
+import { Skeleton } from "@/components/ui/Skeleton";
+import { AccountArea } from "@/features/auth/AccountArea";
 
 import { Container } from "./Container";
 import { Logo } from "./Logo";
 import { MobileMenu } from "./MobileMenu";
+import { SectionLinks } from "./SectionLinks";
 import { SectionNav } from "./SectionNav";
 import { ThemeToggle } from "./ThemeToggle";
 
-const copy = { search: "Пошук", saved: "Обране", login: "Увійти" };
+const copy = { search: "Пошук", saved: "Обране" };
 
 /** Sections on the left, logo in the center, search / saved / account on the right. */
 export function Header() {
@@ -15,7 +19,9 @@ export function Header() {
     <header className="sticky top-0 z-30 border-b border-line bg-bg">
       <Container className="flex h-16 items-center justify-between md:grid md:grid-cols-[1fr_auto_1fr]">
         <div className="hidden md:block">
-          <SectionNav />
+          <Suspense fallback={<SectionLinks />}>
+            <SectionNav />
+          </Suspense>
         </div>
         <Logo />
         <div className="flex items-center justify-end gap-1">
@@ -24,9 +30,9 @@ export function Header() {
           <div className="hidden items-center gap-1 md:flex">
             <IconLink href="/me/saved" icon="bookmark" label={copy.saved} />
             <ThemeToggle />
-            <ButtonLink href="/login" variant="ghost">
-              {copy.login}
-            </ButtonLink>
+            <Suspense fallback={<Skeleton className="size-8" />}>
+              <AccountArea />
+            </Suspense>
           </div>
           <div className="md:hidden">
             <MobileMenu />

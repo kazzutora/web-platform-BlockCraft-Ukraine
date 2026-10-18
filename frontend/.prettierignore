@@ -3,4 +3,6 @@ coverage
 pnpm-lock.yaml
 next-env.d.ts
 openapi.yaml
+allauth-openapi.json
 src/lib/api/schema.d.ts
+src/lib/api/allauth.d.ts

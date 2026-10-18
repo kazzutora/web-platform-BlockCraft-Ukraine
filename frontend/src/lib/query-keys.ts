@@ -23,6 +23,14 @@ export const queryKeys = {
     lookup: (nickname: string) =>
       [...queryKeys.skins.all, "lookup", nickname.toLowerCase()] as const,
   },
+  servers: {
+    all: ["servers"] as const,
+    catalog: (query: object) => [...queryKeys.servers.all, "catalog", query] as const,
+    stats: (slug: string, range: string) =>
+      [...queryKeys.servers.all, "stats", slug, range] as const,
+    verification: (slug: string) => [...queryKeys.servers.all, "verification", slug] as const,
+    mine: () => [...queryKeys.servers.all, "mine"] as const,
+  },
   social: {
     reviews: (kind: string, id: string, sort: string) =>
       ["social", "reviews", kind, id, sort] as const,

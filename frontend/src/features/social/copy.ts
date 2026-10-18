@@ -23,6 +23,7 @@ export const socialCopy = {
     helpfulCount: (count: number) => `${count}`,
     more: "Показати ще",
     loginToRate: "Увійди, щоб оцінити",
+    ownObject: "Власний проєкт оцінити не можна — відгуки залишають гравці.",
     starsLabel: (stars: number) => `${stars} з 5`,
   },
   comments: {

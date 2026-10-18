@@ -30,8 +30,17 @@ const copy = socialCopy.reviews;
 type Review = components["schemas"]["Review"];
 type Sort = "helpful" | "new";
 
+type ReviewsProps = {
+  kind: Kind;
+  id: string;
+  /** False for the owner of the object: owners do not rate their own projects. */
+  canReview?: boolean;
+  /** Extra line under the form, e.g. how often a server review can change. */
+  hint?: string;
+};
+
 /** Rating summary, the player's own review and everybody else's. */
-export function Reviews({ kind, id }: { kind: Kind; id: string }) {
+export function Reviews({ kind, id, canReview = true, hint }: ReviewsProps) {
   const [sort, setSort] = useState<Sort>("helpful");
   const reviews = useInfiniteQuery({
     queryKey: queryKeys.social.reviews(kind, id, sort),
@@ -57,7 +66,14 @@ export function Reviews({ kind, id }: { kind: Kind; id: string }) {
     <div className="flex flex-col gap-10">
       <div className="grid gap-10 md:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
         <Summary summary={summary} />
-        <ReviewForm kind={kind} id={id} mine={summary.my_review} />
+        {canReview ? (
+          <div className="flex flex-col gap-3">
+            <ReviewForm kind={kind} id={id} mine={summary.my_review} />
+            {hint && <p className="text-meta text-muted">{hint}</p>}
+          </div>
+        ) : (
+          <p className="text-muted">{copy.ownObject}</p>
+        )}
       </div>
 
       {results.length > 0 && (

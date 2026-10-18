@@ -1,0 +1,42 @@
+/*
+ * Design tokens of BlockCraft. The only place with raw colors:
+ * components use Tailwind classes generated from these variables (bg-bg, text-muted, border-line…).
+ */
+
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+
+  --bg: #f4f1ea; /* warm paper */
+  --surface: #fbf9f4; /* cards, fields */
+  --text: #1c1b18;
+  --text-muted: #6e6a62;
+  --line: #ddd8cc; /* borders, dividers */
+  --accent: #4d7832; /* grass green: saved, online, focus */
+  --accent-contrast: #ffffff;
+  --primary-bg: #1c1b18; /* primary button */
+  --primary-fg: #f4f1ea;
+  --danger: #b3402f;
+
+  /* section marks, only in chips */
+  --tag-mods: #4f7a34;
+  --tag-packs: #7e57a8;
+  --tag-skins: #c2803a;
+  --tag-servers: #2f8fa3;
+  --tag-moments: #b3402f;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --bg: #121211;
+  --surface: #1a1a18;
+  --text: #edeae3;
+  --text-muted: #8c887f;
+  --line: #2c2b28;
+  --accent: #7fb55a;
+  --accent-contrast: #121211;
+  --primary-bg: #edeae3;
+  --primary-fg: #121211;
+  --danger: #e06a55;
+}

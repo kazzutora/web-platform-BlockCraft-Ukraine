@@ -1,1 +1,145 @@
-@import "tailwindcss";
+/* Scan only src/ for class names: .next and node_modules stay out even inside Docker */
+@import "tailwindcss" source("../");
+@import "./tokens.css";
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+/* Hover-only affordances (e.g. the save icon on cards) stay visible on touch screens */
+@custom-variant can-hover (@media (hover: hover) and (pointer: fine));
+
+/* Drop Tailwind defaults: only design tokens exist, no palette, radii or shadows */
+@theme {
+  --color-*: initial;
+  --radius-*: initial;
+  --shadow-*: initial;
+  --inset-shadow-*: initial;
+  --drop-shadow-*: initial;
+  --text-shadow-*: initial;
+  --font-*: initial;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-text: var(--text);
+  --color-muted: var(--text-muted);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-contrast: var(--accent-contrast);
+  --color-primary-bg: var(--primary-bg);
+  --color-primary-fg: var(--primary-fg);
+  --color-danger: var(--danger);
+  --color-tag-mods: var(--tag-mods);
+  --color-tag-packs: var(--tag-packs);
+  --color-tag-skins: var(--tag-skins);
+  --color-tag-servers: var(--tag-servers);
+  --color-tag-moments: var(--tag-moments);
+
+  --font-serif: var(--font-cormorant), "Times New Roman", serif;
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-mono: ui-monospace, "Cascadia Mono", monospace;
+}
+
+@theme {
+  --container-page: 1200px;
+  --container-prose: 65ch;
+
+  --text-display: clamp(3.5rem, 9vw, 6.875rem);
+  --text-display--line-height: 1;
+  --text-h1: clamp(2.5rem, 6vw, 4rem);
+  --text-h1--line-height: 1.05;
+  --text-h2: 2rem;
+  --text-h2--line-height: 1.1;
+  --text-card: 0.9375rem;
+  --text-card--line-height: 1.4;
+  --text-meta: 0.8125rem;
+  --text-meta--line-height: 1.4;
+  --text-label: 0.75rem;
+  --text-label--line-height: 1rem;
+  --text-label--letter-spacing: 0.2em;
+
+  --animate-fade-in: fade-in 150ms ease-out;
+  --animate-slide-up: slide-up 200ms ease-out;
+  --animate-slide-left: slide-left 200ms ease-out;
+  --animate-pop-in: pop-in 150ms ease-out;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes slide-left {
+  from {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+/* Capslock section label: «ДЛЯ ТВОЄЇ ВЕРСІЇ» */
+@utility caps {
+  font-size: var(--text-label);
+  line-height: var(--text-label--line-height);
+  letter-spacing: var(--text-label--letter-spacing);
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@layer base {
+  html {
+    background-color: var(--bg);
+    color: var(--text);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-serif);
+    font-weight: 500;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background-color: var(--accent);
+    color: var(--accent-contrast);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}

@@ -67,7 +67,7 @@ Celery worker + beat ──> Modrinth API · Mojang API · Minecraft-серве�
 | pydantic | 2.x | Схеми відповідей зовнішніх API |
 | mcstatus | актуальна | Пінг Minecraft-серверів |
 | Pillow | актуальна | Перевірка скінів, прев'ю, банери |
-| meilisearch (python) | актуальна | Клієнт пошуку |
+| httpx → Meilisearch REST | — | Клієнт пошуку (`apps/search/client.py`, без окремого SDK) |
 | django-storages[s3] | актуальна | S3-сумісне сховище в prod (етап 11) |
 | gunicorn + uvicorn | актуальна | Prod-сервер (ASGI для Channels на етапі 15) |
 | channels + channels-redis | актуальна | WebSocket (етап 15) |
@@ -302,9 +302,9 @@ apps/<name>/
 | `PUT/DELETE /servers/{slug}/banner` | Банер (multipart) | 6 |
 | `POST /servers/{slug}/copy-ip` | Лічильник копіювань (без авторизації, scope `copy_ip` 60/год) | 6 |
 | `GET /me/servers` | Усі мої сервери з будь-яким статусом | 6 |
-| `GET /search?q=&kind=` | Пошук, результати згруповано за kind | 7 |
-| `GET /home` | Агрегат для головної (кеш 5 хв, персоналізований для авторизованих) | 7 |
-| `GET /top?kind=&period=week|month|all` | Топи | 7 |
+| `GET /search?q=&kind=&page=` | Пошук `{q, groups: [{kind, total, results, next_page}]}`: без `kind` — по 5 у групі (mod, skin, server, collection), з `kind` — сторінка з 24; без Meilisearch — пошук за назвою в БД | 7 |
+| `GET /home` | `{for_you: {basis: profile\|popular, mods}, skin_of_week, servers_online, new_skins, new_servers}`; кешуються id на 5 хв, стан глядача — на кожен запит | 7 |
+| `GET /top?kind=mod\|skin\|server&period=week\|month\|all` | 24 найкращі: тиждень — `trend_score`, місяць — зважені події 30 днів, увесь час — рейтинг; заповнений лише список свого kind (`mods` / `skins` / `servers`) | 7 |
 | `POST /reports` | Скарга `{kind, id, reason, comment}` | 8 |
 | `GET /me/notifications`, `POST /me/notifications/read` | Сповіщення | 8 |
 | `GET /me/export`, `DELETE /me` | Експорт даних, видалення акаунта | 8 |

@@ -223,8 +223,9 @@ apps/<name>/
 
 **mods**
 - `Category`: `slug`, `name_uk`, `project_type`.
-- `Project` (Engagement): `modrinth_id` (unique), `slug` (unique), `project_type` (mod / resourcepack / shader), `title`, `summary` (англ. з Modrinth), `summary_uk` (від спільноти, nullable), `body_md`, `icon_url`, `gallery` (JSON), `categories` M2M, `loaders` (Array), `game_versions` (Array), `license`, `source_url`, `modrinth_downloads`, `gpu_load` (light / medium / heavy, лише шейдери), `claimed_by` (FK User, nullable), `status`, `synced_at`.
-- `ProjectVersion`: `project`, `modrinth_version_id`, `version_number`, `game_versions` (Array), `loaders` (Array), `file_url`, `file_name`, `file_size`, `sha1`, `dependencies` (JSON: `[{project_id, dependency_type}]`), `released_at`. Індекс GIN на масивах.
+- `Project` (TimeStamped, Publishable, Engagement): `modrinth_id` (unique), `slug` (unique), `project_type` (mod / resourcepack / shader), `title`, `summary` (англ. з Modrinth), `summary_uk` (від спільноти, порожній — немає перекладу), `body_md`, `body_html` (рендер markdown + санітизація nh3 під час синхронізації), `icon_url`, `gallery` (JSON), `categories` M2M, `loaders` (Array), `game_versions` (Array), `license`, `source_url`, `modrinth_downloads`, `modrinth_updated_at`, `gpu_load` (light / medium / heavy, лише шейдери; з категорій «performance impact», якщо модератор не встановив вручну — `gpu_load_manual`), `claimed_by`, `suggested_by` (FK User, nullable), `status`, `synced_at`.
+- `ProjectVersion`: `project`, `modrinth_version_id`, `name`, `version_number`, `version_type` (release / beta / alpha), `game_versions` (Array), `loaders` (Array), `file_url`, `file_name`, `file_size`, `sha1`, `dependencies` (JSON: `[{project_id, dependency_type}]`), `released_at`. Індекс GIN на масивах. Зберігаються лише версії для релізів зі списку `apps/core/game.py`.
+- `library.Download` (з етапу 3): `user`, `project`, `version` (FK, nullable), `game_version`, `loader`, `created_at`.
 
 **skins**
 - `Skin` (Authored, Publishable, Engagement): `title` (≤ 60), `file` (PNG), `preview` (PNG 2D-рендер), `model` (classic / slim), `dominant_color` (hex), `color_bucket` (red / orange / yellow / green / cyan / blue / purple / pink / brown / black / white / gray), `style_tags` (Array, зі списку), `source` (upload / recolor), `parent` (FK Skin, nullable).
@@ -274,9 +275,10 @@ apps/<name>/
 | `GET /users/{nickname}/works?kind=` | Створене автором | 2/5 |
 | `GET /mods` | Каталог: `type, game_version, loader, category, gpu_load, q, sort` | 3 |
 | `GET /mods/{slug}` | Сторінка мода | 3 |
-| `GET /mods/{slug}/versions?game_version=&loader=` | Версії | 3 |
-| `GET /mods/{slug}/download?game_version=&loader=` | Підбір файлу → 302 на file_url, запис `Download` | 3 |
-| `POST /mods/suggest` | Запропонувати мод за посиланням Modrinth | 3 |
+| `GET /mods/{slug}/versions?game_version=&loader=` | Що встановити: `recommended` (реліз, інакше бета/альфа), залежності рекомендованої, `nearest_game_versions`, список версій | 3 |
+| `GET /mods/{slug}/similar` | Схожі проєкти (ті самі категорії) | 3 |
+| `GET /mods/{slug}/download?game_version=&loader=&version=` | Підбір файлу (або точна версія) → 302 на file_url, лічильник + запис `Download`; 404 `no_version` з `nearest_game_versions` | 3 |
+| `POST /mods/suggest` | Запропонувати мод за посиланням Modrinth → 202, імпорт у Celery зі статусом `pending` | 3 |
 | `GET /categories?type=` | Категорії | 3 |
 | `POST /favorites`, `DELETE /favorites` | `{kind, id}` | 4 |
 | `GET /me/saved?kind=&game_version=` | Обране | 4 |
@@ -627,6 +629,8 @@ GOOGLE_CLIENT_SECRET=
 # Зовнішні API
 MODRINTH_USER_AGENT=blockcraft-ua/1.0 (contact: you@example.com)
 MODRINTH_SYNC_LIMIT_MODS=300
+MODRINTH_SYNC_LIMIT_RESOURCEPACKS=100
+MODRINTH_SYNC_LIMIT_SHADERS=100
 
 # Фронтенд
 NEXT_PUBLIC_SITE_URL=http://localhost:8080

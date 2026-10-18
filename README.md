@@ -33,7 +33,7 @@ make up
 - http://localhost:8080/api/v1/health — перевірка БД і Redis
 - http://localhost:8080/admin/ — адмінка (`make createsuperuser`)
 
-Міграції застосовуються автоматично під час старту бекенду. Зупинити — `make down`.
+Міграції застосовуються автоматично під час старту бекенду. Каталог модів наповнює `make sync-mods` (≈ 500 проєктів з Modrinth, кілька хвилин; далі — щоночі через Celery beat). Зупинити — `make down`.
 
 ### Windows: фронтенд на хості
 

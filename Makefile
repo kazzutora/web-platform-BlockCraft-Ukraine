@@ -99,7 +99,7 @@ api-types:
 	$(FRONT) pnpm api-types
 
 seed:
-	@echo make seed arrives in stage 9, task 9.4
+	$(MANAGE) seed
 
 reindex:
 	$(MANAGE) reindex_search

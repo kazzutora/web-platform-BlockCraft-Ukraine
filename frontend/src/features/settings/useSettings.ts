@@ -45,7 +45,7 @@ export function useUpdateGameProfile() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (body: GameProfilePatch) =>
-      unwrap(await api.PATCH("/api/v1/me/game-profile", { body })),
+      unwrap(await api.PATCH("/api/v1/me/game", { body })),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.me.account() }),
   });
 }

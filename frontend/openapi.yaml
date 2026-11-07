@@ -769,9 +769,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiError'
           description: ''
-  /api/v1/me/game-profile:
+  /api/v1/me/game:
     get:
-      operationId: me_game_profile_retrieve
+      operationId: me_game_retrieve
+      description: «Моя гра» of a signed-in player; guests keep it in the `bc_game`
+        cookie.
       tags:
       - me
       security:
@@ -789,8 +791,48 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiError'
           description: ''
+    put:
+      operationId: me_game_update
+      description: «Моя гра» of a signed-in player; guests keep it in the `bc_game`
+        cookie.
+      tags:
+      - me
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GameProfileRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/GameProfileRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/GameProfileRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GameProfile'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
     patch:
-      operationId: me_game_profile_update
+      operationId: me_game_partial_update
+      description: «Моя гра» of a signed-in player; guests keep it in the `bc_game`
+        cookie.
       tags:
       - me
       requestBody:
@@ -3794,6 +3836,20 @@ components:
           readOnly: true
       required:
       - onboarding_done
+    GameProfileRequest:
+      type: object
+      properties:
+        game_version:
+          type: string
+          minLength: 1
+          title: Версія
+          nullable: true
+        loader:
+          oneOf:
+          - $ref: '#/components/schemas/LoaderEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        edition:
+          $ref: '#/components/schemas/EditionEnum'
     GameVersion:
       type: object
       properties:

@@ -96,7 +96,7 @@ def test_onboarding_can_be_skipped(auth_client, user):
 
 def test_game_profile_rejects_unknown_version_and_loader(auth_client):
     response = auth_client.patch(
-        "/api/v1/me/game-profile",
+        "/api/v1/me/game",
         {"game_version": "9.99", "loader": "optifine"},
         format="json",
     )

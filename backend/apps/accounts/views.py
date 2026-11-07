@@ -107,24 +107,42 @@ class MeExportView(APIView):
         return response
 
 
-class MeGameProfileView(APIView):
+class MeGameView(APIView):
+    """«Моя гра» of a signed-in player; guests keep it in the `bc_game` cookie."""
+
     permission_classes = [IsAuthenticated]
+    throttle_scope = "game"
+
+    def get_throttles(self):
+        # Only changes are throttled: the chip reads the profile on every page
+        return [] if self.request.method == "GET" else super().get_throttles()
 
     @extend_schema(
-        operation_id="me_game_profile_retrieve",
+        operation_id="me_game_retrieve",
         responses={200: GameProfileSerializer, **error_responses(401)},
     )
     def get(self, request: Request) -> Response:
         return Response(GameProfileSerializer(request.user.game_profile).data)
 
     @extend_schema(
-        operation_id="me_game_profile_update",
+        operation_id="me_game_update",
+        request=GameProfileSerializer,
+        responses={200: GameProfileSerializer, **error_responses(400, 401)},
+    )
+    def put(self, request: Request) -> Response:
+        return self._update(request, partial=False)
+
+    @extend_schema(
+        operation_id="me_game_partial_update",
         request=GameProfileSerializer,
         responses={200: GameProfileSerializer, **error_responses(400, 401)},
     )
     def patch(self, request: Request) -> Response:
+        return self._update(request, partial=True)
+
+    def _update(self, request: Request, *, partial: bool) -> Response:
         serializer = GameProfileSerializer(
-            request.user.game_profile, data=request.data, partial=True
+            request.user.game_profile, data=request.data, partial=partial
         )
         serializer.is_valid(raise_exception=True)
         profile = services.update_game_profile(user=request.user, data=serializer.validated_data)

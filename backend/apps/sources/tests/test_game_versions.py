@@ -122,7 +122,7 @@ def test_meta_is_cached(api_client, game_versions, django_assert_num_queries):
 
 def test_profile_takes_only_supported_versions(auth_client, user, game_versions):
     GameVersion.objects.create(version="26.4-snapshot-7", version_type="snapshot")
-    url = "/api/v1/me/game-profile"
+    url = "/api/v1/me/game"
 
     assert auth_client.patch(url, {"game_version": "26.4-snapshot-7"}).status_code == 400
     assert auth_client.patch(url, {"game_version": "1.21.1"}).json()["game_version"] == "1.21.1"

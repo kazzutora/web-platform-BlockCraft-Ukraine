@@ -204,7 +204,7 @@ blockcraft/
 | `GET /health`, `GET /csrf` | як у v1 | — |
 | `GET /meta` | підтримувані версії гри, лоадери, категорії (R1); мови й країни серверів — R5 | R1 |
 | `GET /sources` | джерела: назва, опис, сайт, умови, остання синхронізація (статус, час, лічильники) | R1 |
-| `GET/PUT /me/game` | «Моя гра» гравця (гість — cookie `bc_game`, без ендпоінта) | R1 |
+| `GET/PUT/PATCH /me/game` | «Моя гра» гравця (гість — cookie `bc_game`, без ендпоінта); замінює v1 `/me/game-profile` | R1 |
 | `/me`, `/me/avatar`, `/me/settings`, `/me/onboarding`, `/me/export`, `DELETE /me` | як у v1 | — |
 | `GET /me/activity?section=took\|shared&page=` | «Взяв» (Download) і «Поділився» (збірки, добірки, відгуки, переклади, сервери, додані скіни) | R7 |
 | `GET /mods?type=&game_version=&loader=&category=&q=&sort=&all=` | каталог; без `game_version`/`loader` — береться «Моя гра», `all=1` — без фільтра гри | R2 |

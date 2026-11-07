@@ -3,19 +3,20 @@ import { CardGrid } from "@/components/ui/CardGrid";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { plural } from "@/lib/plural";
 
+import { getGameContext } from "@/features/game/context";
 import { getGameVersions } from "@/features/game/meta";
 
-import { getCatalog, getCategories, getGameProfile } from "./api";
+import { getCatalog, getCategories } from "./api";
 import { CatalogFilters } from "./CatalogFilters";
 import { modsCopy } from "./copy";
 import { type ModFilters, toApiQuery, withProfileDefaults } from "./filters";
 import { LoadMoreMods } from "./LoadMoreMods";
 import { ModCard } from "./ModCard";
 
-/** /mods: server-rendered first page; the version and loader default to the game profile. */
+/** /mods: server-rendered first page; the version and loader default to «Моя гра». */
 export async function ModsCatalog({ filters: requested }: { filters: ModFilters }) {
-  const profile = await getGameProfile();
-  const { filters, fromProfile } = withProfileDefaults(requested, profile);
+  const game = await getGameContext();
+  const { filters, fromProfile } = withProfileDefaults(requested, game);
   const [page, categories, gameVersions] = await Promise.all([
     getCatalog(toApiQuery(filters)),
     getCategories(filters.type),

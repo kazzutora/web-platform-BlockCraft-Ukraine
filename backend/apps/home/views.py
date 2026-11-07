@@ -4,6 +4,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from apps.core.game import game_context
 from apps.core.schema import error_responses
 from apps.servers import status as live_status
 
@@ -12,8 +13,8 @@ from .serializers import HomeSerializer, TopQuerySerializer, TopSerializer
 
 
 def _game_profile(request: Request) -> tuple[str, str]:
-    profile = getattr(request.user, "game_profile", None) if request.user.is_authenticated else None
-    return (profile.game_version_id or "", profile.loader) if profile else ("", "")
+    context = game_context(request)
+    return context.game_version, context.loader
 
 
 class HomeView(APIView):

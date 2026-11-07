@@ -215,6 +215,7 @@ REST_FRAMEWORK = {
         "reports": "20/day",
         "lookup": "30/min",
         "copy_ip": "60/hour",
+        "game": "120/hour",
         # The pack constructor saves every added or removed mod
         "pack_edits": "600/hour",
     },

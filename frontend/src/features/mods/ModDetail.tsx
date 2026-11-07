@@ -4,6 +4,7 @@ import { DetailPage } from "@/components/layout/DetailPage";
 import { CardGrid } from "@/components/ui/CardGrid";
 import { Chip } from "@/components/ui/Chip";
 import { Icon } from "@/components/ui/Icon";
+import { getGameContext } from "@/features/game/context";
 import { getGameVersions } from "@/features/game/meta";
 import { AddToCollection } from "@/features/library/AddToCollection";
 import { SaveToggle } from "@/features/library/SaveToggle";
@@ -11,7 +12,7 @@ import { ReportButton } from "@/features/moderation/ReportButton";
 import { Reviews } from "@/features/social/Reviews";
 import { versionDescending } from "@/lib/versions";
 
-import { getGameProfile, getProject, getSimilar, getVersions } from "./api";
+import { getProject, getSimilar, getVersions } from "./api";
 import { modsCopy } from "./copy";
 import { DependenciesList } from "./DependenciesList";
 import { DownloadAction } from "./DownloadAction";
@@ -34,7 +35,7 @@ type ModDetailProps = {
 export async function ModDetail({ slug, searchParams }: ModDetailProps) {
   const [project, profile, supportedVersions] = await Promise.all([
     getProject(slug),
-    getGameProfile(),
+    getGameContext(),
     getGameVersions(),
   ]);
   if (!project) notFound();

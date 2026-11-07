@@ -260,20 +260,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/me/game-profile": {
+    "/api/v1/me/game": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        get: operations["me_game_profile_retrieve"];
-        put?: never;
+        /** @description «Моя гра» of a signed-in player; guests keep it in the `bc_game` cookie. */
+        get: operations["me_game_retrieve"];
+        /** @description «Моя гра» of a signed-in player; guests keep it in the `bc_game` cookie. */
+        put: operations["me_game_update"];
         post?: never;
         delete?: never;
         options?: never;
         head?: never;
-        patch: operations["me_game_profile_update"];
+        /** @description «Моя гра» of a signed-in player; guests keep it in the `bc_game` cookie. */
+        patch: operations["me_game_partial_update"];
         trace?: never;
     };
     "/api/v1/me/notifications": {
@@ -1195,6 +1198,12 @@ export interface components {
             loader?: components["schemas"]["LoaderEnum"] | components["schemas"]["BlankEnum"];
             edition?: components["schemas"]["EditionEnum"];
             readonly onboarding_done: boolean;
+        };
+        GameProfileRequest: {
+            /** Версія */
+            game_version?: string | null;
+            loader?: components["schemas"]["LoaderEnum"] | components["schemas"]["BlankEnum"];
+            edition?: components["schemas"]["EditionEnum"];
         };
         GameVersion: {
             /** Версія */
@@ -3107,7 +3116,7 @@ export interface operations {
             };
         };
     };
-    me_game_profile_retrieve: {
+    me_game_retrieve: {
         parameters: {
             query?: never;
             header?: never;
@@ -3134,7 +3143,48 @@ export interface operations {
             };
         };
     };
-    me_game_profile_update: {
+    me_game_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["GameProfileRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["GameProfileRequest"];
+                "multipart/form-data": components["schemas"]["GameProfileRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GameProfile"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    me_game_partial_update: {
         parameters: {
             query?: never;
             header?: never;

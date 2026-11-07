@@ -4,7 +4,7 @@ import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
 from PIL import Image
 
-pytestmark = pytest.mark.django_db
+pytestmark = [pytest.mark.django_db, pytest.mark.usefixtures("game_versions")]
 
 
 def image_upload(size=(512, 300), image_format="PNG", name="avatar.png") -> SimpleUploadedFile:
@@ -34,7 +34,7 @@ def test_me_returns_account_with_game_profile(auth_client, user):
     assert data["avatar_url"] is None
     assert "level" not in data
     assert data["game_profile"] == {
-        "game_version": "",
+        "game_version": None,
         "loader": "",
         "edition": "java",
         "onboarding_done": False,
@@ -82,7 +82,7 @@ def test_onboarding_saves_choices(auth_client, user):
     assert response.status_code == 200
     user.game_profile.refresh_from_db()
     assert user.game_profile.onboarding_done is True
-    assert user.game_profile.game_version == "26.3"
+    assert user.game_profile.game_version_id == "26.3"
 
 
 def test_onboarding_can_be_skipped(auth_client, user):
@@ -91,7 +91,7 @@ def test_onboarding_can_be_skipped(auth_client, user):
     assert response.status_code == 200
     user.game_profile.refresh_from_db()
     assert user.game_profile.onboarding_done is True
-    assert user.game_profile.game_version == ""
+    assert user.game_profile.game_version is None
 
 
 def test_game_profile_rejects_unknown_version_and_loader(auth_client):

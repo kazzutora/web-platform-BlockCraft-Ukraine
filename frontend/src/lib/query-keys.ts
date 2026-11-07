@@ -1,5 +1,6 @@
 /** TanStack Query keys, one object per domain. */
 export const queryKeys = {
+  meta: ["meta"] as const,
   me: {
     all: ["me"] as const,
     account: () => [...queryKeys.me.all, "account"] as const,

@@ -5,7 +5,7 @@ Claude Code читає цей файл на початку кожної зада
 ## Зараз
 
 - **Етап:** R1 — Шар джерел (R0 завершено)
-- **Наступна задача:** R1.4 — `GameVersion` з Modrinth, `GET /meta`
+- **Наступна задача:** R1.5 — «Моя гра»: `/me/game`, cookie гостя, `GameChip`
 - **Гілка:** `rebuild-r1-sources`
 - **Блокери:** GNU Make ще не в PATH цієї сесії — команди `make` виконуються їхніми рецептами напряму; Node.js на хості не потрібен — фронтенд і його pre-commit-хуки працюють у Docker
 
@@ -22,7 +22,7 @@ Claude Code читає цей файл на початку кожної зада
 - [x] R1.1 `apps/sources`: `Sourced`, `SyncRun`, реєстр, адмінка, `make sync`
 - [x] R1.2 Спайк джерел, фікстури, `docs/sources.md` — показати мені
 - [x] R1.3 Клієнти в `sources/clients/` (перенести v1 + Modrinth v3, MineSkin)
-- [ ] R1.4 `GameVersion` з Modrinth, `GET /meta`, без статичних списків
+- [x] R1.4 `GameVersion` з Modrinth, `GET /meta`, без статичних списків
 - [ ] R1.5 «Моя гра»: `/me/game`, cookie гостя, `GameChip`
 - [ ] R1.6 Атрибуція: `source` у API, `SourceBadge`, `/sources`
 
@@ -153,6 +153,10 @@ Claude Code читає цей файл на початку кожної зада
 - 2026-11-07 · R1.3 · Клієнти — `sources/clients/` на спільному `BaseClient`, pydantic-схеми — `sources/schemas/`; кешований `lookup` за ніком і перевірка текстури лишаються в `skins.mojang` (логіка домену), пінг імпортує SSRF-перевірку з `servers.validators` · HTTP в одному місці, доменні правила — у доменах.
 - 2026-11-07 · R1.3 · Будь-яка неочікувана 4xx тепер `SourceError` (раніше `httpx.HTTPStatusError`); змінена відповідь — `SourceSchemaError`, яку Mojang-пошук показує як «недоступно» (503), а не 500 · одна ієрархія помилок для всіх джерел.
 - 2026-11-07 · R1.3 · `SOURCES_USER_AGENT` читає старий `MODRINTH_USER_AGENT`, якщо нового немає; `SYNC_LIMITS` замінює `MODRINTH_SYNC_LIMITS` і `MODRINTH_OFFICIAL_PACKS` (готових модпаків тепер 200 за tech.md 12, було 10); каталог синхронізує типи з `ProjectType` (датапаки — R2.1); `S3_*` прибрано з `.env.example` · наявний `.env` продовжує працювати без правок.
+- 2026-11-07 · R1.4 · `GameProfile.game_version` — FK на `GameVersion` трьома міграціями (nullable → дата-міграція створює рядки для вже обраних версій, `""` → NULL → FK); API віддає `null` замість `""` і приймає обидва · без рядків міграція впала б на наявних профілях; перша синхронізація дописує решту полів.
+- 2026-11-07 · R1.4 · `/meta` поки без мов і країн серверів — вони з'являться з імпортом R5 · у R1 їх немає звідки взяти.
+- 2026-11-07 · R1.4 · Без синхронізованих версій каталожні синхронізації падають з «спершу `make sync s=modrinth j=game_versions`» (у реєстрі ця задача перша, тож `make sync s=modrinth` працює з нуля); CI робить `sync --source modrinth --limit 20` · інакше синхронізація взяла б файли всіх версій.
+- 2026-11-07 · R1.4 · `Pack.game_version` лишається рядком без choices, перевірка — `validate_supported_version`; фронтенд бере версії з `/meta` (`getGameVersions`, `useGameVersions`), фільтр `/packs` пропускає будь-який номер релізу, перевіряє API · статичних списків версій більше немає.
 
 ## Відомі проблеми й борг (перенесено з v1)
 

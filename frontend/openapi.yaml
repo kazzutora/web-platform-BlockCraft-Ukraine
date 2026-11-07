@@ -1177,6 +1177,21 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiError'
           description: ''
+  /api/v1/meta:
+    get:
+      operationId: meta_retrieve
+      tags:
+      - meta
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Meta'
+          description: ''
   /api/v1/mods:
     get:
       operationId: mods_list
@@ -1519,93 +1534,6 @@ paths:
         name: game_version
         schema:
           type: string
-          title: Версія гри
-          enum:
-          - 1.12.2
-          - '1.16'
-          - 1.16.1
-          - 1.16.2
-          - 1.16.3
-          - 1.16.4
-          - 1.16.5
-          - '1.17'
-          - 1.17.1
-          - '1.18'
-          - 1.18.1
-          - 1.18.2
-          - '1.19'
-          - 1.19.1
-          - 1.19.2
-          - 1.19.3
-          - 1.19.4
-          - '1.20'
-          - 1.20.1
-          - 1.20.2
-          - 1.20.3
-          - 1.20.4
-          - 1.20.5
-          - 1.20.6
-          - '1.21'
-          - 1.21.1
-          - 1.21.10
-          - 1.21.11
-          - 1.21.2
-          - 1.21.3
-          - 1.21.4
-          - 1.21.5
-          - 1.21.6
-          - 1.21.7
-          - 1.21.8
-          - 1.21.9
-          - 1.8.9
-          - '26.1'
-          - 26.1.1
-          - 26.1.2
-          - '26.2'
-          - '26.3'
-        description: |-
-          * `26.3` - 26.3
-          * `26.2` - 26.2
-          * `26.1.2` - 26.1.2
-          * `26.1.1` - 26.1.1
-          * `26.1` - 26.1
-          * `1.21.11` - 1.21.11
-          * `1.21.10` - 1.21.10
-          * `1.21.9` - 1.21.9
-          * `1.21.8` - 1.21.8
-          * `1.21.7` - 1.21.7
-          * `1.21.6` - 1.21.6
-          * `1.21.5` - 1.21.5
-          * `1.21.4` - 1.21.4
-          * `1.21.3` - 1.21.3
-          * `1.21.2` - 1.21.2
-          * `1.21.1` - 1.21.1
-          * `1.21` - 1.21
-          * `1.20.6` - 1.20.6
-          * `1.20.5` - 1.20.5
-          * `1.20.4` - 1.20.4
-          * `1.20.3` - 1.20.3
-          * `1.20.2` - 1.20.2
-          * `1.20.1` - 1.20.1
-          * `1.20` - 1.20
-          * `1.19.4` - 1.19.4
-          * `1.19.3` - 1.19.3
-          * `1.19.2` - 1.19.2
-          * `1.19.1` - 1.19.1
-          * `1.19` - 1.19
-          * `1.18.2` - 1.18.2
-          * `1.18.1` - 1.18.1
-          * `1.18` - 1.18
-          * `1.17.1` - 1.17.1
-          * `1.17` - 1.17
-          * `1.16.5` - 1.16.5
-          * `1.16.4` - 1.16.4
-          * `1.16.3` - 1.16.3
-          * `1.16.2` - 1.16.2
-          * `1.16.1` - 1.16.1
-          * `1.16` - 1.16
-          * `1.12.2` - 1.12.2
-          * `1.8.9` - 1.8.9
       - in: query
         name: loader
         schema:
@@ -3852,9 +3780,9 @@ components:
       type: object
       properties:
         game_version:
-          oneOf:
-          - $ref: '#/components/schemas/GameVersionEnum'
-          - $ref: '#/components/schemas/BlankEnum'
+          type: string
+          title: Версія
+          nullable: true
         loader:
           oneOf:
           - $ref: '#/components/schemas/LoaderEnum'
@@ -3866,94 +3794,40 @@ components:
           readOnly: true
       required:
       - onboarding_done
-    GameVersionEnum:
+    GameVersion:
+      type: object
+      properties:
+        version:
+          type: string
+          title: Версія
+          maxLength: 32
+        version_type:
+          allOf:
+          - $ref: '#/components/schemas/GameVersionVersionTypeEnum'
+          title: Тип
+        released_at:
+          type: string
+          format: date-time
+          nullable: true
+          title: Вийшла
+        is_major:
+          type: boolean
+          title: Велика версія
+      required:
+      - version
+      - version_type
+    GameVersionVersionTypeEnum:
       enum:
-      - '26.3'
-      - '26.2'
-      - 26.1.2
-      - 26.1.1
-      - '26.1'
-      - 1.21.11
-      - 1.21.10
-      - 1.21.9
-      - 1.21.8
-      - 1.21.7
-      - 1.21.6
-      - 1.21.5
-      - 1.21.4
-      - 1.21.3
-      - 1.21.2
-      - 1.21.1
-      - '1.21'
-      - 1.20.6
-      - 1.20.5
-      - 1.20.4
-      - 1.20.3
-      - 1.20.2
-      - 1.20.1
-      - '1.20'
-      - 1.19.4
-      - 1.19.3
-      - 1.19.2
-      - 1.19.1
-      - '1.19'
-      - 1.18.2
-      - 1.18.1
-      - '1.18'
-      - 1.17.1
-      - '1.17'
-      - 1.16.5
-      - 1.16.4
-      - 1.16.3
-      - 1.16.2
-      - 1.16.1
-      - '1.16'
-      - 1.12.2
-      - 1.8.9
+      - release
+      - snapshot
+      - beta
+      - alpha
       type: string
       description: |-
-        * `26.3` - 26.3
-        * `26.2` - 26.2
-        * `26.1.2` - 26.1.2
-        * `26.1.1` - 26.1.1
-        * `26.1` - 26.1
-        * `1.21.11` - 1.21.11
-        * `1.21.10` - 1.21.10
-        * `1.21.9` - 1.21.9
-        * `1.21.8` - 1.21.8
-        * `1.21.7` - 1.21.7
-        * `1.21.6` - 1.21.6
-        * `1.21.5` - 1.21.5
-        * `1.21.4` - 1.21.4
-        * `1.21.3` - 1.21.3
-        * `1.21.2` - 1.21.2
-        * `1.21.1` - 1.21.1
-        * `1.21` - 1.21
-        * `1.20.6` - 1.20.6
-        * `1.20.5` - 1.20.5
-        * `1.20.4` - 1.20.4
-        * `1.20.3` - 1.20.3
-        * `1.20.2` - 1.20.2
-        * `1.20.1` - 1.20.1
-        * `1.20` - 1.20
-        * `1.19.4` - 1.19.4
-        * `1.19.3` - 1.19.3
-        * `1.19.2` - 1.19.2
-        * `1.19.1` - 1.19.1
-        * `1.19` - 1.19
-        * `1.18.2` - 1.18.2
-        * `1.18.1` - 1.18.1
-        * `1.18` - 1.18
-        * `1.17.1` - 1.17.1
-        * `1.17` - 1.17
-        * `1.16.5` - 1.16.5
-        * `1.16.4` - 1.16.4
-        * `1.16.3` - 1.16.3
-        * `1.16.2` - 1.16.2
-        * `1.16.1` - 1.16.1
-        * `1.16` - 1.16
-        * `1.12.2` - 1.12.2
-        * `1.8.9` - 1.8.9
+        * `release` - Реліз
+        * `snapshot` - Снапшот
+        * `beta` - Бета
+        * `alpha` - Альфа
     GpuLoadEnum:
       enum:
       - light
@@ -4200,6 +4074,26 @@ components:
       - mc_nickname
       - nickname
       - role
+    Meta:
+      type: object
+      properties:
+        game_versions:
+          type: array
+          items:
+            $ref: '#/components/schemas/GameVersion'
+          description: Supported, newest first.
+        loaders:
+          type: array
+          items:
+            $ref: '#/components/schemas/LoaderEnum'
+        categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/Category'
+      required:
+      - categories
+      - game_versions
+      - loaders
     ModelEnum:
       enum:
       - classic
@@ -4339,8 +4233,7 @@ components:
             $ref: '#/components/schemas/PackStyleEnum'
           readOnly: true
         game_version:
-          allOf:
-          - $ref: '#/components/schemas/GameVersionEnum'
+          type: string
           readOnly: true
           title: Версія гри
         loader:
@@ -4511,9 +4404,10 @@ components:
       description: 'Everything is optional: the player may skip onboarding.'
       properties:
         game_version:
-          oneOf:
-          - $ref: '#/components/schemas/GameVersionEnum'
-          - $ref: '#/components/schemas/BlankEnum'
+          type: string
+          minLength: 1
+          title: Версія
+          nullable: true
         loader:
           oneOf:
           - $ref: '#/components/schemas/LoaderEnum'
@@ -4569,8 +4463,7 @@ components:
             $ref: '#/components/schemas/PackStyleEnum'
           readOnly: true
         game_version:
-          allOf:
-          - $ref: '#/components/schemas/GameVersionEnum'
+          type: string
           readOnly: true
           title: Версія гри
         loader:
@@ -4662,8 +4555,7 @@ components:
             $ref: '#/components/schemas/PackStyleEnum'
           readOnly: true
         game_version:
-          allOf:
-          - $ref: '#/components/schemas/GameVersionEnum'
+          type: string
           readOnly: true
           title: Версія гри
         loader:
@@ -4986,7 +4878,9 @@ components:
             $ref: '#/components/schemas/PackStyleEnum'
           maxItems: 3
         game_version:
-          $ref: '#/components/schemas/GameVersionEnum'
+          type: string
+          minLength: 1
+          maxLength: 32
         loader:
           $ref: '#/components/schemas/PackLoaderEnum'
         loader_version:
@@ -5215,9 +5109,10 @@ components:
       type: object
       properties:
         game_version:
-          oneOf:
-          - $ref: '#/components/schemas/GameVersionEnum'
-          - $ref: '#/components/schemas/BlankEnum'
+          type: string
+          minLength: 1
+          title: Версія
+          nullable: true
         loader:
           oneOf:
           - $ref: '#/components/schemas/LoaderEnum'
@@ -5260,7 +5155,9 @@ components:
             $ref: '#/components/schemas/PackStyleEnum'
           maxItems: 3
         game_version:
-          $ref: '#/components/schemas/GameVersionEnum'
+          type: string
+          minLength: 1
+          maxLength: 32
         loader:
           $ref: '#/components/schemas/PackLoaderEnum'
         loader_version:
@@ -5595,7 +5492,7 @@ components:
           readOnly: true
         version_type:
           allOf:
-          - $ref: '#/components/schemas/VersionTypeEnum'
+          - $ref: '#/components/schemas/ProjectVersionVersionTypeEnum'
           readOnly: true
         game_versions:
           type: array
@@ -5629,6 +5526,16 @@ components:
       - released_at
       - version_number
       - version_type
+    ProjectVersionVersionTypeEnum:
+      enum:
+      - release
+      - beta
+      - alpha
+      type: string
+      description: |-
+        * `release` - Реліз
+        * `beta` - Бета
+        * `alpha` - Альфа
     PublicProfile:
       type: object
       description: For closed profiles everything except the nickname is null.
@@ -6648,16 +6555,6 @@ components:
           $ref: '#/components/schemas/StateEnum'
       required:
       - state
-    VersionTypeEnum:
-      enum:
-      - release
-      - beta
-      - alpha
-      type: string
-      description: |-
-        * `release` - Реліз
-        * `beta` - Бета
-        * `alpha` - Альфа
     Versions:
       type: object
       description: What to install for the requested game version and loader.

@@ -16,7 +16,7 @@ from apps.social.models import Review
 
 from .factories import PackFactory, add, mod
 
-pytestmark = pytest.mark.django_db
+pytestmark = [pytest.mark.django_db, pytest.mark.usefixtures("game_versions")]
 
 FORM = {
     "title": "Затишна Січ",

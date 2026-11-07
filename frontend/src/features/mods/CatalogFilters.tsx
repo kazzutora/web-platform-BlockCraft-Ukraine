@@ -1,6 +1,6 @@
 import { FilterChip } from "@/components/ui/FilterChip";
 import { FilterRow } from "@/components/ui/FilterRow";
-import { gameVersions, loaderOptions } from "@/features/game/labels";
+import { loaderOptions } from "@/features/game/labels";
 
 import { modsCopy } from "./copy";
 import { type ModFilters, catalogHref, toggle } from "./filters";
@@ -13,11 +13,17 @@ const modLoaders = loaderOptions.filter((option) => option.value !== "vanilla");
 type CatalogFiltersProps = {
   filters: ModFilters;
   categories: Category[];
+  gameVersions: string[];
   fromProfile: boolean;
 };
 
 /** Filter rows of the catalog; every chip is a link to the same page with other filters. */
-export function CatalogFilters({ filters, categories, fromProfile }: CatalogFiltersProps) {
+export function CatalogFilters({
+  filters,
+  categories,
+  gameVersions,
+  fromProfile,
+}: CatalogFiltersProps) {
   const versionOptions = [
     {
       value: "",

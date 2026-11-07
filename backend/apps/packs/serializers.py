@@ -2,8 +2,8 @@ from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
 from apps.accounts.serializers import UserBriefSerializer
-from apps.core.game import GAME_VERSION_CHOICES
 from apps.mods.models import Project, ProjectVersion
+from apps.sources.serializers import validate_supported_version
 
 from . import selectors
 from .choices import MAX_STYLES, PackLoader, Style
@@ -185,7 +185,7 @@ class PackWriteSerializer(serializers.Serializer):
         required=False,
         max_length=MAX_STYLES,
     )
-    game_version = serializers.ChoiceField(choices=GAME_VERSION_CHOICES)
+    game_version = serializers.CharField(max_length=32, validators=[validate_supported_version])
     loader = serializers.ChoiceField(choices=PackLoader.choices)
     loader_version = serializers.CharField(
         max_length=64,

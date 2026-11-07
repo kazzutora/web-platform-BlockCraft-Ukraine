@@ -14,7 +14,7 @@ from apps.packs.models import LoaderRelease, Pack, PackItem
 
 from .factories import PackFactory, add, mod
 
-pytestmark = pytest.mark.django_db
+pytestmark = [pytest.mark.django_db, pytest.mark.usefixtures("game_versions")]
 
 
 def items_of(pack: Pack) -> dict[str, bool]:

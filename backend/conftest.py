@@ -34,3 +34,11 @@ def _clear_cache():
     cache.clear()
     yield
     cache.clear()
+
+
+@pytest.fixture
+def game_versions(db) -> list[str]:
+    """Supported Minecraft versions from the recorded Modrinth answer (R1.2), newest first."""
+    from apps.sources.tests.factories import supported_game_versions
+
+    return supported_game_versions()

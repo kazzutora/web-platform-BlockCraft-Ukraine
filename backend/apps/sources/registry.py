@@ -51,6 +51,11 @@ SOURCES: tuple[SourceInfo, ...] = (
         terms_url="https://modrinth.com/legal/terms",
         jobs=(
             Job(
+                key="game_versions",
+                title="Версії Minecraft: які показуємо в «Моїй грі» й для яких беремо файли",
+                task="apps.sources.tasks.sync_game_versions",
+            ),
+            Job(
                 key="catalog",
                 title="Каталог: популярні проєкти за типами з їхніми версіями",
                 task="apps.mods.tasks.sync_popular",

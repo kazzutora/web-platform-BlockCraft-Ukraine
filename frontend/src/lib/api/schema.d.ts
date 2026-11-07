@@ -425,6 +425,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/meta": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["meta_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/mods": {
         parameters: {
             query?: never;
@@ -1174,57 +1190,33 @@ export interface components {
             featured: boolean;
         };
         GameProfile: {
-            game_version?: components["schemas"]["GameVersionEnum"] | components["schemas"]["BlankEnum"];
+            /** Версія */
+            game_version?: string | null;
             loader?: components["schemas"]["LoaderEnum"] | components["schemas"]["BlankEnum"];
             edition?: components["schemas"]["EditionEnum"];
             readonly onboarding_done: boolean;
         };
+        GameVersion: {
+            /** Версія */
+            version: string;
+            /** Тип */
+            version_type: components["schemas"]["GameVersionVersionTypeEnum"];
+            /**
+             * Вийшла
+             * Format: date-time
+             */
+            released_at?: string | null;
+            /** Велика версія */
+            is_major?: boolean;
+        };
         /**
-         * @description * `26.3` - 26.3
-         *     * `26.2` - 26.2
-         *     * `26.1.2` - 26.1.2
-         *     * `26.1.1` - 26.1.1
-         *     * `26.1` - 26.1
-         *     * `1.21.11` - 1.21.11
-         *     * `1.21.10` - 1.21.10
-         *     * `1.21.9` - 1.21.9
-         *     * `1.21.8` - 1.21.8
-         *     * `1.21.7` - 1.21.7
-         *     * `1.21.6` - 1.21.6
-         *     * `1.21.5` - 1.21.5
-         *     * `1.21.4` - 1.21.4
-         *     * `1.21.3` - 1.21.3
-         *     * `1.21.2` - 1.21.2
-         *     * `1.21.1` - 1.21.1
-         *     * `1.21` - 1.21
-         *     * `1.20.6` - 1.20.6
-         *     * `1.20.5` - 1.20.5
-         *     * `1.20.4` - 1.20.4
-         *     * `1.20.3` - 1.20.3
-         *     * `1.20.2` - 1.20.2
-         *     * `1.20.1` - 1.20.1
-         *     * `1.20` - 1.20
-         *     * `1.19.4` - 1.19.4
-         *     * `1.19.3` - 1.19.3
-         *     * `1.19.2` - 1.19.2
-         *     * `1.19.1` - 1.19.1
-         *     * `1.19` - 1.19
-         *     * `1.18.2` - 1.18.2
-         *     * `1.18.1` - 1.18.1
-         *     * `1.18` - 1.18
-         *     * `1.17.1` - 1.17.1
-         *     * `1.17` - 1.17
-         *     * `1.16.5` - 1.16.5
-         *     * `1.16.4` - 1.16.4
-         *     * `1.16.3` - 1.16.3
-         *     * `1.16.2` - 1.16.2
-         *     * `1.16.1` - 1.16.1
-         *     * `1.16` - 1.16
-         *     * `1.12.2` - 1.12.2
-         *     * `1.8.9` - 1.8.9
+         * @description * `release` - Реліз
+         *     * `snapshot` - Снапшот
+         *     * `beta` - Бета
+         *     * `alpha` - Альфа
          * @enum {string}
          */
-        GameVersionEnum: "26.3" | "26.2" | "26.1.2" | "26.1.1" | "26.1" | "1.21.11" | "1.21.10" | "1.21.9" | "1.21.8" | "1.21.7" | "1.21.6" | "1.21.5" | "1.21.4" | "1.21.3" | "1.21.2" | "1.21.1" | "1.21" | "1.20.6" | "1.20.5" | "1.20.4" | "1.20.3" | "1.20.2" | "1.20.1" | "1.20" | "1.19.4" | "1.19.3" | "1.19.2" | "1.19.1" | "1.19" | "1.18.2" | "1.18.1" | "1.18" | "1.17.1" | "1.17" | "1.16.5" | "1.16.4" | "1.16.3" | "1.16.2" | "1.16.1" | "1.16" | "1.12.2" | "1.8.9";
+        GameVersionVersionTypeEnum: "release" | "snapshot" | "beta" | "alpha";
         /**
          * @description * `light` - Легкий
          *     * `medium` - Середній
@@ -1332,6 +1324,12 @@ export interface components {
             readonly date_joined: string;
             readonly game_profile: components["schemas"]["GameProfile"];
         };
+        Meta: {
+            /** @description Supported, newest first. */
+            game_versions: components["schemas"]["GameVersion"][];
+            loaders: components["schemas"]["LoaderEnum"][];
+            categories: components["schemas"]["Category"][];
+        };
         /**
          * @description * `classic` - Класична (Стів)
          *     * `slim` - Тонкі руки (Алекс)
@@ -1385,7 +1383,7 @@ export interface components {
             readonly icons: components["schemas"]["PackIcon"][];
             readonly style_tags: components["schemas"]["PackStyleEnum"][];
             /** Версія гри */
-            readonly game_version: components["schemas"]["GameVersionEnum"];
+            readonly game_version: string;
             /** Лоадер */
             readonly loader: components["schemas"]["PackLoaderEnum"];
             /** Офіційна */
@@ -1447,7 +1445,8 @@ export interface components {
         NullEnum: null;
         /** @description Everything is optional: the player may skip onboarding. */
         OnboardingRequest: {
-            game_version?: components["schemas"]["GameVersionEnum"] | components["schemas"]["BlankEnum"];
+            /** Версія */
+            game_version?: string | null;
             loader?: components["schemas"]["LoaderEnum"] | components["schemas"]["BlankEnum"];
             edition?: components["schemas"]["EditionEnum"];
         };
@@ -1468,7 +1467,7 @@ export interface components {
             readonly icons: components["schemas"]["PackIcon"][];
             readonly style_tags: components["schemas"]["PackStyleEnum"][];
             /** Версія гри */
-            readonly game_version: components["schemas"]["GameVersionEnum"];
+            readonly game_version: string;
             /** Лоадер */
             readonly loader: components["schemas"]["PackLoaderEnum"];
             /** Офіційна */
@@ -1495,7 +1494,7 @@ export interface components {
             readonly icons: components["schemas"]["PackIcon"][];
             readonly style_tags: components["schemas"]["PackStyleEnum"][];
             /** Версія гри */
-            readonly game_version: components["schemas"]["GameVersionEnum"];
+            readonly game_version: string;
             /** Лоадер */
             readonly loader: components["schemas"]["PackLoaderEnum"];
             /** Офіційна */
@@ -1603,7 +1602,7 @@ export interface components {
             title: string;
             summary?: string;
             style_tags?: components["schemas"]["PackStyleEnum"][];
-            game_version: components["schemas"]["GameVersionEnum"];
+            game_version: string;
             loader: components["schemas"]["PackLoaderEnum"];
             /** @description Empty: the latest stable build at export time. */
             loader_version?: string;
@@ -1725,7 +1724,8 @@ export interface components {
             editors?: string[];
         };
         PatchedGameProfileRequest: {
-            game_version?: components["schemas"]["GameVersionEnum"] | components["schemas"]["BlankEnum"];
+            /** Версія */
+            game_version?: string | null;
             loader?: components["schemas"]["LoaderEnum"] | components["schemas"]["BlankEnum"];
             edition?: components["schemas"]["EditionEnum"];
         };
@@ -1744,7 +1744,7 @@ export interface components {
             title?: string;
             summary?: string;
             style_tags?: components["schemas"]["PackStyleEnum"][];
-            game_version?: components["schemas"]["GameVersionEnum"];
+            game_version?: string;
             loader?: components["schemas"]["PackLoaderEnum"];
             /** @description Empty: the latest stable build at export time. */
             loader_version?: string;
@@ -1861,7 +1861,7 @@ export interface components {
             id: string;
             readonly name: string;
             readonly version_number: string;
-            readonly version_type: components["schemas"]["VersionTypeEnum"];
+            readonly version_type: components["schemas"]["ProjectVersionVersionTypeEnum"];
             readonly game_versions: string[];
             readonly loaders: string[];
             readonly file_name: string;
@@ -1869,6 +1869,13 @@ export interface components {
             /** Format: date-time */
             readonly released_at: string;
         };
+        /**
+         * @description * `release` - Реліз
+         *     * `beta` - Бета
+         *     * `alpha` - Альфа
+         * @enum {string}
+         */
+        ProjectVersionVersionTypeEnum: "release" | "beta" | "alpha";
         /** @description For closed profiles everything except the nickname is null. */
         PublicProfile: {
             nickname: string;
@@ -2248,13 +2255,6 @@ export interface components {
         Verification: {
             state: components["schemas"]["StateEnum"];
         };
-        /**
-         * @description * `release` - Реліз
-         *     * `beta` - Бета
-         *     * `alpha` - Альфа
-         * @enum {string}
-         */
-        VersionTypeEnum: "release" | "beta" | "alpha";
         /** @description What to install for the requested game version and loader. */
         Versions: {
             game_version: string;
@@ -3557,6 +3557,25 @@ export interface operations {
             };
         };
     };
+    meta_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Meta"];
+                };
+            };
+        };
+    };
     mods_list: {
         parameters: {
             query?: {
@@ -3803,51 +3822,7 @@ export interface operations {
             query?: {
                 /** @description Author nickname. */
                 author?: string;
-                /**
-                 * @description * `26.3` - 26.3
-                 *     * `26.2` - 26.2
-                 *     * `26.1.2` - 26.1.2
-                 *     * `26.1.1` - 26.1.1
-                 *     * `26.1` - 26.1
-                 *     * `1.21.11` - 1.21.11
-                 *     * `1.21.10` - 1.21.10
-                 *     * `1.21.9` - 1.21.9
-                 *     * `1.21.8` - 1.21.8
-                 *     * `1.21.7` - 1.21.7
-                 *     * `1.21.6` - 1.21.6
-                 *     * `1.21.5` - 1.21.5
-                 *     * `1.21.4` - 1.21.4
-                 *     * `1.21.3` - 1.21.3
-                 *     * `1.21.2` - 1.21.2
-                 *     * `1.21.1` - 1.21.1
-                 *     * `1.21` - 1.21
-                 *     * `1.20.6` - 1.20.6
-                 *     * `1.20.5` - 1.20.5
-                 *     * `1.20.4` - 1.20.4
-                 *     * `1.20.3` - 1.20.3
-                 *     * `1.20.2` - 1.20.2
-                 *     * `1.20.1` - 1.20.1
-                 *     * `1.20` - 1.20
-                 *     * `1.19.4` - 1.19.4
-                 *     * `1.19.3` - 1.19.3
-                 *     * `1.19.2` - 1.19.2
-                 *     * `1.19.1` - 1.19.1
-                 *     * `1.19` - 1.19
-                 *     * `1.18.2` - 1.18.2
-                 *     * `1.18.1` - 1.18.1
-                 *     * `1.18` - 1.18
-                 *     * `1.17.1` - 1.17.1
-                 *     * `1.17` - 1.17
-                 *     * `1.16.5` - 1.16.5
-                 *     * `1.16.4` - 1.16.4
-                 *     * `1.16.3` - 1.16.3
-                 *     * `1.16.2` - 1.16.2
-                 *     * `1.16.1` - 1.16.1
-                 *     * `1.16` - 1.16
-                 *     * `1.12.2` - 1.12.2
-                 *     * `1.8.9` - 1.8.9
-                 */
-                game_version?: "1.12.2" | "1.16" | "1.16.1" | "1.16.2" | "1.16.3" | "1.16.4" | "1.16.5" | "1.17" | "1.17.1" | "1.18" | "1.18.1" | "1.18.2" | "1.19" | "1.19.1" | "1.19.2" | "1.19.3" | "1.19.4" | "1.20" | "1.20.1" | "1.20.2" | "1.20.3" | "1.20.4" | "1.20.5" | "1.20.6" | "1.21" | "1.21.1" | "1.21.10" | "1.21.11" | "1.21.2" | "1.21.3" | "1.21.4" | "1.21.5" | "1.21.6" | "1.21.7" | "1.21.8" | "1.21.9" | "1.8.9" | "26.1" | "26.1.1" | "26.1.2" | "26.2" | "26.3";
+                game_version?: string;
                 /**
                  * @description * `fabric` - Fabric
                  *     * `forge` - Forge

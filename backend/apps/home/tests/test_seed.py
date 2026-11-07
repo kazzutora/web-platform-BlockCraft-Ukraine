@@ -9,7 +9,7 @@ from apps.mods.tests.factories import ProjectFactory, VersionFactory
 from apps.packs.models import Pack
 from apps.social.models import Review
 
-pytestmark = pytest.mark.django_db
+pytestmark = [pytest.mark.django_db, pytest.mark.usefixtures("game_versions")]
 
 
 def test_demo_content_is_complete_and_consistent():

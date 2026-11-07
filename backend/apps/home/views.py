@@ -13,7 +13,7 @@ from .serializers import HomeSerializer, TopQuerySerializer, TopSerializer
 
 def _game_profile(request: Request) -> tuple[str, str]:
     profile = getattr(request.user, "game_profile", None) if request.user.is_authenticated else None
-    return (profile.game_version, profile.loader) if profile else ("", "")
+    return (profile.game_version_id or "", profile.loader) if profile else ("", "")
 
 
 class HomeView(APIView):

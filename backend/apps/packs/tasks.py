@@ -3,11 +3,11 @@ import logging
 from celery import shared_task
 from django.conf import settings
 
-from apps.core.game import GAME_VERSIONS
 from apps.mods.tasks import LONG_TASK
 from apps.sources.clients.loaders import LoaderClient
 from apps.sources.clients.modrinth import ModrinthClient, ModrinthError
 from apps.sources.runs import sync_run
+from apps.sources.services import supported_game_versions
 
 from . import services
 from .models import Pack
@@ -30,7 +30,7 @@ def fill_dependencies(pack_id: int) -> int:
 @shared_task(name="packs.refresh_loader_versions")
 def refresh_loader_versions() -> dict[str, int]:
     with sync_run("loaders", "loaders.releases") as run, LoaderClient() as client:
-        run.updated += services.store_loader_releases(client.latest_many(GAME_VERSIONS))
+        run.updated += services.store_loader_releases(client.latest_many(supported_game_versions()))
     return run.as_dict()
 
 

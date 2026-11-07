@@ -66,12 +66,12 @@ pnpm dev               # сайт однаково відкривається н
 | `make lint` / `make fmt` / `make typecheck` | ruff, ESLint, Prettier, `tsc --noEmit` |
 | `make api-types` | Експорт схем API (`frontend/openapi.yaml`, `frontend/allauth-openapi.json`) і генерація типів `schema.d.ts` / `allauth.d.ts` у `frontend/src/lib/api/` |
 | `make reset-db` | Видалити й створити БД заново (міграції — під час старту бекенду) |
-| `make sync` | Синхронізація всіх джерел; одне — `make sync s=modrinth`, швидко — `make sync s=modrinth j=catalog limit=20` |
+| `make sync` | Синхронізація всіх джерел; одне — `make sync s=modrinth`, швидко — `make sync s=modrinth limit=20` (версії гри, потім каталог) |
 | `make seed` | Демо-гравці поверх синхронізованих даних (спершу `make sync s=modrinth`): 20 гравців (пароль `Creeper-Aww-Man-2026`), обране, колекції, відгуки, збірки; `--reset` — створити заново |
 | `make reindex` | Перебудувати пошуковий індекс Meilisearch |
 | `make er-diagram` | ER-діаграма моделей у Mermaid (v1: `docs/archive/v1/coursework/er.md`) |
 
-e2e (Playwright): `ACCOUNT_EMAIL_VERIFICATION=none docker compose up -d`, `sync --source modrinth --job catalog --limit 20`, `make seed`, далі тести з `e2e/` — див. джоб `e2e` у `.github/workflows/ci.yml`. Продакшн і деплой — [docs/deploy.md](docs/deploy.md).
+e2e (Playwright): `ACCOUNT_EMAIL_VERIFICATION=none docker compose up -d`, `sync --source modrinth --limit 20`, `make seed`, далі тести з `e2e/` — див. джоб `e2e` у `.github/workflows/ci.yml`. Продакшн і деплой — [docs/deploy.md](docs/deploy.md).
 
 Один тест бекенду: `docker compose exec backend uv run pytest apps/core/tests/test_health.py -k redis`.
 

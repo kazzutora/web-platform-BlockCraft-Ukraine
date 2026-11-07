@@ -3,6 +3,8 @@ import { CardGrid } from "@/components/ui/CardGrid";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { plural } from "@/lib/plural";
 
+import { getGameVersions } from "@/features/game/meta";
+
 import { getCatalog, getCategories, getGameProfile } from "./api";
 import { CatalogFilters } from "./CatalogFilters";
 import { modsCopy } from "./copy";
@@ -14,9 +16,10 @@ import { ModCard } from "./ModCard";
 export async function ModsCatalog({ filters: requested }: { filters: ModFilters }) {
   const profile = await getGameProfile();
   const { filters, fromProfile } = withProfileDefaults(requested, profile);
-  const [page, categories] = await Promise.all([
+  const [page, categories, gameVersions] = await Promise.all([
     getCatalog(toApiQuery(filters)),
     getCategories(filters.type),
+    getGameVersions(),
   ]);
   const typeCopy = modsCopy.types[filters.type];
 
@@ -28,7 +31,12 @@ export async function ModsCatalog({ filters: requested }: { filters: ModFilters 
       title={typeCopy.title}
       count={plural(page.count, typeCopy.plural)}
       filters={
-        <CatalogFilters filters={filters} categories={categories} fromProfile={fromProfile} />
+        <CatalogFilters
+          filters={filters}
+          categories={categories}
+          gameVersions={gameVersions}
+          fromProfile={fromProfile}
+        />
       }
       footer={
         page.next ? (

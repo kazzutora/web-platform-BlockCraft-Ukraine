@@ -1,7 +1,6 @@
 import { FilterChip } from "@/components/ui/FilterChip";
 import { FilterRow } from "@/components/ui/FilterRow";
 import { NavigateSelect } from "@/components/ui/NavigateSelect";
-import { gameVersions } from "@/features/game/labels";
 
 import { packsCopy } from "./copy";
 import { type PackFilters as Filters, catalogHref, toggleStyle } from "./filters";
@@ -10,7 +9,13 @@ import { packLoaders, packStyles } from "./types";
 const copy = packsCopy.filters;
 
 /** Version, sort, loader and style: every chip is a link with the other filters kept. */
-export function PackFilters({ filters }: { filters: Filters }) {
+export function PackFilters({
+  filters,
+  gameVersions,
+}: {
+  filters: Filters;
+  gameVersions: string[];
+}) {
   const versionOptions = [
     { value: "", label: copy.allVersions, href: catalogHref(filters, { gameVersion: "" }) },
     ...gameVersions.map((version) => ({

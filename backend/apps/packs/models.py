@@ -5,7 +5,6 @@ from django.contrib.postgres.indexes import GinIndex
 from django.db import models
 from django.db.models import Q
 
-from apps.core.game import GAME_VERSION_CHOICES
 from apps.core.models import Authored, Engagement, Publishable, TimeStamped
 
 from .choices import PackLoader, Style
@@ -28,7 +27,8 @@ class Pack(TimeStamped, Authored, Publishable, Engagement):
     style_tags = ArrayField(
         models.CharField(max_length=16, choices=Style.choices), default=list, blank=True
     )
-    game_version = models.CharField("версія гри", max_length=32, choices=GAME_VERSION_CHOICES)
+    # A supported sources.GameVersion; packs keep the string to survive version cleanups
+    game_version = models.CharField("версія гри", max_length=32)
     loader = models.CharField("лоадер", max_length=16, choices=PackLoader.choices)
     #: Pinned by the author; empty — the latest stable one we know (see LoaderRelease)
     loader_version = models.CharField("версія лоадера", max_length=64, blank=True)

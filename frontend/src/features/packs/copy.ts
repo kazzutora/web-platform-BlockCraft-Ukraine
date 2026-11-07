@@ -120,6 +120,7 @@ export const packsCopy = {
     error: "Не вдалося зберегти. Перевір поля.",
     errors: {
       title: "Дай зборці назву.",
+      gameVersion: "Обери версію гри.",
       ram: "Від 1 до 64 ГБ.",
       loaderVersion: "Лише цифри, літери, крапки й дефіси.",
     },

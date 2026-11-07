@@ -8,10 +8,10 @@ from django.utils import timezone
 
 from apps.accounts.models import User
 from apps.core.exceptions import DomainError
-from apps.core.game import GAME_VERSIONS
 from apps.core.models import Source
 from apps.sources.clients.modrinth import ModrinthClient, ModrinthError, ModrinthNotFoundError
 from apps.sources.runs import sync_run
+from apps.sources.services import supported_game_versions
 
 from . import services
 from .models import Project, ProjectType
@@ -38,7 +38,7 @@ def sync_popular(limit: int | None = None) -> dict[str, dict[str, int]]:
                 services.sync_popular(
                     client=client,
                     limits={project_type: type_limit},
-                    game_versions=list(GAME_VERSIONS),
+                    game_versions=supported_game_versions(),
                     run=run,
                 )
             counts[project_type] = run.as_dict()
@@ -73,7 +73,7 @@ def sync_versions_for_tracked(days: int = 90) -> dict[str, int]:
                 services.sync_project_versions(
                     client=client,
                     project=project,
-                    game_versions=list(GAME_VERSIONS),
+                    game_versions=supported_game_versions(),
                 )
                 run.updated += 1
     return run.as_dict()
@@ -91,7 +91,7 @@ def import_project(*, slug: str, suggested_by_id: int | None = None) -> str | No
                 client=client,
                 slug=slug,
                 suggested_by=suggested_by,
-                game_versions=list(GAME_VERSIONS),
+                game_versions=supported_game_versions(),
             )
         except DomainError:
             logger.info("Suggested project %s is not a mod, pack or shader", slug)

@@ -4,7 +4,7 @@ import { DetailPage } from "@/components/layout/DetailPage";
 import { CardGrid } from "@/components/ui/CardGrid";
 import { Chip } from "@/components/ui/Chip";
 import { Icon } from "@/components/ui/Icon";
-import { gameVersions as supportedVersions } from "@/features/game/labels";
+import { getGameVersions } from "@/features/game/meta";
 import { AddToCollection } from "@/features/library/AddToCollection";
 import { SaveToggle } from "@/features/library/SaveToggle";
 import { ReportButton } from "@/features/moderation/ReportButton";
@@ -32,7 +32,11 @@ type ModDetailProps = {
 
 /** /mods/[slug]: rendered on the server with the download for the player's setup. */
 export async function ModDetail({ slug, searchParams }: ModDetailProps) {
-  const [project, profile] = await Promise.all([getProject(slug), getGameProfile()]);
+  const [project, profile, supportedVersions] = await Promise.all([
+    getProject(slug),
+    getGameProfile(),
+    getGameVersions(),
+  ]);
   if (!project) notFound();
 
   const target = downloadTarget(project, searchParams, profile);
@@ -42,7 +46,7 @@ export async function ModDetail({ slug, searchParams }: ModDetailProps) {
     getSimilar(slug),
   ]);
   const pickerVersions = project.game_versions
-    .filter((version) => supportedVersions.includes(version as never))
+    .filter((version) => supportedVersions.includes(version))
     .sort(versionDescending);
   const meta = [
     `⬇ ${formatCount(project.downloads)}`,

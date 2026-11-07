@@ -41,7 +41,7 @@ def export(user: User) -> dict:
             "avatar": user.avatar.url if user.avatar else None,
         },
         "game_profile": {
-            "game_version": profile.game_version,
+            "game_version": profile.game_version_id,
             "loader": profile.loader,
             "edition": profile.edition,
         },

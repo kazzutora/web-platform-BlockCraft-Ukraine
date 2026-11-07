@@ -11,7 +11,7 @@ import { Select } from "@/components/ui/Select";
 import { Textarea } from "@/components/ui/Textarea";
 import { applyErrors } from "@/features/auth/applyErrors";
 import { FormError } from "@/features/auth/FormError";
-import { gameVersionOptions, gameVersions } from "@/features/game/labels";
+import { useGameVersions } from "@/features/game/useGameVersions";
 
 import { packsCopy } from "./copy";
 import { MAX_STYLES, type PackDetail, type PackWrite, packLoaders, packStyles } from "./types";
@@ -22,7 +22,7 @@ const errors = copy.errors;
 const schema = z.object({
   title: z.string().trim().min(1, errors.title).max(80),
   summary: z.string().trim().max(280),
-  game_version: z.enum(gameVersions),
+  game_version: z.string().min(1, errors.gameVersion),
   loader: z.enum(packLoaders),
   style_tags: z.array(z.enum(packStyles)).max(MAX_STYLES),
   loader_version: z
@@ -48,7 +48,7 @@ const FIELDS = Object.keys(schema.shape) as Array<keyof PackFormValues>;
 export const emptyPack: PackFormValues = {
   title: "",
   summary: "",
-  game_version: "1.21.1",
+  game_version: "",
   loader: "fabric",
   style_tags: [],
   loader_version: "",
@@ -95,6 +95,12 @@ export function PackForm({
     name: ["game_version", "loader"],
   });
   const saved = form.formState.defaultValues;
+  const supported = useGameVersions();
+  // A pack made for a version that is no longer supported keeps it in the list
+  const versionOptions = [
+    ...(saved?.game_version && !supported.includes(saved.game_version) ? [saved.game_version] : []),
+    ...supported,
+  ].map((version) => ({ value: version, label: version }));
   const retargeting = !short && (gameVersion !== saved?.game_version || loader !== saved?.loader);
 
   async function submit(values: PackFormValues) {
@@ -125,7 +131,7 @@ export function PackForm({
       />
       <Select
         label={copy.gameVersion}
-        options={gameVersionOptions}
+        options={versionOptions}
         error={fieldErrors.game_version?.message}
         {...form.register("game_version")}
       />

@@ -41,3 +41,36 @@ class SyncRun(models.Model):
     @property
     def duration(self):
         return self.finished_at - self.started_at if self.finished_at else None
+
+
+class GameVersionQuerySet(models.QuerySet):
+    def supported(self):
+        """Shown in «Моя гра» and used to sync files: releases from 1.16 + legacy (tech.md 6.2)."""
+        return self.filter(is_supported=True)
+
+
+class GameVersion(models.Model):
+    """A Minecraft version from Modrinth `/tag/game_version`; the PK is the version string."""
+
+    class Type(models.TextChoices):
+        RELEASE = "release", "Реліз"
+        SNAPSHOT = "snapshot", "Снапшот"
+        BETA = "beta", "Бета"
+        ALPHA = "alpha", "Альфа"
+
+    version = models.CharField("версія", max_length=32, primary_key=True)
+    version_type = models.CharField("тип", max_length=8, choices=Type.choices)
+    # Empty only for versions kept from player profiles before the first sync
+    released_at = models.DateTimeField("вийшла", null=True, blank=True)
+    is_major = models.BooleanField("велика версія", default=False)
+    is_supported = models.BooleanField("підтримується", default=False, db_index=True)
+
+    objects = GameVersionQuerySet.as_manager()
+
+    class Meta:
+        verbose_name = "версія гри"
+        verbose_name_plural = "версії гри"
+        ordering = [models.F("released_at").desc(nulls_last=True), "-version"]
+
+    def __str__(self) -> str:
+        return self.version

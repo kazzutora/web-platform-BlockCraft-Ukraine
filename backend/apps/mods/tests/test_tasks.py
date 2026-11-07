@@ -13,7 +13,7 @@ from .factories import ProjectFactory, VersionFactory
 from .payloads import project_payload, version_payload
 from .test_sync import FakeModrinth
 
-pytestmark = pytest.mark.django_db
+pytestmark = [pytest.mark.django_db, pytest.mark.usefixtures("game_versions")]
 
 
 @contextmanager

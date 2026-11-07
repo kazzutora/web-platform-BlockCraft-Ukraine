@@ -18,7 +18,6 @@ from pydantic import ValidationError
 from apps.accounts.models import User
 from apps.core.counters import bump
 from apps.core.exceptions import DomainError
-from apps.core.game import GAME_VERSIONS
 from apps.core.text import slug_from
 from apps.core.versions import latest_release
 from apps.moderation import services as moderation
@@ -29,6 +28,7 @@ from apps.mods.selectors import dependencies_of, resolve_version
 from apps.mods.services import import_missing
 from apps.sources.clients.modrinth import ModrinthClient, ModrinthError
 from apps.sources.schemas.modrinth import ModrinthProject, ModrinthVersion, VersionFile
+from apps.sources.services import supported_game_versions
 
 from . import selectors
 from .choices import MAX_ITEMS, MAX_STYLES, MRPACK_LOADER_KEYS, PackLoader, Style
@@ -507,11 +507,12 @@ def official_author() -> User:
 
 def pick_modpack_version(versions: Iterable[ModrinthVersion]) -> ModrinthVersion | None:
     """The newest release for a loader and game version we support."""
+    game_versions = set(supported_game_versions())
     supported = [
         version
         for version in versions
         if set(version.loaders) & set(PackLoader.values)
-        and set(version.game_versions) & set(GAME_VERSIONS)
+        and set(version.game_versions) & game_versions
         and version.primary_file
     ]
     releases = [version for version in supported if version.version_type == "release"]
@@ -562,7 +563,9 @@ def import_modpack(*, client: ModrinthClient, data: ModrinthProject) -> Pack | N
     Only the index of the modpack's .mrpack is read, to learn its files; nothing is stored,
     players download the original from Modrinth (`source_file_url`).
     """
-    version = pick_modpack_version(client.get_versions(data.id, game_versions=list(GAME_VERSIONS)))
+    version = pick_modpack_version(
+        client.get_versions(data.id, game_versions=supported_game_versions())
+    )
     if version is None or version.primary_file is None:
         return None
     pack = Pack.objects.filter(modrinth_id=data.id).first()
@@ -575,7 +578,7 @@ def import_modpack(*, client: ModrinthClient, data: ModrinthProject) -> Pack | N
     import_missing(
         client=client,
         modrinth_ids={ref.project_id for ref in refs},
-        game_versions=list(GAME_VERSIONS),
+        game_versions=supported_game_versions(),
     )
     with transaction.atomic():
         return _store_official(pack=pack, data=data, version=version, index=index, refs=refs)
@@ -590,7 +593,8 @@ def _store_official(
     refs: list[FileRef],
 ) -> Pack:
     loader = next(loader for loader in version.loaders if loader in PackLoader.values)
-    game_version = latest_release([gv for gv in version.game_versions if gv in GAME_VERSIONS])
+    supported = set(supported_game_versions())
+    game_version = latest_release([gv for gv in version.game_versions if gv in supported])
     if pack is None:
         pack = Pack(
             author=official_author(),
@@ -651,7 +655,9 @@ def _store_official(
 
 def import_popular_modpacks(*, client: ModrinthClient, limit: int) -> list[str]:
     """The `limit` most downloaded modpacks for supported versions, as official packs."""
-    page = client.search(project_type="modpack", game_versions=GAME_VERSIONS, limit=limit)
+    page = client.search(
+        project_type="modpack", game_versions=supported_game_versions(), limit=limit
+    )
     imported = []
     for data in client.get_projects([hit.project_id for hit in page.hits]):
         try:
@@ -669,7 +675,7 @@ def fill_dependencies(*, client: ModrinthClient, pack: Pack) -> int:
     missing = selectors.missing_dependency_ids(pack)
     if not missing:
         return 0
-    import_missing(client=client, modrinth_ids=missing, game_versions=list(GAME_VERSIONS))
+    import_missing(client=client, modrinth_ids=missing, game_versions=supported_game_versions())
     with transaction.atomic():
         return complete_dependencies(pack)
 

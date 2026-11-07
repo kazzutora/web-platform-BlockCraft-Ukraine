@@ -17,7 +17,7 @@ from apps.sources.schemas.modrinth import ModrinthProject, ModrinthVersion, Vers
 
 from .factories import PackFactory, mod
 
-pytestmark = pytest.mark.django_db
+pytestmark = [pytest.mark.django_db, pytest.mark.usefixtures("game_versions")]
 
 MRPACK_URL = "https://cdn.modrinth.com/data/FABULOUS/versions/PACKV001/fabulously.mrpack"
 

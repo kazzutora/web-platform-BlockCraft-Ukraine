@@ -3,7 +3,8 @@ import re
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
-from apps.core.game import GAME_VERSIONS, Edition, Loader
+from apps.core.game import Edition, Loader
+from apps.sources.serializers import GameVersionField
 
 from .models import GameProfile, User, UserSettings
 
@@ -15,6 +16,8 @@ def avatar_url(user: User) -> str | None:
 
 
 class GameProfileSerializer(serializers.ModelSerializer):
+    game_version = GameVersionField(required=False)
+
     class Meta:
         model = GameProfile
         fields = ["game_version", "loader", "edition", "onboarding_done"]
@@ -24,7 +27,7 @@ class GameProfileSerializer(serializers.ModelSerializer):
 class OnboardingSerializer(serializers.Serializer):
     """Everything is optional: the player may skip onboarding."""
 
-    game_version = serializers.ChoiceField(choices=GAME_VERSIONS, required=False, allow_blank=True)
+    game_version = GameVersionField(required=False)
     loader = serializers.ChoiceField(choices=Loader.choices, required=False, allow_blank=True)
     edition = serializers.ChoiceField(choices=Edition.choices, required=False)
 

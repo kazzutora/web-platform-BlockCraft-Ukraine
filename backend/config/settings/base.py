@@ -255,6 +255,10 @@ CELERY_TASK_TIME_LIMIT = 5 * 60
 CELERY_TASK_SOFT_TIME_LIMIT = 4 * 60
 CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 CELERY_BEAT_SCHEDULE: dict[str, dict] = {
+    "sources-sync-game-versions": {
+        "task": "sources.sync_game_versions",
+        "schedule": crontab(hour=2, minute=30),
+    },
     "mods-sync-popular": {"task": "mods.sync_popular", "schedule": crontab(hour=3, minute=0)},
     "mods-sync-versions-for-tracked": {
         "task": "mods.sync_versions_for_tracked",
@@ -270,7 +274,7 @@ CELERY_BEAT_SCHEDULE: dict[str, dict] = {
     },
     "packs-refresh-loader-versions": {
         "task": "packs.refresh_loader_versions",
-        "schedule": crontab(hour=2, minute=30),
+        "schedule": crontab(hour=2, minute=45),
     },
     "packs-import-official": {
         "task": "packs.import_official",
@@ -303,5 +307,7 @@ SYNC_LIMITS = {
     "servers": env.int("SYNC_LIMIT_SERVERS", default=500),
 }
 SYNC_SKINS_PER_RUN = env.int("SYNC_SKINS_PER_RUN", default=300)
+# Releases older than 1.16 still offered in «Моя гра» (apps/sources/services.py)
+SUPPORTED_LEGACY_VERSIONS = env.list("SUPPORTED_LEGACY_VERSIONS", default=["1.12.2", "1.8.9"])
 # Optional free key from account.mineskin.org; without it the API answers with a warning
 MINESKIN_API_KEY = env("MINESKIN_API_KEY", default="")

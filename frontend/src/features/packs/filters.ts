@@ -1,5 +1,3 @@
-import { gameVersions } from "@/features/game/labels";
-
 import {
   type CatalogQuery,
   type PackLoader,
@@ -22,6 +20,8 @@ export type PackFilters = {
 type SearchParams = Record<string, string | string[] | undefined>;
 
 const sorts = ["popular", "new", "top", "downloads"];
+// Release numbers only ("1.21.1", "26.3"); the API checks they are supported
+const RELEASE = /^\d+\.\d+(\.\d+)?$/;
 
 const first = (value: string | string[] | undefined) =>
   (Array.isArray(value) ? value[0] : value)?.trim() ?? "";
@@ -31,7 +31,7 @@ export function parseFilters(params: SearchParams): PackFilters {
   const loader = first(params.loader) as PackLoader;
   const sort = first(params.sort);
   return {
-    gameVersion: (gameVersions as string[]).includes(gameVersion) ? gameVersion : "",
+    gameVersion: RELEASE.test(gameVersion) ? gameVersion : "",
     loader: packLoaders.includes(loader) ? loader : "",
     styles: first(params.style)
       .split(",")

@@ -1,7 +1,7 @@
 import { loaderName, mainLoadersOf } from "./format";
 import type { ProjectDetail } from "./types";
 
-type Profile = { game_version?: string; loader?: string } | null;
+type Profile = { game_version?: string | null; loader?: string } | null;
 type SearchParams = Record<string, string | string[] | undefined>;
 
 export type DownloadTarget = { gameVersion: string; loader: string; label: string };

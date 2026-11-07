@@ -2,8 +2,6 @@ import django_filters
 from django.db.models import Q, QuerySet
 from django.db.models.functions import Lower
 
-from apps.core.game import GAME_VERSION_CHOICES
-
 from .choices import PackLoader, Style
 from .models import Pack
 
@@ -17,7 +15,7 @@ SORTS = {
 
 
 class PackFilter(django_filters.FilterSet):
-    game_version = django_filters.ChoiceFilter(choices=GAME_VERSION_CHOICES)
+    game_version = django_filters.CharFilter()
     loader = django_filters.ChoiceFilter(choices=PackLoader.choices)
     style = django_filters.CharFilter(
         method="filter_style", help_text="Style slugs, comma-separated; any may match."

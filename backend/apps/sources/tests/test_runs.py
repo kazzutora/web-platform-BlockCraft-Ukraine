@@ -1,7 +1,11 @@
-import pytest
+from datetime import timedelta
 
+import pytest
+from django.utils import timezone
+
+from apps.sources import registry
 from apps.sources.models import SyncRun
-from apps.sources.runs import MAX_ERRORS, sync_run
+from apps.sources.runs import INTERRUPTED, MAX_ERRORS, STALE_AFTER, sync_run
 
 pytestmark = pytest.mark.django_db
 
@@ -45,7 +49,7 @@ def test_a_failing_item_is_counted_and_the_job_goes_on():
 
 
 def test_a_run_where_every_item_fails_is_failed():
-    with sync_run("mineskin", "mineskin.gallery") as run, run.item(skin="a"):
+    with sync_run("loaders", "loaders.releases") as run, run.item(loader="quilt"):
         raise RuntimeError("down")
 
     assert SyncRun.objects.get().status == SyncRun.Status.FAILED
@@ -73,3 +77,42 @@ def test_only_the_first_errors_are_kept_as_examples():
     assert record.failed == MAX_ERRORS + 5
     assert len(record.errors) == MAX_ERRORS
     assert record.errors[0] == {"message": "error 0", "context": {"item": "0"}}
+
+
+@pytest.mark.parametrize(
+    ("source", "job"),
+    [("modrinth", "modrinth.catalg:mod"), ("modrinth", "loaders.releases"), ("namemc", "x.y")],
+)
+def test_a_job_outside_the_registry_is_refused(source, job):
+    with pytest.raises(ValueError), sync_run(source, job):
+        pass
+
+    assert not SyncRun.objects.exists()
+
+
+@pytest.mark.parametrize(
+    "name", [f"{source.key}.{job.key}" for source in registry.SOURCES for job in source.jobs]
+)
+def test_every_registry_job_can_open_a_run(name):
+    with sync_run(name.split(".")[0], name):
+        pass
+
+    assert SyncRun.objects.get().status == SyncRun.Status.OK
+
+
+def test_a_run_killed_long_ago_is_closed_by_the_next_one():
+    killed = SyncRun.objects.create(
+        source="loaders", job="loaders.releases", started_at=timezone.now() - STALE_AFTER * 2
+    )
+    recent = SyncRun.objects.create(
+        source="loaders", job="loaders.releases", started_at=timezone.now() - timedelta(minutes=5)
+    )
+
+    with sync_run("loaders", "loaders.releases"):
+        pass
+
+    killed.refresh_from_db()
+    recent.refresh_from_db()
+    assert (killed.status, killed.errors) == (SyncRun.Status.FAILED, [{"message": INTERRUPTED}])
+    assert killed.finished_at is not None
+    assert recent.status == SyncRun.Status.RUNNING  # may still be working

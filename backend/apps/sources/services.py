@@ -1,6 +1,7 @@
 """Sync of source metadata that belongs to no domain app: Minecraft versions."""
 
 from django.conf import settings
+from django.db import transaction
 
 from apps.core.versions import is_release, version_key
 
@@ -18,13 +19,24 @@ def is_supported(version: str, version_type: str) -> bool:
     return version_key(version) >= OLDEST_SUPPORTED or version in settings.SUPPORTED_LEGACY_VERSIONS
 
 
+FIELDS = ("version_type", "released_at", "is_major", "is_supported")
+
+
 def sync_game_versions(*, client: ModrinthClient, run: SyncCounter) -> None:
-    """Upserts every version Modrinth knows; idempotent, unknown types are skipped."""
+    """Upserts every version Modrinth knows in two bulk queries; idempotent.
+
+    A version Modrinth no longer lists (e.g. one kept from a player profile) stops being
+    supported instead of staying in «Моя гра» forever.
+    """
     known = {item.version: item for item in GameVersion.objects.all()}
+    seen: set[str] = set()
+    new: list[GameVersion] = []
+    changed: list[GameVersion] = []
     for item in client.get_game_versions():
         if item.version_type not in GameVersion.Type.values:
             run.skipped += 1
             continue
+        seen.add(item.version)
         values = {
             "version_type": item.version_type,
             "released_at": item.date,
@@ -33,13 +45,22 @@ def sync_game_versions(*, client: ModrinthClient, run: SyncCounter) -> None:
         }
         current = known.get(item.version)
         if current is None:
-            GameVersion.objects.create(version=item.version, **values)
-            run.created += 1
+            new.append(GameVersion(version=item.version, **values))
         elif any(getattr(current, name) != value for name, value in values.items()):
-            GameVersion.objects.filter(pk=item.version).update(**values)
-            run.updated += 1
+            for name, value in values.items():
+                setattr(current, name, value)
+            changed.append(current)
         else:
             run.unchanged += 1
+    for version, current in known.items():
+        if version not in seen and current.is_supported:
+            current.is_supported = False
+            changed.append(current)
+    with transaction.atomic():
+        GameVersion.objects.bulk_create(new, batch_size=500)
+        GameVersion.objects.bulk_update(changed, FIELDS, batch_size=500)
+    run.created += len(new)
+    run.updated += len(changed)
 
 
 class NoGameVersionsError(RuntimeError):

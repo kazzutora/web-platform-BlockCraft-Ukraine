@@ -31,7 +31,7 @@
 | `GET /project/{id\|slug}` | `project_sodium.json`, `project_modpack.json` | `id`, `slug`, `project_type`, `title`, `description`, `body`, `categories`, `additional_categories`, `loaders`, `game_versions`, `versions`, `icon_url`, `gallery[] {url, featured, title, ordering}`, `license {id, name}`, `source_url`, `issues_url`, `wiki_url`, `discord_url`, `downloads`, `followers`, `published`, `updated`, `client_side`, `server_side`, `team` |
 | `GET /project/{id}` неіснуючого | `project_not_found.json` | **404 з порожнім тілом** |
 | `GET /projects?ids=[…]` | `projects_by_ids.json` | список у тому ж форматі, що й `/project` |
-| `GET /project/{id}/version?loaders=[…]&game_versions=[…]` | `project_versions_{sodium,sodium_extra,complementary,modpack}.json` | `id`, `project_id`, `name`, `version_number`, `version_type`, `game_versions`, `loaders`, `date_published`, `status`, `files[] {url, filename, primary, size, file_type, hashes {sha1, sha512}}`, `dependencies[] {project_id, version_id, file_name, dependency_type}` |
+| `GET /project/{id}/version?loaders=[…]&game_versions=[…]` | `project_versions_{sodium,sodium_extra,complementary,modpack}.json` | `id`, `project_id`, `name`, `version_number`, `version_type`, `game_versions`, `loaders`, `date_published`, `status`, `changelog` (markdown або null), `files[] {url, filename, primary, size, file_type, hashes {sha1, sha512}}`, `dependencies[] {project_id, version_id, file_name, dependency_type}` |
 | `GET /versions?ids=[…]` | `versions_by_ids.json` | як вище |
 | `POST /version_files` `{hashes, algorithm:"sha1"}` | `version_files_sha1.json` | об'єкт **хеш → версія**; невідомий хеш просто відсутній у відповіді |
 | `POST /version_files/update` `{hashes, algorithm, loaders, game_versions}` | `version_files_update.json` | хеш → найновіша сумісна версія; невідомий хеш відсутній |
@@ -46,7 +46,7 @@
 - **Модпак:** у версії кілька файлів — `primary` `.mrpack` і додатковий `cosign-bundle.zip`. Беремо лише `primary`.
 - **Усі файли** в записаних версіях лежать на `https://cdn.modrinth.com/data/…`.
 - **Категорії шейдерів** з header `performance impact`: `potato`, `low`, `medium`, `high`, `screenshot`. На них спирається фільтр «легкі» (С1).
-- **Синхронізацію версій гри** проводимо через `/tag/game_version`: «підтримувані» — це релізи від 1.16 + `SUPPORTED_LEGACY_VERSIONS`. `major` = true у 103 записах — це ознака major-релізу, а не «підтримуваної» версії.
+- **Синхронізацію версій гри** проводимо через `/tag/game_version`: «підтримувані» — це релізи від 1.16 + `SUPPORTED_LEGACY_VERSIONS`. `major` = true у 103 записах — ознака великого релізу; зберігаємо її як `GameVersion.is_major`, але «підтримувана» визначається окремо.
 
 ### Ризики
 - Terms кажуть «personal, non-commercial use only» про сам сервіс, а API License дозволяє «display … via their own services». BlockCraft некомерційний, тож це сумісно. Комерційне використання треба буде погоджувати з Modrinth.
@@ -171,4 +171,4 @@
    - Верхньорівневі `game_versions` і `loaders` серверів ігноруємо.
 3. **MineSkin (R6.2).** Пагінація курсором `after`. Модель і URL текстури — лише з деталей скіна. Без ключа API працює з попередженням `no_api_key`.
 4. **`.mrpack` (R4.3).** Усі файли, які ми додаємо в індекс, беруться з версій Modrinth, тобто з `cdn.modrinth.com`. Дозволений домен для експорту — лише він.
-5. **`major` у `/tag/game_version`** — не те саме, що наш `GameVersion.is_major` / `is_supported`. «Підтримувана» = реліз від 1.16 + legacy з налаштувань (6.2).
+5. **`major` у `/tag/game_version`** записуємо як є в `GameVersion.is_major`, але це не `is_supported`: «підтримувана» = реліз від 1.16 + legacy з налаштувань (6.2).

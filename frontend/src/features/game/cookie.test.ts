@@ -14,7 +14,7 @@ describe("bc_game cookie", () => {
   });
 
   it("ignores anything else", () => {
-    for (const value of [":", "1.21.1", "1.21.1:optifine", "<b>:fabric", "", undefined]) {
+    for (const value of [":", "1.21.1", "1.21.1:optifine", "<b>:fabric", "%E0:", "", undefined]) {
       expect(parseGameCookie(value)).toBeNull();
     }
   });

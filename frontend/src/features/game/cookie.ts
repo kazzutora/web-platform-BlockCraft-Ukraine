@@ -10,7 +10,12 @@ const LOADERS = ["fabric", "forge", "neoforge", "quilt", "vanilla"];
 
 /** The shape only; the backend also checks the version is supported. */
 export function parseGameCookie(value: string | undefined | null): MyGame | null {
-  const decoded = value ? decodeURIComponent(value) : "";
+  let decoded = "";
+  try {
+    decoded = value ? decodeURIComponent(value) : "";
+  } catch {
+    return null; // a malformed escape such as %E0 must not break the header
+  }
   const separator = decoded.indexOf(":");
   if (separator < 0) return null;
   const game_version = decoded.slice(0, separator);

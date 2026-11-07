@@ -11,7 +11,15 @@ export async function getMeta(): Promise<Meta> {
   return data;
 }
 
-/** Supported versions, newest first: synced from Modrinth, never a static list. */
+/**
+ * Supported versions, newest first: synced from Modrinth, never a static list. Empty when
+ * /meta fails, so filters lose the version list instead of the whole page failing.
+ */
 export async function getGameVersions(): Promise<string[]> {
-  return (await getMeta()).game_versions.map((item) => item.version);
+  try {
+    return (await getMeta()).game_versions.map((item) => item.version);
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
 }

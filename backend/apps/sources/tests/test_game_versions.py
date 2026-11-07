@@ -78,6 +78,21 @@ def test_a_version_kept_from_a_profile_gets_filled_in():
     assert GameVersion.objects.get(pk="1.21.1").released_at is not None
 
 
+def test_a_version_modrinth_no_longer_lists_stops_being_supported():
+    GameVersion.objects.create(version="1.21.99", version_type="release", is_supported=True)
+
+    run = sync()
+
+    assert not GameVersion.objects.get(pk="1.21.99").is_supported
+    assert "1.21.99" not in services.supported_game_versions()
+    assert run.updated == 1
+
+
+def test_sync_takes_a_fixed_number_of_queries(django_assert_max_num_queries):
+    with django_assert_max_num_queries(8):
+        sync()
+
+
 def test_catalog_syncs_refuse_to_run_without_versions():
     with pytest.raises(services.NoGameVersionsError, match="j=game_versions"):
         services.supported_game_versions()

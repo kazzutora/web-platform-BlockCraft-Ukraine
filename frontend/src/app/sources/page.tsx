@@ -8,8 +8,7 @@ import { SourcesList } from "@/features/sources/SourcesList";
 
 export const metadata: Metadata = {
   title: copy.title,
-  description:
-    "Звідки BlockCraft бере моди, збірки, сервери й скіни і коли востаннє оновлював дані.",
+  description: copy.description,
 };
 
 export default function SourcesPage() {

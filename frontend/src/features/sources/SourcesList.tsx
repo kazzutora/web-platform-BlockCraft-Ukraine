@@ -6,11 +6,17 @@ import { type RunSummary, formatCounts, formatWhen } from "./format";
 
 type Source = components["schemas"]["Source"];
 
-async function getSources(): Promise<Source[]> {
-  const client = await getServerClient();
-  const { data, response } = await client.GET("/api/v1/sources");
-  if (!data) throw new Error(`GET /api/v1/sources failed: ${response.status}`);
-  return data;
+/** The registry with the latest runs; null when the API fails (the page shows why). */
+async function getSources(): Promise<Source[] | null> {
+  try {
+    const client = await getServerClient();
+    const { data, response } = await client.GET("/api/v1/sources");
+    if (!data) throw new Error(`GET /api/v1/sources failed: ${response.status}`);
+    return data;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
 }
 
 const statusTone: Record<RunSummary["status"], string> = {
@@ -38,6 +44,7 @@ function RunLine({ run }: { run: RunSummary }) {
 /** /sources: every source from the registry with its terms and latest sync. */
 export async function SourcesList() {
   const sources = await getSources();
+  if (!sources) return <p className="text-muted">{copy.error}</p>;
   return (
     <ul className="flex flex-col">
       {sources.map((source) => (

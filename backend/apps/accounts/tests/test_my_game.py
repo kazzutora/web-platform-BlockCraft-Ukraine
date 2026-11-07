@@ -111,3 +111,24 @@ def test_signing_in_never_overwrites_the_profile(api_client):
 def test_a_broken_cookie_changes_nothing(user):
     assert not services.adopt_guest_game(user=user, cookie="9.99:")
     assert not services.adopt_guest_game(user=user, cookie="garbage")
+
+
+def test_put_replaces_my_game_and_patch_changes_one_part(auth_client):
+    auth_client.put(URL, {"game_version": "1.21.1", "loader": "fabric"})
+
+    assert auth_client.patch(URL, {"loader": "quilt"}).json()["game_version"] == "1.21.1"
+    body = auth_client.put(URL, {"loader": "forge"}, format="json").json()
+    assert (body["game_version"], body["loader"]) == (None, "forge")
+
+
+def test_only_changes_are_throttled(auth_client, monkeypatch):
+    from rest_framework.throttling import ScopedRateThrottle
+
+    monkeypatch.setattr(ScopedRateThrottle, "THROTTLE_RATES", {"game": "2/hour"})
+
+    assert [auth_client.patch(URL, {"loader": "fabric"}).status_code for _ in range(3)] == [
+        200,
+        200,
+        429,
+    ]
+    assert auth_client.get(URL).status_code == 200

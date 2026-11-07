@@ -4,6 +4,7 @@ import logging
 from collections.abc import Iterator
 from contextlib import contextmanager
 from dataclasses import dataclass, field
+from datetime import timedelta
 from typing import Any
 
 from django.utils import timezone
@@ -13,6 +14,9 @@ from .models import SyncRun
 logger = logging.getLogger(__name__)
 
 MAX_ERRORS = 20
+#: Longer than any task's hard time limit: a run still «running» after this was killed
+STALE_AFTER = timedelta(hours=2)
+INTERRUPTED = "Interrupted: the worker stopped before the run finished."
 
 
 @dataclass
@@ -77,6 +81,8 @@ def sync_run(source: str, job: str, params: dict[str, Any] | None = None) -> Ite
     An exception that escapes the block marks the run as failed and is re-raised, so Celery
     still sees the task fail.
     """
+    _check_registered(source, job)
+    _close_stale(source, job)
     run = SyncRun.objects.create(source=source, job=job, params=params or {})
     counter = SyncCounter()
     try:
@@ -88,6 +94,30 @@ def sync_run(source: str, job: str, params: dict[str, Any] | None = None) -> Ite
     _finish(run, counter, counter.status())
 
 
+def _check_registered(source: str, job: str) -> None:
+    """`modrinth.catalog:mod` must belong to a registry job, or /sources would never show it."""
+    from . import registry
+
+    name = job.split(":", 1)[0]
+    try:
+        info = registry.get(source)
+    except KeyError as error:
+        raise ValueError(f"Unknown source {source!r}") from error
+    if not any(name == f"{source}.{item.key}" for item in info.jobs):
+        raise ValueError(f"{job!r} is not a job of {source!r} in sources.registry")
+
+
+def _close_stale(source: str, job: str) -> None:
+    """A killed worker (time limit, OOM, deploy) leaves its run «running» forever: close it."""
+    now = timezone.now()
+    SyncRun.objects.filter(
+        source=source,
+        job=job,
+        status=SyncRun.Status.RUNNING,
+        started_at__lt=now - STALE_AFTER,
+    ).update(status=SyncRun.Status.FAILED, finished_at=now, errors=[{"message": INTERRUPTED}])
+
+
 def _finish(run: SyncRun, counter: SyncCounter, status: str) -> None:
     for name, value in counter.as_dict().items():
         setattr(run, name, value)
@@ -95,7 +125,11 @@ def _finish(run: SyncRun, counter: SyncCounter, status: str) -> None:
     run.status = status
     run.finished_at = timezone.now()
     run.save()
-    # /sources shows the new run right away instead of after its cache expires
+    # /sources shows the new run right away instead of after its cache expires; a cache
+    # outage must not replace the job's own result or error
     from .selectors import forget_sources
 
-    forget_sources()
+    try:
+        forget_sources()
+    except Exception:
+        logger.warning("Could not reset the /sources cache", exc_info=True)

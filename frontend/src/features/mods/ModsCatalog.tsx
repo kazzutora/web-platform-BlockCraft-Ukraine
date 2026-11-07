@@ -37,6 +37,7 @@ export async function ModsCatalog({ filters: requested }: { filters: ModFilters 
           categories={categories}
           gameVersions={gameVersions}
           fromProfile={fromProfile}
+          inviteToChoose={game.source === "none" && !filters.all}
         />
       }
       footer={

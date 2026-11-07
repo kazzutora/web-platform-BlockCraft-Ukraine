@@ -9,7 +9,7 @@ const copy = {
   tagline: "Моди, скіни й сервери Minecraft українською.",
   disclaimer: "Не є офіційним продуктом Minecraft. Не пов’язано з Mojang або Microsoft.",
   links: [
-    { href: "/sources", label: "Звідки дані" },
+    { href: "/sources", label: sourcesCopy.title },
     { href: "/rules", label: "Правила" },
     { href: "/privacy", label: "Приватність" },
   ],

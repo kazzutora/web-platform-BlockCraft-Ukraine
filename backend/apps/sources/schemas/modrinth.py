@@ -21,17 +21,14 @@ class SearchResponse(BaseModel):
 
 class GalleryImage(BaseModel):
     url: str
-    raw_url: str | None = None
     featured: bool = False
     title: str | None = None
-    description: str | None = None
     ordering: int = 0
 
 
 class License(BaseModel):
     id: str = ""
     name: str = ""
-    url: str | None = None
 
 
 class ModrinthProject(BaseModel):

@@ -1,0 +1,172 @@
+{
+  "id": "hMclbsMN",
+  "slug": "submine",
+  "project_types": [
+    "minecraft_java_server"
+  ],
+  "games": [
+    "minecraft-java",
+    "minecraft-bedrock"
+  ],
+  "team_id": "ceIOY0sT",
+  "organization": null,
+  "name": "SubMine - SMP",
+  "summary": "Seasons of the year, guilds, a dynamic ecosystem, and more",
+  "description": "💥SubMine opens its doors to its players with new features...\n\n● Want mechanisms? Create!\n● Want to explore the world? A variety of biomes and dungeons will brighten up your leisure time.\n● Want to farm? A variety of crops and mechanics will help you with that.\n● Tired of boring mobs? No problem! There are new ones!\n● Want to protect your building? Privates will help you!\n\nAnd much more!\n🗣The server will start on May 2 at 16:00 Moscow time.\n\n👋How to get to our server?\nIP: mc.submine.net\nVersion: 1.21.1\nKernel: Neoforge\n❗It is also important to install the server modpack (without it, you will not be able to enter the server)!\n\n🤩We are waiting for you dear friends! And may luck be on your side)\n#SubMine #SubMineminecraft",
+  "published": "2026-03-04T20:45:23.869006Z",
+  "updated": "2026-06-11T10:36:26.021427Z",
+  "approved": "2026-03-17T04:31:06.263897Z",
+  "queued": "2026-03-16T16:04:04.333965Z",
+  "status": "approved",
+  "requested_status": "approved",
+  "moderator_message": null,
+  "license": {
+    "id": "LicenseRef-Unknown",
+    "name": "",
+    "url": null
+  },
+  "downloads": 48,
+  "followers": 0,
+  "categories": [
+    "custom-content",
+    "offline-mode",
+    "recording-smp"
+  ],
+  "additional_categories": [
+    "creator-community",
+    "crossplay",
+    "pve",
+    "questing",
+    "smp",
+    "social",
+    "survival-mode",
+    "teams",
+    "technical",
+    "vanilla-like"
+  ],
+  "loaders": [
+    "mrpack"
+  ],
+  "versions": [
+    "Pgepf2GB",
+    "TeiGt5l4",
+    "72nbDCZT",
+    "JsOtePr6"
+  ],
+  "icon_url": "https://cdn.modrinth.com/data/hMclbsMN/9217f34a072c77bfbd155a335e1484f7ef8f7136_96.webp",
+  "raw_icon_url": "https://cdn.modrinth.com/data/hMclbsMN/9217f34a072c77bfbd155a335e1484f7ef8f7136.png",
+  "link_urls": {
+    "discord": {
+      "platform": "discord",
+      "donation": false,
+      "url": "https://discord.com/invite/hwTGGK8fUC"
+    }
+  },
+  "gallery": [
+    {
+      "id": 568839,
+      "url": "https://cdn.modrinth.com/data/hMclbsMN/images/2addcecdb61c19f78a0ea35d9d64a04b9df68fbe_350.webp",
+      "raw_url": "https://cdn.modrinth.com/data/hMclbsMN/images/2addcecdb61c19f78a0ea35d9d64a04b9df68fbe.png",
+      "featured": false,
+      "name": null,
+      "description": null,
+      "created": "2026-05-17T07:35:26.997201Z",
+      "ordering": 0
+    },
+    {
+      "id": 568840,
+      "url": "https://cdn.modrinth.com/data/hMclbsMN/images/3d3615c6338867ab4c8d514d7c54e2d8e66286fa_350.webp",
+      "raw_url": "https://cdn.modrinth.com/data/hMclbsMN/images/3d3615c6338867ab4c8d514d7c54e2d8e66286fa.png",
+      "featured": false,
+      "name": null,
+      "description": null,
+      "created": "2026-05-17T07:35:49.013902Z",
+      "ordering": 0
+    },
+    {
+      "id": 568841,
+      "url": "https://cdn.modrinth.com/data/hMclbsMN/images/f914c43368ccd773747125748418b53f889532c3_350.webp",
+      "raw_url": "https://cdn.modrinth.com/data/hMclbsMN/images/f914c43368ccd773747125748418b53f889532c3.png",
+      "featured": false,
+      "name": null,
+      "description": null,
+      "created": "2026-05-17T07:36:24.117180Z",
+      "ordering": 0
+    },
+    {
+      "id": 568843,
+      "url": "https://cdn.modrinth.com/data/hMclbsMN/images/dca3ee0ba954b6f4cde3854885e243de2b66a37d_350.webp",
+      "raw_url": "https://cdn.modrinth.com/data/hMclbsMN/images/dca3ee0ba954b6f4cde3854885e243de2b66a37d.png",
+      "featured": false,
+      "name": null,
+      "description": null,
+      "created": "2026-05-17T07:36:41.667933Z",
+      "ordering": 0
+    },
+    {
+      "id": 568844,
+      "url": "https://cdn.modrinth.com/data/hMclbsMN/images/18f2a80a2bcab379f208f73fe63a2310a4625ab2_350.webp",
+      "raw_url": "https://cdn.modrinth.com/data/hMclbsMN/images/18f2a80a2bcab379f208f73fe63a2310a4625ab2.png",
+      "featured": false,
+      "name": null,
+      "description": null,
+      "created": "2026-05-17T07:37:04.210388Z",
+      "ordering": 0
+    }
+  ],
+  "color": 2182243,
+  "thread_id": "ZT2rHfDu",
+  "monetization_status": "force-demonetized",
+  "side_types_migration_review_status": "reviewed",
+  "minecraft_mod": null,
+  "minecraft_server": {
+    "max_players": null,
+    "country": null,
+    "region": "europe",
+    "languages": [
+      "ru",
+      "be",
+      "uk"
+    ],
+    "active_version": null
+  },
+  "minecraft_java_server": {
+    "address": "mc.submine.net",
+    "content": {
+      "kind": "modpack",
+      "version_id": "JsOtePr6",
+      "project_id": "hMclbsMN",
+      "project_name": "SubMine - SMP",
+      "project_icon": "https://cdn.modrinth.com/data/hMclbsMN/9217f34a072c77bfbd155a335e1484f7ef8f7136_96.webp"
+    },
+    "ping": {
+      "when": "2026-11-07T18:13:18.161187516Z",
+      "address": "mc.submine.net",
+      "data": {
+        "latency": {
+          "secs": 0,
+          "nanos": 388285349
+        },
+        "version_name": "Youer 1.21.1",
+        "version_protocol": 767,
+        "description": "Что-то новенькое)",
+        "players_online": 5,
+        "players_max": 20
+      }
+    },
+    "verified_plays_2w": 10,
+    "verified_plays_4w": 20
+  },
+  "minecraft_bedrock_server": {
+    "address": ""
+  },
+  "game_versions": [
+    "1.21.1"
+  ],
+  "mrpack_loaders": [
+    "neoforge"
+  ],
+  "environment": [
+    "client_and_server"
+  ]
+}

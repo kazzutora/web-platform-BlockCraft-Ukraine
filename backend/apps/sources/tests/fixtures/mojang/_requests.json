@@ -1,0 +1,37 @@
+{
+  "profile_by_name": {
+    "method": "GET",
+    "url": "https://api.mojang.com/users/profiles/minecraft/jeb_",
+    "params": null,
+    "body": null,
+    "status": 200,
+    "headers": {
+      "content-type": "application/json",
+      "cache-control": "max-age=300"
+    },
+    "captured_at": "2026-11-07T18:31:19+00:00"
+  },
+  "session_profile": {
+    "method": "GET",
+    "url": "https://sessionserver.mojang.com/session/minecraft/profile/853c80ef3c3749fdaa49938b674adae6",
+    "params": null,
+    "body": null,
+    "status": 200,
+    "headers": {
+      "content-type": "application/json",
+      "cache-control": "max-age=20"
+    },
+    "captured_at": "2026-11-07T18:31:19+00:00"
+  },
+  "profile_by_name_not_found": {
+    "method": "GET",
+    "url": "https://api.mojang.com/users/profiles/minecraft/no_such_player_bc_x",
+    "params": null,
+    "body": null,
+    "status": 404,
+    "headers": {
+      "content-type": "application/json"
+    },
+    "captured_at": "2026-11-07T18:31:19+00:00"
+  }
+}

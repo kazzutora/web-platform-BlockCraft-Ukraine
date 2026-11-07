@@ -1,0 +1,45 @@
+{
+  "success": true,
+  "skin": {
+    "uuid": "ca7a715a18f3471ea1daea83a88890eb",
+    "shortId": "04b19ddf",
+    "name": "archmc-d5ecda4",
+    "visibility": "public",
+    "variant": "classic",
+    "texture": {
+      "data": {
+        "value": "ewogICJ0aW1lc3RhbXAiIDogMTc5NDA3NjI3MDIzMiwKICAicHJvZmlsZUlkIiA6ICJjOWM5YzkwOWIxNTI0ZDgzODY5NzU2OTE0M2JmNTY4OCIsCiAgInByb2ZpbGVOYW1lIiA6ICJ6dWtlbWF4IiwKICAic2lnbmF0dXJlUmVxdWlyZWQiIDogdHJ1ZSwKICAidGV4dHVyZXMiIDogewogICAgIlNLSU4iIDogewogICAgICAidXJsIiA6ICJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzRmNTA2YTU0NDNjNDU2ZDkzMzE2ZWI4NGE3NTA0Yzk0MTAxMzlhNjViNzFlZmM5MjE4MWM1ZmQ0YTY4YTJlNDYiCiAgICB9CiAgfQp9",
+        "signature": "VXm0lHWBjRaPSVDKifbfp0gD36ONqpsCywCtBGsPVfZO/PQa+8bcDRC/EOlP1p6zu9Sb4FFRIxcxpJ0nj2prse2EF+Q/iLLNKENo+o7UwWT+bhXajnIWa/GLpsbfhoCl96ESPdCGJRrJVHljJajddjWo40TTwB/DMJVzBKegXWtbq2IonQd8uVFI92NW/SseM8l4ZW3ZXQoSSiLdE4U8SjP9cZCTJta0/iQ7rP72Z1l8Y3CN2tzMRkauPfPROa44QUA6TDBjQCpgVBbLYYqROf57Htmc58ML2iFv5adQYjUUbKK8OTnT1VxCsiPPBozODgUG6IIX/sPvHLBHhmPFS1cex2G2aVP/Kmhv++L/J9up00JBj8oUALbjQugc2KMyCdllDWlyv2L4P77iQnmBdRc/LPLbFI3OB7LU31k+/nHoQZCJ1bnU25Bs6oCK100JRzWx3fCbKuB0RIx0FjSjbEzkBR8QwyXFcjsDMHpwkTXeskHVoKtdW/4JiwbnrHldKXCrX134NPHDzhcfFSriRG6W9jhNFm9UKNvaBeLPc0OmlwpmDzzVf8oMZ6BpFBoPqhwAMRuFdju8egLDLZCDck2/EP7BPuJ0kzrnhQCNQg8OszwxmRZQ5/8vJJ9SVYj96SSIfTZHHGOpHZPg53AgfTNY1NFipdIGqUAC1zBrVVc="
+      },
+      "hash": {
+        "skin": "4f506a5443c456d93316eb84a7504c9410139a65b71efc92181c5fd4a68a2e46",
+        "cape": null
+      },
+      "url": {
+        "skin": "https://textures.minecraft.net/texture/4f506a5443c456d93316eb84a7504c9410139a65b71efc92181c5fd4a68a2e46"
+      }
+    },
+    "generator": {
+      "timestamp": 1794076270338,
+      "account": "c9c9c909",
+      "server": "hazelnut1",
+      "worker": "taco",
+      "version": "unknown",
+      "duration": 1093
+    },
+    "tags": [],
+    "views": 0,
+    "duplicate": false
+  },
+  "warnings": [
+    {
+      "code": "no_api_key",
+      "message": "No API Key provided"
+    }
+  ],
+  "messages": [],
+  "links": {
+    "skin": "/v2/skins/ca7a715a18f3471ea1daea83a88890eb",
+    "self": "/v2/skins/ca7a715a18f3471ea1daea83a88890eb"
+  }
+}

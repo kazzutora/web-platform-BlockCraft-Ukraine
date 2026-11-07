@@ -1,0 +1,324 @@
+{
+  "search_mod": {
+    "method": "GET",
+    "url": "https://api.modrinth.com/v2/search",
+    "params": {
+      "facets": "[[\"project_type:mod\"], [\"versions:1.21.1\"]]",
+      "index": "downloads",
+      "limit": 3
+    },
+    "body": null,
+    "status": 200,
+    "headers": {
+      "content-type": "application/json",
+      "x-ratelimit-limit": "300",
+      "x-ratelimit-remaining": "300",
+      "x-ratelimit-reset": "0"
+    },
+    "captured_at": "2026-11-07T18:31:09+00:00"
+  },
+  "search_shader": {
+    "method": "GET",
+    "url": "https://api.modrinth.com/v2/search",
+    "params": {
+      "facets": "[[\"project_type:shader\"], [\"versions:1.21.1\"]]",
+      "index": "downloads",
+      "limit": 2
+    },
+    "body": null,
+    "status": 200,
+    "headers": {
+      "content-type": "application/json",
+      "x-ratelimit-limit": "300",
+      "x-ratelimit-remaining": "299",
+      "x-ratelimit-reset": "0"
+    },
+    "captured_at": "2026-11-07T18:31:09+00:00"
+  },
+  "search_resourcepack": {
+    "method": "GET",
+    "url": "https://api.modrinth.com/v2/search",
+    "params": {
+      "facets": "[[\"project_type:resourcepack\"], [\"versions:1.21.1\"]]",
+      "index": "downloads",
+      "limit": 2
+    },
+    "body": null,
+    "status": 200,
+    "headers": {
+      "content-type": "application/json",
+      "x-ratelimit-limit": "300",
+      "x-ratelimit-remaining": "299",
+      "x-ratelimit-reset": "0"
+    },
+    "captured_at": "2026-11-07T18:31:09+00:00"
+  },
+  "search_datapack": {
+    "method": "GET",
+    "url": "https://api.modrinth.com/v2/search",
+    "params": {
+      "facets": "[[\"project_type:datapack\"], [\"versions:1.21.1\"]]",
+      "index": "downloads",
+      "limit": 2
+    },
+    "body": null,
+    "status": 200,
+    "headers": {
+      "content-type": "application/json",
+      "x-ratelimit-limit": "300",
+      "x-ratelimit-remaining": "299",
+      "x-ratelimit-reset": "0"
+    },
+    "captured_at": "2026-11-07T18:31:10+00:00"
+  },
+  "search_modpack": {
+    "method": "GET",
+    "url": "https://api.modrinth.com/v2/search",
+    "params": {
+      "facets": "[[\"project_type:modpack\"], [\"versions:1.21.1\"]]",
+      "index": "downloads",
+      "limit": 2
+    },
+    "body": null,
+    "status": 200,
+    "headers": {
+      "content-type": "application/json",
+      "x-ratelimit-limit": "300",
+      "x-ratelimit-remaining": "299",
+      "x-ratelimit-reset": "0"
+    },
+    "captured_at": "2026-11-07T18:31:10+00:00"
+  },
+  "project_sodium": {
+    "method": "GET",
+    "url": "https://api.modrinth.com/v2/project/sodium",
+    "params": null,
+    "body": null,
+    "status": 200,
+    "headers": {
+      "content-type": "application/json",
+      "x-ratelimit-limit": "300",
+      "x-ratelimit-remaining": "299",
+      "x-ratelimit-reset": "0"
+    },
+    "captured_at": "2026-11-07T18:31:10+00:00"
+  },
+  "project_not_found": {
+    "method": "GET",
+    "url": "https://api.modrinth.com/v2/project/this-project-does-not-exist-bc",
+    "params": null,
+    "body": null,
+    "status": 404,
+    "headers": {
+      "x-ratelimit-limit": "300",
+      "x-ratelimit-remaining": "299",
+      "x-ratelimit-reset": "0"
+    },
+    "captured_at": "2026-11-07T18:31:10+00:00"
+  },
+  "projects_by_ids": {
+    "method": "GET",
+    "url": "https://api.modrinth.com/v2/projects",
+    "params": {
+      "ids": "[\"AANobbMI\", \"YL57xq9U\"]"
+    },
+    "body": null,
+    "status": 200,
+    "headers": {
+      "content-type": "application/json",
+      "x-ratelimit-limit": "300",
+      "x-ratelimit-remaining": "299",
+      "x-ratelimit-reset": "0"
+    },
+    "captured_at": "2026-11-07T18:31:10+00:00"
+  },
+  "project_versions_sodium": {
+    "method": "GET",
+    "url": "https://api.modrinth.com/v2/project/AANobbMI/version",
+    "params": {
+      "loaders": "[\"fabric\"]",
+      "game_versions": "[\"1.21.1\"]"
+    },
+    "body": null,
+    "status": 200,
+    "headers": {
+      "content-type": "application/json",
+      "x-ratelimit-limit": "300",
+      "x-ratelimit-remaining": "300",
+      "x-ratelimit-reset": "0"
+    },
+    "captured_at": "2026-11-07T18:31:11+00:00",
+    "truncated": "list cut to 3 of 22 items"
+  },
+  "project_versions_complementary": {
+    "method": "GET",
+    "url": "https://api.modrinth.com/v2/project/complementary-reimagined/version",
+    "params": {
+      "game_versions": "[\"1.21.1\"]"
+    },
+    "body": null,
+    "status": 200,
+    "headers": {
+      "content-type": "application/json",
+      "x-ratelimit-limit": "300",
+      "x-ratelimit-remaining": "300",
+      "x-ratelimit-reset": "0"
+    },
+    "captured_at": "2026-11-07T18:31:11+00:00",
+    "truncated": "list cut to 2 of 15 items"
+  },
+  "project_versions_sodium_extra": {
+    "method": "GET",
+    "url": "https://api.modrinth.com/v2/project/sodium-extra/version",
+    "params": {
+      "loaders": "[\"fabric\"]",
+      "game_versions": "[\"1.21.1\"]"
+    },
+    "body": null,
+    "status": 200,
+    "headers": {
+      "content-type": "application/json",
+      "x-ratelimit-limit": "300",
+      "x-ratelimit-remaining": "300",
+      "x-ratelimit-reset": "0"
+    },
+    "captured_at": "2026-11-07T18:31:11+00:00",
+    "truncated": "list cut to 2 of 13 items"
+  },
+  "project_modpack": {
+    "method": "GET",
+    "url": "https://api.modrinth.com/v2/project/fabulously-optimized",
+    "params": null,
+    "body": null,
+    "status": 200,
+    "headers": {
+      "content-type": "application/json",
+      "x-ratelimit-limit": "300",
+      "x-ratelimit-remaining": "300",
+      "x-ratelimit-reset": "0"
+    },
+    "captured_at": "2026-11-07T18:31:11+00:00"
+  },
+  "project_versions_modpack": {
+    "method": "GET",
+    "url": "https://api.modrinth.com/v2/project/fabulously-optimized/version",
+    "params": {
+      "game_versions": "[\"1.21.1\"]"
+    },
+    "body": null,
+    "status": 200,
+    "headers": {
+      "content-type": "application/json",
+      "x-ratelimit-limit": "300",
+      "x-ratelimit-remaining": "299",
+      "x-ratelimit-reset": "0"
+    },
+    "captured_at": "2026-11-07T18:31:12+00:00",
+    "truncated": "list cut to 1 of 23 items"
+  },
+  "versions_by_ids": {
+    "method": "GET",
+    "url": "https://api.modrinth.com/v2/versions",
+    "params": {
+      "ids": "[\"SMxNOGZ6\", \"QV48eyCs\"]"
+    },
+    "body": null,
+    "status": 200,
+    "headers": {
+      "content-type": "application/json",
+      "x-ratelimit-limit": "300",
+      "x-ratelimit-remaining": "300",
+      "x-ratelimit-reset": "0"
+    },
+    "captured_at": "2026-11-07T18:31:12+00:00"
+  },
+  "version_files_sha1": {
+    "method": "POST",
+    "url": "https://api.modrinth.com/v2/version_files",
+    "params": null,
+    "body": {
+      "hashes": [
+        "2172d0e9a5fbdd6791c27769867334382ba6be02",
+        "0000000000000000000000000000000000000000"
+      ],
+      "algorithm": "sha1"
+    },
+    "status": 200,
+    "headers": {
+      "content-type": "application/json",
+      "x-ratelimit-limit": "300",
+      "x-ratelimit-remaining": "300",
+      "x-ratelimit-reset": "0"
+    },
+    "captured_at": "2026-11-07T18:31:12+00:00"
+  },
+  "version_files_update": {
+    "method": "POST",
+    "url": "https://api.modrinth.com/v2/version_files/update",
+    "params": null,
+    "body": {
+      "hashes": [
+        "2172d0e9a5fbdd6791c27769867334382ba6be02",
+        "0000000000000000000000000000000000000000"
+      ],
+      "algorithm": "sha1",
+      "loaders": [
+        "fabric"
+      ],
+      "game_versions": [
+        "1.21.4"
+      ]
+    },
+    "status": 200,
+    "headers": {
+      "content-type": "application/json",
+      "x-ratelimit-limit": "300",
+      "x-ratelimit-remaining": "300",
+      "x-ratelimit-reset": "0"
+    },
+    "captured_at": "2026-11-07T18:31:12+00:00"
+  },
+  "tag_game_version": {
+    "method": "GET",
+    "url": "https://api.modrinth.com/v2/tag/game_version",
+    "params": null,
+    "body": null,
+    "status": 200,
+    "headers": {
+      "content-type": "application/json",
+      "x-ratelimit-limit": "300",
+      "x-ratelimit-remaining": "297",
+      "x-ratelimit-reset": "0",
+      "cache-control": "no-store"
+    },
+    "captured_at": "2026-11-07T18:31:12+00:00"
+  },
+  "tag_loader": {
+    "method": "GET",
+    "url": "https://api.modrinth.com/v2/tag/loader",
+    "params": null,
+    "body": null,
+    "status": 200,
+    "headers": {
+      "content-type": "application/json",
+      "x-ratelimit-limit": "300",
+      "x-ratelimit-remaining": "300",
+      "x-ratelimit-reset": "0"
+    },
+    "captured_at": "2026-11-07T18:31:13+00:00"
+  },
+  "tag_category": {
+    "method": "GET",
+    "url": "https://api.modrinth.com/v2/tag/category",
+    "params": null,
+    "body": null,
+    "status": 200,
+    "headers": {
+      "content-type": "application/json",
+      "x-ratelimit-limit": "300",
+      "x-ratelimit-remaining": "299",
+      "x-ratelimit-reset": "0"
+    },
+    "captured_at": "2026-11-07T18:31:13+00:00"
+  }
+}

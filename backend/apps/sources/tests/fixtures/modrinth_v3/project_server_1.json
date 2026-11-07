@@ -1,0 +1,236 @@
+{
+  "id": "OgcNPs6n",
+  "slug": "aero-server",
+  "project_types": [
+    "minecraft_java_server"
+  ],
+  "games": [
+    "minecraft-java",
+    "minecraft-bedrock"
+  ],
+  "team_id": "P3OIvUAG",
+  "organization": null,
+  "name": "Aero SMP",
+  "summary": "A no-nonsense server with just Create and Create Aeronautics.",
+  "description": "# Aero SMP!\nYou know what this server is about. We've all been waiting for it, and it's finally here! If you want to play create aeronautics in survival with no fluff, then this is the server for you. Probably the most stable create aeronautics SMP!!\n\n<iframe width=\"560\" height=\"315\" src=\"https://www.youtube-nocookie.com/embed/50ltHJOBeWk\" title=\"YouTube video player\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" allowfullscreen></iframe>\n\n### A welcoming spawn\n![Welcoming Spawn](https://cdn.modrinth.com/data/cached_images/2f90124f9f37f61ad2b82162ba44862a246bb12a.png)\n\n### Cool Bases\n![Cool Bases](https://cdn.modrinth.com/data/cached_images/9da787b337996c64f3fbd0b40557c8eff1428921.gif)\n\n### Cool Factories\n![Cool Factories](https://cdn.modrinth.com/data/cached_images/9ab3fa74c1aceaf9536a53012d05c10a2ce21880.png)\n\n### Take a stroll through the clouds\n![Stroll through the clouds](https://cdn.modrinth.com/data/cached_images/168d74649dbcee5011cb1c4e9248b89ec1db787c.png)",
+  "published": "2026-04-18T20:10:21.823635Z",
+  "updated": "2026-09-10T20:12:53.374072Z",
+  "approved": "2026-04-27T04:36:20.278623Z",
+  "queued": "2026-04-18T20:16:11.239490Z",
+  "status": "approved",
+  "requested_status": "approved",
+  "moderator_message": null,
+  "license": {
+    "id": "LicenseRef-Unknown",
+    "name": "",
+    "url": null
+  },
+  "downloads": 39164,
+  "followers": 126,
+  "categories": [
+    "smp",
+    "social",
+    "technical"
+  ],
+  "additional_categories": [],
+  "loaders": [
+    "mrpack"
+  ],
+  "versions": [
+    "vG4iGSZd",
+    "wwhwBMJj",
+    "NvZQRqpN",
+    "1q4zMCSD",
+    "aSroWLJl",
+    "Z67aFN0C",
+    "HbaS79Vh",
+    "O5WDSwvX",
+    "kUIzherv",
+    "zM3GpJMu",
+    "VyEq9vM9",
+    "CH9mnyuB",
+    "611yQNHc",
+    "Tyuk6477",
+    "22gMk1yx",
+    "oQ5KIVNw",
+    "Rc7fijGX",
+    "vZN4AGHe",
+    "tIXe5CrD",
+    "BI8N9kpm",
+    "GDELFL7Y"
+  ],
+  "icon_url": "https://cdn.modrinth.com/data/OgcNPs6n/12b5d0ea9e6843746e703223699c3e429f8f6da6_96.webp",
+  "raw_icon_url": "https://cdn.modrinth.com/data/OgcNPs6n/12b5d0ea9e6843746e703223699c3e429f8f6da6.png",
+  "link_urls": {
+    "discord": {
+      "platform": "discord",
+      "donation": false,
+      "url": "https://discord.gg/aerosmp"
+    }
+  },
+  "gallery": [
+    {
+      "id": 547249,
+      "url": "https://cdn.modrinth.com/data/OgcNPs6n/images/d35de2035b3879cbf9060c93bdca043428d76274_350.webp",
+      "raw_url": "https://cdn.modrinth.com/data/OgcNPs6n/images/d35de2035b3879cbf9060c93bdca043428d76274.png",
+      "featured": true,
+      "name": "Spawn Daytime",
+      "description": null,
+      "created": "2026-04-27T10:37:11.528260Z",
+      "ordering": 0
+    },
+    {
+      "id": 547251,
+      "url": "https://cdn.modrinth.com/data/OgcNPs6n/images/54c4fd2a3ea2a3d5f4bf275b8e826a8a11efdddd_350.webp",
+      "raw_url": "https://cdn.modrinth.com/data/OgcNPs6n/images/54c4fd2a3ea2a3d5f4bf275b8e826a8a11efdddd.png",
+      "featured": false,
+      "name": "Spawn Nighttime",
+      "description": null,
+      "created": "2026-04-27T10:38:35.730234Z",
+      "ordering": 0
+    },
+    {
+      "id": 547297,
+      "url": "https://cdn.modrinth.com/data/OgcNPs6n/images/23651695404471da910cf64d0d561b9f82cc3daf_350.webp",
+      "raw_url": "https://cdn.modrinth.com/data/OgcNPs6n/images/23651695404471da910cf64d0d561b9f82cc3daf.png",
+      "featured": false,
+      "name": "Evil little truck??",
+      "description": null,
+      "created": "2026-04-27T11:55:56.104698Z",
+      "ordering": 0
+    },
+    {
+      "id": 547298,
+      "url": "https://cdn.modrinth.com/data/OgcNPs6n/images/916029d43f16c5a4c47c62b7226e5e29c195244b_350.webp",
+      "raw_url": "https://cdn.modrinth.com/data/OgcNPs6n/images/916029d43f16c5a4c47c62b7226e5e29c195244b.png",
+      "featured": false,
+      "name": "conglomeration of ships at spawn",
+      "description": null,
+      "created": "2026-04-27T11:56:59.569470Z",
+      "ordering": 0
+    },
+    {
+      "id": 547299,
+      "url": "https://cdn.modrinth.com/data/OgcNPs6n/images/6bc6be4cba7ae35e490a279417ccf1b3a2ab9026_350.webp",
+      "raw_url": "https://cdn.modrinth.com/data/OgcNPs6n/images/6bc6be4cba7ae35e490a279417ccf1b3a2ab9026.png",
+      "featured": false,
+      "name": "Floating chests",
+      "description": null,
+      "created": "2026-04-27T11:57:39.779077Z",
+      "ordering": 0
+    },
+    {
+      "id": 547300,
+      "url": "https://cdn.modrinth.com/data/OgcNPs6n/images/bf5a25788da6ccc47fc77b8c605d460be55e9168_350.webp",
+      "raw_url": "https://cdn.modrinth.com/data/OgcNPs6n/images/bf5a25788da6ccc47fc77b8c605d460be55e9168.png",
+      "featured": false,
+      "name": "Helicopter",
+      "description": null,
+      "created": "2026-04-27T11:58:01.536153Z",
+      "ordering": 0
+    },
+    {
+      "id": 547301,
+      "url": "https://cdn.modrinth.com/data/OgcNPs6n/images/7f38baa9a1504cd19f4f1cc6f22ec89fb6fc30d6_350.webp",
+      "raw_url": "https://cdn.modrinth.com/data/OgcNPs6n/images/7f38baa9a1504cd19f4f1cc6f22ec89fb6fc30d6.png",
+      "featured": false,
+      "name": null,
+      "description": null,
+      "created": "2026-04-27T11:58:24.373334Z",
+      "ordering": 0
+    },
+    {
+      "id": 547302,
+      "url": "https://cdn.modrinth.com/data/OgcNPs6n/images/f248c7920ccb94d31d674241b662b7507953d13d_350.webp",
+      "raw_url": "https://cdn.modrinth.com/data/OgcNPs6n/images/f248c7920ccb94d31d674241b662b7507953d13d.png",
+      "featured": false,
+      "name": "Big boat",
+      "description": null,
+      "created": "2026-04-27T11:58:51.930663Z",
+      "ordering": 0
+    },
+    {
+      "id": 547304,
+      "url": "https://cdn.modrinth.com/data/OgcNPs6n/images/bbd4baa591809e2d111e92514c168fc6659e72de_350.webp",
+      "raw_url": "https://cdn.modrinth.com/data/OgcNPs6n/images/bbd4baa591809e2d111e92514c168fc6659e72de.png",
+      "featured": false,
+      "name": null,
+      "description": null,
+      "created": "2026-04-27T11:59:38.082416Z",
+      "ordering": 0
+    },
+    {
+      "id": 547305,
+      "url": "https://cdn.modrinth.com/data/OgcNPs6n/images/fc869daf7e056fe8228355cdbbf93a83767f9963_350.webp",
+      "raw_url": "https://cdn.modrinth.com/data/OgcNPs6n/images/fc869daf7e056fe8228355cdbbf93a83767f9963.png",
+      "featured": false,
+      "name": "Jet plane",
+      "description": null,
+      "created": "2026-04-27T12:00:10.851233Z",
+      "ordering": 0
+    },
+    {
+      "id": 548368,
+      "url": "https://cdn.modrinth.com/data/OgcNPs6n/images/74649750bd971a8a5b2133abc217f49a7a540502_350.webp",
+      "raw_url": "https://cdn.modrinth.com/data/OgcNPs6n/images/74649750bd971a8a5b2133abc217f49a7a540502.png",
+      "featured": false,
+      "name": null,
+      "description": null,
+      "created": "2026-04-28T15:16:04.762239Z",
+      "ordering": 0
+    }
+  ],
+  "color": 3087889,
+  "thread_id": "fEvlC8wM",
+  "monetization_status": "force-demonetized",
+  "side_types_migration_review_status": "reviewed",
+  "minecraft_mod": null,
+  "minecraft_server": {
+    "max_players": null,
+    "country": null,
+    "region": "europe",
+    "languages": [
+      "en"
+    ],
+    "active_version": null
+  },
+  "minecraft_java_server": {
+    "address": "play.aerosmp.com",
+    "content": {
+      "kind": "modpack",
+      "version_id": "GDELFL7Y",
+      "project_id": "OgcNPs6n",
+      "project_name": "Aero SMP",
+      "project_icon": "https://cdn.modrinth.com/data/OgcNPs6n/12b5d0ea9e6843746e703223699c3e429f8f6da6_96.webp"
+    },
+    "ping": {
+      "when": "2026-11-07T18:22:47.388814553Z",
+      "address": "play.aerosmp.com",
+      "data": {
+        "latency": {
+          "secs": 0,
+          "nanos": 521861961
+        },
+        "version_name": "Velocity 1.7.2-26.1.2",
+        "version_protocol": 578,
+        "description": "The only ",
+        "players_online": 39,
+        "players_max": 300
+      }
+    },
+    "verified_plays_2w": 3919,
+    "verified_plays_4w": 8285
+  },
+  "minecraft_bedrock_server": {
+    "address": ""
+  },
+  "mrpack_loaders": [
+    "neoforge"
+  ],
+  "game_versions": [
+    "1.21.1"
+  ],
+  "environment": [
+    "client_and_server"
+  ]
+}

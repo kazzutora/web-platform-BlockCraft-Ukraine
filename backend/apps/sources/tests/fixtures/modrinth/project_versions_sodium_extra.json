@@ -1,0 +1,150 @@
+[
+  {
+    "game_versions": [
+      "1.21.1"
+    ],
+    "loaders": [
+      "fabric"
+    ],
+    "environment": "client_only",
+    "id": "CmiqMBZT",
+    "project_id": "PtjYWJkn",
+    "author_id": "QXAY01zS",
+    "featured": true,
+    "name": "[Fabric] mc1.21.1-0.9.5",
+    "version_number": "mc1.21.1-0.9.5+fabric",
+    "changelog": "**Full Changelog**: https://github.com/FlashyReese/sodium-extra/compare/mc1.21.1-0.9.4...mc1.21.1-0.9.5",
+    "changelog_url": null,
+    "date_published": "2026-10-25T16:34:23.573347Z",
+    "downloads": 118443,
+    "version_type": "release",
+    "status": "listed",
+    "requested_status": null,
+    "files": [
+      {
+        "id": "PJ12QK2U",
+        "hashes": {
+          "sha1": "39df00f8a5baeeeff4bf0226997e958d89fe0c93",
+          "sha512": "2587475562472b7e5cdc8c2b4409de498815402156524242acbad9672a0c348288b9b3328ec82b9300593d1a02eb71022704742889e5b33b755f75709cf16827"
+        },
+        "url": "https://cdn.modrinth.com/data/PtjYWJkn/versions/CmiqMBZT/sodium-extra-fabric-0.9.5%2Bmc1.21.1.jar",
+        "filename": "sodium-extra-fabric-0.9.5+mc1.21.1.jar",
+        "primary": true,
+        "size": 492939,
+        "file_type": null
+      },
+      {
+        "id": "SASwlFHv",
+        "hashes": {
+          "sha1": "51699ce13a2a6d6cf5fecc30260832437a4e4bb2",
+          "sha512": "fde9893d06ec758a67bffa32340d0fff603f5f5cd2541b3674ab2ac479a505fc77321b1e0d9f9c5c47076689992d3a254e98d5fac314097f26fff18e08ffab29"
+        },
+        "url": "https://cdn.modrinth.com/data/PtjYWJkn/versions/CmiqMBZT/sodium-extra-fabric-0.9.5%2Bmc1.21.1-dev-shadow.jar",
+        "filename": "sodium-extra-fabric-0.9.5+mc1.21.1-dev-shadow.jar",
+        "primary": false,
+        "size": 491489,
+        "file_type": null
+      }
+    ],
+    "dependencies": [
+      {
+        "version_id": null,
+        "project_id": "Bh37bMuy",
+        "file_name": null,
+        "dependency_type": "optional"
+      },
+      {
+        "version_id": null,
+        "project_id": "AANobbMI",
+        "file_name": null,
+        "dependency_type": "required"
+      },
+      {
+        "version_id": null,
+        "project_id": "EE4vxUHj",
+        "file_name": null,
+        "dependency_type": "optional"
+      },
+      {
+        "version_id": null,
+        "project_id": "YL57xq9U",
+        "file_name": null,
+        "dependency_type": "optional"
+      }
+    ]
+  },
+  {
+    "game_versions": [
+      "1.21.1"
+    ],
+    "loaders": [
+      "fabric"
+    ],
+    "environment": "client_only",
+    "id": "YEWu6red",
+    "project_id": "PtjYWJkn",
+    "author_id": "QXAY01zS",
+    "featured": false,
+    "name": "[Fabric] Sodium Extra 0.9.4 - Minecraft 1.21.1",
+    "version_number": "mc1.21.1-0.9.4+fabric",
+    "changelog": "### Fixed\r\n\r\n- Corrected custom fog distance encoding.\r\n- Fixed Panini Projection scaling with the active FOV.\r\n- Fixed blank tooltip translations.\r\n- Improved fog rendering compatibility by avoiding a Redirect.\r\n\r\n**Full Changelog**: https://github.com/FlashyReese/sodium-extra/compare/mc1.21.1-0.9.3...mc1.21.1-0.9.4",
+    "changelog_url": null,
+    "date_published": "2026-09-16T02:17:34.868883Z",
+    "downloads": 356551,
+    "version_type": "release",
+    "status": "listed",
+    "requested_status": null,
+    "files": [
+      {
+        "id": "1kxNugbF",
+        "hashes": {
+          "sha512": "824b06ddaa7ab697ff252ee47c6278725fc2ed6eeaaa027c32c0ee8bbb9ab416c23dfdd3c89a2ca7f4618cb106ef55694a6163cd09abc248219d14e9eca3d7d3",
+          "sha1": "628487b330c9589d26cada5c4a51ac457af80a1f"
+        },
+        "url": "https://cdn.modrinth.com/data/PtjYWJkn/versions/YEWu6red/sodium-extra-fabric-0.9.4%2Bmc1.21.1.jar",
+        "filename": "sodium-extra-fabric-0.9.4+mc1.21.1.jar",
+        "primary": true,
+        "size": 472019,
+        "file_type": null
+      },
+      {
+        "id": "ymdouzJn",
+        "hashes": {
+          "sha1": "16d4e93269cfefe1c8bc7f215d8dbc252381903e",
+          "sha512": "59bd450fc90ed8de50ff425b583eccab3486920b7056bf67ec8cc197141972590ddc2f2a97a6c4d8f4c97f402f594d6b2766ac1c20b552e659751e2ce0bcf36e"
+        },
+        "url": "https://cdn.modrinth.com/data/PtjYWJkn/versions/YEWu6red/sodium-extra-fabric-0.9.4%2Bmc1.21.1-dev-shadow.jar",
+        "filename": "sodium-extra-fabric-0.9.4+mc1.21.1-dev-shadow.jar",
+        "primary": false,
+        "size": 470574,
+        "file_type": null
+      }
+    ],
+    "dependencies": [
+      {
+        "version_id": null,
+        "project_id": "Bh37bMuy",
+        "file_name": null,
+        "dependency_type": "optional"
+      },
+      {
+        "version_id": null,
+        "project_id": "EE4vxUHj",
+        "file_name": null,
+        "dependency_type": "optional"
+      },
+      {
+        "version_id": null,
+        "project_id": "AANobbMI",
+        "file_name": null,
+        "dependency_type": "required"
+      },
+      {
+        "version_id": null,
+        "project_id": "YL57xq9U",
+        "file_name": null,
+        "dependency_type": "optional"
+      }
+    ]
+  }
+]

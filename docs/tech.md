@@ -260,16 +260,17 @@ blockcraft/
 - `GET /tag/game_version`, `GET /tag/loader`, `GET /tag/category` — метадані.
 - Ліміт: 300 запитів/хв на IP, однаковий з токеном і без; заголовки `X-Ratelimit-Limit/Remaining/Reset`. Токен не потрібен.
 - v1: клієнт у `mods/clients.py` уже вміє повтори й rate-limit → перенести в `sources/clients/modrinth.py`.
-- `.mrpack`: завантаження в `files[].downloads` — лише з `cdn.modrinth.com` (і дозволених Modrinth доменів — перевірити в R1.2).
+- `.mrpack`: завантаження в `files[].downloads` — лише з `cdn.modrinth.com` (усі файли версій у фікстурах R1.2 лежать там).
+- Датапаки не мають власного `project_type`: facet `project_type:datapack` працює, але проєкт приходить з `project_type: "mod"` і `datapack` в `all_project_types` — тип визначаємо самі (R2.1, `docs/sources.md`).
 
 ### 8.2 Modrinth API v3 — сервери (Server Projects, з 4 березня 2026)
 - Новий тип проєкту для серверів: адреса Java (і Bedrock — поки не використовується Modrinth), країна, мова, банер, сумісність: vanilla (підтримувані й рекомендована версії) або modded (опублікований модпак Modrinth чи завантажений власний). Modrinth сам пінгує сервери й прибирає з пошуку ті, що довго недоступні.
-- `GET /v3/search` з типом `minecraft_java_server` і фільтрами (мова, країна, vanilla/modded); `GET /v3/project/{id}` — повні дані сервера.
+- `GET /v3/search` з facet `project_types:minecraft_java_server` і фільтрами `minecraft_server.languages:<код>`, `minecraft_java_server.content.kind:vanilla|modpack` (facet країни не працює — фільтруємо в нас); `GET /v3/project/{id}` — повні дані сервера. Деталі — `docs/sources.md`.
 - v3 документований гірше за v2 і може змінюватися: окремий клієнт `modrinth_v3.py`, схеми лише з фікстур, при зміні схеми падає задача (`SyncRun` = failed) і тест, а не сайт.
-- Мапінг: vanilla → `supported_versions`, `recommended_version`; modded з модпаком Modrinth → імпорт модпака як `Pack(origin=modrinth)` → `required_pack`; modded з власним завантаженим паком → `content_kind=modded` без `required_pack` + посилання «встановити через Modrinth App».
+- Мапінг: vanilla → `supported_versions`, `recommended_version`; modded з модпаком Modrinth → імпорт модпака як `Pack(origin=modrinth)` → `required_pack`; modded з паком, завантаженим у сам серверний проєкт (`content.project_id` = id сервера), → теж `required_pack` з версії серверного проєкту (R1.2: це звичайна версія Modrinth з `.mrpack`). Верхньорівневі `game_versions` / `loaders` серверів ігноруємо — лише `content`.
 
 ### 8.3 MineSkin API v2 — `https://api.mineskin.org`
-- `GET /v2/skins` — список публічної галереї (пагінація — уточнити в R1.2), `GET /v2/skins/{uuid}` — один скін (текстура, модель, назва).
+- `GET /v2/skins` — список публічної галереї (пагінація курсором `after`; у списку лише хеш текстури, модель і URL — у деталях), `GET /v2/skins/{uuid}` — один скін (текстура, модель, назва).
 - `User-Agent` обов'язковий; `MINESKIN_API_KEY` (безкоштовний ключ з account.mineskin.org) — рекомендований для лімітів, `Authorization: Bearer`.
 - Імпорт (`skins.sync_mineskin`): без назви — пропустити; текстура не 64×64 / 64×32 — пропустити; дублікат за `texture_hash` — пропустити; обробка текстури — код v1 (модель, колір, прев'ю).
 

@@ -1,0 +1,120 @@
+{
+  "id": "t64zvHbD",
+  "slug": "the-vee-hive-minecraft-server",
+  "project_types": [
+    "minecraft_java_server"
+  ],
+  "games": [
+    "minecraft-java",
+    "minecraft-bedrock"
+  ],
+  "team_id": "wPqORSZP",
+  "organization": null,
+  "name": "The Vee Hive Minecraft Server",
+  "summary": "We're a small community server open to everyone running on Paper with plugins! Anyone is welcome and we have a discord community attached to the server for any and all questions, concerns or other inquiries! We're LGBT and Autistic owned and for everyone!",
+  "description": "Welcome to The Vee Hive Minecraft Server! I'm Vee, the owner of this modpack! This server is my own creation running Paper on 26.2, combining Vanilla and QoL plugins!\n\nFor Java users, please install the client sided 'simple voice chat' mod to communicate with others in game! Otherwise, you can use the chat which is compatible with bedrock!\n\nI own my own community over on YouTube at @euceravee and my streams also go through to Twitch too! For all the latest information on the pack, you can join the Discord over at discord.gg/euceravee to join us!\n\nThe server isn't open 24/7, but I always make sure to ping the Discord role before I pop it back up!",
+  "published": "2026-03-08T19:09:56.229997Z",
+  "updated": "2026-04-18T22:47:24.209842Z",
+  "approved": "2026-03-10T07:56:30.782600Z",
+  "queued": "2026-03-08T19:16:26.977311Z",
+  "status": "approved",
+  "requested_status": "approved",
+  "moderator_message": null,
+  "license": {
+    "id": "LicenseRef-Unknown",
+    "name": "",
+    "url": null
+  },
+  "downloads": 246,
+  "followers": 1,
+  "categories": [
+    "adventure-mode",
+    "economy"
+  ],
+  "additional_categories": [
+    "creator-community",
+    "crossplay",
+    "keep-inventory",
+    "personal-worlds",
+    "plots",
+    "pve",
+    "smp",
+    "survival-mode",
+    "vanilla-like",
+    "world-resets"
+  ],
+  "loaders": [
+    "mrpack"
+  ],
+  "versions": [
+    "vDJhVWBx",
+    "KCoGnk3b",
+    "h9MNasX0",
+    "m14DVzXP",
+    "c2hALAYq",
+    "uosnbmc8",
+    "8ZzYzJSJ",
+    "LlHVuu8K",
+    "DB5vrhzl",
+    "TX1rTb7f",
+    "VMr5aEuP"
+  ],
+  "icon_url": "https://cdn.modrinth.com/data/t64zvHbD/4f3783c472dd3ebcfe5b31bc1f91682a9388e406_96.webp",
+  "raw_icon_url": "https://cdn.modrinth.com/data/t64zvHbD/4f3783c472dd3ebcfe5b31bc1f91682a9388e406.png",
+  "link_urls": {
+    "site": {
+      "platform": "site",
+      "donation": false,
+      "url": "https://www.youtube.com/@euceravee"
+    },
+    "discord": {
+      "platform": "discord",
+      "donation": false,
+      "url": "https://discord.gg/euceravee"
+    }
+  },
+  "gallery": [],
+  "color": 6327136,
+  "thread_id": "IRhR3yeY",
+  "monetization_status": "force-demonetized",
+  "side_types_migration_review_status": "reviewed",
+  "minecraft_mod": null,
+  "minecraft_server": {
+    "max_players": null,
+    "country": null,
+    "region": "europe",
+    "languages": [
+      "en"
+    ],
+    "active_version": null
+  },
+  "minecraft_java_server": {
+    "address": "dominica-spot.tun.ply.gg",
+    "content": {
+      "kind": "vanilla",
+      "supported_game_versions": [
+        "26.2"
+      ],
+      "recommended_game_version": "26.2"
+    },
+    "ping": {
+      "when": "2026-11-07T18:23:10.805877640Z",
+      "address": "dominica-spot.tun.ply.gg",
+      "data": null
+    },
+    "verified_plays_2w": 3,
+    "verified_plays_4w": 3
+  },
+  "minecraft_bedrock_server": {
+    "address": "katherine-cadillac.tun.ply.gg"
+  },
+  "mrpack_loaders": [
+    "fabric"
+  ],
+  "game_versions": [
+    "1.21.1"
+  ],
+  "environment": [
+    "client_and_server"
+  ]
+}

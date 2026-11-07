@@ -8,16 +8,17 @@ import pytest
 
 from apps.core.exceptions import DomainError
 from apps.mods.models import Project
-from apps.mods.schemas import ModrinthProject, ModrinthVersion, VersionFile
 from apps.mods.tests.factories import ProjectFactory, VersionFactory
 from apps.mods.tests.payloads import project_payload, version_payload
 from apps.mods.tests.test_sync import FakeModrinth
 from apps.packs import services, tasks
 from apps.packs.models import LoaderRelease, Pack
+from apps.sources.models import SyncRun
+from apps.sources.schemas.modrinth import ModrinthProject, ModrinthVersion, VersionFile
 
 from .factories import PackFactory, mod
 
-pytestmark = pytest.mark.django_db
+pytestmark = [pytest.mark.django_db, pytest.mark.usefixtures("game_versions")]
 
 MRPACK_URL = "https://cdn.modrinth.com/data/FABULOUS/versions/PACKV001/fabulously.mrpack"
 
@@ -246,10 +247,13 @@ def modrinth(fake):
 
 
 def test_import_official_task(fake, settings):
-    settings.MODRINTH_OFFICIAL_PACKS = 3
+    settings.SYNC_LIMITS = {**settings.SYNC_LIMITS, "modpack": 3}
 
     with modrinth(fake):
-        assert tasks.import_official.delay().get() == ["fabulously-optimized"]
+        result = tasks.import_official.delay().get()
+
+    assert result["created"] == 1
+    assert SyncRun.objects.get(job="modrinth.modpacks").params == {"limit": 3}
 
 
 def test_fill_dependencies_task_brings_in_and_adds_missing_ones(user):
@@ -280,7 +284,7 @@ def test_refresh_loader_versions_task_stores_builds():
 
     with mock.patch("apps.packs.tasks.LoaderClient") as factory:
         factory.return_value.__enter__.return_value.latest_many.return_value = found
-        assert tasks.refresh_loader_versions.delay().get() == 2
+        assert tasks.refresh_loader_versions.delay().get()["updated"] == 2
 
     assert dict(LoaderRelease.objects.values_list("loader", "version")) == {
         "fabric": "0.17.2",
@@ -298,7 +302,7 @@ def test_versions_of_projects_in_packs_are_kept_fresh(user):
 
     with mock.patch("apps.mods.tasks.ModrinthClient") as factory:
         factory.return_value.__enter__.return_value = fake
-        assert mod_tasks.sync_versions_for_tracked.delay().get() == 1
+        assert mod_tasks.sync_versions_for_tracked.delay().get()["updated"] == 1
 
     # The file left Modrinth: the item stays and waits for another pick
     item = pack.items.get()

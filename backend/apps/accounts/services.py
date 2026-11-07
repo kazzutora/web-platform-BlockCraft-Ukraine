@@ -8,7 +8,9 @@ from django.db import transaction
 from PIL import Image, ImageOps, UnidentifiedImageError
 
 from apps.core.exceptions import DomainError
+from apps.core.game import parse_game_cookie
 from apps.moderation import words
+from apps.sources.models import GameVersion
 
 from .models import GameProfile, User, UserSettings
 
@@ -45,6 +47,23 @@ def update_game_profile(*, user: User, data: dict[str, Any]) -> GameProfile:
     if changed:
         profile.save(update_fields=changed)
     return profile
+
+
+def adopt_guest_game(*, user: User, cookie: str | None) -> bool:
+    """After sign-in, «Моя гра» chosen as a guest fills an empty profile (never overwrites)."""
+    profile = user.game_profile
+    if profile.game_version_id or profile.loader:
+        return False
+    parsed = parse_game_cookie(cookie)
+    if parsed is None:
+        return False
+    version, loader = parsed
+    game_version = GameVersion.objects.supported().filter(pk=version).first() if version else None
+    if game_version is None and not loader:
+        return False
+    profile.game_version, profile.loader = game_version, loader
+    profile.save(update_fields=["game_version", "loader"])
+    return True
 
 
 def complete_onboarding(*, user: User, data: dict[str, Any]) -> GameProfile:

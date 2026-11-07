@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { Container } from "@/components/layout/Container";
 import { Badge } from "@/components/ui/Badge";
 import { Chip } from "@/components/ui/Chip";
-import { Icon } from "@/components/ui/Icon";
+import { SourceBadge } from "@/components/ui/SourceBadge";
 import { Tabs } from "@/components/ui/Tabs";
 import { AddToCollection } from "@/features/library/AddToCollection";
 import { SaveToggle } from "@/features/library/SaveToggle";
@@ -168,16 +168,12 @@ function Credits({ pack }: { pack: Pack }) {
           </Link>
         </span>
       )}
-      {pack.modrinth_url && (
-        <a
-          href={pack.modrinth_url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 underline underline-offset-4"
-        >
-          <Icon name="external-link" size={16} />
-          {copy.modrinth}
-        </a>
+      {pack.source && (
+        <SourceBadge
+          {...pack.source}
+          label={copy.source(pack.title, pack.source.name)}
+          className="text-sm"
+        />
       )}
     </p>
   );

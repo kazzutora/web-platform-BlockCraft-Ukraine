@@ -9,7 +9,7 @@ from apps.mods.tests.factories import ProjectFactory, VersionFactory
 from apps.packs.models import Pack
 from apps.social.models import Review
 
-pytestmark = pytest.mark.django_db
+pytestmark = [pytest.mark.django_db, pytest.mark.usefixtures("game_versions")]
 
 
 def test_demo_content_is_complete_and_consistent():
@@ -40,7 +40,7 @@ def test_reset_replaces_the_demo_and_fixes_counters():
 
 
 def test_seed_needs_synced_mods_and_invents_nothing():
-    with pytest.raises(CommandError, match="sync-mods"):
+    with pytest.raises(CommandError, match="make sync s=modrinth"):
         call_command("seed", "--reset")
 
     assert not Project.objects.exists()

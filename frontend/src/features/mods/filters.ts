@@ -34,7 +34,7 @@ export function parseFilters(params: SearchParams): ModFilters {
   };
 }
 
-type Profile = { game_version?: string; loader?: string } | null;
+type Profile = { game_version?: string | null; loader?: string } | null;
 
 /** Fills version and loader from the player's profile unless the URL says otherwise. */
 export function withProfileDefaults(

@@ -6,7 +6,7 @@ from dataclasses import asdict
 from django.core.cache import cache
 from django.utils import timezone
 
-from .clients import PingResult
+from apps.sources.clients.ping import PingResult
 
 TTL = 15 * 60
 

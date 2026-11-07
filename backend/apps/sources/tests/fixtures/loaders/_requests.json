@@ -1,0 +1,51 @@
+{
+  "fabric_loader_1.21.1": {
+    "method": "GET",
+    "url": "https://meta.fabricmc.net/v2/versions/loader/1.21.1",
+    "params": null,
+    "body": null,
+    "status": 200,
+    "headers": {
+      "content-type": "application/json",
+      "cache-control": "public, max-age=1800"
+    },
+    "captured_at": "2026-11-07T18:31:20+00:00",
+    "truncated": "list cut to 3 of 255 items"
+  },
+  "quilt_loader_1.21.1": {
+    "method": "GET",
+    "url": "https://meta.quiltmc.org/v3/versions/loader/1.21.1",
+    "params": null,
+    "body": null,
+    "status": 200,
+    "headers": {
+      "content-type": "application/json",
+      "cache-control": "no-store"
+    },
+    "captured_at": "2026-11-07T18:31:20+00:00",
+    "truncated": "list cut to 3 of 310 items"
+  },
+  "forge_promotions_slim": {
+    "method": "GET",
+    "url": "https://files.minecraftforge.net/net/minecraftforge/forge/promotions_slim.json",
+    "params": null,
+    "body": null,
+    "status": 200,
+    "headers": {
+      "content-type": "application/json"
+    },
+    "captured_at": "2026-11-07T18:31:21+00:00"
+  },
+  "neoforge_versions": {
+    "method": "GET",
+    "url": "https://maven.neoforged.net/api/maven/versions/releases/net/neoforged/neoforge",
+    "params": null,
+    "body": null,
+    "status": 200,
+    "headers": {
+      "content-type": "application/json",
+      "cache-control": "no-cache, no-store, must-revalidate, max-age=0"
+    },
+    "captured_at": "2026-11-07T18:31:21+00:00"
+  }
+}

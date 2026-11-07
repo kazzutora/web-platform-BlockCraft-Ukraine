@@ -16,7 +16,7 @@ from apps.social.models import Review
 
 from .factories import PackFactory, add, mod
 
-pytestmark = pytest.mark.django_db
+pytestmark = [pytest.mark.django_db, pytest.mark.usefixtures("game_versions")]
 
 FORM = {
     "title": "Затишна Січ",
@@ -131,7 +131,7 @@ def test_pack_page_shows_files_issues_and_requirements(api_client):
         }
     ]
     assert body["is_mine"] is False
-    assert body["modrinth_url"] is None
+    assert body["source"] is None
 
 
 def test_drafts_are_seen_only_by_their_author(api_client, draft, user):

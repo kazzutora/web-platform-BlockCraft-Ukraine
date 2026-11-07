@@ -15,6 +15,7 @@ from rest_framework.views import APIView
 
 from apps.core.exceptions import DomainError
 from apps.core.schema import error_responses
+from apps.core.throttling import WriteScopedRateThrottle
 
 from . import privacy, selectors, services
 from .serializers import (
@@ -107,25 +108,42 @@ class MeExportView(APIView):
         return response
 
 
-class MeGameProfileView(APIView):
+class MeGameView(APIView):
+    """«Моя гра» of a signed-in player; guests keep it in the `bc_game` cookie."""
+
     permission_classes = [IsAuthenticated]
+    # Only changes are throttled: the chip reads «Моя гра» on every page
+    throttle_classes = [WriteScopedRateThrottle]
+    throttle_scope = "game"
 
     @extend_schema(
-        operation_id="me_game_profile_retrieve",
+        operation_id="me_game_retrieve",
         responses={200: GameProfileSerializer, **error_responses(401)},
     )
     def get(self, request: Request) -> Response:
         return Response(GameProfileSerializer(request.user.game_profile).data)
 
     @extend_schema(
-        operation_id="me_game_profile_update",
+        operation_id="me_game_update",
+        request=GameProfileSerializer,
+        responses={200: GameProfileSerializer, **error_responses(400, 401)},
+    )
+    def put(self, request: Request) -> Response:
+        # A full replacement: what is not sent becomes «not chosen»
+        # QueryDict (forms) unpacks into lists: take plain values
+        sent = request.data.dict() if hasattr(request.data, "dict") else dict(request.data)
+        return self._update(request, data={"game_version": None, "loader": "", **sent})
+
+    @extend_schema(
+        operation_id="me_game_partial_update",
         request=GameProfileSerializer,
         responses={200: GameProfileSerializer, **error_responses(400, 401)},
     )
     def patch(self, request: Request) -> Response:
-        serializer = GameProfileSerializer(
-            request.user.game_profile, data=request.data, partial=True
-        )
+        return self._update(request, data=request.data)
+
+    def _update(self, request: Request, *, data) -> Response:
+        serializer = GameProfileSerializer(request.user.game_profile, data=data, partial=True)
         serializer.is_valid(raise_exception=True)
         profile = services.update_game_profile(user=request.user, data=serializer.validated_data)
         return Response(GameProfileSerializer(profile).data)

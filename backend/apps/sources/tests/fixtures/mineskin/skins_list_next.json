@@ -1,0 +1,45 @@
+{
+  "success": true,
+  "skins": [
+    {
+      "uuid": "5e63135e31644bfab2456263bce41d1e",
+      "shortId": "acdf19ae",
+      "name": null,
+      "texture": "35ec1b93680fe1cc0638e5d47ca644e78d390183f0278dc4ad326326f283f2f7",
+      "timestamp": 1794076264549
+    },
+    {
+      "uuid": "ba628be0ba7848ccb63caf99b85988c3",
+      "shortId": "3c5d1b43",
+      "name": null,
+      "texture": "111ee6b4eaf1f3b88389090439a85508dace06e953b4ff59d19e5821c8b1806a",
+      "timestamp": 1794076257268
+    },
+    {
+      "uuid": "016e39b655e74d5f81fa72384722900f",
+      "shortId": "9bde392c",
+      "name": null,
+      "texture": "f17854a44549fe196dfd700d2298e89e2ef89598649f1bd228cc348843109f1",
+      "timestamp": 1794076252946
+    }
+  ],
+  "pagination": {
+    "current": {
+      "after": "4f5e82992e9749b6a114ef89a1311920"
+    },
+    "next": {
+      "after": "016e39b655e74d5f81fa72384722900f"
+    }
+  },
+  "warnings": [
+    {
+      "code": "no_api_key",
+      "message": "No API Key provided"
+    }
+  ],
+  "messages": [],
+  "links": {
+    "self": "/v2/skins?after=4f5e82992e9749b6a114ef89a1311920&size=3",
+    "next": "/v2/skins?after=016e39b655e74d5f81fa72384722900f&size=3"
+  }
+}

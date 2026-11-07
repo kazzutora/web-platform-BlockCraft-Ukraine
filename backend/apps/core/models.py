@@ -48,6 +48,46 @@ class Publishable(models.Model):
         abstract = True
 
 
+class Source(models.TextChoices):
+    """Where a catalog object comes from (the registry in apps/sources describes each one)."""
+
+    MODRINTH = "modrinth", "Modrinth"
+    MINESKIN = "mineskin", "MineSkin"
+    MOJANG = "mojang", "Mojang"
+    OWNER = "owner", "Власник"
+
+
+class SourcedQuerySet(models.QuerySet):
+    def visible(self):
+        return self.filter(is_hidden=False)
+
+
+class Sourced(models.Model):
+    """Everything mirrored from a source: we keep the link back and never invent the object.
+
+    Concrete models inherit `Meta` (`class Meta(Sourced.Meta)`) to get the unique
+    `(source, external_id)` constraint.
+    """
+
+    source = models.CharField("джерело", max_length=16, choices=Source.choices, db_index=True)
+    external_id = models.CharField("id у джерелі", max_length=64)
+    external_url = models.URLField("сторінка в джерелі", max_length=500, blank=True)
+    synced_at = models.DateTimeField("синхронізовано", null=True, blank=True)
+    is_hidden = models.BooleanField("приховано в нас", default=False, db_index=True)
+    hidden_reason = models.CharField("чому приховано", max_length=280, blank=True)
+
+    objects = SourcedQuerySet.as_manager()
+
+    class Meta:
+        abstract = True
+        constraints = [
+            models.UniqueConstraint(
+                fields=["source", "external_id"],
+                name="%(app_label)s_%(class)s_source_external_id_unique",
+            )
+        ]
+
+
 class Engagement(models.Model):
     """Denormalized counters; change them only in services with F() inside a transaction."""
 

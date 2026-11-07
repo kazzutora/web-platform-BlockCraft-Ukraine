@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { IconLink } from "@/components/ui/IconLink";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { AccountArea } from "@/features/auth/AccountArea";
+import { GameChipArea } from "@/features/game/GameChipArea";
 import { NotificationBell } from "@/features/notifications/NotificationBell";
 import { SearchOverlay } from "@/features/search/SearchOverlay";
 
@@ -27,6 +28,10 @@ export function Header() {
         </div>
         <Logo />
         <div className="flex items-center justify-end gap-1">
+          {/* «Моя гра» on every screen size: everything below is filtered for it */}
+          <Suspense fallback={<Skeleton className="h-9 w-28" />}>
+            <GameChipArea />
+          </Suspense>
           <SearchOverlay />
           {/* Desktop-only actions; on phones they live in the menu and the tab bar */}
           <div className="hidden items-center gap-1 md:flex">

@@ -1,0 +1,192 @@
+{
+  "id": "zghks7Se",
+  "slug": "rosedalean-smp-season-2",
+  "project_types": [
+    "minecraft_java_server"
+  ],
+  "games": [
+    "minecraft-java",
+    "minecraft-bedrock"
+  ],
+  "team_id": "WhRxtisW",
+  "organization": "818BG3nr",
+  "name": "Rosedalean SMP season 2",
+  "summary": "[18+] Rosedalean SMP season 2 - Hop on and make some friends !",
+  "description": "# Rosedalean SMP - Season 2\n\n### This is an 18+ server!\nPlease only apply if you're **18 years of age or older.**\n\nWelcome to the **Rosedalean SMP!** We're currently in Season 2, which means a fresh start and a whole new chance for you to get involved!\n\n## Mods & Gameplay\n\nWe've specially curated a wide range of standout mods with something for all types of players, including:\n\n- A variety of furniture and decoration mods\n- **Create**, along with plenty of Create addons\n- **Biomes O' Plenty** for loads of extra biomes\n- **Proximity Voice Chat**\n- **Tectonic** for a more interesting and exciting world\n- And so, so, so much more!\n\nWhether you enjoy building, exploring, messing around with Create, or just finding somewhere nice to settle down, there's plenty to do.\n\n## Lore & Roleplay\n\nIf lore is your style, we also have a dedicated community to act and play with!\n\nWhether you want to create your own character and roleplay with others, get involved with the server's stories, or simply settle down with a cool base while hanging out with friends, we could be the server for you.\n\nThere's also **no requirement to participate in lore** if that's not your thing.\n\n## Community\n\nWe strive to be a **community-based server** and have big plans for guilds and community events that bring people together.\n\nThis includes in-game events, weekly Discord game nights, and collaborative story-building for anyone interested in the lore side of the server.\n\n## Interested?\n\nJoin our Discord to apply, get approved, and be whitelisted:\n\n**https://discord.gg/ue2AJBe2V5**",
+  "published": "2026-06-16T01:38:42.277908Z",
+  "updated": "2026-08-09T01:57:04.945173Z",
+  "approved": "2026-07-02T00:51:17.125709Z",
+  "queued": "2026-06-26T00:33:50.551239Z",
+  "status": "approved",
+  "requested_status": "approved",
+  "moderator_message": null,
+  "license": {
+    "id": "LicenseRef-Unknown",
+    "name": "",
+    "url": null
+  },
+  "downloads": 1170,
+  "followers": 26,
+  "categories": [
+    "smp",
+    "vanilla-like",
+    "whitelisted"
+  ],
+  "additional_categories": [
+    "questing",
+    "roleplay",
+    "social",
+    "survival-mode",
+    "teams",
+    "world-resets"
+  ],
+  "loaders": [
+    "mrpack"
+  ],
+  "versions": [
+    "q9nrk2L5",
+    "UTJONDTm",
+    "VmHsFilw",
+    "eLwbdhCz",
+    "BV83V9p4",
+    "cW4SxmXB",
+    "dtHPD31w",
+    "COjn45Zd",
+    "eoHw15I5",
+    "11vTODrH"
+  ],
+  "icon_url": "https://cdn.modrinth.com/data/zghks7Se/d09036c83d9a47f59d70e1528fe84642d0abed7c_96.webp",
+  "raw_icon_url": "https://cdn.modrinth.com/data/zghks7Se/d09036c83d9a47f59d70e1528fe84642d0abed7c.png",
+  "link_urls": {
+    "discord": {
+      "platform": "discord",
+      "donation": false,
+      "url": "https://discord.gg/ue2AJBe2V5"
+    }
+  },
+  "gallery": [
+    {
+      "id": 608157,
+      "url": "https://cdn.modrinth.com/data/zghks7Se/images/73f4c6fe9aa41c16e7ca558be6d6672794b2ab2a_350.webp",
+      "raw_url": "https://cdn.modrinth.com/data/zghks7Se/images/73f4c6fe9aa41c16e7ca558be6d6672794b2ab2a.png",
+      "featured": false,
+      "name": "__mc_server_banner__",
+      "description": null,
+      "created": "2026-06-16T01:58:54.226023Z",
+      "ordering": 0
+    },
+    {
+      "id": 632162,
+      "url": "https://cdn.modrinth.com/data/zghks7Se/images/1823231321760a4fcab13b6212707e5321069ca3_350.webp",
+      "raw_url": "https://cdn.modrinth.com/data/zghks7Se/images/1823231321760a4fcab13b6212707e5321069ca3.png",
+      "featured": false,
+      "name": "What are they cooking down here",
+      "description": null,
+      "created": "2026-07-03T18:15:47.101270Z",
+      "ordering": 0
+    },
+    {
+      "id": 632171,
+      "url": "https://cdn.modrinth.com/data/zghks7Se/images/45d848bea01f7b1ce2fa386ec65b9d00ff9563a5_350.webp",
+      "raw_url": "https://cdn.modrinth.com/data/zghks7Se/images/45d848bea01f7b1ce2fa386ec65b9d00ff9563a5.png",
+      "featured": false,
+      "name": "Traveling around",
+      "description": null,
+      "created": "2026-07-03T18:23:27.437675Z",
+      "ordering": 0
+    },
+    {
+      "id": 632173,
+      "url": "https://cdn.modrinth.com/data/zghks7Se/images/f63eb2b28b768996be996d9970f42035741a2690_350.webp",
+      "raw_url": "https://cdn.modrinth.com/data/zghks7Se/images/f63eb2b28b768996be996d9970f42035741a2690.png",
+      "featured": false,
+      "name": "Hot tub time",
+      "description": null,
+      "created": "2026-07-03T18:25:22.760580Z",
+      "ordering": 0
+    },
+    {
+      "id": 632175,
+      "url": "https://cdn.modrinth.com/data/zghks7Se/images/97ff0c55ca1d2a5165c118434a347ee4df11b8b2_350.webp",
+      "raw_url": "https://cdn.modrinth.com/data/zghks7Se/images/97ff0c55ca1d2a5165c118434a347ee4df11b8b2.png",
+      "featured": false,
+      "name": "Season 1 spawn",
+      "description": null,
+      "created": "2026-07-03T18:26:02.956742Z",
+      "ordering": 0
+    },
+    {
+      "id": 632177,
+      "url": "https://cdn.modrinth.com/data/zghks7Se/images/cf8c96536b7aa2f7bcb493420dd6fba241802cd5_350.webp",
+      "raw_url": "https://cdn.modrinth.com/data/zghks7Se/images/cf8c96536b7aa2f7bcb493420dd6fba241802cd5.png",
+      "featured": false,
+      "name": "Riding around",
+      "description": null,
+      "created": "2026-07-03T18:26:37.732150Z",
+      "ordering": 0
+    },
+    {
+      "id": 632180,
+      "url": "https://cdn.modrinth.com/data/zghks7Se/images/728dbf3c75fcc93bec63d3ff73526665dc73bd34_350.webp",
+      "raw_url": "https://cdn.modrinth.com/data/zghks7Se/images/728dbf3c75fcc93bec63d3ff73526665dc73bd34.png",
+      "featured": false,
+      "name": "Maid time",
+      "description": null,
+      "created": "2026-07-03T18:27:07.576910Z",
+      "ordering": 0
+    }
+  ],
+  "color": 15125704,
+  "thread_id": "4G3Nxoew",
+  "monetization_status": "force-demonetized",
+  "side_types_migration_review_status": "reviewed",
+  "minecraft_mod": null,
+  "minecraft_server": {
+    "max_players": null,
+    "country": null,
+    "region": "us_east",
+    "languages": [
+      "en"
+    ],
+    "active_version": null
+  },
+  "minecraft_java_server": {
+    "address": "rosedalean.com",
+    "content": {
+      "kind": "modpack",
+      "version_id": "7l2yJNvH",
+      "project_id": "shAGUyEd",
+      "project_name": "Rosedalean SMP Modpack",
+      "project_icon": "https://cdn.modrinth.com/data/shAGUyEd/f7c2986ff1ff3750f410d1c68a0ed332c3e8f707_96.webp"
+    },
+    "ping": {
+      "when": "2026-11-07T18:20:10.637991712Z",
+      "address": "rosedalean.com",
+      "data": {
+        "latency": {
+          "secs": 0,
+          "nanos": 61158867
+        },
+        "version_name": "1.20.1",
+        "version_protocol": 763,
+        "description": "§f Welcome to§a Rosedalean§d SMP§6§l season 2§f !!!! §r\n",
+        "players_online": 11,
+        "players_max": 50
+      }
+    },
+    "verified_plays_2w": 438,
+    "verified_plays_4w": 882
+  },
+  "minecraft_bedrock_server": {
+    "address": ""
+  },
+  "game_versions": [
+    "1.20.1"
+  ],
+  "mrpack_loaders": [
+    "fabric"
+  ],
+  "environment": [
+    "client_and_server"
+  ]
+}

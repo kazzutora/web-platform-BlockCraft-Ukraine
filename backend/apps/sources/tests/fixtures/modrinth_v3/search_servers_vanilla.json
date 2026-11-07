@@ -1,0 +1,3335 @@
+{
+  "hits": [
+    {
+      "version_id": "VMr5aEuP",
+      "project_id": "t64zvHbD",
+      "project_types": [
+        "minecraft_java_server"
+      ],
+      "all_project_types": [
+        "minecraft_java_server"
+      ],
+      "slug": "the-vee-hive-minecraft-server",
+      "author": "bumblebeevee18",
+      "author_id": "sX5N91ZW",
+      "organization": null,
+      "organization_id": null,
+      "name": "The Vee Hive Minecraft Server",
+      "summary": "We're a small community server open to everyone running on Paper with plugins! Anyone is welcome and we have a discord community attached to the server for any and all questions, concerns or other inquiries! We're LGBT and Autistic owned and for everyone!",
+      "categories": [
+        "adventure-mode",
+        "creator-community",
+        "crossplay",
+        "economy",
+        "fabric",
+        "keep-inventory",
+        "personal-worlds",
+        "plots",
+        "pve",
+        "smp",
+        "survival-mode",
+        "vanilla-like",
+        "world-resets"
+      ],
+      "display_categories": [
+        "economy",
+        "economy",
+        "adventure-mode"
+      ],
+      "downloads": 246,
+      "follows": 1,
+      "icon_url": "https://cdn.modrinth.com/data/t64zvHbD/4f3783c472dd3ebcfe5b31bc1f91682a9388e406_96.webp",
+      "date_created": "2026-03-10T07:56:30.782600+00:00",
+      "date_modified": "2026-04-18T22:47:23.704829+00:00",
+      "license": "LicenseRef-Unknown",
+      "gallery": [],
+      "featured_gallery": null,
+      "color": 6327136,
+      "dependency_project_ids": [
+        "1IjD5062",
+        "1KP4CLlU",
+        "1bokaNcj",
+        "1eAoo2KR",
+        "1oUDhxuy",
+        "1u6JkXh5",
+        "2V1Y86sc",
+        "3Puj7Mln",
+        "3ne670on",
+        "3sLJoaQH",
+        "469QXqgC",
+        "50dA9Sha",
+        "5aaWibi9",
+        "6L3ydNi8",
+        "6avVoBVB",
+        "6txNkua3",
+        "6vhHOIKw",
+        "7cFX55fD",
+        "7vxePowz",
+        "8BmcQJ2H",
+        "8oi3bsk5",
+        "8ooWzSQP",
+        "97Az7HCf",
+        "9cz66Qto",
+        "9jxwkYQL",
+        "9s6osm5g",
+        "AANobbMI",
+        "AXY1OO9m",
+        "AqaIIO6D",
+        "B0g2vT6l",
+        "B8jaH3P1",
+        "BAscRYKm",
+        "BDQucwF0",
+        "C7I0BCni",
+        "CVBAErky",
+        "CVRzrXGP",
+        "CZrLuVQo",
+        "CaOWby9K",
+        "D53qveoj",
+        "DjLobEOy",
+        "E96uokEJ",
+        "EltpO5cN",
+        "EpQFjzrQ",
+        "EsAfCjCV",
+        "G1hIVOrD",
+        "GURcjz8O",
+        "GcWjdA9I",
+        "GmwLse2I",
+        "Gx07Bguy",
+        "HU6mkUZs",
+        "HVnmMxH1",
+        "HXF82T3G",
+        "Ha28R6CL",
+        "HnePtkev",
+        "IUJGdLaw",
+        "K01OU20C",
+        "KJe6y9Eu",
+        "KZAmykow",
+        "LBl4Qguc",
+        "LN9BxssP",
+        "LOpKHB2A",
+        "LrYZi08Q",
+        "MBAkmtvl",
+        "MPCX6s5C",
+        "MdwFAVRL",
+        "NCKpPR0Z",
+        "NNAgCjsB",
+        "NPCfuUI4",
+        "NcUtCpym",
+        "NkGaQMDA",
+        "OQAgZMH1",
+        "OhduvhIc",
+        "P7dR8mSH",
+        "PeZ4h4i0",
+        "Q1ZgOTni",
+        "QWfaJXEc",
+        "R2OftAxM",
+        "SaCpeal4",
+        "SpgcWKWY",
+        "SszvX85I",
+        "Tanquv9C",
+        "UL4bJFDY",
+        "UVtY3ZAC",
+        "UYeecoyN",
+        "VRLhWB91",
+        "Va3BanZa",
+        "W2pr9jyL",
+        "W3Dr0Mk2",
+        "Wb5oqrBJ",
+        "Wkc3lwHo",
+        "Wnxd13zP",
+        "XvcfUGfB",
+        "XvoWJaA2",
+        "YL57xq9U",
+        "YWmj2r1d",
+        "Yd4wb5wZ",
+        "ZVzW5oNS",
+        "ZvMtQlho",
+        "aC3cM3Vq",
+        "aTaCgKLW",
+        "aaRl8GiW",
+        "b1ZV3DIJ",
+        "bEpr0Arc",
+        "bI8Nt3uA",
+        "bK3Ubu9p",
+        "bMdS1gMo",
+        "bQrcYNc5",
+        "c1OpnQs3",
+        "ccKDOlHs",
+        "cl223EMc",
+        "cl5ec0Qm",
+        "coUTm32c",
+        "dCCkNFwE",
+        "ddaWpjKK",
+        "dtWC90iB",
+        "e0M1UDsY",
+        "eXts2L7r",
+        "fFEIiSDQ",
+        "fPetb5Kh",
+        "fchC4AOW",
+        "fnAffV0n",
+        "fuuu3xnx",
+        "gF3BGWvG",
+        "gHoB7SHO",
+        "gedNE4y2",
+        "hYykXjDp",
+        "hnOfcjSq",
+        "iHtpVwJL",
+        "iP3wH1ha",
+        "isWGaSnM",
+        "jCpoCBpn",
+        "jK2xMxSG",
+        "joEfVgkn",
+        "jrDKjZP7",
+        "jtmvUHXj",
+        "kNxa8z3e",
+        "kkmrDlKT",
+        "kppEhbWI",
+        "lIDAJAby",
+        "lLqFfGNs",
+        "lP9Yrr1E",
+        "lVP9aUaY",
+        "lfVtagkm",
+        "lhGA9TYQ",
+        "m6RyHSbV",
+        "mOgUt4GM",
+        "n2fvCDlM",
+        "nGUXvjTa",
+        "nU0bVIaL",
+        "nvQzSEkH",
+        "ohNO6lps",
+        "okE6QVAY",
+        "p19vrgc2",
+        "pduQXSbl",
+        "qwBon1nq",
+        "r4PuRGfV",
+        "rH20L2Lp",
+        "rOUBggPv",
+        "rlloIFEV",
+        "s3dmwKy5",
+        "s7N7AsqL",
+        "sNJAIjUm",
+        "spZb29SD",
+        "tEcCNQe7",
+        "tZMuL9tl",
+        "tagwiZkJ",
+        "twkfQtEc",
+        "u6dRKJwZ",
+        "unvZ692M",
+        "uy4Cnpcm",
+        "w4an97C2",
+        "w7ThoJFB",
+        "wQfMUdZT",
+        "wpVff6b8",
+        "x3s69afN",
+        "xv94TkTM",
+        "yBW8D80W",
+        "ywwXJDli",
+        "zlrbPCvu",
+        "znHQQtuU"
+      ],
+      "compatible_dependency_project_ids": [
+        "1IjD5062",
+        "1KP4CLlU",
+        "1bokaNcj",
+        "1eAoo2KR",
+        "1oUDhxuy",
+        "1u6JkXh5",
+        "2V1Y86sc",
+        "3Puj7Mln",
+        "3ne670on",
+        "3sLJoaQH",
+        "469QXqgC",
+        "50dA9Sha",
+        "5aaWibi9",
+        "6L3ydNi8",
+        "6avVoBVB",
+        "6txNkua3",
+        "6vhHOIKw",
+        "7cFX55fD",
+        "7vxePowz",
+        "8BmcQJ2H",
+        "8oi3bsk5",
+        "8ooWzSQP",
+        "97Az7HCf",
+        "9cz66Qto",
+        "9jxwkYQL",
+        "9s6osm5g",
+        "AANobbMI",
+        "AXY1OO9m",
+        "AqaIIO6D",
+        "B0g2vT6l",
+        "B8jaH3P1",
+        "BAscRYKm",
+        "BDQucwF0",
+        "C7I0BCni",
+        "CVBAErky",
+        "CVRzrXGP",
+        "CZrLuVQo",
+        "CaOWby9K",
+        "D53qveoj",
+        "DjLobEOy",
+        "E96uokEJ",
+        "EltpO5cN",
+        "EpQFjzrQ",
+        "EsAfCjCV",
+        "G1hIVOrD",
+        "GURcjz8O",
+        "GcWjdA9I",
+        "GmwLse2I",
+        "Gx07Bguy",
+        "HU6mkUZs",
+        "HVnmMxH1",
+        "HXF82T3G",
+        "Ha28R6CL",
+        "HnePtkev",
+        "IUJGdLaw",
+        "K01OU20C",
+        "KJe6y9Eu",
+        "KZAmykow",
+        "LBl4Qguc",
+        "LN9BxssP",
+        "LOpKHB2A",
+        "LrYZi08Q",
+        "MBAkmtvl",
+        "MPCX6s5C",
+        "MdwFAVRL",
+        "NCKpPR0Z",
+        "NNAgCjsB",
+        "NPCfuUI4",
+        "NcUtCpym",
+        "NkGaQMDA",
+        "OQAgZMH1",
+        "OhduvhIc",
+        "P7dR8mSH",
+        "PeZ4h4i0",
+        "Q1ZgOTni",
+        "QWfaJXEc",
+        "R2OftAxM",
+        "SaCpeal4",
+        "SpgcWKWY",
+        "SszvX85I",
+        "Tanquv9C",
+        "UL4bJFDY",
+        "UVtY3ZAC",
+        "UYeecoyN",
+        "VRLhWB91",
+        "Va3BanZa",
+        "W2pr9jyL",
+        "W3Dr0Mk2",
+        "Wb5oqrBJ",
+        "Wkc3lwHo",
+        "Wnxd13zP",
+        "XvcfUGfB",
+        "XvoWJaA2",
+        "YL57xq9U",
+        "YWmj2r1d",
+        "Yd4wb5wZ",
+        "ZVzW5oNS",
+        "ZvMtQlho",
+        "aC3cM3Vq",
+        "aTaCgKLW",
+        "aaRl8GiW",
+        "b1ZV3DIJ",
+        "bEpr0Arc",
+        "bI8Nt3uA",
+        "bK3Ubu9p",
+        "bMdS1gMo",
+        "bQrcYNc5",
+        "c1OpnQs3",
+        "ccKDOlHs",
+        "cl223EMc",
+        "cl5ec0Qm",
+        "coUTm32c",
+        "dCCkNFwE",
+        "ddaWpjKK",
+        "dtWC90iB",
+        "e0M1UDsY",
+        "eXts2L7r",
+        "fFEIiSDQ",
+        "fPetb5Kh",
+        "fchC4AOW",
+        "fnAffV0n",
+        "fuuu3xnx",
+        "gF3BGWvG",
+        "gHoB7SHO",
+        "gedNE4y2",
+        "hYykXjDp",
+        "hnOfcjSq",
+        "iHtpVwJL",
+        "iP3wH1ha",
+        "isWGaSnM",
+        "jCpoCBpn",
+        "jK2xMxSG",
+        "joEfVgkn",
+        "jrDKjZP7",
+        "jtmvUHXj",
+        "kNxa8z3e",
+        "kkmrDlKT",
+        "kppEhbWI",
+        "lIDAJAby",
+        "lLqFfGNs",
+        "lP9Yrr1E",
+        "lVP9aUaY",
+        "lfVtagkm",
+        "lhGA9TYQ",
+        "m6RyHSbV",
+        "mOgUt4GM",
+        "n2fvCDlM",
+        "nGUXvjTa",
+        "nU0bVIaL",
+        "nvQzSEkH",
+        "ohNO6lps",
+        "okE6QVAY",
+        "p19vrgc2",
+        "pduQXSbl",
+        "qwBon1nq",
+        "r4PuRGfV",
+        "rH20L2Lp",
+        "rOUBggPv",
+        "rlloIFEV",
+        "s3dmwKy5",
+        "s7N7AsqL",
+        "sNJAIjUm",
+        "spZb29SD",
+        "tEcCNQe7",
+        "tZMuL9tl",
+        "tagwiZkJ",
+        "twkfQtEc",
+        "u6dRKJwZ",
+        "unvZ692M",
+        "uy4Cnpcm",
+        "w4an97C2",
+        "w7ThoJFB",
+        "wQfMUdZT",
+        "wpVff6b8",
+        "x3s69afN",
+        "xv94TkTM",
+        "yBW8D80W",
+        "ywwXJDli",
+        "zlrbPCvu",
+        "znHQQtuU"
+      ],
+      "required_dependency_project_ids": [],
+      "optional_dependency_project_ids": [],
+      "embedded_dependency_project_ids": [
+        "1IjD5062",
+        "1KP4CLlU",
+        "1bokaNcj",
+        "1eAoo2KR",
+        "1oUDhxuy",
+        "1u6JkXh5",
+        "2V1Y86sc",
+        "3Puj7Mln",
+        "3ne670on",
+        "3sLJoaQH",
+        "469QXqgC",
+        "50dA9Sha",
+        "5aaWibi9",
+        "6L3ydNi8",
+        "6avVoBVB",
+        "6txNkua3",
+        "6vhHOIKw",
+        "7cFX55fD",
+        "7vxePowz",
+        "8BmcQJ2H",
+        "8oi3bsk5",
+        "8ooWzSQP",
+        "97Az7HCf",
+        "9cz66Qto",
+        "9jxwkYQL",
+        "9s6osm5g",
+        "AANobbMI",
+        "AXY1OO9m",
+        "AqaIIO6D",
+        "B0g2vT6l",
+        "B8jaH3P1",
+        "BAscRYKm",
+        "BDQucwF0",
+        "C7I0BCni",
+        "CVBAErky",
+        "CVRzrXGP",
+        "CZrLuVQo",
+        "CaOWby9K",
+        "D53qveoj",
+        "DjLobEOy",
+        "E96uokEJ",
+        "EltpO5cN",
+        "EpQFjzrQ",
+        "EsAfCjCV",
+        "G1hIVOrD",
+        "GURcjz8O",
+        "GcWjdA9I",
+        "GmwLse2I",
+        "Gx07Bguy",
+        "HU6mkUZs",
+        "HVnmMxH1",
+        "HXF82T3G",
+        "Ha28R6CL",
+        "HnePtkev",
+        "IUJGdLaw",
+        "K01OU20C",
+        "KJe6y9Eu",
+        "KZAmykow",
+        "LBl4Qguc",
+        "LN9BxssP",
+        "LOpKHB2A",
+        "LrYZi08Q",
+        "MBAkmtvl",
+        "MPCX6s5C",
+        "MdwFAVRL",
+        "NCKpPR0Z",
+        "NNAgCjsB",
+        "NPCfuUI4",
+        "NcUtCpym",
+        "NkGaQMDA",
+        "OQAgZMH1",
+        "OhduvhIc",
+        "P7dR8mSH",
+        "PeZ4h4i0",
+        "Q1ZgOTni",
+        "QWfaJXEc",
+        "R2OftAxM",
+        "SaCpeal4",
+        "SpgcWKWY",
+        "SszvX85I",
+        "Tanquv9C",
+        "UL4bJFDY",
+        "UVtY3ZAC",
+        "UYeecoyN",
+        "VRLhWB91",
+        "Va3BanZa",
+        "W2pr9jyL",
+        "W3Dr0Mk2",
+        "Wb5oqrBJ",
+        "Wkc3lwHo",
+        "Wnxd13zP",
+        "XvcfUGfB",
+        "XvoWJaA2",
+        "YL57xq9U",
+        "YWmj2r1d",
+        "Yd4wb5wZ",
+        "ZVzW5oNS",
+        "ZvMtQlho",
+        "aC3cM3Vq",
+        "aTaCgKLW",
+        "aaRl8GiW",
+        "b1ZV3DIJ",
+        "bEpr0Arc",
+        "bI8Nt3uA",
+        "bK3Ubu9p",
+        "bMdS1gMo",
+        "bQrcYNc5",
+        "c1OpnQs3",
+        "ccKDOlHs",
+        "cl223EMc",
+        "cl5ec0Qm",
+        "coUTm32c",
+        "dCCkNFwE",
+        "ddaWpjKK",
+        "dtWC90iB",
+        "e0M1UDsY",
+        "eXts2L7r",
+        "fFEIiSDQ",
+        "fPetb5Kh",
+        "fchC4AOW",
+        "fnAffV0n",
+        "fuuu3xnx",
+        "gF3BGWvG",
+        "gHoB7SHO",
+        "gedNE4y2",
+        "hYykXjDp",
+        "hnOfcjSq",
+        "iHtpVwJL",
+        "iP3wH1ha",
+        "isWGaSnM",
+        "jCpoCBpn",
+        "jK2xMxSG",
+        "joEfVgkn",
+        "jrDKjZP7",
+        "jtmvUHXj",
+        "kNxa8z3e",
+        "kkmrDlKT",
+        "kppEhbWI",
+        "lIDAJAby",
+        "lLqFfGNs",
+        "lP9Yrr1E",
+        "lVP9aUaY",
+        "lfVtagkm",
+        "lhGA9TYQ",
+        "m6RyHSbV",
+        "mOgUt4GM",
+        "n2fvCDlM",
+        "nGUXvjTa",
+        "nU0bVIaL",
+        "nvQzSEkH",
+        "ohNO6lps",
+        "okE6QVAY",
+        "p19vrgc2",
+        "pduQXSbl",
+        "qwBon1nq",
+        "r4PuRGfV",
+        "rH20L2Lp",
+        "rOUBggPv",
+        "rlloIFEV",
+        "s3dmwKy5",
+        "s7N7AsqL",
+        "sNJAIjUm",
+        "spZb29SD",
+        "tEcCNQe7",
+        "tZMuL9tl",
+        "tagwiZkJ",
+        "twkfQtEc",
+        "u6dRKJwZ",
+        "unvZ692M",
+        "uy4Cnpcm",
+        "w4an97C2",
+        "w7ThoJFB",
+        "wQfMUdZT",
+        "wpVff6b8",
+        "x3s69afN",
+        "xv94TkTM",
+        "yBW8D80W",
+        "ywwXJDli",
+        "zlrbPCvu",
+        "znHQQtuU"
+      ],
+      "incompatible_dependency_project_ids": [],
+      "dependencies": [
+        {
+          "project_id": "1IjD5062",
+          "dependency_type": "embedded",
+          "name": "Continuity",
+          "slug": "continuity",
+          "icon_url": "https://cdn.modrinth.com/data/1IjD5062/icon.png"
+        },
+        {
+          "project_id": "1KP4CLlU",
+          "dependency_type": "embedded",
+          "name": "Cobblemon Wiki Gui",
+          "slug": "cobblemon-wiki-gui",
+          "icon_url": "https://cdn.modrinth.com/data/1KP4CLlU/14fc8a3ff231dfd591c00c34283d986e292ffe09_96.webp"
+        },
+        {
+          "project_id": "1bokaNcj",
+          "dependency_type": "embedded",
+          "name": "Xaero's Minimap",
+          "slug": "xaeros-minimap",
+          "icon_url": "https://cdn.modrinth.com/data/1bokaNcj/354080f65407e49f486fcf9c4580e82c45ae63b8_96.webp"
+        },
+        {
+          "project_id": "1eAoo2KR",
+          "dependency_type": "embedded",
+          "name": "YetAnotherConfigLib (YACL)",
+          "slug": "yacl",
+          "icon_url": "https://cdn.modrinth.com/data/1eAoo2KR/08c0cd32515e260f4bb20bbc0696510041523f9a_96.webp"
+        },
+        {
+          "project_id": "1oUDhxuy",
+          "dependency_type": "embedded",
+          "name": "Moog's Structure Lib (moogs_structures)",
+          "slug": "moogs-structure-lib",
+          "icon_url": "https://cdn.modrinth.com/data/1oUDhxuy/fef0b294bd97cb59292df315fa46013a6db76bd5_96.webp"
+        },
+        {
+          "project_id": "1u6JkXh5",
+          "dependency_type": "embedded",
+          "name": "WorldEdit",
+          "slug": "worldedit",
+          "icon_url": "https://cdn.modrinth.com/data/1u6JkXh5/30698991048ced77e60c4e8284007d3782f2e6a3_96.webp"
+        },
+        {
+          "project_id": "2V1Y86sc",
+          "dependency_type": "embedded",
+          "name": "Navas ZA Megas",
+          "slug": "navas-zamega",
+          "icon_url": "https://cdn.modrinth.com/data/2V1Y86sc/c0f10eeeb1a3e5824ecfedc39b9a78a32652572e_96.webp"
+        },
+        {
+          "project_id": "3Puj7Mln",
+          "dependency_type": "embedded",
+          "name": "Quick Leaf Decay",
+          "slug": "quickleafdecay",
+          "icon_url": "https://cdn.modrinth.com/data/3Puj7Mln/0a7715807c7a204069b822a06ed1b4f31d800c38_96.webp"
+        },
+        {
+          "project_id": "3ne670on",
+          "dependency_type": "embedded",
+          "name": "Teleport Commands",
+          "slug": "teleport-commands",
+          "icon_url": "https://cdn.modrinth.com/data/3ne670on/32f33410d8140fe66dee303ef6dd80e37bbc002b_96.webp"
+        },
+        {
+          "project_id": "3sLJoaQH",
+          "dependency_type": "embedded",
+          "name": "Radical Gyms & Structures [Cobblemon]",
+          "slug": "radical-gyms-cobblemon",
+          "icon_url": "https://cdn.modrinth.com/data/3sLJoaQH/da2233c63d4d32c72afca4a83bc642cfffafea0d.png"
+        },
+        {
+          "project_id": "469QXqgC",
+          "dependency_type": "embedded",
+          "name": "Cobblemon cafe",
+          "slug": "cobble-caf-forms",
+          "icon_url": "https://cdn.modrinth.com/data/469QXqgC/4385347c39ce92839cc7b4ccb186122d43f5377a.png"
+        },
+        {
+          "project_id": "50dA9Sha",
+          "dependency_type": "embedded",
+          "name": "Fresh Animations",
+          "slug": "fresh-animations",
+          "icon_url": "https://cdn.modrinth.com/data/50dA9Sha/3132c10e9e3c73fde9799720fd3da5561071708c_96.webp"
+        },
+        {
+          "project_id": "5aaWibi9",
+          "dependency_type": "embedded",
+          "name": "Trinkets",
+          "slug": "trinkets",
+          "icon_url": "https://cdn.modrinth.com/data/5aaWibi9/icon.png"
+        },
+        {
+          "project_id": "6L3ydNi8",
+          "dependency_type": "embedded",
+          "name": "Starter Kit",
+          "slug": "starter-kit",
+          "icon_url": "https://cdn.modrinth.com/data/6L3ydNi8/946acc868c947e5f3ff7a1c1ccb268d09a14f6e5_96.webp"
+        },
+        {
+          "project_id": "6avVoBVB",
+          "dependency_type": "embedded",
+          "name": "Simply Tooltips",
+          "slug": "simply-tooltips",
+          "icon_url": "https://cdn.modrinth.com/data/6avVoBVB/c040fc973fff175c90ebc4382ee29d86fec98884_96.webp"
+        },
+        {
+          "project_id": "6txNkua3",
+          "dependency_type": "embedded",
+          "name": "Immersive Paintings",
+          "slug": "immersive-paintings",
+          "icon_url": "https://cdn.modrinth.com/data/6txNkua3/8c7abdd0a185dace29d4c4a0476f2d8af29475a9_96.webp"
+        },
+        {
+          "project_id": "6vhHOIKw",
+          "dependency_type": "embedded",
+          "name": "Enchant Icons",
+          "slug": "enchant-icons-countxd",
+          "icon_url": "https://cdn.modrinth.com/data/6vhHOIKw/0e65c5452472a00c5bb4c3b0d00d64d0e977e41a.gif"
+        },
+        {
+          "project_id": "7cFX55fD",
+          "dependency_type": "embedded",
+          "name": "TimeOutOut",
+          "slug": "timeoutout",
+          "icon_url": "https://cdn.modrinth.com/data/7cFX55fD/icon.png"
+        },
+        {
+          "project_id": "7vxePowz",
+          "dependency_type": "embedded",
+          "name": "Farmer's Delight Refabricated",
+          "slug": "farmers-delight-refabricated",
+          "icon_url": "https://cdn.modrinth.com/data/7vxePowz/26e8448993e9bda4dba92b6e7a1a13d9c4333138.png"
+        },
+        {
+          "project_id": "8BmcQJ2H",
+          "dependency_type": "embedded",
+          "name": "Geckolib",
+          "slug": "geckolib",
+          "icon_url": "https://cdn.modrinth.com/data/8BmcQJ2H/012d1aadbc754995de66e8c149a56aa10b63fe05_96.webp"
+        },
+        {
+          "project_id": "8oi3bsk5",
+          "dependency_type": "embedded",
+          "name": "Terralith",
+          "slug": "terralith",
+          "icon_url": "https://cdn.modrinth.com/data/8oi3bsk5/1959d924a1088944bbf07a06ba523726112d7e7a_96.webp"
+        },
+        {
+          "project_id": "8ooWzSQP",
+          "dependency_type": "embedded",
+          "name": "Spell Power Attributes",
+          "slug": "spell-power",
+          "icon_url": "https://cdn.modrinth.com/data/8ooWzSQP/fb6ef3214dcfddc7d0062f5642e30eb45de6df32_96.webp"
+        },
+        {
+          "project_id": "97Az7HCf",
+          "dependency_type": "embedded",
+          "name": "Cobblemon Extra Data",
+          "slug": "cobblemon-extra-data",
+          "icon_url": "https://cdn.modrinth.com/data/97Az7HCf/c4757d87ef0942e3d46c27aa3c617eb1dadfb1e3_96.webp"
+        },
+        {
+          "project_id": "9cz66Qto",
+          "dependency_type": "embedded",
+          "name": "Uncraft Everything",
+          "slug": "uncraft-everything",
+          "icon_url": "https://cdn.modrinth.com/data/9cz66Qto/7cfdf1e53a0da6aed3fb4acd8b3fa9881ab49cb6_96.webp"
+        },
+        {
+          "project_id": "9jxwkYQL",
+          "dependency_type": "embedded",
+          "name": "Sophisticated Core (Unofficial Fabric port)",
+          "slug": "sophisticated-core-unofficial-fabric-port",
+          "icon_url": "https://cdn.modrinth.com/data/9jxwkYQL/1cdcf75010fe58c81e40085534750f2b7236d08a.png"
+        },
+        {
+          "project_id": "9s6osm5g",
+          "dependency_type": "embedded",
+          "name": "Cloth Config API",
+          "slug": "cloth-config",
+          "icon_url": "https://cdn.modrinth.com/data/9s6osm5g/ed8a2316cbb6f4fc5f510e8e13a59a85cbbbff4d_96.webp"
+        },
+        {
+          "project_id": "AANobbMI",
+          "dependency_type": "embedded",
+          "name": "Sodium",
+          "slug": "sodium",
+          "icon_url": "https://cdn.modrinth.com/data/AANobbMI/295862f4724dc3f78df3447ad6072b2dcd3ef0c9_96.webp"
+        },
+        {
+          "project_id": "AXY1OO9m",
+          "dependency_type": "embedded",
+          "name": "CobbleFurnies",
+          "slug": "cobblefurnies",
+          "icon_url": "https://cdn.modrinth.com/data/AXY1OO9m/3f167d03e0c32af70b46dd1377d7e5c12f10a4b6_96.webp"
+        },
+        {
+          "project_id": "AqaIIO6D",
+          "dependency_type": "embedded",
+          "name": "Ranged Weapon API",
+          "slug": "ranged-weapon-api",
+          "icon_url": "https://cdn.modrinth.com/data/AqaIIO6D/cf4d822d2fa89e72d37eebcfb1113a6389a0abe6_96.webp"
+        },
+        {
+          "project_id": "B0g2vT6l",
+          "dependency_type": "embedded",
+          "name": "Rechiseled",
+          "slug": "rechiseled",
+          "icon_url": "https://cdn.modrinth.com/data/B0g2vT6l/b3d1c0f2ed2ec55eed1d6cd59c3ceb8f23b6eba3_96.webp"
+        },
+        {
+          "project_id": "B8jaH3P1",
+          "dependency_type": "embedded",
+          "name": "Macaw's Roofs",
+          "slug": "macaws-roofs",
+          "icon_url": "https://cdn.modrinth.com/data/B8jaH3P1/e6652e3ddfe1cc21188c7bf354a4570292791864_96.webp"
+        },
+        {
+          "project_id": "BAscRYKm",
+          "dependency_type": "embedded",
+          "name": "Chipped",
+          "slug": "chipped",
+          "icon_url": "https://cdn.modrinth.com/data/BAscRYKm/4faa514b4824672a0877d026bcd5a94bc8aad985_96.webp"
+        },
+        {
+          "project_id": "BDQucwF0",
+          "dependency_type": "embedded",
+          "name": "Relics (RPG Series)",
+          "slug": "relics-rpg",
+          "icon_url": "https://cdn.modrinth.com/data/BDQucwF0/6aac428c17df067875dfff8a37b6f2a3535ea2cc_96.webp"
+        },
+        {
+          "project_id": "C7I0BCni",
+          "dependency_type": "embedded",
+          "name": "Macaw's Windows",
+          "slug": "macaws-windows",
+          "icon_url": "https://cdn.modrinth.com/data/C7I0BCni/7eb5e7816f887154e69a4001bee5bcc143242b32_96.webp"
+        },
+        {
+          "project_id": "CVBAErky",
+          "dependency_type": "embedded",
+          "name": "Immersive structures",
+          "slug": "immersive-structures",
+          "icon_url": "https://cdn.modrinth.com/data/CVBAErky/a6e08b500a1d36096843158f3706d18febad63c8_96.webp"
+        },
+        {
+          "project_id": "CVRzrXGP",
+          "dependency_type": "embedded",
+          "name": "Accessorify",
+          "slug": "accessorify",
+          "icon_url": "https://cdn.modrinth.com/data/CVRzrXGP/c06fca6e003abae595eab75ff9ad11b7a69ca15e_96.webp"
+        },
+        {
+          "project_id": "CZrLuVQo",
+          "dependency_type": "embedded",
+          "name": "Low Shield",
+          "slug": "low-shield-pack",
+          "icon_url": "https://cdn.modrinth.com/data/CZrLuVQo/4ae626dba10d5bcc73f9a7b0a50c22e572075b6b.png"
+        },
+        {
+          "project_id": "CaOWby9K",
+          "dependency_type": "embedded",
+          "name": "Myths and Legends [Cobblemon Sidemod]",
+          "slug": "cobblemon-myths-and-legends-sidemod",
+          "icon_url": "https://cdn.modrinth.com/data/CaOWby9K/f8a9877caf29768ef98c4b642682e494978f3b8f.png"
+        },
+        {
+          "project_id": "D53qveoj",
+          "dependency_type": "embedded",
+          "name": "Fabric Seasons: Terralith Compat",
+          "slug": "fabric-seasons-terralith-compat",
+          "icon_url": "https://cdn.modrinth.com/data/D53qveoj/5515c1d64e73c848b19af739f0743524f2370750.png"
+        },
+        {
+          "project_id": "DjLobEOy",
+          "dependency_type": "embedded",
+          "name": "Towns and Towers",
+          "slug": "towns-and-towers",
+          "icon_url": "https://cdn.modrinth.com/data/DjLobEOy/f7f552ec019c9ad8b777c9ab5eecbb95da8707a0_96.webp"
+        },
+        {
+          "project_id": "E96uokEJ",
+          "dependency_type": "embedded",
+          "name": "Cobblemon Broadcaster",
+          "slug": "cobblemon-broadcaster",
+          "icon_url": "https://cdn.modrinth.com/data/E96uokEJ/b7351b665fa93c52c7819c6c196183ef270dba83_96.webp"
+        },
+        {
+          "project_id": "EltpO5cN",
+          "dependency_type": "embedded",
+          "name": "Lootr",
+          "slug": "lootr",
+          "icon_url": "https://cdn.modrinth.com/data/EltpO5cN/3dc915eb1bbcd65654c17eb3870de4aba055d0c6_96.webp"
+        },
+        {
+          "project_id": "EpQFjzrQ",
+          "dependency_type": "embedded",
+          "name": "Solas Shader",
+          "slug": "solas-shader",
+          "icon_url": "https://cdn.modrinth.com/data/EpQFjzrQ/e3efc6ba7a63f9e1cf473a794d0224a6daf243c7_96.webp"
+        },
+        {
+          "project_id": "EsAfCjCV",
+          "dependency_type": "embedded",
+          "name": "AppleSkin",
+          "slug": "appleskin",
+          "icon_url": "https://cdn.modrinth.com/data/EsAfCjCV/icon.png"
+        },
+        {
+          "project_id": "G1hIVOrD",
+          "dependency_type": "embedded",
+          "name": "Resourceful Lib",
+          "slug": "resourceful-lib",
+          "icon_url": "https://cdn.modrinth.com/data/G1hIVOrD/52130f41d05162ce6d7d1832a47d3c238d102632_96.webp"
+        },
+        {
+          "project_id": "GURcjz8O",
+          "dependency_type": "embedded",
+          "name": "Macaw's Bridges",
+          "slug": "macaws-bridges",
+          "icon_url": "https://cdn.modrinth.com/data/GURcjz8O/5cd0895fdcde03f1d970ef910dd9287fb881bdc6_96.webp"
+        },
+        {
+          "project_id": "GcWjdA9I",
+          "dependency_type": "embedded",
+          "name": "MaLiLib",
+          "slug": "malilib",
+          "icon_url": "https://cdn.modrinth.com/data/GcWjdA9I/a530ae55df5e0c405f5cf1b3e4fd6163a398bdc3.png"
+        },
+        {
+          "project_id": "GmwLse2I",
+          "dependency_type": "embedded",
+          "name": "Macaw's Fences and Walls",
+          "slug": "macaws-fences-and-walls",
+          "icon_url": "https://cdn.modrinth.com/data/GmwLse2I/ebe4d2375e0a402e5587665ba9da5eb50f37422a_96.webp"
+        },
+        {
+          "project_id": "Gx07Bguy",
+          "dependency_type": "embedded",
+          "name": "Cobblemon Shiny Days",
+          "slug": "cobblemon-shiny-days",
+          "icon_url": "https://cdn.modrinth.com/data/Gx07Bguy/fa08f87ccf2311c63b45e002e9c9d94623d696bc.png"
+        },
+        {
+          "project_id": "HU6mkUZs",
+          "dependency_type": "embedded",
+          "name": "TMCraft",
+          "slug": "tmcraft",
+          "icon_url": "https://cdn.modrinth.com/data/HU6mkUZs/300a953504ee90acc37b38f46dd7a0cd68976d99.png"
+        },
+        {
+          "project_id": "HVnmMxH1",
+          "dependency_type": "embedded",
+          "name": "Complementary Shaders - Reimagined",
+          "slug": "complementary-reimagined",
+          "icon_url": "https://cdn.modrinth.com/data/HVnmMxH1/79cb7c8123bbc54945305b2ebad6b8881efdf5f8_96.webp"
+        },
+        {
+          "project_id": "HXF82T3G",
+          "dependency_type": "embedded",
+          "name": "Biomes O' Plenty",
+          "slug": "biomes-o-plenty",
+          "icon_url": "https://cdn.modrinth.com/data/HXF82T3G/ffb870e12c325b795d54833f8f899126553ef06f.png"
+        },
+        {
+          "project_id": "Ha28R6CL",
+          "dependency_type": "embedded",
+          "name": "Fabric Language Kotlin",
+          "slug": "fabric-language-kotlin",
+          "icon_url": "https://cdn.modrinth.com/data/Ha28R6CL/72c3d74aeb665e45aea93a945a01474cbce3b7da_96.webp"
+        },
+        {
+          "project_id": "HnePtkev",
+          "dependency_type": "embedded",
+          "name": "Gym Badges",
+          "slug": "gym-badges",
+          "icon_url": "https://cdn.modrinth.com/data/HnePtkev/4b8d104a157c44e67b4cf5f0932ca8f19db07262_96.webp"
+        },
+        {
+          "project_id": "IUJGdLaw",
+          "dependency_type": "embedded",
+          "name": "Overgrown Flowery GUI",
+          "slug": "overgrown-flowery-gui",
+          "icon_url": "https://cdn.modrinth.com/data/IUJGdLaw/40d95a590697a25a5b559e43f199c6c05e00c1cd.png"
+        },
+        {
+          "project_id": "K01OU20C",
+          "dependency_type": "embedded",
+          "name": "Cardinal Components API",
+          "slug": "cardinal-components-api",
+          "icon_url": "https://cdn.modrinth.com/data/K01OU20C/c95792db39092b68abb6266237382281d441ad9d.webp"
+        },
+        {
+          "project_id": "KJe6y9Eu",
+          "dependency_type": "embedded",
+          "name": "Fabric Seasons",
+          "slug": "fabric-seasons",
+          "icon_url": "https://cdn.modrinth.com/data/KJe6y9Eu/7ce47fcb4242493ad069789298400b14f27737ad.png"
+        },
+        {
+          "project_id": "KZAmykow",
+          "dependency_type": "embedded",
+          "name": "Clutter",
+          "slug": "clutter",
+          "icon_url": "https://cdn.modrinth.com/data/KZAmykow/446b8987d44be202b16c5f4b4401903f426a7e63_96.webp"
+        },
+        {
+          "project_id": "LBl4Qguc",
+          "dependency_type": "embedded",
+          "name": "Cobblemon Capture XP",
+          "slug": "cobblemon-capture-xp",
+          "icon_url": "https://cdn.modrinth.com/data/LBl4Qguc/1c43abde13c8f411c877a596522438ff3eb79415.png"
+        },
+        {
+          "project_id": "LN9BxssP",
+          "dependency_type": "embedded",
+          "name": "SuperMartijn642's Config Lib",
+          "slug": "supermartijn642s-config-lib",
+          "icon_url": "https://cdn.modrinth.com/data/LN9BxssP/ad25597dd1b10b49cdfbc97c70d401e3158000f7_96.webp"
+        },
+        {
+          "project_id": "LOpKHB2A",
+          "dependency_type": "embedded",
+          "name": "Waystones",
+          "slug": "waystones",
+          "icon_url": "https://cdn.modrinth.com/data/LOpKHB2A/d56c030a875582aff5bab477ddcfec317a1610f0_96.webp"
+        },
+        {
+          "project_id": "LrYZi08Q",
+          "dependency_type": "embedded",
+          "name": "Structure Pool API",
+          "slug": "structure-pool-api",
+          "icon_url": "https://cdn.modrinth.com/data/LrYZi08Q/90488ffba720db0ac727047e5e1ebc9213f53627_96.webp"
+        },
+        {
+          "project_id": "MBAkmtvl",
+          "dependency_type": "embedded",
+          "name": "Balm",
+          "slug": "balm",
+          "icon_url": "https://cdn.modrinth.com/data/MBAkmtvl/285b7bcfd6e525c043e640b08f3efc0cde90f7dd_96.webp"
+        },
+        {
+          "project_id": "MPCX6s5C",
+          "dependency_type": "embedded",
+          "name": "Not Enough Animations",
+          "slug": "not-enough-animations",
+          "icon_url": "https://cdn.modrinth.com/data/MPCX6s5C/b97fd5f7a893165052408b747286d6eb38d57abb_96.webp"
+        },
+        {
+          "project_id": "MdwFAVRL",
+          "dependency_type": "embedded",
+          "name": "Cobblemon",
+          "slug": "cobblemon",
+          "icon_url": "https://cdn.modrinth.com/data/MdwFAVRL/abfca1654a2d09bab85cbffcc9869938c951ee0e_96.webp"
+        },
+        {
+          "project_id": "NCKpPR0Z",
+          "dependency_type": "embedded",
+          "name": "Ecologics",
+          "slug": "ecologics",
+          "icon_url": "https://cdn.modrinth.com/data/NCKpPR0Z/1f03abae2fdfb2bbab34e8bd26b41b5bca68488e_96.webp"
+        },
+        {
+          "project_id": "NNAgCjsB",
+          "dependency_type": "embedded",
+          "name": "Entity Culling",
+          "slug": "entityculling",
+          "icon_url": "https://cdn.modrinth.com/data/NNAgCjsB/7873452d6cede4daed12da3d7d8c193ab88b4fd6_96.webp"
+        },
+        {
+          "project_id": "NPCfuUI4",
+          "dependency_type": "embedded",
+          "name": "Cobblemon Integrations",
+          "slug": "cobblemon-integrations",
+          "icon_url": "https://cdn.modrinth.com/data/NPCfuUI4/77abe33c9dc395e55a3a04a95f8008579eccb6ee.png"
+        },
+        {
+          "project_id": "NcUtCpym",
+          "dependency_type": "embedded",
+          "name": "Xaero's World Map",
+          "slug": "xaeros-world-map",
+          "icon_url": "https://cdn.modrinth.com/data/NcUtCpym/354080f65407e49f486fcf9c4580e82c45ae63b8_96.webp"
+        },
+        {
+          "project_id": "NkGaQMDA",
+          "dependency_type": "embedded",
+          "name": "Wizards (RPG Series)",
+          "slug": "wizards",
+          "icon_url": "https://cdn.modrinth.com/data/NkGaQMDA/06c5350c207bddffefdfea0b6fc80269d683bbd7_96.webp"
+        },
+        {
+          "project_id": "OQAgZMH1",
+          "dependency_type": "embedded",
+          "name": "MVS - Moog's Voyager Structures",
+          "slug": "moogs-voyager-structures",
+          "icon_url": "https://cdn.modrinth.com/data/OQAgZMH1/2935e7445501b0b2bda81c97cff448a88345078d_96.webp"
+        },
+        {
+          "project_id": "OhduvhIc",
+          "dependency_type": "embedded",
+          "name": "VeinMiner",
+          "slug": "veinminer",
+          "icon_url": "https://cdn.modrinth.com/data/OhduvhIc/5ea1f538e66ee4d4e5e571ad952cba0e06e0bd5c.png"
+        },
+        {
+          "project_id": "P7dR8mSH",
+          "dependency_type": "embedded",
+          "name": "Fabric API",
+          "slug": "fabric-api",
+          "icon_url": "https://cdn.modrinth.com/data/P7dR8mSH/icon.png"
+        },
+        {
+          "project_id": "PeZ4h4i0",
+          "dependency_type": "embedded",
+          "name": "Elemental Wizards (RPG Series Plus)",
+          "slug": "elemental-wizards-rpg",
+          "icon_url": "https://cdn.modrinth.com/data/PeZ4h4i0/4855d9a8568e003a065187127946e12e9968b3f5_96.webp"
+        },
+        {
+          "project_id": "Q1ZgOTni",
+          "dependency_type": "embedded",
+          "name": "Cat Loaf",
+          "slug": "cat-loaf",
+          "icon_url": "https://cdn.modrinth.com/data/Q1ZgOTni/36be3c877c7cd050ff3e776f2879d115dfd2d0f9_96.webp"
+        },
+        {
+          "project_id": "QWfaJXEc",
+          "dependency_type": "embedded",
+          "name": "Farmer's Cutting: Biomes O' Plenty",
+          "slug": "farmers-cutting-biomes-o-plenty",
+          "icon_url": "https://cdn.modrinth.com/data/QWfaJXEc/0e6bb2a1d8f07c877670793e3028693f6d78cf62.png"
+        },
+        {
+          "project_id": "R2OftAxM",
+          "dependency_type": "embedded",
+          "name": "Farmer's Delight",
+          "slug": "farmers-delight",
+          "icon_url": "https://cdn.modrinth.com/data/R2OftAxM/8e7aa38ab94d94bb0a2894a218b69beb49002b34.png"
+        },
+        {
+          "project_id": "SaCpeal4",
+          "dependency_type": "embedded",
+          "name": "Comforts",
+          "slug": "comforts",
+          "icon_url": "https://cdn.modrinth.com/data/SaCpeal4/ed4840f0c9a30e04ad88413bd82cd762dd6ec95d.png"
+        },
+        {
+          "project_id": "SpgcWKWY",
+          "dependency_type": "embedded",
+          "name": "Cobblemon Emissive Ores",
+          "slug": "cobblemon-emissive-ores",
+          "icon_url": "https://cdn.modrinth.com/data/SpgcWKWY/fb22843f55ae940db49279802d5b1ddfba3df62e_96.webp"
+        },
+        {
+          "project_id": "SszvX85I",
+          "dependency_type": "embedded",
+          "name": "Cobblemon: Mega Showdown",
+          "slug": "cobblemon-mega-showdown",
+          "icon_url": "https://cdn.modrinth.com/data/SszvX85I/62338ad15814a49df76dfbece1edba24ebca4135.png"
+        },
+        {
+          "project_id": "Tanquv9C",
+          "dependency_type": "embedded",
+          "name": "Macaw's Biomes O' Plenty",
+          "slug": "macaws-biomes-o-plenty",
+          "icon_url": "https://cdn.modrinth.com/data/Tanquv9C/eb432f672a6fc809a24f5b29234ef7d697749402_96.webp"
+        },
+        {
+          "project_id": "UL4bJFDY",
+          "dependency_type": "embedded",
+          "name": "Vanish",
+          "slug": "vanish",
+          "icon_url": "https://cdn.modrinth.com/data/UL4bJFDY/9bba723ce1e83e7b388a3edc76d1d990d12e1531_96.webp"
+        },
+        {
+          "project_id": "UVtY3ZAC",
+          "dependency_type": "embedded",
+          "name": "Enchantment Descriptions",
+          "slug": "enchantment-descriptions",
+          "icon_url": "https://cdn.modrinth.com/data/UVtY3ZAC/1f857baf3d1f78e40343925176c084838c91a891_96.webp"
+        },
+        {
+          "project_id": "UYeecoyN",
+          "dependency_type": "embedded",
+          "name": "Extra Flowery GUI",
+          "slug": "extra-flowery-gui",
+          "icon_url": "https://cdn.modrinth.com/data/UYeecoyN/b93aaf77613c754bf4ef9c306cc84ccbccaf4103.png"
+        },
+        {
+          "project_id": "VRLhWB91",
+          "dependency_type": "embedded",
+          "name": "Macaw's Paths and Pavings",
+          "slug": "macaws-paths-and-pavings",
+          "icon_url": "https://cdn.modrinth.com/data/VRLhWB91/4564a530eaf62d3704796e407f700dc1f1fc22f8_96.webp"
+        },
+        {
+          "project_id": "Va3BanZa",
+          "dependency_type": "embedded",
+          "name": "E19 - Cobblemon Minimap Icons",
+          "slug": "e19_cobblemon_minimap_icons",
+          "icon_url": "https://cdn.modrinth.com/data/Va3BanZa/cc0f6a4a8f279148d4e8b65212d67fe47000d6e7.png"
+        },
+        {
+          "project_id": "W2pr9jyL",
+          "dependency_type": "embedded",
+          "name": "Cobblemon additions",
+          "slug": "cobblemon-additions",
+          "icon_url": "https://cdn.modrinth.com/data/W2pr9jyL/67d983f03a3dfdfc690ae1de158120124872d85f_96.webp"
+        },
+        {
+          "project_id": "W3Dr0Mk2",
+          "dependency_type": "embedded",
+          "name": "Cobblemon: Capture PC Heal",
+          "slug": "cobblemon-capture-pc-heal",
+          "icon_url": "https://cdn.modrinth.com/data/W3Dr0Mk2/2255eb957e7a04a510987992e8a29a7a49010921_96.webp"
+        },
+        {
+          "project_id": "Wb5oqrBJ",
+          "dependency_type": "embedded",
+          "name": "Chat Heads",
+          "slug": "chat-heads",
+          "icon_url": "https://cdn.modrinth.com/data/Wb5oqrBJ/icon.png"
+        },
+        {
+          "project_id": "Wkc3lwHo",
+          "dependency_type": "embedded",
+          "name": "More RPG Library",
+          "slug": "more-rpg-library",
+          "icon_url": "https://cdn.modrinth.com/data/Wkc3lwHo/9f1378cb7da3aa61082a91ac43218519e4c0dbc0_96.webp"
+        },
+        {
+          "project_id": "Wnxd13zP",
+          "dependency_type": "embedded",
+          "name": "Clumps",
+          "slug": "clumps",
+          "icon_url": "https://cdn.modrinth.com/data/Wnxd13zP/6a965bb7974c3e759a53a1c89c35de4acd4cf86a_96.webp"
+        },
+        {
+          "project_id": "XvcfUGfB",
+          "dependency_type": "embedded",
+          "name": "Eternal Starlight",
+          "slug": "eternal-starlight",
+          "icon_url": "https://cdn.modrinth.com/data/XvcfUGfB/2c38d40c2f387adb8b406afd8c1f78f218a7e599_96.webp"
+        },
+        {
+          "project_id": "XvoWJaA2",
+          "dependency_type": "embedded",
+          "name": "Spell Engine",
+          "slug": "spell-engine",
+          "icon_url": "https://cdn.modrinth.com/data/XvoWJaA2/9f3d222d82aebadd5325ae53a927463f1e20abd0.png"
+        },
+        {
+          "project_id": "YL57xq9U",
+          "dependency_type": "embedded",
+          "name": "Iris Shaders",
+          "slug": "iris",
+          "icon_url": "https://cdn.modrinth.com/data/YL57xq9U/18d0e7f076d3d6ed5bedd472b853909aac5da202_96.webp"
+        },
+        {
+          "project_id": "YWmj2r1d",
+          "dependency_type": "embedded",
+          "name": "FastRTP | Random Teleport",
+          "slug": "fastrtp",
+          "icon_url": "https://cdn.modrinth.com/data/YWmj2r1d/b52454e7e3c91e5a225fc52cb053c1dda90192b2_96.webp"
+        },
+        {
+          "project_id": "Yd4wb5wZ",
+          "dependency_type": "embedded",
+          "name": "Critters and Companions",
+          "slug": "critters-and-companions",
+          "icon_url": "https://cdn.modrinth.com/data/Yd4wb5wZ/6a54e2ebabb89763669ba56c76a3514ca5605d3e_96.webp"
+        },
+        {
+          "project_id": "ZVzW5oNS",
+          "dependency_type": "embedded",
+          "name": "Incendium Legacy",
+          "slug": "incendium",
+          "icon_url": "https://cdn.modrinth.com/data/ZVzW5oNS/65c8dcaaf260e5b2182c228a1a442c792a7c4782.jpeg"
+        },
+        {
+          "project_id": "ZvMtQlho",
+          "dependency_type": "embedded",
+          "name": "Bliss Shaders",
+          "slug": "bliss-shader",
+          "icon_url": "https://cdn.modrinth.com/data/ZvMtQlho/90145c971ea24387775108fc86c89bed9bd2c8f1_96.webp"
+        },
+        {
+          "project_id": "aC3cM3Vq",
+          "dependency_type": "embedded",
+          "name": "Mouse Tweaks",
+          "slug": "mouse-tweaks",
+          "icon_url": "https://cdn.modrinth.com/data/aC3cM3Vq/6c0eaa4e60a9c87f4766f222ff63286f09da32c0_96.webp"
+        },
+        {
+          "project_id": "aTaCgKLW",
+          "dependency_type": "embedded",
+          "name": "Silk",
+          "slug": "silk",
+          "icon_url": "https://cdn.modrinth.com/data/aTaCgKLW/532a7cfb249d72b39d9855fe9ea0a4ec5db36e42_96.webp"
+        },
+        {
+          "project_id": "aaRl8GiW",
+          "dependency_type": "embedded",
+          "name": "Prickle",
+          "slug": "prickle",
+          "icon_url": "https://cdn.modrinth.com/data/aaRl8GiW/36749d1d2d87d14d7f703b18e8726c7b78057abb.png"
+        },
+        {
+          "project_id": "b1ZV3DIJ",
+          "dependency_type": "embedded",
+          "name": "Athena",
+          "slug": "athena-ctm",
+          "icon_url": "https://cdn.modrinth.com/data/b1ZV3DIJ/3dec7dd828894a4c5c6d98eaf960e9a418647b55_96.webp"
+        },
+        {
+          "project_id": "bEpr0Arc",
+          "dependency_type": "embedded",
+          "name": "Litematica",
+          "slug": "litematica",
+          "icon_url": "https://cdn.modrinth.com/data/bEpr0Arc/25b5529d7a3b030ac136a6ce879d8ed2a1aa4a8d.png"
+        },
+        {
+          "project_id": "bI8Nt3uA",
+          "dependency_type": "embedded",
+          "name": "Cobblemon PokeNav",
+          "slug": "cobblemon-pokenav",
+          "icon_url": "https://cdn.modrinth.com/data/bI8Nt3uA/ddfdb17c516e97c28941acb153bf0f051b7d02d5.png"
+        },
+        {
+          "project_id": "bK3Ubu9p",
+          "dependency_type": "embedded",
+          "name": "Simply Swords",
+          "slug": "simply-swords",
+          "icon_url": "https://cdn.modrinth.com/data/bK3Ubu9p/9d244d5a3b7a3a15ffa749d941fb6c40445afcdd_96.webp"
+        },
+        {
+          "project_id": "bMdS1gMo",
+          "dependency_type": "embedded",
+          "name": "Cobblemon Size Variations",
+          "slug": "cobblemon-size-variations",
+          "icon_url": "https://cdn.modrinth.com/data/bMdS1gMo/b68e0ed65b961427adda85f89785016af0c7a427.png"
+        },
+        {
+          "project_id": "bQrcYNc5",
+          "dependency_type": "embedded",
+          "name": "Emissive Ores",
+          "slug": "emissive-ores",
+          "icon_url": "https://cdn.modrinth.com/data/bQrcYNc5/1f0ee62cf6454040dd9a8c530e1b970597cec16e_96.webp"
+        },
+        {
+          "project_id": "c1OpnQs3",
+          "dependency_type": "embedded",
+          "name": "CobbledGacha v.3 [Cobblemon 1.7] [Fabric/NeoForge 1.21.1]",
+          "slug": "cobbledgacha",
+          "icon_url": "https://cdn.modrinth.com/data/c1OpnQs3/204fc29bbfb2dfb038bf29ff89bbacecb9157b00_96.webp"
+        },
+        {
+          "project_id": "ccKDOlHs",
+          "dependency_type": "embedded",
+          "name": "oωo (owo-lib)",
+          "slug": "owo-lib",
+          "icon_url": "https://cdn.modrinth.com/data/ccKDOlHs/42c9fe358c72dd5afda078271c574c325e963d19_96.webp"
+        },
+        {
+          "project_id": "cl223EMc",
+          "dependency_type": "embedded",
+          "name": "Cristel Lib",
+          "slug": "cristel-lib",
+          "icon_url": "https://cdn.modrinth.com/data/cl223EMc/22b1072af55724911840b93a30cf8d3b3fc514bf_96.webp"
+        },
+        {
+          "project_id": "cl5ec0Qm",
+          "dependency_type": "embedded",
+          "name": "AddonsLib",
+          "slug": "addonslib",
+          "icon_url": "https://cdn.modrinth.com/data/cl5ec0Qm/5321c775f2d494d75acd7b2a3fe0905e01314bfe_96.webp"
+        },
+        {
+          "project_id": "coUTm32c",
+          "dependency_type": "embedded",
+          "name": "Overgrown Flowery Hotbar",
+          "slug": "overgrown-flowery-hotbar",
+          "icon_url": "https://cdn.modrinth.com/data/coUTm32c/acda4f9debc09ba01354c80a1a8e93ccca4be289_96.webp"
+        },
+        {
+          "project_id": "dCCkNFwE",
+          "dependency_type": "embedded",
+          "name": "Supplementaries Squared",
+          "slug": "supplementaries-squared",
+          "icon_url": "https://cdn.modrinth.com/data/dCCkNFwE/737ff011bd478489c8ddb61bc6e90df90296391d_96.webp"
+        },
+        {
+          "project_id": "ddaWpjKK",
+          "dependency_type": "embedded",
+          "name": "LootRestock",
+          "slug": "lootrestock",
+          "icon_url": "https://cdn.modrinth.com/data/ddaWpjKK/36e62bf069c74bcc7093ca9fc79d24599046399f_96.webp"
+        },
+        {
+          "project_id": "dtWC90iB",
+          "dependency_type": "embedded",
+          "name": "Macaw's Furniture",
+          "slug": "macaws-furniture",
+          "icon_url": "https://cdn.modrinth.com/data/dtWC90iB/2d2fdc39e9ab4c1cc56c6ce2785b6d60343bb86d_96.webp"
+        },
+        {
+          "project_id": "e0M1UDsY",
+          "dependency_type": "embedded",
+          "name": "Collective",
+          "slug": "collective",
+          "icon_url": "https://cdn.modrinth.com/data/e0M1UDsY/f5e4fe9ac298e2c14591920d6bda937c566accd0_96.webp"
+        },
+        {
+          "project_id": "eXts2L7r",
+          "dependency_type": "embedded",
+          "name": "Text Placeholder API",
+          "slug": "placeholder-api",
+          "icon_url": "https://cdn.modrinth.com/data/eXts2L7r/e9c9990896e6422bffc5f73d2c41b8f077348f83.png"
+        },
+        {
+          "project_id": "fFEIiSDQ",
+          "dependency_type": "embedded",
+          "name": "Supplementaries",
+          "slug": "supplementaries",
+          "icon_url": "https://cdn.modrinth.com/data/fFEIiSDQ/e9f5f66fa3b67e54acb91258a1428d68311c58bc_96.webp"
+        },
+        {
+          "project_id": "fPetb5Kh",
+          "dependency_type": "embedded",
+          "name": "Nature's Compass",
+          "slug": "natures-compass",
+          "icon_url": "https://cdn.modrinth.com/data/fPetb5Kh/95e4110a4cf600843c4ba9d545cc1b60e2c00eaa.png"
+        },
+        {
+          "project_id": "fchC4AOW",
+          "dependency_type": "embedded",
+          "name": "Withered Foxy Jumpscare",
+          "slug": "withererd-foxy-jumpscare",
+          "icon_url": "https://cdn.modrinth.com/data/fchC4AOW/6067ae3023d267c490712e473d2f97b9782b5fd5_96.webp"
+        },
+        {
+          "project_id": "fnAffV0n",
+          "dependency_type": "embedded",
+          "name": "Deeper and Darker",
+          "slug": "deeperdarker",
+          "icon_url": "https://cdn.modrinth.com/data/fnAffV0n/be8023f374038c6bd8a52a0e5b2cbc4eb1a37746_96.webp"
+        },
+        {
+          "project_id": "fuuu3xnx",
+          "dependency_type": "embedded",
+          "name": "Searchables",
+          "slug": "searchables",
+          "icon_url": "https://cdn.modrinth.com/data/fuuu3xnx/206971d54b37b30a2e728b1c194f7f096963d05a_96.webp"
+        },
+        {
+          "project_id": "gF3BGWvG",
+          "dependency_type": "embedded",
+          "name": "Open Parties and Claims",
+          "slug": "open-parties-and-claims",
+          "icon_url": "https://cdn.modrinth.com/data/gF3BGWvG/410c5443b268912b11709e7d03dd9ec3fda38ea5.png"
+        },
+        {
+          "project_id": "gHoB7SHO",
+          "dependency_type": "embedded",
+          "name": "HT's TreeChop",
+          "slug": "treechop",
+          "icon_url": "https://cdn.modrinth.com/data/gHoB7SHO/58692ff7dc6cc327291e8aac195cf44545b87f23_96.webp"
+        },
+        {
+          "project_id": "gedNE4y2",
+          "dependency_type": "embedded",
+          "name": "playerAnimator",
+          "slug": "playeranimator"
+        },
+        {
+          "project_id": "hYykXjDp",
+          "dependency_type": "embedded",
+          "name": "Fzzy Config",
+          "slug": "fzzy-config",
+          "icon_url": "https://cdn.modrinth.com/data/hYykXjDp/11f469b1bf1f201a95c2e3ddc09ca47d85c3ed53.png"
+        },
+        {
+          "project_id": "hnOfcjSq",
+          "dependency_type": "embedded",
+          "name": "Pokeblocks",
+          "slug": "pokeblocks",
+          "icon_url": "https://cdn.modrinth.com/data/hnOfcjSq/1363712832af0aede9eb62f92b8e8be8b8002a45_96.webp"
+        },
+        {
+          "project_id": "iHtpVwJL",
+          "dependency_type": "embedded",
+          "name": "Sophisticated Storage (Unofficial Fabric port)",
+          "slug": "sophisticated-storage-unofficial-fabric-port",
+          "icon_url": "https://cdn.modrinth.com/data/iHtpVwJL/1aac3424c3b129fbe11eb5f9734ec767e7fe20c4_96.webp"
+        },
+        {
+          "project_id": "iP3wH1ha",
+          "dependency_type": "embedded",
+          "name": "Macaw's Stairs",
+          "slug": "macaws-stairs",
+          "icon_url": "https://cdn.modrinth.com/data/iP3wH1ha/7760df8839c395ee42099387cd9cb0fe34b2626e_96.webp"
+        },
+        {
+          "project_id": "isWGaSnM",
+          "dependency_type": "embedded",
+          "name": "HiddenMons [Cobblemon]",
+          "slug": "hiddenmons-cobblemon",
+          "icon_url": "https://cdn.modrinth.com/data/isWGaSnM/1237037ce37e59e551228d52c022549fdc8b72ea.png"
+        },
+        {
+          "project_id": "jCpoCBpn",
+          "dependency_type": "embedded",
+          "name": "ReFramed",
+          "slug": "reframed",
+          "icon_url": "https://cdn.modrinth.com/data/jCpoCBpn/5eed69d3208b3a9f8de76c4c9c22fe4f8a521bce.webp"
+        },
+        {
+          "project_id": "jK2xMxSG",
+          "dependency_type": "embedded",
+          "name": "Display Delight Fabric",
+          "slug": "display-delight-fabric",
+          "icon_url": "https://cdn.modrinth.com/data/jK2xMxSG/eaeb2708002a54f9728c3e9b1876d5c7f8417255.png"
+        },
+        {
+          "project_id": "joEfVgkn",
+          "dependency_type": "embedded",
+          "name": "Carry On",
+          "slug": "carry-on",
+          "icon_url": "https://cdn.modrinth.com/data/joEfVgkn/d7750a532cd45c9020bf4d07f304191de6e98c19_96.webp"
+        },
+        {
+          "project_id": "jrDKjZP7",
+          "dependency_type": "embedded",
+          "name": "Inv View",
+          "slug": "invview",
+          "icon_url": "https://cdn.modrinth.com/data/jrDKjZP7/3b0a7abfe8eec78374ba408c218f7dda5b002504_96.webp"
+        },
+        {
+          "project_id": "jtmvUHXj",
+          "dependency_type": "embedded",
+          "name": "Accessories",
+          "slug": "accessories",
+          "icon_url": "https://cdn.modrinth.com/data/jtmvUHXj/14fabf4859e845b0bd6659daf2375be3e88f59ec.png"
+        },
+        {
+          "project_id": "kNxa8z3e",
+          "dependency_type": "embedded",
+          "name": "Macaw's Doors",
+          "slug": "macaws-doors",
+          "icon_url": "https://cdn.modrinth.com/data/kNxa8z3e/ced8fa00264400cbe06d622b92a6d1106cedc65d_96.webp"
+        },
+        {
+          "project_id": "kkmrDlKT",
+          "dependency_type": "embedded",
+          "name": "TerraBlender",
+          "slug": "terrablender",
+          "icon_url": "https://cdn.modrinth.com/data/kkmrDlKT/ffe690c604b123c63ee77a5baf76cf008cb73663.png"
+        },
+        {
+          "project_id": "kppEhbWI",
+          "dependency_type": "embedded",
+          "name": "[Cobblemon] Pet a poke",
+          "slug": "cobblemon-pet-a-poke",
+          "icon_url": "https://cdn.modrinth.com/data/kppEhbWI/60abeedf14e24128f785a2425b59f2896b668848_96.webp"
+        },
+        {
+          "project_id": "lIDAJAby",
+          "dependency_type": "embedded",
+          "name": "CobbleMotion - Animation Resource Pack",
+          "slug": "cobblemotion",
+          "icon_url": "https://cdn.modrinth.com/data/lIDAJAby/cc9e4863f6465fa2de72757c16f80c556ee90886_96.webp"
+        },
+        {
+          "project_id": "lLqFfGNs",
+          "dependency_type": "embedded",
+          "name": "Photon Shaders",
+          "slug": "photon-shader",
+          "icon_url": "https://cdn.modrinth.com/data/lLqFfGNs/39cb5f12e7dcc68d6cb666f225fcb2b801dd70fb_96.webp"
+        },
+        {
+          "project_id": "lP9Yrr1E",
+          "dependency_type": "embedded",
+          "name": "Runes",
+          "slug": "runes",
+          "icon_url": "https://cdn.modrinth.com/data/lP9Yrr1E/d80117583d3b45e7e8d902e3e7e27ef15ee9b4dd_96.webp"
+        },
+        {
+          "project_id": "lVP9aUaY",
+          "dependency_type": "embedded",
+          "name": "Cobblemon Tim Core",
+          "slug": "cobblemon-tim-core",
+          "icon_url": "https://cdn.modrinth.com/data/lVP9aUaY/8532a93f1341800bc6c2b2b567e5834b624bf2f2_96.webp"
+        },
+        {
+          "project_id": "lfVtagkm",
+          "dependency_type": "embedded",
+          "name": "Yuushya Townscape",
+          "slug": "yuushya-townscape",
+          "icon_url": "https://cdn.modrinth.com/data/lfVtagkm/133ea8fecc79f8661d175204644e9b5b9bceccd2_96.webp"
+        },
+        {
+          "project_id": "lhGA9TYQ",
+          "dependency_type": "embedded",
+          "name": "Architectury API",
+          "slug": "architectury-api",
+          "icon_url": "https://cdn.modrinth.com/data/lhGA9TYQ/05fe3a61c28faaccaec3533b92e1b321edde7bf6_96.webp"
+        },
+        {
+          "project_id": "m6RyHSbV",
+          "dependency_type": "embedded",
+          "name": "Cobblemon: Legendary Monuments (CB 1.8 Version Out)",
+          "slug": "legendary-monuments",
+          "icon_url": "https://cdn.modrinth.com/data/m6RyHSbV/84611dc76bd01f9cb3f67213ec37c88707eb0ece_96.webp"
+        },
+        {
+          "project_id": "mOgUt4GM",
+          "dependency_type": "embedded",
+          "name": "Mod Menu",
+          "slug": "modmenu",
+          "icon_url": "https://cdn.modrinth.com/data/mOgUt4GM/5a20ed1450a0e1e79a1fe04e61bb4e5878bf1d20.png"
+        },
+        {
+          "project_id": "n2fvCDlM",
+          "dependency_type": "embedded",
+          "name": "Macaw's Trapdoors",
+          "slug": "macaws-trapdoors",
+          "icon_url": "https://cdn.modrinth.com/data/n2fvCDlM/e764bf33a0a9d94fd33af84a63d8a47da7c85561_96.webp"
+        },
+        {
+          "project_id": "nGUXvjTa",
+          "dependency_type": "embedded",
+          "name": "MNS - Moog's Nether Structures",
+          "slug": "mns-moogs-nether-structures",
+          "icon_url": "https://cdn.modrinth.com/data/nGUXvjTa/986323910fb5330e8799031fb59a6a42260625dc_96.webp"
+        },
+        {
+          "project_id": "nU0bVIaL",
+          "dependency_type": "embedded",
+          "name": "Patchouli",
+          "slug": "patchouli",
+          "icon_url": "https://cdn.modrinth.com/data/nU0bVIaL/c271809dda89c9e7a39f19d91f7cf6fba3ede585_96.webp"
+        },
+        {
+          "project_id": "nvQzSEkH",
+          "dependency_type": "embedded",
+          "name": "Jade 🔍",
+          "slug": "jade",
+          "icon_url": "https://cdn.modrinth.com/data/nvQzSEkH/b04217bc2b7dc524c4d12f81ff42cc1cefb9b0fc_96.webp"
+        },
+        {
+          "project_id": "ohNO6lps",
+          "dependency_type": "embedded",
+          "name": "Forge Config API Port",
+          "slug": "forge-config-api-port",
+          "icon_url": "https://cdn.modrinth.com/data/ohNO6lps/cb3b942cc18a66a0f35f802e004713f134e46cc2_96.webp"
+        },
+        {
+          "project_id": "okE6QVAY",
+          "dependency_type": "embedded",
+          "name": "Macaw's Paintings",
+          "slug": "macaws-paintings",
+          "icon_url": "https://cdn.modrinth.com/data/okE6QVAY/c3899cf3bd5b780839e98257492a6b68372eca3d_96.webp"
+        },
+        {
+          "project_id": "p19vrgc2",
+          "dependency_type": "embedded",
+          "name": "Fusion (Connected Textures)",
+          "slug": "fusion-connected-textures",
+          "icon_url": "https://cdn.modrinth.com/data/p19vrgc2/8a9940a468bb536f7402b389d583e7f070ee14fb_96.webp"
+        },
+        {
+          "project_id": "pduQXSbl",
+          "dependency_type": "embedded",
+          "name": "AzureLib Armor",
+          "slug": "azurelib-armor",
+          "icon_url": "https://cdn.modrinth.com/data/pduQXSbl/e1ab3fc63a52df5d6f9b31e0d14eb045d4ae0674_96.webp"
+        },
+        {
+          "project_id": "qwBon1nq",
+          "dependency_type": "embedded",
+          "name": "Pocket Repose",
+          "slug": "pocket-repose",
+          "icon_url": "https://cdn.modrinth.com/data/qwBon1nq/efd4561b4110134c33403bfb01319cd222a8de65_96.webp"
+        },
+        {
+          "project_id": "r4PuRGfV",
+          "dependency_type": "embedded",
+          "name": "MES - Moog's End Structures",
+          "slug": "mes-moogs-end-structures",
+          "icon_url": "https://cdn.modrinth.com/data/r4PuRGfV/5dfea63344f4605a5007c78782b3ecb4d05d408b_96.webp"
+        },
+        {
+          "project_id": "rH20L2Lp",
+          "dependency_type": "embedded",
+          "name": "Macaw's Holidays",
+          "slug": "macaws-holidays",
+          "icon_url": "https://cdn.modrinth.com/data/rH20L2Lp/b6075bf7698016577b1329d4b048462ff6f9b0d3_96.webp"
+        },
+        {
+          "project_id": "rOUBggPv",
+          "dependency_type": "embedded",
+          "name": "SuperMartijn642's Core Lib",
+          "slug": "supermartijn642s-core-lib",
+          "icon_url": "https://cdn.modrinth.com/data/rOUBggPv/e745e719d7fe2aa0335d819ca9c97defbf2e0bcb_96.webp"
+        },
+        {
+          "project_id": "rlloIFEV",
+          "dependency_type": "embedded",
+          "name": "Traveler's Backpack",
+          "slug": "travelersbackpack",
+          "icon_url": "https://cdn.modrinth.com/data/rlloIFEV/271b2133a315ee3d864ea5a429472f0e71591fe3_96.webp"
+        },
+        {
+          "project_id": "s3dmwKy5",
+          "dependency_type": "embedded",
+          "name": "GlitchCore",
+          "slug": "glitchcore",
+          "icon_url": "https://cdn.modrinth.com/data/s3dmwKy5/76dd9e7bc737a02b723730ab34f536ab43936980.png"
+        },
+        {
+          "project_id": "s7N7AsqL",
+          "dependency_type": "embedded",
+          "name": "CobbleDollars [Cobblemon Addon]",
+          "slug": "cobbledollars",
+          "icon_url": "https://cdn.modrinth.com/data/s7N7AsqL/684040a264fc1d7f9b856ec5d2da39767398c7ad.png"
+        },
+        {
+          "project_id": "sNJAIjUm",
+          "dependency_type": "embedded",
+          "name": "Jewelry (RPG Series)",
+          "slug": "jewelry",
+          "icon_url": "https://cdn.modrinth.com/data/sNJAIjUm/2eece212d22ebb4387f0b64df55d945e496d6e8c_96.webp"
+        },
+        {
+          "project_id": "spZb29SD",
+          "dependency_type": "embedded",
+          "name": "MMV - Moog's Missing Villages",
+          "slug": "mmv-moogs-missing-villages",
+          "icon_url": "https://cdn.modrinth.com/data/spZb29SD/451e1cc5bcbfed58560782f424115ccd8dc6e056_96.webp"
+        },
+        {
+          "project_id": "tEcCNQe7",
+          "dependency_type": "embedded",
+          "name": "Improved Signs",
+          "slug": "improved-signs",
+          "icon_url": "https://cdn.modrinth.com/data/tEcCNQe7/8781ec55e65d42144eb8e5ee6f9855c7421cff52.png"
+        },
+        {
+          "project_id": "tZMuL9tl",
+          "dependency_type": "embedded",
+          "name": "Cobblemon Marks",
+          "slug": "cobblemon-marks",
+          "icon_url": "https://cdn.modrinth.com/data/tZMuL9tl/7dd47743e1b5d2106bfe2c907f8f07a8fc4f678e_96.webp"
+        },
+        {
+          "project_id": "tagwiZkJ",
+          "dependency_type": "embedded",
+          "name": "Polymorph",
+          "slug": "polymorph",
+          "icon_url": "https://cdn.modrinth.com/data/tagwiZkJ/ed244c5829bde539763c7fffb55cb3194a349d66.png"
+        },
+        {
+          "project_id": "twkfQtEc",
+          "dependency_type": "embedded",
+          "name": "Moonlight Lib",
+          "slug": "moonlight",
+          "icon_url": "https://cdn.modrinth.com/data/twkfQtEc/icon.png"
+        },
+        {
+          "project_id": "u6dRKJwZ",
+          "dependency_type": "embedded",
+          "name": "Just Enough Items (JEI)",
+          "slug": "jei",
+          "icon_url": "https://cdn.modrinth.com/data/u6dRKJwZ/4a3f18ac0d096c9f8e9176984c44be4e58f94c89_96.webp"
+        },
+        {
+          "project_id": "unvZ692M",
+          "dependency_type": "embedded",
+          "name": "Croptopia Refabricated",
+          "slug": "croptopia-refabricated",
+          "icon_url": "https://cdn.modrinth.com/data/unvZ692M/2c84b800a7fc9c40ca97f3f4bb2c896ee1bfbe7b_96.webp"
+        },
+        {
+          "project_id": "uy4Cnpcm",
+          "dependency_type": "embedded",
+          "name": "Bookshelf",
+          "slug": "bookshelf-lib",
+          "icon_url": "https://cdn.modrinth.com/data/uy4Cnpcm/002e73d916fb63c9c85e212ac47fde4ef9c4a65f.png"
+        },
+        {
+          "project_id": "w4an97C2",
+          "dependency_type": "embedded",
+          "name": "Macaw's Lights and Lamps",
+          "slug": "macaws-lights-and-lamps",
+          "icon_url": "https://cdn.modrinth.com/data/w4an97C2/23b3786d03ab6ed8b8df056d1123f20129175b6b_96.webp"
+        },
+        {
+          "project_id": "w7ThoJFB",
+          "dependency_type": "embedded",
+          "name": "Zoomify (Zoom)",
+          "slug": "zoomify",
+          "icon_url": "https://cdn.modrinth.com/data/w7ThoJFB/e2de67a0bfb9e8aa2347982ab3ec5463f26cca31_96.webp"
+        },
+        {
+          "project_id": "wQfMUdZT",
+          "dependency_type": "embedded",
+          "name": "Colorful Hearts",
+          "slug": "colorful-hearts",
+          "icon_url": "https://cdn.modrinth.com/data/wQfMUdZT/2f9f0ab9d03f7fa24d817942278f0f1fb0658006.png"
+        },
+        {
+          "project_id": "wpVff6b8",
+          "dependency_type": "embedded",
+          "name": "Cobblemon Dailies",
+          "slug": "cobblemon-dailies",
+          "icon_url": "https://cdn.modrinth.com/data/wpVff6b8/0028b65f2596b634e0f1c556eaaeb4a74138dabf.png"
+        },
+        {
+          "project_id": "x3s69afN",
+          "dependency_type": "embedded",
+          "name": "cat_jam",
+          "slug": "cat_jam",
+          "icon_url": "https://cdn.modrinth.com/data/x3s69afN/a53a7f356a8c7216303d86608440cda35ba167e9_96.webp"
+        },
+        {
+          "project_id": "xv94TkTM",
+          "dependency_type": "embedded",
+          "name": "Controlling",
+          "slug": "controlling",
+          "icon_url": "https://cdn.modrinth.com/data/xv94TkTM/bdb6feb3d04ca37da4ed5aa73fef062a39d8b3e5_96.webp"
+        },
+        {
+          "project_id": "yBW8D80W",
+          "dependency_type": "embedded",
+          "name": "LambDynamicLights - Dynamic Lights",
+          "slug": "lambdynamiclights",
+          "icon_url": "https://cdn.modrinth.com/data/yBW8D80W/d4f5c3ff8df7caf024178b04eca6d69f95979cfe_96.webp"
+        },
+        {
+          "project_id": "ywwXJDli",
+          "dependency_type": "embedded",
+          "name": "Lootrmon: Lootr & Cobblemon Gilded Chest Compatibility",
+          "slug": "lootrmon",
+          "icon_url": "https://cdn.modrinth.com/data/ywwXJDli/5c92d93bd1fc84e6151c7a07cd3a3edaa2a23e6e_96.webp"
+        },
+        {
+          "project_id": "zlrbPCvu",
+          "dependency_type": "embedded",
+          "name": "Cobblemon: PlayerXP",
+          "slug": "cobblemon-playerxp",
+          "icon_url": "https://cdn.modrinth.com/data/zlrbPCvu/19ba3a4aefa5fb1610fd27c2c52b518c842f9fad_96.webp"
+        },
+        {
+          "project_id": "znHQQtuU",
+          "dependency_type": "embedded",
+          "name": "More Delight (for Farmer's Delight)",
+          "slug": "more-delight",
+          "icon_url": "https://cdn.modrinth.com/data/znHQQtuU/a0b97c0306ac9507bca7b81059fb146051596e08.gif"
+        }
+      ],
+      "disclosure_types": [],
+      "loaders": [
+        "mrpack"
+      ],
+      "project_loader_fields": {
+        "environment": [
+          "client_and_server"
+        ],
+        "game_versions": [
+          "1.21.1"
+        ],
+        "mrpack_loaders": [
+          "fabric"
+        ]
+      },
+      "minecraft_mod": null,
+      "minecraft_server": {
+        "max_players": null,
+        "country": null,
+        "region": "europe",
+        "languages": [
+          "en"
+        ],
+        "active_version": null
+      },
+      "minecraft_java_server": {
+        "address": "dominica-spot.tun.ply.gg",
+        "content": {
+          "kind": "vanilla",
+          "supported_game_versions": [
+            "26.2"
+          ],
+          "recommended_game_version": "26.2"
+        },
+        "ping": {
+          "when": "2026-11-07T18:23:10.805877640Z",
+          "address": "dominica-spot.tun.ply.gg",
+          "data": null
+        },
+        "verified_plays_2w": 3,
+        "verified_plays_4w": 3
+      },
+      "minecraft_bedrock_server": {
+        "address": "katherine-cadillac.tun.ply.gg"
+      },
+      "environment": [
+        "client_and_server"
+      ],
+      "server_side": [
+        "required"
+      ],
+      "mrpack_loaders": [
+        "fabric"
+      ],
+      "client_side": [
+        "required"
+      ],
+      "game_versions": [
+        "1.21.1"
+      ]
+    },
+    {
+      "version_id": "yAUDlasi",
+      "project_id": "aTb41haS",
+      "project_types": [
+        "minecraft_java_server"
+      ],
+      "all_project_types": [
+        "minecraft_java_server"
+      ],
+      "slug": "the-unstable-hmp",
+      "author": "Overpowered",
+      "author_id": "QxEzSBMi",
+      "organization": "UNSTABLE NETWORK",
+      "organization_id": "ScsywHfj",
+      "name": "Unstable Universe Network",
+      "summary": "This is a recreation Of the Unstable Universe - Having Builds from unstable and allowing you to play how you want\nFFA, DUELS, SMP, ALTERVERSE EVENTS",
+      "categories": [
+        "creator-community",
+        "custom-content",
+        "fabric",
+        "hardcore-mode",
+        "media",
+        "network",
+        "pve",
+        "pvp",
+        "recording-smp",
+        "smp",
+        "social",
+        "survival-mode",
+        "teams"
+      ],
+      "display_categories": [
+        "pvp",
+        "network",
+        "creator-community"
+      ],
+      "downloads": 109,
+      "follows": 6,
+      "icon_url": "https://cdn.modrinth.com/data/aTb41haS/a9e752c09a11b21fdb5a59f6618b236f14ee6b7b.gif",
+      "date_created": "2026-03-08T00:47:01.218944+00:00",
+      "date_modified": "2026-03-06T07:48:39.668553+00:00",
+      "license": "LicenseRef-Unknown",
+      "gallery": [
+        "https://cdn.modrinth.com/data/aTb41haS/images/999f46baa48e21df2891050265d94a6b8fc5dd23.gif",
+        "https://cdn.modrinth.com/data/aTb41haS/images/adbcb1d03622cf4246a7b03823629d111c3caf3a_350.webp",
+        "https://cdn.modrinth.com/data/aTb41haS/images/a326e4396d4de579e3527f73a7dea1a3dde4c2ff_350.webp",
+        "https://cdn.modrinth.com/data/aTb41haS/images/774e72e6500dadde27ebb90be9ec756d1bcbe68d_350.webp",
+        "https://cdn.modrinth.com/data/aTb41haS/images/db6833d094f9ed852a942506c0020cb42519e054_350.webp",
+        "https://cdn.modrinth.com/data/aTb41haS/images/217962e6b74dd60d6bbf7b511f9e430ead791482_350.webp",
+        "https://cdn.modrinth.com/data/aTb41haS/images/804af64e5883915b1aac32b80a65c6d09fb1b2bb_350.webp",
+        "https://cdn.modrinth.com/data/aTb41haS/images/6928cfc61ac79e4b1986db3ae8c64c14ae8eb3ac_350.webp"
+      ],
+      "featured_gallery": "https://cdn.modrinth.com/data/aTb41haS/images/7d1c0912b9820c4ad7fc22b15ddb9346e708c315_350.webp",
+      "color": 3748940,
+      "dependency_project_ids": [
+        "1IjD5062",
+        "1eAoo2KR",
+        "1u6JkXh5",
+        "2M01OLQq",
+        "2O3YTVOd",
+        "3azQ6p0W",
+        "4I1XuqiY",
+        "4das1Fjq",
+        "5ZwdcRci",
+        "5srFLIaK",
+        "7YpmyzZr",
+        "9eGKb6K1",
+        "9mtu0sUO",
+        "9s6osm5g",
+        "AANobbMI",
+        "BVzZfTc1",
+        "Bh37bMuy",
+        "CVT4pFB2",
+        "EsAfCjCV",
+        "GNxdLCoP",
+        "GcWjdA9I",
+        "J81TRJWm",
+        "M08ruV16",
+        "MBAkmtvl",
+        "MS1ZMyR7",
+        "N6n5dqoA",
+        "NK39zBp2",
+        "NNAgCjsB",
+        "OgsODby2",
+        "P7dR8mSH",
+        "PTj85Anz",
+        "PmLlAay9",
+        "PtjYWJkn",
+        "REfW2AEX",
+        "SNVQ2c0g",
+        "T9FDHbY5",
+        "TQTTVgYE",
+        "UR0ocuEt",
+        "UpdayxEt",
+        "W0UVc3e9",
+        "Wb5oqrBJ",
+        "Wnxd13zP",
+        "Y8uFrUil",
+        "aC3cM3Vq",
+        "aEK1KhsC",
+        "bEpr0Arc",
+        "c7m1mi73",
+        "codAaoxh",
+        "e0M1UDsY",
+        "eXts2L7r",
+        "gvQqBUqZ",
+        "iAiqcykM",
+        "jE0SjGuf",
+        "jURjbCaq",
+        "k2ZPuTBm",
+        "kIhxG5zE",
+        "kYuIpRLv",
+        "kzwxhsjp",
+        "lhGA9TYQ",
+        "mOgUt4GM",
+        "orXAsira",
+        "ozpC8eDC",
+        "p19vrgc2",
+        "qyVF9oeo",
+        "rd9rKuJT",
+        "s3dmwKy5",
+        "uCdwusMi",
+        "uXXizFIs",
+        "wF189hn9",
+        "xGdtZczs",
+        "zLAdIOH7",
+        "zV5r3pPn"
+      ],
+      "compatible_dependency_project_ids": [
+        "1IjD5062",
+        "1eAoo2KR",
+        "1u6JkXh5",
+        "2M01OLQq",
+        "2O3YTVOd",
+        "3azQ6p0W",
+        "4I1XuqiY",
+        "4das1Fjq",
+        "5ZwdcRci",
+        "5srFLIaK",
+        "7YpmyzZr",
+        "9eGKb6K1",
+        "9mtu0sUO",
+        "9s6osm5g",
+        "AANobbMI",
+        "BVzZfTc1",
+        "Bh37bMuy",
+        "CVT4pFB2",
+        "EsAfCjCV",
+        "GNxdLCoP",
+        "GcWjdA9I",
+        "J81TRJWm",
+        "M08ruV16",
+        "MBAkmtvl",
+        "MS1ZMyR7",
+        "N6n5dqoA",
+        "NK39zBp2",
+        "NNAgCjsB",
+        "OgsODby2",
+        "P7dR8mSH",
+        "PTj85Anz",
+        "PmLlAay9",
+        "PtjYWJkn",
+        "REfW2AEX",
+        "SNVQ2c0g",
+        "T9FDHbY5",
+        "TQTTVgYE",
+        "UR0ocuEt",
+        "UpdayxEt",
+        "W0UVc3e9",
+        "Wb5oqrBJ",
+        "Wnxd13zP",
+        "Y8uFrUil",
+        "aC3cM3Vq",
+        "aEK1KhsC",
+        "bEpr0Arc",
+        "c7m1mi73",
+        "codAaoxh",
+        "e0M1UDsY",
+        "eXts2L7r",
+        "gvQqBUqZ",
+        "iAiqcykM",
+        "jE0SjGuf",
+        "jURjbCaq",
+        "k2ZPuTBm",
+        "kIhxG5zE",
+        "kYuIpRLv",
+        "kzwxhsjp",
+        "lhGA9TYQ",
+        "mOgUt4GM",
+        "orXAsira",
+        "ozpC8eDC",
+        "p19vrgc2",
+        "qyVF9oeo",
+        "rd9rKuJT",
+        "s3dmwKy5",
+        "uCdwusMi",
+        "uXXizFIs",
+        "wF189hn9",
+        "xGdtZczs",
+        "zLAdIOH7",
+        "zV5r3pPn"
+      ],
+      "required_dependency_project_ids": [],
+      "optional_dependency_project_ids": [],
+      "embedded_dependency_project_ids": [
+        "1IjD5062",
+        "1eAoo2KR",
+        "1u6JkXh5",
+        "2M01OLQq",
+        "2O3YTVOd",
+        "3azQ6p0W",
+        "4I1XuqiY",
+        "4das1Fjq",
+        "5ZwdcRci",
+        "5srFLIaK",
+        "7YpmyzZr",
+        "9eGKb6K1",
+        "9mtu0sUO",
+        "9s6osm5g",
+        "AANobbMI",
+        "BVzZfTc1",
+        "Bh37bMuy",
+        "CVT4pFB2",
+        "EsAfCjCV",
+        "GNxdLCoP",
+        "GcWjdA9I",
+        "J81TRJWm",
+        "M08ruV16",
+        "MBAkmtvl",
+        "MS1ZMyR7",
+        "N6n5dqoA",
+        "NK39zBp2",
+        "NNAgCjsB",
+        "OgsODby2",
+        "P7dR8mSH",
+        "PTj85Anz",
+        "PmLlAay9",
+        "PtjYWJkn",
+        "REfW2AEX",
+        "SNVQ2c0g",
+        "T9FDHbY5",
+        "TQTTVgYE",
+        "UR0ocuEt",
+        "UpdayxEt",
+        "W0UVc3e9",
+        "Wb5oqrBJ",
+        "Wnxd13zP",
+        "Y8uFrUil",
+        "aC3cM3Vq",
+        "aEK1KhsC",
+        "bEpr0Arc",
+        "c7m1mi73",
+        "codAaoxh",
+        "e0M1UDsY",
+        "eXts2L7r",
+        "gvQqBUqZ",
+        "iAiqcykM",
+        "jE0SjGuf",
+        "jURjbCaq",
+        "k2ZPuTBm",
+        "kIhxG5zE",
+        "kYuIpRLv",
+        "kzwxhsjp",
+        "lhGA9TYQ",
+        "mOgUt4GM",
+        "orXAsira",
+        "ozpC8eDC",
+        "p19vrgc2",
+        "qyVF9oeo",
+        "rd9rKuJT",
+        "s3dmwKy5",
+        "uCdwusMi",
+        "uXXizFIs",
+        "wF189hn9",
+        "xGdtZczs",
+        "zLAdIOH7",
+        "zV5r3pPn"
+      ],
+      "incompatible_dependency_project_ids": [],
+      "dependencies": [
+        {
+          "project_id": "1IjD5062",
+          "dependency_type": "embedded",
+          "name": "Continuity",
+          "slug": "continuity",
+          "icon_url": "https://cdn.modrinth.com/data/1IjD5062/icon.png"
+        },
+        {
+          "project_id": "1eAoo2KR",
+          "dependency_type": "embedded",
+          "name": "YetAnotherConfigLib (YACL)",
+          "slug": "yacl",
+          "icon_url": "https://cdn.modrinth.com/data/1eAoo2KR/08c0cd32515e260f4bb20bbc0696510041523f9a_96.webp"
+        },
+        {
+          "project_id": "1u6JkXh5",
+          "dependency_type": "embedded",
+          "name": "WorldEdit",
+          "slug": "worldedit",
+          "icon_url": "https://cdn.modrinth.com/data/1u6JkXh5/30698991048ced77e60c4e8284007d3782f2e6a3_96.webp"
+        },
+        {
+          "project_id": "2M01OLQq",
+          "dependency_type": "embedded",
+          "name": "Shulker Box Tooltip",
+          "slug": "shulkerboxtooltip",
+          "icon_url": "https://cdn.modrinth.com/data/2M01OLQq/bb490716cf2590cf84100a495931c3d4743bce43_96.webp"
+        },
+        {
+          "project_id": "2O3YTVOd",
+          "dependency_type": "embedded",
+          "name": "Carpet Extra Extras",
+          "slug": "carpet-extra-extras",
+          "icon_url": "https://cdn.modrinth.com/data/2O3YTVOd/2ec959128e03ba344e0cf9b630cd22566fcabb81_96.webp"
+        },
+        {
+          "project_id": "3azQ6p0W",
+          "dependency_type": "embedded",
+          "name": "Cherished Worlds",
+          "slug": "cherished-worlds",
+          "icon_url": "https://cdn.modrinth.com/data/3azQ6p0W/14d3a7430f4e834fc0a86d228c6e17e5b9b33a0a.png"
+        },
+        {
+          "project_id": "4I1XuqiY",
+          "dependency_type": "embedded",
+          "name": "[EMF] Entity Model Features",
+          "slug": "entity-model-features",
+          "icon_url": "https://cdn.modrinth.com/data/4I1XuqiY/6e5bbd0d06b1741bfdab6c0cfab6de8fdaf0064c_96.webp"
+        },
+        {
+          "project_id": "4das1Fjq",
+          "dependency_type": "embedded",
+          "name": "Flashback",
+          "slug": "flashback",
+          "icon_url": "https://cdn.modrinth.com/data/4das1Fjq/e81c66aacf2e12c09a95e4f971ea5e2b9f608317_96.webp"
+        },
+        {
+          "project_id": "5ZwdcRci",
+          "dependency_type": "embedded",
+          "name": "ImmediatelyFast",
+          "slug": "immediatelyfast",
+          "icon_url": "https://cdn.modrinth.com/data/5ZwdcRci/e57b6b451425692ac17ad322d5e14bea686a383a_96.webp"
+        },
+        {
+          "project_id": "5srFLIaK",
+          "dependency_type": "embedded",
+          "name": "Better Clouds",
+          "slug": "better-clouds",
+          "icon_url": "https://cdn.modrinth.com/data/5srFLIaK/68edb3cf18c96196450b84f467e7870f29a29554_96.webp"
+        },
+        {
+          "project_id": "7YpmyzZr",
+          "dependency_type": "embedded",
+          "name": "Raid Restorer",
+          "slug": "raid-restore",
+          "icon_url": "https://cdn.modrinth.com/data/7YpmyzZr/da475a2580e8c82ab9e987d8b2e902a8935180f2.png"
+        },
+        {
+          "project_id": "9eGKb6K1",
+          "dependency_type": "embedded",
+          "name": "Simple Voice Chat",
+          "slug": "simple-voice-chat",
+          "icon_url": "https://cdn.modrinth.com/data/9eGKb6K1/icon.png"
+        },
+        {
+          "project_id": "9mtu0sUO",
+          "dependency_type": "embedded",
+          "name": "Fast IP Ping",
+          "slug": "fast-ip-ping",
+          "icon_url": "https://cdn.modrinth.com/data/9mtu0sUO/dca186a8a57d45ad06e88de6cfc45d4cc4c6a0ba.png"
+        },
+        {
+          "project_id": "9s6osm5g",
+          "dependency_type": "embedded",
+          "name": "Cloth Config API",
+          "slug": "cloth-config",
+          "icon_url": "https://cdn.modrinth.com/data/9s6osm5g/ed8a2316cbb6f4fc5f510e8e13a59a85cbbbff4d_96.webp"
+        },
+        {
+          "project_id": "AANobbMI",
+          "dependency_type": "embedded",
+          "name": "Sodium",
+          "slug": "sodium",
+          "icon_url": "https://cdn.modrinth.com/data/AANobbMI/295862f4724dc3f78df3447ad6072b2dcd3ef0c9_96.webp"
+        },
+        {
+          "project_id": "BVzZfTc1",
+          "dependency_type": "embedded",
+          "name": "[ETF] Entity Texture Features",
+          "slug": "entitytexturefeatures",
+          "icon_url": "https://cdn.modrinth.com/data/BVzZfTc1/af683d206d50b05258d865b0d6e4aa2f2cee12f2_96.webp"
+        },
+        {
+          "project_id": "Bh37bMuy",
+          "dependency_type": "embedded",
+          "name": "Reese's Sodium Options",
+          "slug": "reeses-sodium-options",
+          "icon_url": "https://cdn.modrinth.com/data/Bh37bMuy/icon.png"
+        },
+        {
+          "project_id": "CVT4pFB2",
+          "dependency_type": "embedded",
+          "name": "Melody",
+          "slug": "melody",
+          "icon_url": "https://cdn.modrinth.com/data/CVT4pFB2/87ac2562f06b104c827d322b4b937bad8fac5fbc_96.webp"
+        },
+        {
+          "project_id": "EsAfCjCV",
+          "dependency_type": "embedded",
+          "name": "AppleSkin",
+          "slug": "appleskin",
+          "icon_url": "https://cdn.modrinth.com/data/EsAfCjCV/icon.png"
+        },
+        {
+          "project_id": "GNxdLCoP",
+          "dependency_type": "embedded",
+          "name": "Cull Leaves",
+          "slug": "cull-leaves",
+          "icon_url": "https://cdn.modrinth.com/data/GNxdLCoP/icon.png"
+        },
+        {
+          "project_id": "GcWjdA9I",
+          "dependency_type": "embedded",
+          "name": "MaLiLib",
+          "slug": "malilib",
+          "icon_url": "https://cdn.modrinth.com/data/GcWjdA9I/a530ae55df5e0c405f5cf1b3e4fd6163a398bdc3.png"
+        },
+        {
+          "project_id": "J81TRJWm",
+          "dependency_type": "embedded",
+          "name": "Konkrete",
+          "slug": "konkrete",
+          "icon_url": "https://cdn.modrinth.com/data/J81TRJWm/f27c753fd9ec7944b49f4fe2d7cfd32527340183_96.webp"
+        },
+        {
+          "project_id": "M08ruV16",
+          "dependency_type": "embedded",
+          "name": "Bobby",
+          "slug": "bobby",
+          "icon_url": "https://cdn.modrinth.com/data/M08ruV16/icon.png"
+        },
+        {
+          "project_id": "MBAkmtvl",
+          "dependency_type": "embedded",
+          "name": "Balm",
+          "slug": "balm",
+          "icon_url": "https://cdn.modrinth.com/data/MBAkmtvl/285b7bcfd6e525c043e640b08f3efc0cde90f7dd_96.webp"
+        },
+        {
+          "project_id": "MS1ZMyR7",
+          "dependency_type": "embedded",
+          "name": "Better Ping Display [Fabric]",
+          "slug": "better-ping-display-fabric",
+          "icon_url": "https://cdn.modrinth.com/data/MS1ZMyR7/icon.png"
+        },
+        {
+          "project_id": "N6n5dqoA",
+          "dependency_type": "embedded",
+          "name": "Axiom",
+          "slug": "axiom",
+          "icon_url": "https://cdn.modrinth.com/data/N6n5dqoA/dd175669d5ac228dc00453d13528ad26c1f056ac.png"
+        },
+        {
+          "project_id": "NK39zBp2",
+          "dependency_type": "embedded",
+          "name": "Blur+",
+          "slug": "blur-plus",
+          "icon_url": "https://cdn.modrinth.com/data/NK39zBp2/1bb976c95042f20f26e27e6c4eb9e359e45d5002.webp"
+        },
+        {
+          "project_id": "NNAgCjsB",
+          "dependency_type": "embedded",
+          "name": "Entity Culling",
+          "slug": "entityculling",
+          "icon_url": "https://cdn.modrinth.com/data/NNAgCjsB/7873452d6cede4daed12da3d7d8c193ab88b4fd6_96.webp"
+        },
+        {
+          "project_id": "OgsODby2",
+          "dependency_type": "embedded",
+          "name": "Vanilla+ TPS",
+          "slug": "vtps",
+          "icon_url": "https://cdn.modrinth.com/data/OgsODby2/9fba922697e5436a9a29ae49dfd7b175c0003dfc_96.webp"
+        },
+        {
+          "project_id": "P7dR8mSH",
+          "dependency_type": "embedded",
+          "name": "Fabric API",
+          "slug": "fabric-api",
+          "icon_url": "https://cdn.modrinth.com/data/P7dR8mSH/icon.png"
+        },
+        {
+          "project_id": "PTj85Anz",
+          "dependency_type": "embedded",
+          "name": "My Resource Pack, My Choice",
+          "slug": "my-resource-pack",
+          "icon_url": "https://cdn.modrinth.com/data/PTj85Anz/d51f3f3d6419e904ca660e18544251f9e8ac0c8e.png"
+        },
+        {
+          "project_id": "PmLlAay9",
+          "dependency_type": "embedded",
+          "name": "Disable Fog",
+          "slug": "disable-fog",
+          "icon_url": "https://cdn.modrinth.com/data/PmLlAay9/3de510deb5ccf45295ba93922d98a1901c9d7ed7_96.webp"
+        },
+        {
+          "project_id": "PtjYWJkn",
+          "dependency_type": "embedded",
+          "name": "Sodium Extra",
+          "slug": "sodium-extra",
+          "icon_url": "https://cdn.modrinth.com/data/PtjYWJkn/0df4fb22a11e1dcb5e83cb0aadd275b571aca7a9_96.webp"
+        },
+        {
+          "project_id": "REfW2AEX",
+          "dependency_type": "embedded",
+          "name": "InvMove",
+          "slug": "invmove",
+          "icon_url": "https://cdn.modrinth.com/data/REfW2AEX/24c63fa80c1e94bc45ca600ba9e0993ff91d289b_96.webp"
+        },
+        {
+          "project_id": "SNVQ2c0g",
+          "dependency_type": "embedded",
+          "name": "MRU",
+          "slug": "mru",
+          "icon_url": "https://cdn.modrinth.com/data/SNVQ2c0g/82339bfc8a0a3a6a3c376f5c29555a378379cfa0_96.webp"
+        },
+        {
+          "project_id": "T9FDHbY5",
+          "dependency_type": "embedded",
+          "name": "Status Effect Timer",
+          "slug": "statuseffecttimer",
+          "icon_url": "https://cdn.modrinth.com/data/T9FDHbY5/icon.png"
+        },
+        {
+          "project_id": "TQTTVgYE",
+          "dependency_type": "embedded",
+          "name": "Carpet",
+          "slug": "carpet",
+          "icon_url": "https://cdn.modrinth.com/data/TQTTVgYE/3ad650635d067b6bfa09403cf5e70e0947a05c07_96.webp"
+        },
+        {
+          "project_id": "UR0ocuEt",
+          "dependency_type": "embedded",
+          "name": "NBT Autocomplete",
+          "slug": "nbt-autocomplete",
+          "icon_url": "https://cdn.modrinth.com/data/UR0ocuEt/3114a4cea537fed3e2d86156b555a5b3d7bdd5ca.png"
+        },
+        {
+          "project_id": "UpdayxEt",
+          "dependency_type": "embedded",
+          "name": "BetterShields",
+          "slug": "bettershields",
+          "icon_url": "https://cdn.modrinth.com/data/UpdayxEt/7c21f2b7c056cd36bb9d12f45c954c18848b10cd.png"
+        },
+        {
+          "project_id": "W0UVc3e9",
+          "dependency_type": "embedded",
+          "name": "Save and Load Inventories",
+          "slug": "save-and-load-inventories",
+          "icon_url": "https://cdn.modrinth.com/data/W0UVc3e9/be1b0e54760fa9a074215fe7c2568328faeb8a56_96.webp"
+        },
+        {
+          "project_id": "Wb5oqrBJ",
+          "dependency_type": "embedded",
+          "name": "Chat Heads",
+          "slug": "chat-heads",
+          "icon_url": "https://cdn.modrinth.com/data/Wb5oqrBJ/icon.png"
+        },
+        {
+          "project_id": "Wnxd13zP",
+          "dependency_type": "embedded",
+          "name": "Clumps",
+          "slug": "clumps",
+          "icon_url": "https://cdn.modrinth.com/data/Wnxd13zP/6a965bb7974c3e759a53a1c89c35de4acd4cf86a_96.webp"
+        },
+        {
+          "project_id": "Y8uFrUil",
+          "dependency_type": "embedded",
+          "name": "ukulib",
+          "slug": "ukulib",
+          "icon_url": "https://cdn.modrinth.com/data/Y8uFrUil/3306adc6d3ba21b11bb14f06f00c21cd5f47e506.webp"
+        },
+        {
+          "project_id": "aC3cM3Vq",
+          "dependency_type": "embedded",
+          "name": "Mouse Tweaks",
+          "slug": "mouse-tweaks",
+          "icon_url": "https://cdn.modrinth.com/data/aC3cM3Vq/6c0eaa4e60a9c87f4766f222ff63286f09da32c0_96.webp"
+        },
+        {
+          "project_id": "aEK1KhsC",
+          "dependency_type": "embedded",
+          "name": "Full Brightness Toggle",
+          "slug": "full-brightness-toggle",
+          "icon_url": "https://cdn.modrinth.com/data/aEK1KhsC/d1124e6ed9eb24a9e11649159cd7c7b26cf1a6be_96.webp"
+        },
+        {
+          "project_id": "bEpr0Arc",
+          "dependency_type": "embedded",
+          "name": "Litematica",
+          "slug": "litematica",
+          "icon_url": "https://cdn.modrinth.com/data/bEpr0Arc/25b5529d7a3b030ac136a6ce879d8ed2a1aa4a8d.png"
+        },
+        {
+          "project_id": "c7m1mi73",
+          "dependency_type": "embedded",
+          "name": "Packet Fixer",
+          "slug": "packet-fixer",
+          "icon_url": "https://cdn.modrinth.com/data/c7m1mi73/388af00d61fa57e7e10612bcc099bf6ee0794e5e.png"
+        },
+        {
+          "project_id": "codAaoxh",
+          "dependency_type": "embedded",
+          "name": "MidnightLib",
+          "slug": "midnightlib",
+          "icon_url": "https://cdn.modrinth.com/data/codAaoxh/76ce92742fea39dadbf9a68a389b4690f10ebd52_96.webp"
+        },
+        {
+          "project_id": "e0M1UDsY",
+          "dependency_type": "embedded",
+          "name": "Collective",
+          "slug": "collective",
+          "icon_url": "https://cdn.modrinth.com/data/e0M1UDsY/f5e4fe9ac298e2c14591920d6bda937c566accd0_96.webp"
+        },
+        {
+          "project_id": "eXts2L7r",
+          "dependency_type": "embedded",
+          "name": "Text Placeholder API",
+          "slug": "placeholder-api",
+          "icon_url": "https://cdn.modrinth.com/data/eXts2L7r/e9c9990896e6422bffc5f73d2c41b8f077348f83.png"
+        },
+        {
+          "project_id": "gvQqBUqZ",
+          "dependency_type": "embedded",
+          "name": "Lithium",
+          "slug": "lithium",
+          "icon_url": "https://cdn.modrinth.com/data/gvQqBUqZ/bcc8686c13af0143adf4285d741256af824f70b7_96.webp"
+        },
+        {
+          "project_id": "iAiqcykM",
+          "dependency_type": "embedded",
+          "name": "Just Zoom",
+          "slug": "just-zoom",
+          "icon_url": "https://cdn.modrinth.com/data/iAiqcykM/1ea49f93020b6bd030f73dd39efc52b396d4dc8b.png"
+        },
+        {
+          "project_id": "jE0SjGuf",
+          "dependency_type": "embedded",
+          "name": "Carpet TIS Addition",
+          "slug": "carpet-tis-addition",
+          "icon_url": "https://cdn.modrinth.com/data/jE0SjGuf/0eb2c1c34fee3c75e5fdadd7274d071445b80e9e_96.webp"
+        },
+        {
+          "project_id": "jURjbCaq",
+          "dependency_type": "embedded",
+          "name": "Variants-CIT",
+          "slug": "variants-cit",
+          "icon_url": "https://cdn.modrinth.com/data/jURjbCaq/24d09a1527554293adeac37a14b3f07aa9b26769.png"
+        },
+        {
+          "project_id": "k2ZPuTBm",
+          "dependency_type": "embedded",
+          "name": "Essential Mod",
+          "slug": "essential",
+          "icon_url": "https://cdn.modrinth.com/data/k2ZPuTBm/7f7ac7cf2a46d5f02e9644372c44b3095ad61ffb_96.webp"
+        },
+        {
+          "project_id": "kIhxG5zE",
+          "dependency_type": "embedded",
+          "name": "Armor Trim Item Fix",
+          "slug": "armor-trim-item-fix",
+          "icon_url": "https://cdn.modrinth.com/data/kIhxG5zE/755876b7ff51f77f2adf93f70749a82f094ab211.png"
+        },
+        {
+          "project_id": "kYuIpRLv",
+          "dependency_type": "embedded",
+          "name": "Wavey Capes",
+          "slug": "wavey-capes",
+          "icon_url": "https://cdn.modrinth.com/data/kYuIpRLv/a51c297bdaf9685a23cc9994372fa8d45852b98b_96.webp"
+        },
+        {
+          "project_id": "kzwxhsjp",
+          "dependency_type": "embedded",
+          "name": "Accurate Block Placement Reborn",
+          "slug": "accurate-block-placement-reborn",
+          "icon_url": "https://cdn.modrinth.com/data/kzwxhsjp/d625b497fc032d684c9c9d1826ee04fbef9f37d9_96.webp"
+        },
+        {
+          "project_id": "lhGA9TYQ",
+          "dependency_type": "embedded",
+          "name": "Architectury API",
+          "slug": "architectury-api",
+          "icon_url": "https://cdn.modrinth.com/data/lhGA9TYQ/05fe3a61c28faaccaec3533b92e1b321edde7bf6_96.webp"
+        },
+        {
+          "project_id": "mOgUt4GM",
+          "dependency_type": "embedded",
+          "name": "Mod Menu",
+          "slug": "modmenu",
+          "icon_url": "https://cdn.modrinth.com/data/mOgUt4GM/5a20ed1450a0e1e79a1fe04e61bb4e5878bf1d20.png"
+        },
+        {
+          "project_id": "orXAsira",
+          "dependency_type": "embedded",
+          "name": "Cape Provider",
+          "slug": "cape-provider",
+          "icon_url": "https://cdn.modrinth.com/data/orXAsira/848e384494a5e9a5cb60c343b7c65dcfc973a669.png"
+        },
+        {
+          "project_id": "ozpC8eDC",
+          "dependency_type": "embedded",
+          "name": "Marlow's Crystal Optimizer",
+          "slug": "marlow-crystal-optimizer",
+          "icon_url": "https://cdn.modrinth.com/data/ozpC8eDC/3d4faf5604c309cacdd3c8d88be4f14257915385_96.webp"
+        },
+        {
+          "project_id": "p19vrgc2",
+          "dependency_type": "embedded",
+          "name": "Fusion (Connected Textures)",
+          "slug": "fusion-connected-textures",
+          "icon_url": "https://cdn.modrinth.com/data/p19vrgc2/8a9940a468bb536f7402b389d583e7f070ee14fb_96.webp"
+        },
+        {
+          "project_id": "qyVF9oeo",
+          "dependency_type": "embedded",
+          "name": "Sound Physics Remastered",
+          "slug": "sound-physics-remastered",
+          "icon_url": "https://cdn.modrinth.com/data/qyVF9oeo/798fbfae58ec95ad51f3e1d522b43227306c326c.png"
+        },
+        {
+          "project_id": "rd9rKuJT",
+          "dependency_type": "embedded",
+          "name": "Disconnect Packet Fix",
+          "slug": "disconnect-packet-fix",
+          "icon_url": "https://cdn.modrinth.com/data/rd9rKuJT/d80231b72f74b4ed3b6e67ec14d835ee56f3d984.png"
+        },
+        {
+          "project_id": "s3dmwKy5",
+          "dependency_type": "embedded",
+          "name": "GlitchCore",
+          "slug": "glitchcore",
+          "icon_url": "https://cdn.modrinth.com/data/s3dmwKy5/76dd9e7bc737a02b723730ab34f536ab43936980.png"
+        },
+        {
+          "project_id": "uCdwusMi",
+          "dependency_type": "embedded",
+          "name": "Distant Horizons",
+          "slug": "distanthorizons",
+          "icon_url": "https://cdn.modrinth.com/data/uCdwusMi/e716cda9bb568b5373ff76e363fb4c6d7278fba6_96.webp"
+        },
+        {
+          "project_id": "uXXizFIs",
+          "dependency_type": "embedded",
+          "name": "FerriteCore",
+          "slug": "ferrite-core",
+          "icon_url": "https://cdn.modrinth.com/data/uXXizFIs/222a126f26f8f9ae1eb339f3b767677f18bff31f_96.webp"
+        },
+        {
+          "project_id": "wF189hn9",
+          "dependency_type": "embedded",
+          "name": "uku's Armor HUD",
+          "slug": "ukus-armor-hud",
+          "icon_url": "https://cdn.modrinth.com/data/wF189hn9/a790ea8edc940ba6fd6bb92f298a19e438904e4a.png"
+        },
+        {
+          "project_id": "xGdtZczs",
+          "dependency_type": "embedded",
+          "name": "Polymer",
+          "slug": "polymer",
+          "icon_url": "https://cdn.modrinth.com/data/xGdtZczs/icon.png"
+        },
+        {
+          "project_id": "zLAdIOH7",
+          "dependency_type": "embedded",
+          "name": "Crosshair Indicator",
+          "slug": "crosshair-indicator",
+          "icon_url": "https://cdn.modrinth.com/data/zLAdIOH7/63d31b84b0be858bed305a969139ff2792fab1b7_96.webp"
+        },
+        {
+          "project_id": "zV5r3pPn",
+          "dependency_type": "embedded",
+          "name": "3D Skin Layers",
+          "slug": "3dskinlayers",
+          "icon_url": "https://cdn.modrinth.com/data/zV5r3pPn/ff7010d4ec0275609866c8b0f603b25e25949c08_96.webp"
+        }
+      ],
+      "disclosure_types": [],
+      "loaders": [
+        "mrpack"
+      ],
+      "project_loader_fields": {
+        "game_versions": [
+          "1.21.11"
+        ],
+        "mrpack_loaders": [
+          "fabric"
+        ],
+        "environment": [
+          "client_and_server"
+        ]
+      },
+      "minecraft_mod": null,
+      "minecraft_server": {
+        "max_players": null,
+        "country": null,
+        "region": "us_west",
+        "languages": [
+          "en"
+        ],
+        "active_version": null
+      },
+      "minecraft_java_server": {
+        "address": "lobby.unfathon.net",
+        "content": {
+          "kind": "vanilla",
+          "supported_game_versions": [
+            "1.21.11",
+            "1.21.10",
+            "1.21.9",
+            "1.21.8",
+            "1.21.6",
+            "1.21.7",
+            "1.21.5",
+            "26.2",
+            "26.1.2",
+            "26.1.1",
+            "26.1"
+          ],
+          "recommended_game_version": "1.21.11"
+        },
+        "ping": {
+          "when": "2026-11-07T18:23:16.001393502Z",
+          "address": "lobby.unfathon.net",
+          "data": {
+            "latency": {
+              "secs": 0,
+              "nanos": 348959651
+            },
+            "version_name": "Paper 1.21.11",
+            "version_protocol": 578,
+            "description": "",
+            "players_online": 1,
+            "players_max": 10000
+          }
+        },
+        "verified_plays_2w": 68,
+        "verified_plays_4w": 130
+      },
+      "minecraft_bedrock_server": {
+        "address": ""
+      },
+      "game_versions": [
+        "1.21.11"
+      ],
+      "client_side": [
+        "required"
+      ],
+      "mrpack_loaders": [
+        "fabric"
+      ],
+      "server_side": [
+        "required"
+      ],
+      "environment": [
+        "client_and_server"
+      ]
+    },
+    {
+      "version_id": "aB8nwBFr",
+      "project_id": "vDdcs9di",
+      "project_types": [
+        "minecraft_java_server"
+      ],
+      "all_project_types": [
+        "minecraft_java_server"
+      ],
+      "slug": "vanilla-valley-smp",
+      "author": "chowiekomba",
+      "author_id": "TUMxuTGC",
+      "organization": null,
+      "organization_id": null,
+      "name": "Vanilla Valley SMP",
+      "summary": "A vanilla plus Minecraft server focused on exploration and community",
+      "categories": [
+        "creator-community",
+        "custom-content",
+        "economy",
+        "fabric",
+        "minigames",
+        "rpg",
+        "smp",
+        "survival-mode",
+        "towns",
+        "vanilla-like"
+      ],
+      "display_categories": [
+        "smp",
+        "survival-mode",
+        "vanilla-like",
+        "vanilla-like",
+        "vanilla-like"
+      ],
+      "downloads": 98,
+      "follows": 2,
+      "icon_url": "https://cdn.modrinth.com/data/vDdcs9di/580062c91ed0199a4c6c2fb0e8d6486088672142.webp",
+      "date_created": "2026-06-01T00:39:45.173294+00:00",
+      "date_modified": "2026-06-06T13:54:06.169984+00:00",
+      "license": "LicenseRef-Unknown",
+      "gallery": [],
+      "featured_gallery": null,
+      "color": 5717810,
+      "dependency_project_ids": [
+        "1IjD5062",
+        "1eAoo2KR",
+        "5ZwdcRci",
+        "7vuMiTHm",
+        "7x43ZN3Z",
+        "8BmcQJ2H",
+        "9KawNmQc",
+        "9Ya7Yyre",
+        "AANobbMI",
+        "AtHRJSUW",
+        "AuFCCYMx",
+        "B7SkZcUv",
+        "CFX9ftUJ",
+        "EsAfCjCV",
+        "G1hIVOrD",
+        "Ha28R6CL",
+        "MQycb7Aw",
+        "P7dR8mSH",
+        "POQ2i9zu",
+        "QAGBst4M",
+        "R6NEzAwj",
+        "UFRJve4V",
+        "YL57xq9U",
+        "ZLKQjA7t",
+        "e2R0wxyL",
+        "eXts2L7r",
+        "gvQqBUqZ",
+        "hB9LrID8",
+        "jSDZS2Xr",
+        "lfHFW1mp",
+        "lsUDPMOT",
+        "m4qArYal",
+        "mOgUt4GM",
+        "nvQzSEkH",
+        "ohNO6lps",
+        "rox3U8B6",
+        "s6R4jmL8",
+        "tnTEDxIj",
+        "u6dRKJwZ",
+        "vcDllg0H",
+        "w7ThoJFB",
+        "wqDYvUus"
+      ],
+      "compatible_dependency_project_ids": [
+        "1IjD5062",
+        "1eAoo2KR",
+        "5ZwdcRci",
+        "7vuMiTHm",
+        "7x43ZN3Z",
+        "8BmcQJ2H",
+        "9KawNmQc",
+        "9Ya7Yyre",
+        "AANobbMI",
+        "AtHRJSUW",
+        "AuFCCYMx",
+        "B7SkZcUv",
+        "CFX9ftUJ",
+        "EsAfCjCV",
+        "G1hIVOrD",
+        "Ha28R6CL",
+        "MQycb7Aw",
+        "P7dR8mSH",
+        "POQ2i9zu",
+        "QAGBst4M",
+        "R6NEzAwj",
+        "UFRJve4V",
+        "YL57xq9U",
+        "ZLKQjA7t",
+        "e2R0wxyL",
+        "eXts2L7r",
+        "gvQqBUqZ",
+        "hB9LrID8",
+        "jSDZS2Xr",
+        "lfHFW1mp",
+        "lsUDPMOT",
+        "m4qArYal",
+        "mOgUt4GM",
+        "nvQzSEkH",
+        "ohNO6lps",
+        "rox3U8B6",
+        "s6R4jmL8",
+        "tnTEDxIj",
+        "u6dRKJwZ",
+        "vcDllg0H",
+        "w7ThoJFB",
+        "wqDYvUus"
+      ],
+      "required_dependency_project_ids": [],
+      "optional_dependency_project_ids": [],
+      "embedded_dependency_project_ids": [
+        "1IjD5062",
+        "1eAoo2KR",
+        "5ZwdcRci",
+        "7vuMiTHm",
+        "7x43ZN3Z",
+        "8BmcQJ2H",
+        "9KawNmQc",
+        "9Ya7Yyre",
+        "AANobbMI",
+        "AtHRJSUW",
+        "AuFCCYMx",
+        "B7SkZcUv",
+        "CFX9ftUJ",
+        "EsAfCjCV",
+        "G1hIVOrD",
+        "Ha28R6CL",
+        "MQycb7Aw",
+        "P7dR8mSH",
+        "POQ2i9zu",
+        "QAGBst4M",
+        "R6NEzAwj",
+        "UFRJve4V",
+        "YL57xq9U",
+        "ZLKQjA7t",
+        "e2R0wxyL",
+        "eXts2L7r",
+        "gvQqBUqZ",
+        "hB9LrID8",
+        "jSDZS2Xr",
+        "lfHFW1mp",
+        "lsUDPMOT",
+        "m4qArYal",
+        "mOgUt4GM",
+        "nvQzSEkH",
+        "ohNO6lps",
+        "rox3U8B6",
+        "s6R4jmL8",
+        "tnTEDxIj",
+        "u6dRKJwZ",
+        "vcDllg0H",
+        "w7ThoJFB",
+        "wqDYvUus"
+      ],
+      "incompatible_dependency_project_ids": [],
+      "dependencies": [
+        {
+          "project_id": "1IjD5062",
+          "dependency_type": "embedded",
+          "name": "Continuity",
+          "slug": "continuity",
+          "icon_url": "https://cdn.modrinth.com/data/1IjD5062/icon.png"
+        },
+        {
+          "project_id": "1eAoo2KR",
+          "dependency_type": "embedded",
+          "name": "YetAnotherConfigLib (YACL)",
+          "slug": "yacl",
+          "icon_url": "https://cdn.modrinth.com/data/1eAoo2KR/08c0cd32515e260f4bb20bbc0696510041523f9a_96.webp"
+        },
+        {
+          "project_id": "5ZwdcRci",
+          "dependency_type": "embedded",
+          "name": "ImmediatelyFast",
+          "slug": "immediatelyfast",
+          "icon_url": "https://cdn.modrinth.com/data/5ZwdcRci/e57b6b451425692ac17ad322d5e14bea686a383a_96.webp"
+        },
+        {
+          "project_id": "7vuMiTHm",
+          "dependency_type": "embedded",
+          "name": "Bare Bones - Connected Glass",
+          "slug": "bare-bones-connected-glass",
+          "icon_url": "https://cdn.modrinth.com/data/7vuMiTHm/b241a14e0b40c02bff8dd0f3aa702f88ea155236.png"
+        },
+        {
+          "project_id": "7x43ZN3Z",
+          "dependency_type": "embedded",
+          "name": "Bare Bones x LambdaBetterGrass",
+          "slug": "bare-bones-x-lambdabettergrass",
+          "icon_url": "https://cdn.modrinth.com/data/7x43ZN3Z/ee4a37894c5ce96f1de0f55a7fab183486328e85_96.webp"
+        },
+        {
+          "project_id": "8BmcQJ2H",
+          "dependency_type": "embedded",
+          "name": "Geckolib",
+          "slug": "geckolib",
+          "icon_url": "https://cdn.modrinth.com/data/8BmcQJ2H/012d1aadbc754995de66e8c149a56aa10b63fe05_96.webp"
+        },
+        {
+          "project_id": "9KawNmQc",
+          "dependency_type": "embedded",
+          "name": "FrozenLib",
+          "slug": "frozenlib",
+          "icon_url": "https://cdn.modrinth.com/data/9KawNmQc/icon.png"
+        },
+        {
+          "project_id": "9Ya7Yyre",
+          "dependency_type": "embedded",
+          "name": "StrawberryLib",
+          "slug": "strawberrylib",
+          "icon_url": "https://cdn.modrinth.com/data/9Ya7Yyre/101989d1e3c4649b2d736927b6ce43b73c90e2ba_96.webp"
+        },
+        {
+          "project_id": "AANobbMI",
+          "dependency_type": "embedded",
+          "name": "Sodium",
+          "slug": "sodium",
+          "icon_url": "https://cdn.modrinth.com/data/AANobbMI/295862f4724dc3f78df3447ad6072b2dcd3ef0c9_96.webp"
+        },
+        {
+          "project_id": "AtHRJSUW",
+          "dependency_type": "embedded",
+          "name": "Wilder Wild",
+          "slug": "wilder-wild",
+          "icon_url": "https://cdn.modrinth.com/data/AtHRJSUW/9cef13699a169068ba7a8cc23bb3e5bae86f30fa_96.webp"
+        },
+        {
+          "project_id": "AuFCCYMx",
+          "dependency_type": "embedded",
+          "name": "Armored Elytra",
+          "slug": "elytra-armor",
+          "icon_url": "https://cdn.modrinth.com/data/AuFCCYMx/eb028d2db6143709804cd11d0ebe1f1adf52f1c1.png"
+        },
+        {
+          "project_id": "B7SkZcUv",
+          "dependency_type": "embedded",
+          "name": "Ores outlined (Bare Bones)",
+          "slug": "ores-outlined",
+          "icon_url": "https://cdn.modrinth.com/data/B7SkZcUv/0027c17631f5d255b6aac81f03590bbfe73528c4.png"
+        },
+        {
+          "project_id": "CFX9ftUJ",
+          "dependency_type": "embedded",
+          "name": "Advanced Netherite",
+          "slug": "advanced-netherite",
+          "icon_url": "https://cdn.modrinth.com/data/CFX9ftUJ/7b013fed831aa73654edaaff022455543f301468.gif"
+        },
+        {
+          "project_id": "EsAfCjCV",
+          "dependency_type": "embedded",
+          "name": "AppleSkin",
+          "slug": "appleskin",
+          "icon_url": "https://cdn.modrinth.com/data/EsAfCjCV/icon.png"
+        },
+        {
+          "project_id": "G1hIVOrD",
+          "dependency_type": "embedded",
+          "name": "Resourceful Lib",
+          "slug": "resourceful-lib",
+          "icon_url": "https://cdn.modrinth.com/data/G1hIVOrD/52130f41d05162ce6d7d1832a47d3c238d102632_96.webp"
+        },
+        {
+          "project_id": "Ha28R6CL",
+          "dependency_type": "embedded",
+          "name": "Fabric Language Kotlin",
+          "slug": "fabric-language-kotlin",
+          "icon_url": "https://cdn.modrinth.com/data/Ha28R6CL/72c3d74aeb665e45aea93a945a01474cbce3b7da_96.webp"
+        },
+        {
+          "project_id": "MQycb7Aw",
+          "dependency_type": "embedded",
+          "name": "Variety Of Totems",
+          "slug": "variety-of-totems",
+          "icon_url": "https://cdn.modrinth.com/data/MQycb7Aw/19647650b34faba475b9eb9d252fcc85e6a56db0.png"
+        },
+        {
+          "project_id": "P7dR8mSH",
+          "dependency_type": "embedded",
+          "name": "Fabric API",
+          "slug": "fabric-api",
+          "icon_url": "https://cdn.modrinth.com/data/P7dR8mSH/icon.png"
+        },
+        {
+          "project_id": "POQ2i9zu",
+          "dependency_type": "embedded",
+          "name": "Friends&Foes (Fabric/Quilt)",
+          "slug": "friends-and-foes",
+          "icon_url": "https://cdn.modrinth.com/data/POQ2i9zu/0d5db692d86ca2f99935ebc01123d4c55a714122_96.webp"
+        },
+        {
+          "project_id": "QAGBst4M",
+          "dependency_type": "embedded",
+          "name": "Puzzles Lib",
+          "slug": "puzzles-lib",
+          "icon_url": "https://cdn.modrinth.com/data/QAGBst4M/c78216c61f65b6ce82593e4e92e9c358402bb524_96.webp"
+        },
+        {
+          "project_id": "R6NEzAwj",
+          "dependency_type": "embedded",
+          "name": "Complementary Shaders - Unbound",
+          "slug": "complementary-unbound",
+          "icon_url": "https://cdn.modrinth.com/data/R6NEzAwj/c85ce4049aac76360d2cd24fd9a7003de01ef312_96.webp"
+        },
+        {
+          "project_id": "UFRJve4V",
+          "dependency_type": "embedded",
+          "name": "Clear Water/Lava/PowderSnow",
+          "slug": "clear-waterlavapowdersnow",
+          "icon_url": "https://cdn.modrinth.com/data/UFRJve4V/facde2c2a2fdf6e518e83fa04ef09779e7b2bdfa_96.webp"
+        },
+        {
+          "project_id": "YL57xq9U",
+          "dependency_type": "embedded",
+          "name": "Iris Shaders",
+          "slug": "iris",
+          "icon_url": "https://cdn.modrinth.com/data/YL57xq9U/18d0e7f076d3d6ed5bedd472b853909aac5da202_96.webp"
+        },
+        {
+          "project_id": "ZLKQjA7t",
+          "dependency_type": "embedded",
+          "name": "PneumonoCore",
+          "slug": "pneumono_core",
+          "icon_url": "https://cdn.modrinth.com/data/ZLKQjA7t/199da8b16a46d6c527e2ee17077036d4eb2f1588.png"
+        },
+        {
+          "project_id": "e2R0wxyL",
+          "dependency_type": "embedded",
+          "name": "Enhanced Cats",
+          "slug": "enhanced-cats",
+          "icon_url": "https://cdn.modrinth.com/data/e2R0wxyL/62721d447c7c916b96e59edf7fe49a58eb9455a3_96.webp"
+        },
+        {
+          "project_id": "eXts2L7r",
+          "dependency_type": "embedded",
+          "name": "Text Placeholder API",
+          "slug": "placeholder-api",
+          "icon_url": "https://cdn.modrinth.com/data/eXts2L7r/e9c9990896e6422bffc5f73d2c41b8f077348f83.png"
+        },
+        {
+          "project_id": "gvQqBUqZ",
+          "dependency_type": "embedded",
+          "name": "Lithium",
+          "slug": "lithium",
+          "icon_url": "https://cdn.modrinth.com/data/gvQqBUqZ/bcc8686c13af0143adf4285d741256af824f70b7_96.webp"
+        },
+        {
+          "project_id": "hB9LrID8",
+          "dependency_type": "embedded",
+          "name": "Ability Tools",
+          "slug": "ability-tools",
+          "icon_url": "https://cdn.modrinth.com/data/hB9LrID8/856ade2e13975e7e5853633b17b220b30f52dba2_96.webp"
+        },
+        {
+          "project_id": "jSDZS2Xr",
+          "dependency_type": "embedded",
+          "name": "Bare Bones Simple PBR",
+          "slug": "bare-bones-simple-pbr",
+          "icon_url": "https://cdn.modrinth.com/data/jSDZS2Xr/f28d8cbd209bbee69dbc5fbe488d60f6b50814c7_96.webp"
+        },
+        {
+          "project_id": "lfHFW1mp",
+          "dependency_type": "embedded",
+          "name": "JourneyMap",
+          "slug": "journeymap",
+          "icon_url": "https://cdn.modrinth.com/data/lfHFW1mp/a1c571a21a88f6fa59eab67829f216f65ab393ee_96.webp"
+        },
+        {
+          "project_id": "lsUDPMOT",
+          "dependency_type": "embedded",
+          "name": "Terrestria",
+          "slug": "terrestria",
+          "icon_url": "https://cdn.modrinth.com/data/lsUDPMOT/37bf53575f1767f27e1f99b1a0d355031c013fa3.webp"
+        },
+        {
+          "project_id": "m4qArYal",
+          "dependency_type": "embedded",
+          "name": "Bare Bones - Better Leaves",
+          "slug": "bare-bones-better-leaves",
+          "icon_url": "https://cdn.modrinth.com/data/m4qArYal/66dab1f82fccecb33f7ab329c3fd32e6fc00a9c2_96.webp"
+        },
+        {
+          "project_id": "mOgUt4GM",
+          "dependency_type": "embedded",
+          "name": "Mod Menu",
+          "slug": "modmenu",
+          "icon_url": "https://cdn.modrinth.com/data/mOgUt4GM/5a20ed1450a0e1e79a1fe04e61bb4e5878bf1d20.png"
+        },
+        {
+          "project_id": "nvQzSEkH",
+          "dependency_type": "embedded",
+          "name": "Jade 🔍",
+          "slug": "jade",
+          "icon_url": "https://cdn.modrinth.com/data/nvQzSEkH/b04217bc2b7dc524c4d12f81ff42cc1cefb9b0fc_96.webp"
+        },
+        {
+          "project_id": "ohNO6lps",
+          "dependency_type": "embedded",
+          "name": "Forge Config API Port",
+          "slug": "forge-config-api-port",
+          "icon_url": "https://cdn.modrinth.com/data/ohNO6lps/cb3b942cc18a66a0f35f802e004713f134e46cc2_96.webp"
+        },
+        {
+          "project_id": "rox3U8B6",
+          "dependency_type": "embedded",
+          "name": "Bare Bones",
+          "slug": "bare-bones",
+          "icon_url": "https://cdn.modrinth.com/data/rox3U8B6/b502bd8b2a6048f635230da8e8a66eeb4383874b_96.webp"
+        },
+        {
+          "project_id": "s6R4jmL8",
+          "dependency_type": "embedded",
+          "name": "Eternal Nether",
+          "slug": "eternal-nether",
+          "icon_url": "https://cdn.modrinth.com/data/s6R4jmL8/cd258579b012c6c7f9088538e88bff8245c6b63c_96.webp"
+        },
+        {
+          "project_id": "tnTEDxIj",
+          "dependency_type": "embedded",
+          "name": "Nycto",
+          "slug": "nycto",
+          "icon_url": "https://cdn.modrinth.com/data/tnTEDxIj/048228eaf958d61117377f5ea346f2b92fafed64_96.webp"
+        },
+        {
+          "project_id": "u6dRKJwZ",
+          "dependency_type": "embedded",
+          "name": "Just Enough Items (JEI)",
+          "slug": "jei",
+          "icon_url": "https://cdn.modrinth.com/data/u6dRKJwZ/4a3f18ac0d096c9f8e9176984c44be4e58f94c89_96.webp"
+        },
+        {
+          "project_id": "vcDllg0H",
+          "dependency_type": "embedded",
+          "name": "Bare Bones - Low On Fire",
+          "slug": "bare-bones-low-on-fire",
+          "icon_url": "https://cdn.modrinth.com/data/vcDllg0H/de9e89d0e486b9265936c1c70bb88d15acc164ca.gif"
+        },
+        {
+          "project_id": "w7ThoJFB",
+          "dependency_type": "embedded",
+          "name": "Zoomify (Zoom)",
+          "slug": "zoomify",
+          "icon_url": "https://cdn.modrinth.com/data/w7ThoJFB/e2de67a0bfb9e8aa2347982ab3ec5463f26cca31_96.webp"
+        },
+        {
+          "project_id": "wqDYvUus",
+          "dependency_type": "embedded",
+          "name": "Bare Bones X PvP Pack",
+          "slug": "bare-bones-x-pvp-pack",
+          "icon_url": "https://cdn.modrinth.com/data/wqDYvUus/9e5ce3c78c06c5a65537cfac6f919f45d133faca_96.webp"
+        }
+      ],
+      "disclosure_types": [],
+      "loaders": [
+        "mrpack"
+      ],
+      "project_loader_fields": {
+        "mrpack_loaders": [
+          "fabric"
+        ],
+        "environment": [
+          "client_and_server"
+        ],
+        "game_versions": [
+          "26.1.2"
+        ]
+      },
+      "minecraft_mod": null,
+      "minecraft_server": {
+        "max_players": null,
+        "country": null,
+        "region": "us_west",
+        "languages": [
+          "en"
+        ],
+        "active_version": null
+      },
+      "minecraft_java_server": {
+        "address": "vanillavale.duckdns.org",
+        "content": {
+          "kind": "vanilla",
+          "supported_game_versions": [
+            "26.2"
+          ],
+          "recommended_game_version": "26.2"
+        },
+        "ping": {
+          "when": "2026-11-07T18:12:05.316269907Z",
+          "address": "vanillavale.duckdns.org",
+          "data": {
+            "latency": {
+              "secs": 0,
+              "nanos": 304399228
+            },
+            "version_name": "26.3",
+            "version_protocol": 777,
+            "description": "§r                  §aVanilla Valley SMP §c[26.3]§r\n§l  §c         §6§lSEASON 7 §3§lRPG§6§l AND §b§lOMNICHUNK",
+            "players_online": 0,
+            "players_max": 69
+          }
+        },
+        "verified_plays_2w": 4,
+        "verified_plays_4w": 5
+      },
+      "minecraft_bedrock_server": {
+        "address": ""
+      },
+      "environment": [
+        "client_and_server"
+      ],
+      "client_side": [
+        "required"
+      ],
+      "server_side": [
+        "required"
+      ],
+      "mrpack_loaders": [
+        "fabric"
+      ],
+      "game_versions": [
+        "26.1.2"
+      ]
+    }
+  ],
+  "page": 1,
+  "hits_per_page": 3,
+  "total_hits": 1863
+}

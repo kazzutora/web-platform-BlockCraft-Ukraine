@@ -24,6 +24,13 @@ describe("pack filters", () => {
     });
   });
 
+  it("takes any release number from the URL and leaves the check to the API", () => {
+    expect(parseFilters({ version: "26.3" }).gameVersion).toBe("26.3");
+    expect(parseFilters({ version: "1.8.9" }).gameVersion).toBe("1.8.9");
+    expect(parseFilters({ version: "26.4-snapshot-7" }).gameVersion).toBe("");
+    expect(parseFilters({ version: "<script>" }).gameVersion).toBe("");
+  });
+
   it("builds the API query and links back to the catalog", () => {
     const filters = parseFilters({ loader: "fabric", style: "tech", page: "3" });
 

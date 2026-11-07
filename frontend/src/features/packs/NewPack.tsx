@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useMe } from "@/features/auth/useMe";
-import { gameVersions } from "@/features/game/labels";
+import { useGameVersions } from "@/features/game/useGameVersions";
 import { api } from "@/lib/api/client";
 import { queryKeys } from "@/lib/query-keys";
 
@@ -20,11 +20,13 @@ export function NewPack() {
   const { me, isLoading } = useMe();
   const profile = me?.game_profile;
   const loader = packLoaders.find((value) => value === profile?.loader);
-  const gameVersion = gameVersions.find((value) => value === profile?.game_version);
+  const gameVersions = useGameVersions();
+  const gameVersion =
+    gameVersions.find((value) => value === profile?.game_version) ?? gameVersions[0];
 
   // The form starts from the player's game profile: wait for it instead of resetting
   // what was already typed
-  if (isLoading) return <Skeleton className="h-96 w-full" />;
+  if (isLoading || !gameVersions.length) return <Skeleton className="h-96 w-full" />;
 
   return (
     <PackForm

@@ -1,0 +1,39 @@
+{
+  "2172d0e9a5fbdd6791c27769867334382ba6be02": {
+    "game_versions": [
+      "1.21.4"
+    ],
+    "loaders": [
+      "fabric"
+    ],
+    "environment": "client_only",
+    "id": "c3YkZvne",
+    "project_id": "AANobbMI",
+    "author_id": "TEZXhE2U",
+    "featured": false,
+    "name": "Sodium 0.6.13 for Fabric 1.21.4",
+    "version_number": "mc1.21.4-0.6.13-fabric",
+    "changelog": "- Improved compatibility with some NeoForge mods that use the Fabric Rendering API.\n- Improved compatibility with some Fabric mods when they're used on NeoForge with Sinytra Connector.\n- Fixed an incompatibility with _Snow Real Magic!_ and some other mods that would cause holes to appear in the world.\n- Fixed an issue with mods that use animated sprites in the user interface which was causing their sprites to not be animated.\n- Disabled the use of certain developer options in production which were being modified unnecessarily by other mods.\n- Marked PojavLauncher as incompatible due to multiple severe and unresolved issues.\n- Marked BetterEnd as incompatible due to it enabling code when Sodium is present that causes frequent and difficult to understand crashes.\n- Added a warning for when resource packs try to replace the shaders used by Sodium's improved cloud renderer.",
+    "changelog_url": null,
+    "date_published": "2025-04-04T00:09:49.666331Z",
+    "downloads": 5716721,
+    "version_type": "release",
+    "status": "listed",
+    "requested_status": null,
+    "files": [
+      {
+        "id": "Ya4LV6Qd",
+        "hashes": {
+          "sha1": "c881d2db971207c396b5629632437f1520c0c478",
+          "sha512": "2c72ca2ddfd27e29ff6c24fccdf6f3d80857bd1014c707017f96cb4a424f94918e53ba21d85f22e3c9171803f8d2c12c99ae857d38d8e85546cc65960b95a2f1"
+        },
+        "url": "https://cdn.modrinth.com/data/AANobbMI/versions/c3YkZvne/sodium-fabric-0.6.13%2Bmc1.21.4.jar",
+        "filename": "sodium-fabric-0.6.13+mc1.21.4.jar",
+        "primary": true,
+        "size": 1306799,
+        "file_type": null
+      }
+    ],
+    "dependencies": []
+  }
+}

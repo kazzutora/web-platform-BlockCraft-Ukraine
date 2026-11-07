@@ -3,15 +3,16 @@ import { notFound } from "next/navigation";
 import { DetailPage } from "@/components/layout/DetailPage";
 import { CardGrid } from "@/components/ui/CardGrid";
 import { Chip } from "@/components/ui/Chip";
-import { Icon } from "@/components/ui/Icon";
-import { gameVersions as supportedVersions } from "@/features/game/labels";
+import { SourceBadge } from "@/components/ui/SourceBadge";
+import { getGameContext } from "@/features/game/context";
+import { getGameVersions } from "@/features/game/meta";
 import { AddToCollection } from "@/features/library/AddToCollection";
 import { SaveToggle } from "@/features/library/SaveToggle";
 import { ReportButton } from "@/features/moderation/ReportButton";
 import { Reviews } from "@/features/social/Reviews";
 import { versionDescending } from "@/lib/versions";
 
-import { getGameProfile, getProject, getSimilar, getVersions } from "./api";
+import { getProject, getSimilar, getVersions } from "./api";
 import { modsCopy } from "./copy";
 import { DependenciesList } from "./DependenciesList";
 import { DownloadAction } from "./DownloadAction";
@@ -32,7 +33,11 @@ type ModDetailProps = {
 
 /** /mods/[slug]: rendered on the server with the download for the player's setup. */
 export async function ModDetail({ slug, searchParams }: ModDetailProps) {
-  const [project, profile] = await Promise.all([getProject(slug), getGameProfile()]);
+  const [project, profile, supportedVersions] = await Promise.all([
+    getProject(slug),
+    getGameContext(),
+    getGameVersions(),
+  ]);
   if (!project) notFound();
 
   const target = downloadTarget(project, searchParams, profile);
@@ -42,7 +47,7 @@ export async function ModDetail({ slug, searchParams }: ModDetailProps) {
     getSimilar(slug),
   ]);
   const pickerVersions = project.game_versions
-    .filter((version) => supportedVersions.includes(version as never))
+    .filter((version) => supportedVersions.includes(version))
     .sort(versionDescending);
   const meta = [
     `⬇ ${formatCount(project.downloads)}`,
@@ -85,15 +90,11 @@ export async function ModDetail({ slug, searchParams }: ModDetailProps) {
               className="h-12"
             />
             <AddToCollection kind="mod" id={project.slug} />
-            <a
-              href={project.modrinth_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-sm underline underline-offset-4"
-            >
-              <Icon name="external-link" size={16} />
-              {copy.modrinth}
-            </a>
+            <SourceBadge
+              {...project.source}
+              label={copy.source(project.title, project.source.name)}
+              className="text-sm"
+            />
             <ReportButton kind="mod" id={project.slug} />
           </>
         }

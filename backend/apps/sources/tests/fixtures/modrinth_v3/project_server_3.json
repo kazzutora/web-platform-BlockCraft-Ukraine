@@ -1,0 +1,149 @@
+{
+  "id": "gIpf7Gr9",
+  "slug": "plasmacube",
+  "project_types": [
+    "minecraft_java_server"
+  ],
+  "games": [
+    "minecraft-java",
+    "minecraft-bedrock"
+  ],
+  "team_id": "4Hse7Uta",
+  "organization": null,
+  "name": "PlasmaCube",
+  "summary": "A unique French Cobblemon server offering a fresh and exclusive Pokemon experience.",
+  "description": "# Vis l'aventure Pokémon comme jamais tu ne l'as vécue :\n\nPrépare-toi à vivre la meilleure expérience Cobblemon sur PlasmaCube, le premier serveur où tu commences ton aventure avec un starter Shiny. Que tu sois un chasseur de shiny ou un tout nouveau dresseur, notre communauté française est là pour t'accueillir et te faire vivre des sessions inoubliables.\n\n## Ce qui nous rend unique :\n- Starter Shiny offert dès la première connexion\n- Cartes à collectionner avec des effets uniques en jeu\n- Éclosion d'œufs shiny avec des animations spectaculaires\n- Multi-Pokédex \n- Tour de Combat pour affronter les meilleurs dresseurs\n- Mode Ranked avec son économie intégrée\n- Daily rewards \n- Événements réguliers ( Booster shiny, tournois .. ) \n- Méga-Gemmes & Évolutions Z-A\n- Monde Safari\n\nTout se débloque en jouant grades, battlepass, cosmétiques, cartes.\n\nRejoins PlasmaCube maintenant et écris ta propre légende dans l'aventure Pokémon la plus complète de France !\n\n<img src=\"https://i.ibb.co/pBtsy0Qr/render.png\" alt=\"render\" border=\"0\" />\n",
+  "published": "2026-05-04T01:25:30.929139Z",
+  "updated": "2026-10-17T05:36:18.033619Z",
+  "approved": "2026-05-08T02:01:09.009450Z",
+  "queued": "2026-05-07T12:04:33.026693Z",
+  "status": "approved",
+  "requested_status": "unlisted",
+  "moderator_message": null,
+  "license": {
+    "id": "LicenseRef-Unknown",
+    "name": "",
+    "url": null
+  },
+  "downloads": 13128,
+  "followers": 7,
+  "categories": [
+    "economy",
+    "pokemon",
+    "questing"
+  ],
+  "additional_categories": [
+    "adventure-mode",
+    "bosses",
+    "competitive",
+    "creator-community",
+    "custom-content",
+    "dungeons",
+    "factions",
+    "plots",
+    "pve",
+    "pvp",
+    "teams",
+    "towns"
+  ],
+  "loaders": [
+    "mrpack"
+  ],
+  "versions": [
+    "9tSRCsLi",
+    "NJTScbGH",
+    "DczZttz5",
+    "sysneyaY",
+    "vlTOMvHH",
+    "pJSXsDA9",
+    "ZencJHG1",
+    "QnYv6Lrd",
+    "1Kms9Gme",
+    "rSL42Zty",
+    "zxahIHnr",
+    "XaZKFkGf",
+    "CJxcRrQ1",
+    "Zaa2XqxR",
+    "o5bXVTRi",
+    "ZOIBJfAZ",
+    "g04QeNdd",
+    "95jWjfGG",
+    "SdInoFkM",
+    "wTM5YUan",
+    "zvvHdPVr",
+    "WEjlMMVu",
+    "qErjAFMs",
+    "tGvRvAID",
+    "a35dZhoN",
+    "3Xi1N3lv",
+    "Fk19Qt7t"
+  ],
+  "icon_url": "https://cdn.modrinth.com/data/gIpf7Gr9/03655735675570d61d7c05dede53eaf585bf04ce_96.webp",
+  "raw_icon_url": "https://cdn.modrinth.com/data/gIpf7Gr9/03655735675570d61d7c05dede53eaf585bf04ce.png",
+  "link_urls": {
+    "site": {
+      "platform": "site",
+      "donation": false,
+      "url": "https://www.plasmacube.fr/"
+    },
+    "discord": {
+      "platform": "discord",
+      "donation": false,
+      "url": "https://discord.gg/J97zJRDd78"
+    }
+  },
+  "gallery": [],
+  "color": 2373445,
+  "thread_id": "skJADYSe",
+  "monetization_status": "force-demonetized",
+  "side_types_migration_review_status": "reviewed",
+  "minecraft_mod": null,
+  "minecraft_server": {
+    "max_players": null,
+    "country": null,
+    "region": "europe",
+    "languages": [
+      "fr"
+    ],
+    "active_version": null
+  },
+  "minecraft_java_server": {
+    "address": "play.plasmacube.fr",
+    "content": {
+      "kind": "modpack",
+      "version_id": "Fk19Qt7t",
+      "project_id": "gIpf7Gr9",
+      "project_name": "PlasmaCube",
+      "project_icon": "https://cdn.modrinth.com/data/gIpf7Gr9/03655735675570d61d7c05dede53eaf585bf04ce_96.webp"
+    },
+    "ping": {
+      "when": "2026-11-07T18:10:19.506233047Z",
+      "address": "play.plasmacube.fr",
+      "data": {
+        "latency": {
+          "secs": 0,
+          "nanos": 365102754
+        },
+        "version_name": "Velocity 1.7.2-26.2",
+        "version_protocol": 578,
+        "description": "   ✳ ",
+        "players_online": 162,
+        "players_max": 500
+      }
+    },
+    "verified_plays_2w": 2767,
+    "verified_plays_4w": 5845
+  },
+  "minecraft_bedrock_server": {
+    "address": ""
+  },
+  "game_versions": [
+    "1.21.1"
+  ],
+  "environment": [
+    "client_and_server"
+  ],
+  "mrpack_loaders": [
+    "fabric"
+  ]
+}

@@ -2,7 +2,8 @@ import socket
 
 import pytest
 
-from apps.servers import clients, validators
+from apps.servers import validators
+from apps.sources.clients import ping as clients
 
 
 @pytest.fixture(autouse=True)

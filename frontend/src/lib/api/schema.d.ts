@@ -260,20 +260,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/me/game-profile": {
+    "/api/v1/me/game": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        get: operations["me_game_profile_retrieve"];
-        put?: never;
+        /** @description «Моя гра» of a signed-in player; guests keep it in the `bc_game` cookie. */
+        get: operations["me_game_retrieve"];
+        /** @description «Моя гра» of a signed-in player; guests keep it in the `bc_game` cookie. */
+        put: operations["me_game_update"];
         post?: never;
         delete?: never;
         options?: never;
         head?: never;
-        patch: operations["me_game_profile_update"];
+        /** @description «Моя гра» of a signed-in player; guests keep it in the `bc_game` cookie. */
+        patch: operations["me_game_partial_update"];
         trace?: never;
     };
     "/api/v1/me/notifications": {
@@ -420,6 +423,22 @@ export interface paths {
         put: operations["me_skin_set"];
         post?: never;
         delete: operations["me_skin_clear"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/meta": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["meta_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -956,6 +975,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/sources": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description «Звідки дані»: every source, its terms and when we last synced it. */
+        get: operations["sources_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/top": {
         parameters: {
             query?: never;
@@ -1174,57 +1210,39 @@ export interface components {
             featured: boolean;
         };
         GameProfile: {
-            game_version?: components["schemas"]["GameVersionEnum"] | components["schemas"]["BlankEnum"];
+            /** Версія */
+            game_version?: string | null;
             loader?: components["schemas"]["LoaderEnum"] | components["schemas"]["BlankEnum"];
             edition?: components["schemas"]["EditionEnum"];
             readonly onboarding_done: boolean;
         };
+        GameProfileRequest: {
+            /** Версія */
+            game_version?: string | null;
+            loader?: components["schemas"]["LoaderEnum"] | components["schemas"]["BlankEnum"];
+            edition?: components["schemas"]["EditionEnum"];
+        };
+        GameVersion: {
+            /** Версія */
+            version: string;
+            /** Тип */
+            version_type: components["schemas"]["GameVersionVersionTypeEnum"];
+            /**
+             * Вийшла
+             * Format: date-time
+             */
+            released_at?: string | null;
+            /** Велика версія */
+            is_major?: boolean;
+        };
         /**
-         * @description * `26.3` - 26.3
-         *     * `26.2` - 26.2
-         *     * `26.1.2` - 26.1.2
-         *     * `26.1.1` - 26.1.1
-         *     * `26.1` - 26.1
-         *     * `1.21.11` - 1.21.11
-         *     * `1.21.10` - 1.21.10
-         *     * `1.21.9` - 1.21.9
-         *     * `1.21.8` - 1.21.8
-         *     * `1.21.7` - 1.21.7
-         *     * `1.21.6` - 1.21.6
-         *     * `1.21.5` - 1.21.5
-         *     * `1.21.4` - 1.21.4
-         *     * `1.21.3` - 1.21.3
-         *     * `1.21.2` - 1.21.2
-         *     * `1.21.1` - 1.21.1
-         *     * `1.21` - 1.21
-         *     * `1.20.6` - 1.20.6
-         *     * `1.20.5` - 1.20.5
-         *     * `1.20.4` - 1.20.4
-         *     * `1.20.3` - 1.20.3
-         *     * `1.20.2` - 1.20.2
-         *     * `1.20.1` - 1.20.1
-         *     * `1.20` - 1.20
-         *     * `1.19.4` - 1.19.4
-         *     * `1.19.3` - 1.19.3
-         *     * `1.19.2` - 1.19.2
-         *     * `1.19.1` - 1.19.1
-         *     * `1.19` - 1.19
-         *     * `1.18.2` - 1.18.2
-         *     * `1.18.1` - 1.18.1
-         *     * `1.18` - 1.18
-         *     * `1.17.1` - 1.17.1
-         *     * `1.17` - 1.17
-         *     * `1.16.5` - 1.16.5
-         *     * `1.16.4` - 1.16.4
-         *     * `1.16.3` - 1.16.3
-         *     * `1.16.2` - 1.16.2
-         *     * `1.16.1` - 1.16.1
-         *     * `1.16` - 1.16
-         *     * `1.12.2` - 1.12.2
-         *     * `1.8.9` - 1.8.9
+         * @description * `release` - Реліз
+         *     * `snapshot` - Снапшот
+         *     * `beta` - Бета
+         *     * `alpha` - Альфа
          * @enum {string}
          */
-        GameVersionEnum: "26.3" | "26.2" | "26.1.2" | "26.1.1" | "26.1" | "1.21.11" | "1.21.10" | "1.21.9" | "1.21.8" | "1.21.7" | "1.21.6" | "1.21.5" | "1.21.4" | "1.21.3" | "1.21.2" | "1.21.1" | "1.21" | "1.20.6" | "1.20.5" | "1.20.4" | "1.20.3" | "1.20.2" | "1.20.1" | "1.20" | "1.19.4" | "1.19.3" | "1.19.2" | "1.19.1" | "1.19" | "1.18.2" | "1.18.1" | "1.18" | "1.17.1" | "1.17" | "1.16.5" | "1.16.4" | "1.16.3" | "1.16.2" | "1.16.1" | "1.16" | "1.12.2" | "1.8.9";
+        GameVersionVersionTypeEnum: "release" | "snapshot" | "beta" | "alpha";
         /**
          * @description * `light` - Легкий
          *     * `medium` - Середній
@@ -1332,6 +1350,12 @@ export interface components {
             readonly date_joined: string;
             readonly game_profile: components["schemas"]["GameProfile"];
         };
+        Meta: {
+            /** @description Supported, newest first. */
+            game_versions: components["schemas"]["GameVersion"][];
+            loaders: components["schemas"]["LoaderEnum"][];
+            categories: components["schemas"]["Category"][];
+        };
         /**
          * @description * `classic` - Класична (Стів)
          *     * `slim` - Тонкі руки (Алекс)
@@ -1385,7 +1409,7 @@ export interface components {
             readonly icons: components["schemas"]["PackIcon"][];
             readonly style_tags: components["schemas"]["PackStyleEnum"][];
             /** Версія гри */
-            readonly game_version: components["schemas"]["GameVersionEnum"];
+            readonly game_version: string;
             /** Лоадер */
             readonly loader: components["schemas"]["PackLoaderEnum"];
             /** Офіційна */
@@ -1399,6 +1423,7 @@ export interface components {
             readonly modrinth_downloads: number;
             readonly is_favorited: boolean;
             readonly my_review_stars: number | null;
+            readonly source: components["schemas"]["SourceRef"] | null;
             /** Статус */
             readonly status: components["schemas"]["PublishStatusEnum"];
             /** Причина відхилення */
@@ -1447,7 +1472,8 @@ export interface components {
         NullEnum: null;
         /** @description Everything is optional: the player may skip onboarding. */
         OnboardingRequest: {
-            game_version?: components["schemas"]["GameVersionEnum"] | components["schemas"]["BlankEnum"];
+            /** Версія */
+            game_version?: string | null;
             loader?: components["schemas"]["LoaderEnum"] | components["schemas"]["BlankEnum"];
             edition?: components["schemas"]["EditionEnum"];
         };
@@ -1468,7 +1494,7 @@ export interface components {
             readonly icons: components["schemas"]["PackIcon"][];
             readonly style_tags: components["schemas"]["PackStyleEnum"][];
             /** Версія гри */
-            readonly game_version: components["schemas"]["GameVersionEnum"];
+            readonly game_version: string;
             /** Лоадер */
             readonly loader: components["schemas"]["PackLoaderEnum"];
             /** Офіційна */
@@ -1482,6 +1508,7 @@ export interface components {
             readonly modrinth_downloads: number;
             readonly is_favorited: boolean;
             readonly my_review_stars: number | null;
+            readonly source: components["schemas"]["SourceRef"] | null;
         };
         /** @description Catalog card: cover (or the first mod icons), target and counters. */
         PackDetail: {
@@ -1495,7 +1522,7 @@ export interface components {
             readonly icons: components["schemas"]["PackIcon"][];
             readonly style_tags: components["schemas"]["PackStyleEnum"][];
             /** Версія гри */
-            readonly game_version: components["schemas"]["GameVersionEnum"];
+            readonly game_version: string;
             /** Лоадер */
             readonly loader: components["schemas"]["PackLoaderEnum"];
             /** Офіційна */
@@ -1509,6 +1536,7 @@ export interface components {
             readonly modrinth_downloads: number;
             readonly is_favorited: boolean;
             readonly my_review_stars: number | null;
+            readonly source: components["schemas"]["SourceRef"] | null;
             /** Версія лоадера */
             readonly loader_version: string;
             /** @description What the .mrpack will ask for: pinned by the author or the latest stable build. */
@@ -1533,8 +1561,6 @@ export interface components {
             /** Причина відхилення */
             readonly rejection_reason: string;
             readonly is_mine: boolean;
-            /** Format: uri */
-            readonly modrinth_url: string | null;
             /** Format: date-time */
             readonly created_at: string;
             /** Format: date-time */
@@ -1603,7 +1629,7 @@ export interface components {
             title: string;
             summary?: string;
             style_tags?: components["schemas"]["PackStyleEnum"][];
-            game_version: components["schemas"]["GameVersionEnum"];
+            game_version: string;
             loader: components["schemas"]["PackLoaderEnum"];
             /** @description Empty: the latest stable build at export time. */
             loader_version?: string;
@@ -1725,7 +1751,8 @@ export interface components {
             editors?: string[];
         };
         PatchedGameProfileRequest: {
-            game_version?: components["schemas"]["GameVersionEnum"] | components["schemas"]["BlankEnum"];
+            /** Версія */
+            game_version?: string | null;
             loader?: components["schemas"]["LoaderEnum"] | components["schemas"]["BlankEnum"];
             edition?: components["schemas"]["EditionEnum"];
         };
@@ -1744,7 +1771,7 @@ export interface components {
             title?: string;
             summary?: string;
             style_tags?: components["schemas"]["PackStyleEnum"][];
-            game_version?: components["schemas"]["GameVersionEnum"];
+            game_version?: string;
             loader?: components["schemas"]["PackLoaderEnum"];
             /** @description Empty: the latest stable build at export time. */
             loader_version?: string;
@@ -1804,6 +1831,7 @@ export interface components {
             readonly favorites_count: number;
             readonly is_favorited: boolean;
             readonly my_review_stars: number | null;
+            readonly source: components["schemas"]["SourceRef"];
         };
         /** @description Catalog card: one image, title, one line of metadata. */
         ProjectDetail: {
@@ -1827,6 +1855,7 @@ export interface components {
             readonly favorites_count: number;
             readonly is_favorited: boolean;
             readonly my_review_stars: number | null;
+            readonly source: components["schemas"]["SourceRef"];
             readonly summary_en: string;
             /**
              * Короткий опис українською
@@ -1840,7 +1869,6 @@ export interface components {
             readonly license: string;
             /** Format: uri */
             readonly source_url: string;
-            readonly modrinth_url: string;
             readonly needs_translation: boolean;
             /**
              * Опубліковано
@@ -1861,7 +1889,7 @@ export interface components {
             id: string;
             readonly name: string;
             readonly version_number: string;
-            readonly version_type: components["schemas"]["VersionTypeEnum"];
+            readonly version_type: components["schemas"]["ProjectVersionVersionTypeEnum"];
             readonly game_versions: string[];
             readonly loaders: string[];
             readonly file_name: string;
@@ -1869,6 +1897,13 @@ export interface components {
             /** Format: date-time */
             readonly released_at: string;
         };
+        /**
+         * @description * `release` - Реліз
+         *     * `beta` - Бета
+         *     * `alpha` - Альфа
+         * @enum {string}
+         */
+        ProjectVersionVersionTypeEnum: "release" | "beta" | "alpha";
         /** @description For closed profiles everything except the nickname is null. */
         PublicProfile: {
             nickname: string;
@@ -1956,6 +1991,26 @@ export interface components {
          * @enum {string}
          */
         RoleEnum: "user" | "moderator" | "admin";
+        RunSummary: {
+            status: components["schemas"]["RunSummaryStatusEnum"];
+            /** Format: date-time */
+            started_at: string;
+            /** Format: date-time */
+            finished_at: string | null;
+            created: number;
+            updated: number;
+            unchanged: number;
+            skipped: number;
+            failed: number;
+        };
+        /**
+         * @description * `running` - Виконується
+         *     * `ok` - Успішно
+         *     * `partial` - З помилками
+         *     * `failed` - Не вдалася
+         * @enum {string}
+         */
+        RunSummaryStatusEnum: "running" | "ok" | "partial" | "failed";
         /** @description One saved object; exactly one of the kind fields is filled. */
         SavedItem: {
             kind: string;
@@ -2169,6 +2224,30 @@ export interface components {
          * @enum {string}
          */
         SkinStyleEnum: "casual" | "fantasy" | "medieval" | "scifi" | "anime" | "horror" | "cute" | "mob" | "military" | "sport" | "ukrainian";
+        Source: {
+            key: string;
+            name: string;
+            description: string;
+            /** Format: uri */
+            url: string;
+            terms_url: string;
+            /** @description The latest run of any job. */
+            last_sync: components["schemas"]["RunSummary"] | null;
+            jobs: components["schemas"]["SourceJob"][];
+        };
+        SourceJob: {
+            key: string;
+            title: string;
+            last_run: components["schemas"]["RunSummary"] | null;
+        };
+        SourceRef: {
+            name: string;
+            /**
+             * Format: uri
+             * @description The object's own page at the source.
+             */
+            url: string;
+        };
         /**
          * @description * `idle` - idle
          *     * `checking` - checking
@@ -2248,13 +2327,6 @@ export interface components {
         Verification: {
             state: components["schemas"]["StateEnum"];
         };
-        /**
-         * @description * `release` - Реліз
-         *     * `beta` - Бета
-         *     * `alpha` - Альфа
-         * @enum {string}
-         */
-        VersionTypeEnum: "release" | "beta" | "alpha";
         /** @description What to install for the requested game version and loader. */
         Versions: {
             game_version: string;
@@ -3107,7 +3179,7 @@ export interface operations {
             };
         };
     };
-    me_game_profile_retrieve: {
+    me_game_retrieve: {
         parameters: {
             query?: never;
             header?: never;
@@ -3134,7 +3206,48 @@ export interface operations {
             };
         };
     };
-    me_game_profile_update: {
+    me_game_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["GameProfileRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["GameProfileRequest"];
+                "multipart/form-data": components["schemas"]["GameProfileRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GameProfile"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    me_game_partial_update: {
         parameters: {
             query?: never;
             header?: never;
@@ -3557,6 +3670,25 @@ export interface operations {
             };
         };
     };
+    meta_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Meta"];
+                };
+            };
+        };
+    };
     mods_list: {
         parameters: {
             query?: {
@@ -3803,51 +3935,7 @@ export interface operations {
             query?: {
                 /** @description Author nickname. */
                 author?: string;
-                /**
-                 * @description * `26.3` - 26.3
-                 *     * `26.2` - 26.2
-                 *     * `26.1.2` - 26.1.2
-                 *     * `26.1.1` - 26.1.1
-                 *     * `26.1` - 26.1
-                 *     * `1.21.11` - 1.21.11
-                 *     * `1.21.10` - 1.21.10
-                 *     * `1.21.9` - 1.21.9
-                 *     * `1.21.8` - 1.21.8
-                 *     * `1.21.7` - 1.21.7
-                 *     * `1.21.6` - 1.21.6
-                 *     * `1.21.5` - 1.21.5
-                 *     * `1.21.4` - 1.21.4
-                 *     * `1.21.3` - 1.21.3
-                 *     * `1.21.2` - 1.21.2
-                 *     * `1.21.1` - 1.21.1
-                 *     * `1.21` - 1.21
-                 *     * `1.20.6` - 1.20.6
-                 *     * `1.20.5` - 1.20.5
-                 *     * `1.20.4` - 1.20.4
-                 *     * `1.20.3` - 1.20.3
-                 *     * `1.20.2` - 1.20.2
-                 *     * `1.20.1` - 1.20.1
-                 *     * `1.20` - 1.20
-                 *     * `1.19.4` - 1.19.4
-                 *     * `1.19.3` - 1.19.3
-                 *     * `1.19.2` - 1.19.2
-                 *     * `1.19.1` - 1.19.1
-                 *     * `1.19` - 1.19
-                 *     * `1.18.2` - 1.18.2
-                 *     * `1.18.1` - 1.18.1
-                 *     * `1.18` - 1.18
-                 *     * `1.17.1` - 1.17.1
-                 *     * `1.17` - 1.17
-                 *     * `1.16.5` - 1.16.5
-                 *     * `1.16.4` - 1.16.4
-                 *     * `1.16.3` - 1.16.3
-                 *     * `1.16.2` - 1.16.2
-                 *     * `1.16.1` - 1.16.1
-                 *     * `1.16` - 1.16
-                 *     * `1.12.2` - 1.12.2
-                 *     * `1.8.9` - 1.8.9
-                 */
-                game_version?: "1.12.2" | "1.16" | "1.16.1" | "1.16.2" | "1.16.3" | "1.16.4" | "1.16.5" | "1.17" | "1.17.1" | "1.18" | "1.18.1" | "1.18.2" | "1.19" | "1.19.1" | "1.19.2" | "1.19.3" | "1.19.4" | "1.20" | "1.20.1" | "1.20.2" | "1.20.3" | "1.20.4" | "1.20.5" | "1.20.6" | "1.21" | "1.21.1" | "1.21.10" | "1.21.11" | "1.21.2" | "1.21.3" | "1.21.4" | "1.21.5" | "1.21.6" | "1.21.7" | "1.21.8" | "1.21.9" | "1.8.9" | "26.1" | "26.1.1" | "26.1.2" | "26.2" | "26.3";
+                game_version?: string;
                 /**
                  * @description * `fabric` - Fabric
                  *     * `forge` - Forge
@@ -5471,6 +5559,25 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    sources_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Source"][];
                 };
             };
         };

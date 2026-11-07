@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     "allauth.headless",
     "apps.core",
     "apps.accounts",
+    "apps.sources",
     "apps.library",
     "apps.social",
     "apps.mods",
@@ -214,6 +215,7 @@ REST_FRAMEWORK = {
         "reports": "20/day",
         "lookup": "30/min",
         "copy_ip": "60/hour",
+        "game": "120/hour",
         # The pack constructor saves every added or removed mod
         "pack_edits": "600/hour",
     },
@@ -254,6 +256,10 @@ CELERY_TASK_TIME_LIMIT = 5 * 60
 CELERY_TASK_SOFT_TIME_LIMIT = 4 * 60
 CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 CELERY_BEAT_SCHEDULE: dict[str, dict] = {
+    "sources-sync-game-versions": {
+        "task": "sources.sync_game_versions",
+        "schedule": crontab(hour=2, minute=30),
+    },
     "mods-sync-popular": {"task": "mods.sync_popular", "schedule": crontab(hour=3, minute=0)},
     "mods-sync-versions-for-tracked": {
         "task": "mods.sync_versions_for_tracked",
@@ -269,7 +275,7 @@ CELERY_BEAT_SCHEDULE: dict[str, dict] = {
     },
     "packs-refresh-loader-versions": {
         "task": "packs.refresh_loader_versions",
-        "schedule": crontab(hour=2, minute=30),
+        "schedule": crontab(hour=2, minute=45),
     },
     "packs-import-official": {
         "task": "packs.import_official",
@@ -285,16 +291,25 @@ SEARCH_INDEX = env("SEARCH_INDEX", default="content")
 # Signals queue index updates; tests switch it off and mock the search engine
 SEARCH_INDEXING = env.bool("SEARCH_INDEXING", default=True)
 
-# Modrinth
+# Content sources (apps/sources, docs/sources.md)
 
-MODRINTH_USER_AGENT = env(
-    "MODRINTH_USER_AGENT", default="blockcraft-ua/1.0 (contact: you@example.com)"
+# Modrinth requires a unique User-Agent with contact info; MODRINTH_USER_AGENT is the v1 name
+SOURCES_USER_AGENT = env(
+    "SOURCES_USER_AGENT",
+    default=env("MODRINTH_USER_AGENT", default="blockcraft-ua/2.0 (contact: you@example.com)"),
 )
-# Projects and versions are synced for the releases listed in apps/core/game.py
-MODRINTH_SYNC_LIMITS = {
-    "mod": env.int("MODRINTH_SYNC_LIMIT_MODS", default=300),
-    "resourcepack": env.int("MODRINTH_SYNC_LIMIT_RESOURCEPACKS", default=100),
-    "shader": env.int("MODRINTH_SYNC_LIMIT_SHADERS", default=100),
+# How many items each sync takes: top-N by downloads per project type, servers, skins per run
+SYNC_LIMITS = {
+    "mod": env.int("SYNC_LIMIT_MOD", default=1000),
+    "resourcepack": env.int("SYNC_LIMIT_RESOURCEPACK", default=300),
+    "shader": env.int("SYNC_LIMIT_SHADER", default=200),
+    "datapack": env.int("SYNC_LIMIT_DATAPACK", default=200),
+    # Each modpack reads its .mrpack index and imports its mods: kept small until R4.4
+    "modpack": env.int("SYNC_LIMIT_MODPACK", default=20),
+    "servers": env.int("SYNC_LIMIT_SERVERS", default=500),
 }
-# Most downloaded Modrinth modpacks imported as official packs (stage 10)
-MODRINTH_OFFICIAL_PACKS = env.int("MODRINTH_OFFICIAL_PACKS", default=10)
+SYNC_SKINS_PER_RUN = env.int("SYNC_SKINS_PER_RUN", default=300)
+# Releases older than 1.16 still offered in «Моя гра» (apps/sources/services.py)
+SUPPORTED_LEGACY_VERSIONS = env.list("SUPPORTED_LEGACY_VERSIONS", default=["1.12.2", "1.8.9"])
+# Optional free key from account.mineskin.org; without it the API answers with a warning
+MINESKIN_API_KEY = env("MINESKIN_API_KEY", default="")

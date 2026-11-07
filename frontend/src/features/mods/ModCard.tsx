@@ -2,6 +2,7 @@ import Image from "next/image";
 
 import { Card } from "@/components/ui/Card";
 import { Illustration } from "@/components/ui/Illustration";
+import { SourceBadge } from "@/components/ui/SourceBadge";
 import { SaveToggle } from "@/features/library/SaveToggle";
 
 import { modsCopy } from "./copy";
@@ -25,7 +26,15 @@ export function ModCard({ project, eager = false }: { project: ProjectCard; eage
     <Card
       href={`/mods/${project.slug}`}
       title={project.title}
-      meta={meta(project)}
+      meta={
+        <>
+          {meta(project)} ·{" "}
+          <SourceBadge
+            {...project.source}
+            label={modsCopy.detail.source(project.title, project.source.name)}
+          />
+        </>
+      }
       action={<SaveToggle kind="mod" id={project.slug} saved={project.is_favorited} />}
       cover={
         <div className="flex size-full items-center justify-center p-[18%]">

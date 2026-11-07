@@ -5,6 +5,8 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { Icon } from "@/components/ui/Icon";
 import { plural } from "@/lib/plural";
 
+import { getGameVersions } from "@/features/game/meta";
+
 import { getCatalog } from "./api";
 import { packsCopy } from "./copy";
 import { type PackFilters as Filters, toApiQuery } from "./filters";
@@ -15,7 +17,7 @@ import { PackFilters } from "./PackFilters";
 /** /packs: server-rendered first page of published packs. */
 export async function PacksCatalog({ filters }: { filters: Filters }) {
   const query = toApiQuery(filters);
-  const page = await getCatalog(query);
+  const [page, gameVersions] = await Promise.all([getCatalog(query), getGameVersions()]);
 
   return (
     <CatalogPage
@@ -28,7 +30,7 @@ export async function PacksCatalog({ filters }: { filters: Filters }) {
             <Icon name="plus" />
             {packsCopy.create}
           </ButtonLink>
-          <PackFilters filters={filters} />
+          <PackFilters filters={filters} gameVersions={gameVersions} />
         </div>
       }
       footer={

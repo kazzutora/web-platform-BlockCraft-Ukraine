@@ -60,7 +60,7 @@ export const packsCopy = {
     cancel: "Скасувати",
     error: "Не вдалося. Спробуй ще раз.",
     by: "Автор",
-    modrinth: "Сторінка на Modrinth",
+    source: (title: string, source: string) => `${title} на ${source}`,
     draft: "Це чернетка: її бачиш лише ти. Опублікуй у конструкторі.",
     pending: "Зборка на модерації: після перевірки її побачать усі.",
     rejected: (reason: string) =>
@@ -120,6 +120,7 @@ export const packsCopy = {
     error: "Не вдалося зберегти. Перевір поля.",
     errors: {
       title: "Дай зборці назву.",
+      gameVersion: "Обери версію гри.",
       ram: "Від 1 до 64 ГБ.",
       loaderVersion: "Лише цифри, літери, крапки й дефіси.",
     },

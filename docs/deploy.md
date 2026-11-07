@@ -33,7 +33,7 @@ cp .env.example .env
 | `EMAIL_BACKEND` | `django.core.mail.backends.smtp.EmailBackend` |
 | `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `DEFAULT_FROM_EMAIL` | дані SMTP |
 | `DISCORD_*`, `GOOGLE_*` | ключі OAuth (callback: `https://DOMAIN/accounts/<provider>/login/callback/`) |
-| `MODRINTH_USER_AGENT` | `blockcraft-ua/1.0 (contact: ваша-пошта)` |
+| `SOURCES_USER_AGENT` | `blockcraft-ua/2.0 (contact: ваша-пошта)` |
 
 Збірка, сертифікат і старт:
 
@@ -43,7 +43,7 @@ docker compose -f docker-compose.prod.yml run --rm static        # статич�
 sh infra/scripts/init-letsencrypt.sh                             # перший сертифікат
 docker compose -f docker-compose.prod.yml up -d
 docker compose -f docker-compose.prod.yml exec backend python manage.py createsuperuser
-docker compose -f docker-compose.prod.yml exec backend python manage.py sync_mods
+docker compose -f docker-compose.prod.yml exec backend python manage.py sync
 docker compose -f docker-compose.prod.yml exec backend python manage.py reindex_search
 ```
 
@@ -76,7 +76,7 @@ git tag v0.9.0 && git push origin v0.9.0
 
 Копію `backups/` варто регулярно забирати з сервера (наприклад, `rsync` на інший комп'ютер або в хмару).
 
-Відновлення на чистому сервері (після «Першого запуску» без `sync_mods`):
+Відновлення на чистому сервері (після «Першого запуску» без `sync`):
 
 ```sh
 sh infra/scripts/restore.sh backups/db_2026-10-18_0415.dump backups/media_2026-10-18_0415.tar.gz

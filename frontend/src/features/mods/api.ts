@@ -1,5 +1,3 @@
-import { cookies } from "next/headers";
-
 import { getServerClient } from "@/lib/api/server-client";
 
 import type { CatalogQuery } from "./types";
@@ -42,15 +40,6 @@ export async function getSimilar(slug: string) {
     params: { path: { slug } },
   });
   return data ?? [];
-}
-
-/** The signed-in player's game profile: defaults for filters and downloads. */
-export async function getGameProfile() {
-  // Guests have no profile: skip the request instead of collecting a 401
-  if (!(await cookies()).has("sessionid")) return null;
-  const client = await getServerClient();
-  const { data } = await client.GET("/api/v1/me");
-  return data?.game_profile ?? null;
 }
 
 export function downloadUrl(

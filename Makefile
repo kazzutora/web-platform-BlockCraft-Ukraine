@@ -19,7 +19,7 @@ POSTGRES_DB ?= blockcraft
 .DEFAULT_GOAL := help
 
 .PHONY: help up up-local down logs ps sh-back sh-front migrate makemigrations createsuperuser \
-	test test-back test-front lint fmt typecheck api-types seed sync-mods reindex er-diagram reset-db
+	test test-back test-front lint fmt typecheck api-types seed sync reindex er-diagram reset-db
 
 help:
 	@echo up               - build and start everything, site at http://localhost:8080
@@ -30,7 +30,8 @@ help:
 	@echo test, test-back, test-front
 	@echo lint, fmt, typecheck
 	@echo api-types        - regenerate API types: schema.d.ts and allauth.d.ts in frontend/src/lib/api
-	@echo seed, sync-mods  - demo data / Modrinth sync
+	@echo sync             - sync all sources; one source: make sync s=modrinth, quick: limit=20
+	@echo seed             - demo players on top of synced data (dev only)
 	@echo reindex          - rebuild the Meilisearch index
 	@echo reset-db         - drop and recreate the database, then migrate
 
@@ -108,8 +109,9 @@ reindex:
 er-diagram:
 	$(MANAGE) er_diagram
 
-sync-mods:
-	$(MANAGE) sync_mods
+# make sync / make sync s=modrinth / make sync s=modrinth j=catalog limit=20
+sync:
+	$(MANAGE) sync $(if $(s),--source $(s)) $(if $(j),--job $(j)) $(if $(limit),--limit $(limit))
 
 reset-db:
 	$(COMPOSE) stop backend worker beat

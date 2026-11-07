@@ -4,8 +4,8 @@ import factory
 from django.utils import timezone
 
 from apps.accounts.tests.factories import UserFactory
-from apps.servers.clients import PingResult
 from apps.servers.models import Server, ServerSnapshot
+from apps.sources.clients.ping import PingResult
 
 
 class ServerFactory(factory.django.DjangoModelFactory):

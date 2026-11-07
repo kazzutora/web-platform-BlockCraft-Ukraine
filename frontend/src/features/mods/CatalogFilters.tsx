@@ -1,6 +1,7 @@
 import { FilterChip } from "@/components/ui/FilterChip";
 import { FilterRow } from "@/components/ui/FilterRow";
-import { gameVersions, loaderOptions } from "@/features/game/labels";
+import { gameCopy } from "@/features/game/copy";
+import { loaderOptions } from "@/features/game/labels";
 
 import { modsCopy } from "./copy";
 import { type ModFilters, catalogHref, toggle } from "./filters";
@@ -13,11 +14,20 @@ const modLoaders = loaderOptions.filter((option) => option.value !== "vanilla");
 type CatalogFiltersProps = {
   filters: ModFilters;
   categories: Category[];
+  gameVersions: string[];
   fromProfile: boolean;
+  /** Nothing chosen yet: a soft hint at the header chip. */
+  inviteToChoose?: boolean;
 };
 
 /** Filter rows of the catalog; every chip is a link to the same page with other filters. */
-export function CatalogFilters({ filters, categories, fromProfile }: CatalogFiltersProps) {
+export function CatalogFilters({
+  filters,
+  categories,
+  gameVersions,
+  fromProfile,
+  inviteToChoose = false,
+}: CatalogFiltersProps) {
   const versionOptions = [
     {
       value: "",
@@ -105,6 +115,8 @@ export function CatalogFilters({ filters, categories, fromProfile }: CatalogFilt
           ))}
         </FilterRow>
       )}
+
+      {inviteToChoose && <p className="text-meta text-muted">{gameCopy.invite}</p>}
 
       {fromProfile && (
         <p className="flex flex-wrap items-center gap-3 text-meta text-muted">

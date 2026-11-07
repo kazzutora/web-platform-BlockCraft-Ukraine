@@ -1,9 +1,9 @@
 import pytest
 
 from apps.mods import services
-from apps.mods.clients import ModrinthNotFoundError
 from apps.mods.models import Category, Project, ProjectVersion
-from apps.mods.schemas import (
+from apps.sources.clients.modrinth import ModrinthNotFoundError
+from apps.sources.schemas.modrinth import (
     ModrinthCategory,
     ModrinthProject,
     ModrinthVersion,

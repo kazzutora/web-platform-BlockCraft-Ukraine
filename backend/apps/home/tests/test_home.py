@@ -14,7 +14,7 @@ from apps.servers import status
 from apps.servers.tests.factories import ServerFactory, SnapshotFactory, online
 from apps.skins.tests.factories import SkinFactory
 
-pytestmark = pytest.mark.django_db
+pytestmark = [pytest.mark.django_db, pytest.mark.usefixtures("game_versions")]
 
 
 def client_for(user) -> APIClient:

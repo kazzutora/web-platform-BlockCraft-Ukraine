@@ -136,7 +136,7 @@ blockcraft/
 
 ### 6.2 sources (НОВЕ)
 
-- `SyncRun`: `source`, `job` (напр. `modrinth.catalog:shader`), `status` (running / ok / partial / failed), `started_at`, `finished_at`, `created`, `updated`, `unchanged`, `skipped`, `failed`, `errors` (JSON, до 20 прикладів з контекстом), `params` (JSON). Індекс `(source, -started_at)`. Пишеться контекст-менеджером `sync_run(source, job, params)`.
+- `SyncRun`: `source` (ключ `registry.py`, без choices), `job` (напр. `modrinth.catalog:shader`), `status` (running / ok / partial / failed), `started_at`, `finished_at`, `created`, `updated`, `unchanged`, `skipped`, `failed`, `errors` (JSON, до 20 прикладів з контекстом), `params` (JSON). Індекс `(source, -started_at)`. Пишеться контекст-менеджером `sync_run(source, job, params)`.
 - `GameVersion`: `version` (PK, рядок), `version_type` (release / snapshot / beta / alpha), `released_at`, `is_major`, `is_supported` (показуємо в «Моїй грі» й синхронізуємо версії файлів). Підтримувані: релізи від 1.16 + `SUPPORTED_LEGACY_VERSIONS` (за замовчуванням `1.12.2,1.8.9`). Порядок — `released_at`.
 - Лоадери — `Loader` TextChoices у коді (fabric, forge, neoforge, quilt + vanilla для «Моєї гри»): змінюються рідко, а від них залежать правила сумісності.
 
@@ -202,9 +202,9 @@ blockcraft/
 | Метод і шлях | Опис | Етап |
 | --- | --- | --- |
 | `GET /health`, `GET /csrf` | як у v1 | — |
-| `GET /meta` | підтримувані версії гри, лоадери, категорії за типами, мови й країни серверів | R1 |
+| `GET /meta` | підтримувані версії гри, лоадери, категорії (R1); мови й країни серверів — R5 | R1 |
 | `GET /sources` | джерела: назва, опис, сайт, умови, остання синхронізація (статус, час, лічильники) | R1 |
-| `GET/PUT /me/game` | «Моя гра» гравця (гість — cookie `bc_game`, без ендпоінта) | R1 |
+| `GET/PUT/PATCH /me/game` | «Моя гра» гравця (гість — cookie `bc_game`, без ендпоінта); замінює v1 `/me/game-profile` | R1 |
 | `/me`, `/me/avatar`, `/me/settings`, `/me/onboarding`, `/me/export`, `DELETE /me` | як у v1 | — |
 | `GET /me/activity?section=took\|shared&page=` | «Взяв» (Download) і «Поділився» (збірки, добірки, відгуки, переклади, сервери, додані скіни) | R7 |
 | `GET /mods?type=&game_version=&loader=&category=&q=&sort=&all=` | каталог; без `game_version`/`loader` — береться «Моя гра», `all=1` — без фільтра гри | R2 |
@@ -260,16 +260,17 @@ blockcraft/
 - `GET /tag/game_version`, `GET /tag/loader`, `GET /tag/category` — метадані.
 - Ліміт: 300 запитів/хв на IP, однаковий з токеном і без; заголовки `X-Ratelimit-Limit/Remaining/Reset`. Токен не потрібен.
 - v1: клієнт у `mods/clients.py` уже вміє повтори й rate-limit → перенести в `sources/clients/modrinth.py`.
-- `.mrpack`: завантаження в `files[].downloads` — лише з `cdn.modrinth.com` (і дозволених Modrinth доменів — перевірити в R1.2).
+- `.mrpack`: завантаження в `files[].downloads` — лише з `cdn.modrinth.com` (усі файли версій у фікстурах R1.2 лежать там).
+- Датапаки не мають власного `project_type`: facet `project_type:datapack` працює, але проєкт приходить з `project_type: "mod"` і `datapack` в `all_project_types` — тип визначаємо самі (R2.1, `docs/sources.md`).
 
 ### 8.2 Modrinth API v3 — сервери (Server Projects, з 4 березня 2026)
 - Новий тип проєкту для серверів: адреса Java (і Bedrock — поки не використовується Modrinth), країна, мова, банер, сумісність: vanilla (підтримувані й рекомендована версії) або modded (опублікований модпак Modrinth чи завантажений власний). Modrinth сам пінгує сервери й прибирає з пошуку ті, що довго недоступні.
-- `GET /v3/search` з типом `minecraft_java_server` і фільтрами (мова, країна, vanilla/modded); `GET /v3/project/{id}` — повні дані сервера.
+- `GET /v3/search` з facet `project_types:minecraft_java_server` і фільтрами `minecraft_server.languages:<код>`, `minecraft_java_server.content.kind:vanilla|modpack` (facet країни не працює — фільтруємо в нас); `GET /v3/project/{id}` — повні дані сервера. Деталі — `docs/sources.md`.
 - v3 документований гірше за v2 і може змінюватися: окремий клієнт `modrinth_v3.py`, схеми лише з фікстур, при зміні схеми падає задача (`SyncRun` = failed) і тест, а не сайт.
-- Мапінг: vanilla → `supported_versions`, `recommended_version`; modded з модпаком Modrinth → імпорт модпака як `Pack(origin=modrinth)` → `required_pack`; modded з власним завантаженим паком → `content_kind=modded` без `required_pack` + посилання «встановити через Modrinth App».
+- Мапінг: vanilla → `supported_versions`, `recommended_version`; modded з модпаком Modrinth → імпорт модпака як `Pack(origin=modrinth)` → `required_pack`; modded з паком, завантаженим у сам серверний проєкт (`content.project_id` = id сервера), → теж `required_pack` з версії серверного проєкту (R1.2: це звичайна версія Modrinth з `.mrpack`). Верхньорівневі `game_versions` / `loaders` серверів ігноруємо — лише `content`.
 
 ### 8.3 MineSkin API v2 — `https://api.mineskin.org`
-- `GET /v2/skins` — список публічної галереї (пагінація — уточнити в R1.2), `GET /v2/skins/{uuid}` — один скін (текстура, модель, назва).
+- `GET /v2/skins` — список публічної галереї (пагінація курсором `after`; у списку лише хеш текстури, модель і URL — у деталях), `GET /v2/skins/{uuid}` — один скін (текстура, модель, назва).
 - `User-Agent` обов'язковий; `MINESKIN_API_KEY` (безкоштовний ключ з account.mineskin.org) — рекомендований для лімітів, `Authorization: Bearer`.
 - Імпорт (`skins.sync_mineskin`): без назви — пропустити; текстура не 64×64 / 64×32 — пропустити; дублікат за `texture_hash` — пропустити; обробка текстури — код v1 (модель, колір, прев'ю).
 
@@ -471,7 +472,7 @@ MINESKIN_API_KEY=                  # безкоштовний ключ account.m
 
 Формат: **Мета** → **Задачі** (ID для PROGRESS.md) → **Готово, коли** → **Тести**. Задача виконана лише тоді, коли виконано «Визначення готовності» з `CLAUDE.md`. Наприкінці кожного етапу — **продуктова перевірка**: пройти сценарії з `docs/product.md`, які зачіпає етап, на скріншотах (375 і 1440 px), і показати мені.
 
-Гілки: `rebuild` — інтеграційна; етап — `rebuild/r<N>-<name>` від `rebuild`, злиття назад після зеленого CI й рев'ю. Розмір: S — 1–2 сесії, M — 3–5, L — 6+.
+Гілки: `rebuild` — інтеграційна; етап — `rebuild-r<N>-<name>` від `rebuild` (не `rebuild/…`: git не дозволяє гілку `rebuild/x` поруч із `rebuild`), злиття назад після зеленого CI й рев'ю. Розмір: S — 1–2 сесії, M — 3–5, L — 6+.
 
 ### R0 — Підготовка (S)
 **Мета:** зберегти зроблене, перейти на гілку ребілду, прибрати те, що суперечить v2.
@@ -487,7 +488,7 @@ MINESKIN_API_KEY=                  # безкоштовний ключ account.m
 ### R1 — Шар джерел (M)
 **Мета:** усі зовнішні API в одному місці, кожна синхронізація видна в журналі, версії гри — живі, «Моя гра» працює й для гостя.
 
-- **R1.1** `apps/sources`: міксин `Sourced` (у `core`), `SyncRun` + `sync_run(...)`, `registry.py` (назва, опис українською, сайт, умови, задачі), адмінка «Синхронізації» (фільтри за джерелом і статусом), `make sync` і `make sync s=<source>`.
+- **R1.1** `apps/sources`: міксин `Sourced` (у `core`), `SyncRun` + `sync_run(...)`, `registry.py` (назва, опис українською, сайт, умови, задачі), адмінка «Синхронізації» (фільтри за джерелом і статусом), `make sync` і `make sync s=<source>` (+ `j=<job>`, `limit=N`).
 - **R1.2** Спайк джерел: Modrinth v2, Modrinth v3 (сервери), MineSkin v2, Mojang — реальні запити з контейнера, 2–3 відповіді в `apps/sources/tests/fixtures/<source>/`. `docs/sources.md`: ендпоінти, поля, ліміти, умови використання й атрибуції, ризики. **Показати мені `sources.md`.**
 - **R1.3** Клієнти в `sources/clients/`: перенести Modrinth (v1 `mods/clients.py`), Mojang (v1 skins), лоадери (WIP `packs/clients.py`), пінг (v1 servers); нові — `modrinth_v3.py`, `mineskin.py`. Спільна база з 8.
 - **R1.4** `GameVersion` з `/tag/game_version` (`sources.sync_game_versions`), `GET /meta`; видалити статичні `GAME_VERSIONS` (бекенд) і `features/game/labels.ts` (фронтенд), профіль посилається на `GameVersion`.

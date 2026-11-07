@@ -2,7 +2,7 @@ from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
 from django.db.models.functions import Lower
 
-from apps.core.game import GAME_VERSION_CHOICES, Edition, Loader
+from apps.core.game import Edition, Loader
 
 from .validators import NICKNAME_MAX_LENGTH, nickname_validators
 
@@ -88,7 +88,15 @@ class GameProfile(models.Model):
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, primary_key=True, related_name="game_profile"
     )
-    game_version = models.CharField(max_length=16, choices=GAME_VERSION_CHOICES, blank=True)
+    # Supported versions come from Modrinth (sources.GameVersion), not from a static list
+    game_version = models.ForeignKey(
+        "sources.GameVersion",
+        verbose_name="версія гри",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
     loader = models.CharField(max_length=16, choices=Loader.choices, blank=True)
     edition = models.CharField(max_length=8, choices=Edition.choices, default=Edition.JAVA)
     onboarding_done = models.BooleanField(default=False)
@@ -98,7 +106,7 @@ class GameProfile(models.Model):
         verbose_name_plural = "ігрові профілі"
 
     def __str__(self) -> str:
-        return f"{self.user} · {self.game_version or '—'} · {self.loader or '—'}"
+        return f"{self.user} · {self.game_version_id or '—'} · {self.loader or '—'}"
 
 
 class UserSettings(models.Model):

@@ -1,0 +1,57 @@
+{
+  "skins_list": {
+    "method": "GET",
+    "url": "https://api.mineskin.org/v2/skins",
+    "params": {
+      "size": 3
+    },
+    "body": null,
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "public, max-age=3600"
+    },
+    "captured_at": "2026-11-07T18:31:14+00:00"
+  },
+  "skin": {
+    "method": "GET",
+    "url": "https://api.mineskin.org/v2/skins/ca7a715a18f3471ea1daea83a88890eb",
+    "params": null,
+    "body": null,
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "public, max-age=10800"
+    },
+    "captured_at": "2026-11-07T18:31:14+00:00"
+  },
+  "skins_list_next": {
+    "method": "GET",
+    "url": "https://api.mineskin.org/v2/skins",
+    "params": {
+      "size": 3,
+      "after": "4f5e82992e9749b6a114ef89a1311920"
+    },
+    "body": null,
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "public, max-age=3600"
+    },
+    "captured_at": "2026-11-07T18:31:15+00:00"
+  },
+  "skin_not_found": {
+    "method": "GET",
+    "url": "https://api.mineskin.org/v2/skins/00000000000000000000000000000000",
+    "params": null,
+    "body": null,
+    "status": 404,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "x-ratelimit-limit": "0",
+      "x-ratelimit-remaining": "0",
+      "x-ratelimit-reset": "1794076278"
+    },
+    "captured_at": "2026-11-07T18:31:18+00:00"
+  }
+}

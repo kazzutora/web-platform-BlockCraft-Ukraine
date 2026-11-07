@@ -1,6 +1,10 @@
 import re
 
+from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
+
+from apps.core.models import Source
+from apps.sources.attribution import SourceRef, SourceRefSerializer, source_ref
 
 from . import selectors
 from .models import Category, Project, ProjectVersion
@@ -24,6 +28,7 @@ class ProjectCardSerializer(serializers.ModelSerializer):
     # Viewer state from social.selectors.with_viewer_state (false/null for guests)
     is_favorited = serializers.SerializerMethodField()
     my_review_stars = serializers.SerializerMethodField()
+    source = serializers.SerializerMethodField()
 
     class Meta:
         model = Project
@@ -43,8 +48,13 @@ class ProjectCardSerializer(serializers.ModelSerializer):
             "favorites_count",
             "is_favorited",
             "my_review_stars",
+            "source",
         ]
         read_only_fields = fields
+
+    @extend_schema_field(SourceRefSerializer)
+    def get_source(self, project: Project) -> SourceRef:
+        return source_ref(Source.MODRINTH, project.modrinth_url)
 
     def get_is_favorited(self, project: Project) -> bool:
         return bool(getattr(project, "is_favorited", False))
@@ -71,7 +81,6 @@ class GalleryImageSerializer(serializers.Serializer):
 class ProjectDetailSerializer(ProjectCardSerializer):
     summary_en = serializers.CharField(source="summary", read_only=True)
     gallery = GalleryImageSerializer(many=True, read_only=True)
-    modrinth_url = serializers.CharField(read_only=True)
     needs_translation = serializers.SerializerMethodField()
     updated_at = serializers.DateTimeField(source="modrinth_updated_at", read_only=True)
 
@@ -86,7 +95,6 @@ class ProjectDetailSerializer(ProjectCardSerializer):
             "game_versions",
             "license",
             "source_url",
-            "modrinth_url",
             "needs_translation",
             "published_at",
             "updated_at",

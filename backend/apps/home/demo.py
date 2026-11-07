@@ -20,6 +20,7 @@ from apps.mods.models import Project
 from apps.packs import services as packs
 from apps.packs.models import Pack
 from apps.social import services as social
+from apps.sources.models import GameVersion
 
 DEMO_DOMAIN = "demo.blockcraft.test"
 PASSWORD = "Creeper-Aww-Man-2026"
@@ -38,7 +39,8 @@ BIOS = [
     "Малюю скіни для всієї гільдії.",
     "",
 ]
-VERSIONS = ["26.3", "1.21.11", "1.21.1", "1.20.1"]
+# Demo players pick among the newest supported versions (synced from Modrinth)
+NEWEST_VERSIONS = 4
 LOADERS = ["fabric", "neoforge", "forge", "vanilla"]
 REVIEWS = [
     (5, "Чудово працює, раджу."),
@@ -71,6 +73,7 @@ def remove() -> int:
 
 def _players(rng: random.Random) -> list[User]:
     players = []
+    versions = list(GameVersion.objects.supported()[:NEWEST_VERSIONS])
     for nickname in NICKNAMES:
         user = User.objects.create_user(
             email=_email(nickname),
@@ -82,7 +85,7 @@ def _players(rng: random.Random) -> list[User]:
         accounts.complete_onboarding(
             user=user,
             data={
-                "game_version": rng.choice(VERSIONS),
+                "game_version": rng.choice(versions) if versions else None,
                 "loader": rng.choice(LOADERS),
             },
         )

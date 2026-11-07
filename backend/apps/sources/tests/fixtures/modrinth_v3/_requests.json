@@ -1,0 +1,151 @@
+{
+  "search_servers": {
+    "method": "GET",
+    "url": "https://api.modrinth.com/v3/search",
+    "params": {
+      "facets": "[[\"project_types:minecraft_java_server\"]]",
+      "limit": 5
+    },
+    "body": null,
+    "status": 200,
+    "headers": {
+      "content-type": "application/json",
+      "x-ratelimit-limit": "300",
+      "x-ratelimit-remaining": "299",
+      "x-ratelimit-reset": "0"
+    },
+    "captured_at": "2026-11-07T18:31:13+00:00"
+  },
+  "project_server_1": {
+    "method": "GET",
+    "url": "https://api.modrinth.com/v3/project/OgcNPs6n",
+    "params": null,
+    "body": null,
+    "status": 200,
+    "headers": {
+      "content-type": "application/json",
+      "x-ratelimit-limit": "300",
+      "x-ratelimit-remaining": "300",
+      "x-ratelimit-reset": "0"
+    },
+    "captured_at": "2026-11-07T18:31:13+00:00"
+  },
+  "project_server_2": {
+    "method": "GET",
+    "url": "https://api.modrinth.com/v3/project/J7UcDbaC",
+    "params": null,
+    "body": null,
+    "status": 200,
+    "headers": {
+      "content-type": "application/json",
+      "x-ratelimit-limit": "300",
+      "x-ratelimit-remaining": "299",
+      "x-ratelimit-reset": "0"
+    },
+    "captured_at": "2026-11-07T18:31:14+00:00"
+  },
+  "project_server_3": {
+    "method": "GET",
+    "url": "https://api.modrinth.com/v3/project/gIpf7Gr9",
+    "params": null,
+    "body": null,
+    "status": 200,
+    "headers": {
+      "content-type": "application/json",
+      "x-ratelimit-limit": "300",
+      "x-ratelimit-remaining": "299",
+      "x-ratelimit-reset": "0"
+    },
+    "captured_at": "2026-11-07T18:31:14+00:00"
+  },
+  "project_mod_v3": {
+    "method": "GET",
+    "url": "https://api.modrinth.com/v3/project/sodium",
+    "params": null,
+    "body": null,
+    "status": 200,
+    "headers": {
+      "content-type": "application/json",
+      "x-ratelimit-limit": "300",
+      "x-ratelimit-remaining": "300",
+      "x-ratelimit-reset": "0"
+    },
+    "captured_at": "2026-11-07T18:31:14+00:00"
+  },
+  "search_servers_uk": {
+    "method": "GET",
+    "url": "https://api.modrinth.com/v3/search",
+    "params": {
+      "facets": "[[\"project_types:minecraft_java_server\"], [\"minecraft_server.languages:uk\"]]",
+      "limit": 3
+    },
+    "body": null,
+    "status": 200,
+    "headers": {
+      "content-type": "application/json",
+      "x-ratelimit-limit": "300",
+      "x-ratelimit-remaining": "300",
+      "x-ratelimit-reset": "0"
+    },
+    "captured_at": "2026-11-07T18:32:25+00:00"
+  },
+  "search_servers_vanilla": {
+    "method": "GET",
+    "url": "https://api.modrinth.com/v3/search",
+    "params": {
+      "facets": "[[\"project_types:minecraft_java_server\"], [\"minecraft_java_server.content.kind:vanilla\"]]",
+      "limit": 3
+    },
+    "body": null,
+    "status": 200,
+    "headers": {
+      "content-type": "application/json",
+      "x-ratelimit-limit": "300",
+      "x-ratelimit-remaining": "300",
+      "x-ratelimit-reset": "0"
+    },
+    "captured_at": "2026-11-07T18:32:26+00:00"
+  },
+  "project_server_vanilla": {
+    "method": "GET",
+    "url": "https://api.modrinth.com/v3/project/t64zvHbD",
+    "params": null,
+    "body": null,
+    "status": 200,
+    "headers": {
+      "content-type": "application/json",
+      "x-ratelimit-limit": "300",
+      "x-ratelimit-remaining": "300",
+      "x-ratelimit-reset": "0"
+    },
+    "captured_at": "2026-11-07T18:32:26+00:00"
+  },
+  "project_server_uk": {
+    "method": "GET",
+    "url": "https://api.modrinth.com/v3/project/hMclbsMN",
+    "params": null,
+    "body": null,
+    "status": 200,
+    "headers": {
+      "content-type": "application/json",
+      "x-ratelimit-limit": "300",
+      "x-ratelimit-remaining": "299",
+      "x-ratelimit-reset": "0"
+    },
+    "captured_at": "2026-11-07T18:32:26+00:00"
+  },
+  "project_server_external_pack": {
+    "method": "GET",
+    "url": "https://api.modrinth.com/v3/project/zghks7Se",
+    "params": null,
+    "body": null,
+    "status": 200,
+    "headers": {
+      "content-type": "application/json",
+      "x-ratelimit-limit": "300",
+      "x-ratelimit-remaining": "300",
+      "x-ratelimit-reset": "0"
+    },
+    "captured_at": "2026-11-07T18:32:28+00:00"
+  }
+}

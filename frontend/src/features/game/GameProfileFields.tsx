@@ -9,9 +9,9 @@ import {
   type GameVersion,
   type Loader,
   editionOptions,
-  gameVersionOptions,
   loaderOptions,
 } from "./labels";
+import { useGameVersions } from "./useGameVersions";
 
 const copy = {
   version: "Версія гри",
@@ -38,6 +38,7 @@ type Props = {
 
 /** Version, loader and edition — shared by onboarding and settings. */
 export function GameProfileFields({ values, onChange, errors = {} }: Props) {
+  const versions = useGameVersions();
   const set = <K extends keyof GameProfileValues>(key: K, value: GameProfileValues[K]) =>
     onChange({ ...values, [key]: value });
 
@@ -54,7 +55,7 @@ export function GameProfileFields({ values, onChange, errors = {} }: Props) {
         <Select
           label={copy.version}
           placeholder={copy.versionPlaceholder}
-          options={gameVersionOptions}
+          options={versions.map((version) => ({ value: version, label: version }))}
           value={values.game_version}
           onChange={(event) => set("game_version", event.target.value as GameVersion | "")}
           error={errors.game_version}

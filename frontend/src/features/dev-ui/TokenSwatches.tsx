@@ -11,7 +11,6 @@ const swatches = [
   { name: "--tag-packs", className: "bg-tag-packs" },
   { name: "--tag-skins", className: "bg-tag-skins" },
   { name: "--tag-servers", className: "bg-tag-servers" },
-  { name: "--tag-moments", className: "bg-tag-moments" },
 ];
 
 export function TokenSwatches() {

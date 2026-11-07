@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 import { cn } from "@/lib/cn";
 
-export type ChipTone = "neutral" | "mods" | "packs" | "skins" | "servers" | "moments";
+export type ChipTone = "neutral" | "mods" | "packs" | "skins" | "servers";
 
 const markers: Record<ChipTone, string> = {
   neutral: "bg-muted",
@@ -10,7 +10,6 @@ const markers: Record<ChipTone, string> = {
   packs: "bg-tag-packs",
   skins: "bg-tag-skins",
   servers: "bg-tag-servers",
-  moments: "bg-tag-moments",
 };
 
 /**

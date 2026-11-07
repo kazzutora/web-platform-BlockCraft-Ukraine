@@ -78,7 +78,6 @@ const illustrations: IllustrationName[] = [
   "packs",
   "skins",
   "servers",
-  "moments",
   "worlds",
   "empty",
   "void",
@@ -195,7 +194,6 @@ export default function DevUiPage() {
           <Chip tone="packs">Зборки</Chip>
           <Chip tone="skins">Скіни</Chip>
           <Chip tone="servers">Сервери</Chip>
-          <Chip tone="moments">Моменти</Chip>
           <Chip>Без розділу</Chip>
         </div>
         <div className="flex flex-wrap gap-2">

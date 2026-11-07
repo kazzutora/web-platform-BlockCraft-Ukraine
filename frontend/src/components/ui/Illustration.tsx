@@ -1,16 +1,7 @@
 import Image from "next/image";
 
 export type IllustrationName =
-  | "home"
-  | "mods"
-  | "packs"
-  | "skins"
-  | "servers"
-  | "moments"
-  | "worlds"
-  | "empty"
-  | "void"
-  | "error";
+  "home" | "mods" | "packs" | "skins" | "servers" | "worlds" | "empty" | "void" | "error";
 
 /**
  * Final artwork (PNG/WebP in public/illustrations/) replaces the placeholder
@@ -57,11 +48,6 @@ const scenes: Record<IllustrationName, Voxel[]> = {
     [1, 1, 0],
     [1, 1, 1],
     [1, 1, 2, true],
-  ],
-  moments: [
-    [0, 0, 0, true],
-    [1, 0, 0],
-    [1, 0, 1, true],
   ],
   worlds: [
     [0, 0, 0, true],

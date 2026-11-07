@@ -13,7 +13,6 @@ from apps.packs.tests.factories import PackFactory
 from apps.servers import status
 from apps.servers.tests.factories import ServerFactory, SnapshotFactory, online
 from apps.skins.tests.factories import SkinFactory
-from apps.social.models import Like
 
 pytestmark = pytest.mark.django_db
 
@@ -112,7 +111,7 @@ def test_top_periods(api_client):
 
 def test_top_skins_and_servers(api_client):
     skin = SkinFactory(trend_score=2)
-    Like.objects.create(
+    Favorite.objects.create(
         user=UserFactory(), content_type=get_kind("skin").content_type, object_id=skin.pk
     )
     server = ServerFactory(trend_score=1)

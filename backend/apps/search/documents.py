@@ -91,7 +91,7 @@ def skin_document(skin: Skin) -> dict:
         summary="",
         tags=skin.style_tags,
         color_bucket=skin.color_bucket,
-        popularity=skin.downloads_count + 10 * (skin.likes_count + skin.favorites_count),
+        popularity=skin.downloads_count + 10 * skin.favorites_count,
         author=skin.author.nickname,
         image=image.url if image else None,
     )
@@ -145,7 +145,7 @@ def collection_document(collection: Collection) -> dict:
         summary=collection.description,
         author=collection.owner.nickname,
         items_count=collection.items_count,
-        popularity=10 * (collection.likes_count + collection.favorites_count),
+        popularity=10 * collection.favorites_count,
     )
 
 

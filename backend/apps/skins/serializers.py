@@ -15,7 +15,6 @@ class SkinCardSerializer(serializers.ModelSerializer):
     preview_url = serializers.SerializerMethodField()
     # Viewer state from social.selectors.with_viewer_state (false for guests)
     is_favorited = serializers.SerializerMethodField()
-    is_liked = serializers.SerializerMethodField()
 
     class Meta:
         model = Skin
@@ -29,11 +28,9 @@ class SkinCardSerializer(serializers.ModelSerializer):
             "dominant_color",
             "color_bucket",
             "style_tags",
-            "likes_count",
             "favorites_count",
             "downloads_count",
             "is_favorited",
-            "is_liked",
         ]
         read_only_fields = fields
 
@@ -46,9 +43,6 @@ class SkinCardSerializer(serializers.ModelSerializer):
     def get_is_favorited(self, skin: Skin) -> bool:
         return bool(getattr(skin, "is_favorited", False))
 
-    def get_is_liked(self, skin: Skin) -> bool:
-        return bool(getattr(skin, "is_liked", False))
-
 
 class SkinDetailSerializer(SkinCardSerializer):
     is_mine = serializers.SerializerMethodField()
@@ -60,7 +54,6 @@ class SkinDetailSerializer(SkinCardSerializer):
             "rejection_reason",
             "is_current",
             "is_mine",
-            "comments_count",
             "created_at",
             "published_at",
         ]

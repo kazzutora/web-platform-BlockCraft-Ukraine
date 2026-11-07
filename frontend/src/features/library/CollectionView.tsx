@@ -24,14 +24,12 @@ import { ReportButton } from "@/features/moderation/ReportButton";
 import { PackCard } from "@/features/packs/PackCard";
 import { ServerTile } from "@/features/servers/ServerTile";
 import { SkinCard } from "@/features/skins/SkinCard";
-import { Comments } from "@/features/social/Comments";
 import { api } from "@/lib/api/client";
 import { plural } from "@/lib/plural";
 import { queryKeys } from "@/lib/query-keys";
 
 import { CollectionForm, parseEditors } from "./CollectionForm";
 import { libraryCopy } from "./copy";
-import { LikeButton } from "./LikeButton";
 import { SaveToggle } from "./SaveToggle";
 import type { CollectionDetail, CollectionItem } from "./types";
 
@@ -97,16 +95,6 @@ export function CollectionView({ initial, shareToken }: CollectionViewProps) {
             label: `${copy.tabs.items} · ${collection.items_count}`,
             content: <Items collection={collection} />,
           },
-          // Link-only collections are not listed, so they take no comments from visitors
-          ...(collection.visibility === "public" || collection.can_edit
-            ? [
-                {
-                  value: "comments",
-                  label: copy.tabs.comments,
-                  content: <Comments kind="collection" id={String(collection.id)} />,
-                },
-              ]
-            : []),
         ]}
       />
     </Container>
@@ -251,12 +239,6 @@ function VisitorActions({
       </Button>
       {collection.visibility === "public" && (
         <>
-          <LikeButton
-            kind="collection"
-            id={String(collection.id)}
-            liked={collection.is_liked}
-            count={collection.likes_count}
-          />
           <SaveToggle
             kind="collection"
             id={String(collection.id)}

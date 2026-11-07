@@ -240,9 +240,7 @@ SPECTACULAR_SETTINGS = {
         "SkinStyleEnum": "apps.skins.styles.Style",
         "PackStyleEnum": "apps.packs.choices.Style",
         "PublishStatusEnum": "apps.core.models.Publishable.Status",
-        # Reports also accept comments, which are not a kind
         "KindEnum": ["collection", "mod", "skin", "server", "pack"],
-        "ReportKindEnum": ["collection", "mod", "skin", "server", "pack", "comment"],
         "NotificationTypeEnum": "apps.notifications.models.Notification.Type",
     },
 }

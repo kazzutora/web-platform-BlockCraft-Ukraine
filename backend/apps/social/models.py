@@ -2,27 +2,7 @@ from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
-from apps.core.models import GenericTarget, Publishable, TimeStamped
-
-
-class Like(GenericTarget):
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="likes"
-    )
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        verbose_name = "вподобання"
-        verbose_name_plural = "вподобання"
-        constraints = [
-            models.UniqueConstraint(
-                fields=["user", "content_type", "object_id"], name="social_like_unique"
-            )
-        ]
-        indexes = [models.Index(fields=["content_type", "object_id"], name="social_like_target")]
-
-    def __str__(self) -> str:
-        return f"{self.user} ♥ {self.content_type.model}#{self.object_id}"
+from apps.core.models import GenericTarget, TimeStamped
 
 
 class Review(GenericTarget, TimeStamped):
@@ -79,30 +59,3 @@ class ReviewVote(models.Model):
 
     def __str__(self) -> str:
         return f"{self.user} → {self.review_id}: {'+' if self.is_helpful else '-'}"
-
-
-class Comment(GenericTarget, TimeStamped, Publishable):
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="comments"
-    )
-    parent = models.ForeignKey(
-        "self", on_delete=models.CASCADE, null=True, blank=True, related_name="replies"
-    )
-    body = models.TextField(max_length=1000)
-    is_pinned = models.BooleanField(default=False)
-    #: Deleted comments with replies stay as «коментар видалено» so the thread keeps sense
-    is_deleted = models.BooleanField(default=False)
-
-    class Meta:
-        verbose_name = "коментар"
-        verbose_name_plural = "коментарі"
-        ordering = ["-created_at"]
-        indexes = [
-            models.Index(
-                fields=["content_type", "object_id", "parent", "created_at"],
-                name="social_comment_target",
-            )
-        ]
-
-    def __str__(self) -> str:
-        return f"{self.user}: {self.body[:40]}"

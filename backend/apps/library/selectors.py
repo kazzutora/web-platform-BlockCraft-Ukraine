@@ -84,7 +84,7 @@ def public_collections(*, owner_nickname: str = "") -> QuerySet[Collection]:
         queryset = queryset.filter(
             owner__nickname__iexact=owner_nickname, owner__settings__collections_visible=True
         )
-    return _with_preview(queryset).order_by("-likes_count", "-updated_at")
+    return _with_preview(queryset).order_by("-favorites_count", "-updated_at")
 
 
 def my_collections(

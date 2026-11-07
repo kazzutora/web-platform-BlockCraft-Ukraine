@@ -11,7 +11,7 @@ class CollectionItemInline(admin.TabularInline):
 
 @admin.register(Collection)
 class CollectionAdmin(admin.ModelAdmin):
-    list_display = ["title", "owner", "visibility", "items_count", "likes_count", "updated_at"]
+    list_display = ["title", "owner", "visibility", "items_count", "favorites_count", "updated_at"]
     list_filter = ["visibility", "is_setup"]
     search_fields = ["title", "owner__nickname"]
     raw_id_fields = ["owner", "copied_from"]

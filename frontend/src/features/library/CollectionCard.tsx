@@ -18,12 +18,7 @@ export function CollectionCard({
   collection: Collection;
   showVisibility?: boolean;
 }) {
-  const meta = [
-    plural(collection.items_count, copy.items),
-    collection.likes_count ? copy.likes(collection.likes_count) : "",
-  ]
-    .filter(Boolean)
-    .join(" · ");
+  const meta = [plural(collection.items_count, copy.items)].filter(Boolean).join(" · ");
 
   return (
     <Card

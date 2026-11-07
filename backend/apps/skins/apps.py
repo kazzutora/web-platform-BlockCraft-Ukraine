@@ -14,8 +14,8 @@ class SkinsConfig(AppConfig):
                 name="skin",
                 model_label="skins.Skin",
                 lookup_field="pk",
-                rating="like",
-                actions=frozenset({"favorite", "like", "comment", "collect", "report"}),
+                rating="favorites",
+                actions=frozenset({"favorite", "collect", "report"}),
                 owner_field="author",
             )
         )

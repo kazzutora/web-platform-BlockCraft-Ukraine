@@ -88,7 +88,6 @@ class ProjectDetailSerializer(ProjectCardSerializer):
             "source_url",
             "modrinth_url",
             "needs_translation",
-            "comments_count",
             "published_at",
             "updated_at",
         ]

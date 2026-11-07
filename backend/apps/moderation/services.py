@@ -3,7 +3,6 @@ from collections.abc import Iterable
 from django.contrib.contenttypes.models import ContentType
 from django.db import IntegrityError, transaction
 from django.db.models import Model, Q
-from django.http import Http404
 from django.utils import timezone
 
 from apps.accounts.models import User
@@ -13,7 +12,6 @@ from apps.core.models import Publishable
 from apps.library.models import Collection
 from apps.notifications.models import Notification
 from apps.notifications.services import notify
-from apps.social.models import Comment
 
 from .models import Report, Sanction
 
@@ -25,23 +23,12 @@ TRUSTED_AFTER = publishing.REVIEWED_FIRST
 
 
 def resolve_target(*, kind: str, identifier: str, viewer: User) -> Model:
-    """A visible object of a kind that allows reports, or a published comment."""
-    if kind == "comment":
-        if not identifier.isdigit():
-            raise Http404
-        comment = Comment.objects.filter(
-            pk=identifier, status=Comment.Status.PUBLISHED, is_deleted=False
-        ).first()
-        if comment is None:
-            raise Http404
-        return comment
+    """A visible object of a kind that allows reports."""
     _, target = kinds.resolve(kind, identifier, viewer=viewer, action="report")
     return target
 
 
 def author_of(target: Model) -> User | None:
-    if isinstance(target, Comment):
-        return target.user
     if isinstance(target, Collection):
         return target.owner
     return getattr(target, "author", None) or getattr(target, "claimed_by", None)
@@ -129,13 +116,7 @@ def accept_reports(*, reports: Iterable[Report], moderator: User | None) -> int:
         open_reports.update(
             status=Report.Status.ACCEPTED, handled_by=moderator, handled_at=timezone.now()
         )
-        extra = {"excerpt": target.body} if isinstance(target, Comment) else {}
-        notify(
-            user=author_of(target),
-            type=Notification.Type.HIDDEN,
-            target=_link_target(target),
-            **extra,
-        )
+        notify(user=author_of(target), type=Notification.Type.HIDDEN, target=target)
     return len(targets)
 
 
@@ -147,18 +128,11 @@ def reject_reports(*, reports: Iterable[Report], moderator: User | None) -> int:
         open_reports = _open_reports(target)
         if open_reports.filter(auto_hidden=True).exists():
             _restore(target)
-            notify(
-                user=author_of(target), type=Notification.Type.RESTORED, target=_link_target(target)
-            )
+            notify(user=author_of(target), type=Notification.Type.RESTORED, target=target)
         open_reports.update(
             status=Report.Status.REJECTED, handled_by=moderator, handled_at=timezone.now()
         )
     return len(targets)
-
-
-def _link_target(target: Model) -> Model | None:
-    """Notifications link to a kind object; for a comment — to what it was written under."""
-    return target.target if isinstance(target, Comment) else target
 
 
 # Publications (skins, servers): the first three of a new author wait for a moderator
@@ -194,7 +168,7 @@ def active_sanctions(user: User, *types: str):
 
 
 def ensure_can_publish(user: User) -> None:
-    """Called before uploads, servers, comments and reviews."""
+    """Called before servers, packs, collections and reviews."""
     if active_sanctions(user, Sanction.Type.PUBLISH_BAN, Sanction.Type.BAN).exists():
         raise DomainError(
             code="publish_banned",

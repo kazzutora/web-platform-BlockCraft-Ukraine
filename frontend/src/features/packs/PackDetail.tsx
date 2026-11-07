@@ -10,7 +10,6 @@ import { AddToCollection } from "@/features/library/AddToCollection";
 import { SaveToggle } from "@/features/library/SaveToggle";
 import { ReportButton } from "@/features/moderation/ReportButton";
 import { formatFileSize } from "@/features/mods/format";
-import { Comments } from "@/features/social/Comments";
 import { Reviews } from "@/features/social/Reviews";
 import { plural } from "@/lib/plural";
 
@@ -142,13 +141,6 @@ export async function PackDetail({ slug }: { slug: string }) {
                         hint={copy.reviewsHint}
                       />
                     ),
-                  },
-                  {
-                    value: "comments",
-                    label: pack.comments_count
-                      ? `${copy.tabs.comments} · ${pack.comments_count}`
-                      : copy.tabs.comments,
-                    content: <Comments kind="pack" id={pack.slug} />,
                   },
                 ]
               : []),

@@ -9,13 +9,9 @@ import type { SkinCard as SkinCardData } from "./types";
 
 const copy = skinsCopy.card;
 
-/** «Alex_UA · ♥ 12 · ⬇ 340». */
+/** «Alex_UA · ⬇ 340». */
 function meta(skin: SkinCardData): string {
-  return [
-    skin.author.nickname,
-    skin.likes_count ? copy.likes(skin.likes_count) : "",
-    copy.downloads(formatCount(skin.downloads_count)),
-  ]
+  return [skin.author.nickname, copy.downloads(formatCount(skin.downloads_count))]
     .filter(Boolean)
     .join(" · ");
 }

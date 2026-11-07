@@ -3,7 +3,6 @@
 import { useState } from "react";
 
 import { Checkbox } from "@/components/ui/Checkbox";
-import { ChoiceChips } from "@/components/ui/ChoiceChips";
 import { useToast } from "@/components/ui/useToast";
 import type { Me } from "@/features/auth/useMe";
 
@@ -14,7 +13,6 @@ const copy = settingsCopy.privacy;
 
 type Values = {
   is_private: boolean;
-  who_can_comment: NonNullable<UserSettings["who_can_comment"]>;
   collections_visible: boolean;
   history_enabled: boolean;
 };
@@ -26,7 +24,6 @@ export function PrivacyPanel({ me, settings }: { me: Me; settings: UserSettings 
   const updateSettings = useUpdateSettings();
   const [values, setValues] = useState<Values>({
     is_private: me.is_private,
-    who_can_comment: settings.who_can_comment ?? "all",
     collections_visible: settings.collections_visible ?? true,
     history_enabled: settings.history_enabled ?? true,
   });
@@ -55,12 +52,6 @@ export function PrivacyPanel({ me, settings }: { me: Me; settings: UserSettings 
         hint={copy.isPrivateHint}
         checked={values.is_private}
         onChange={(event) => change("is_private", event.target.checked)}
-      />
-      <ChoiceChips
-        label={copy.whoCanComment}
-        options={copy.commentPolicies}
-        value={values.who_can_comment}
-        onChange={(value) => change("who_can_comment", value)}
       />
       <Checkbox
         label={copy.collectionsVisible}

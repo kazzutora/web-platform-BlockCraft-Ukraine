@@ -8,44 +8,13 @@ from apps.social import services
 pytestmark = pytest.mark.django_db
 
 
-def like(client, collection, method="post"):
-    if method == "delete":
-        return client.delete(f"/api/v1/likes?kind=collection&id={collection.pk}")
-    return client.post("/api/v1/likes", {"kind": "collection", "id": collection.pk}, format="json")
-
-
-def test_like_and_unlike_a_collection(auth_client):
-    collection = CollectionFactory()
-
-    like(auth_client, collection)
-    state = like(auth_client, collection).json()
-    assert state == {
-        "kind": "collection",
-        "id": str(collection.pk),
-        "liked": True,
-        "likes_count": 1,
-    }
-
-    state = like(auth_client, collection, method="delete").json()
-    assert (state["liked"], state["likes_count"]) == (False, 0)
-
-
-def test_mods_are_not_liked_but_reviewed(auth_client):
-    ProjectFactory(slug="sodium")
-
-    response = auth_client.post("/api/v1/likes", {"kind": "mod", "id": "sodium"}, format="json")
-
-    assert response.status_code == 400
-
-
-def test_like_score_for_collections(user):
-    collection = CollectionFactory(visibility=Collection.Visibility.PUBLIC)
-    services.like(user=user, kind="collection", identifier=str(collection.pk))
+def test_saves_score_for_collections(user):
+    collection = CollectionFactory(visibility=Collection.Visibility.PUBLIC, favorites_count=3)
 
     services.recalc_scores()
 
     collection.refresh_from_db()
-    assert collection.score == 1
+    assert collection.score == 3
 
 
 def test_catalog_shows_the_viewer_state(auth_client, user, api_client):

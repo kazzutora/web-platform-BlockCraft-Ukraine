@@ -46,7 +46,6 @@ class CollectionSerializer(serializers.ModelSerializer):
     owner = UserBriefSerializer(read_only=True)
     preview = serializers.SerializerMethodField()
     can_edit = serializers.SerializerMethodField()
-    is_liked = serializers.SerializerMethodField()
     is_favorited = serializers.SerializerMethodField()
 
     class Meta:
@@ -58,12 +57,10 @@ class CollectionSerializer(serializers.ModelSerializer):
             "visibility",
             "owner",
             "items_count",
-            "likes_count",
             "favorites_count",
             "is_setup",
             "preview",
             "can_edit",
-            "is_liked",
             "is_favorited",
             "created_at",
             "updated_at",
@@ -92,9 +89,6 @@ class CollectionSerializer(serializers.ModelSerializer):
         # Lists annotate it (library.views._with_collection_state); otherwise ask the database
         annotated = getattr(collection, "viewer_is_editor", None)
         return annotated if annotated is not None else can_edit(request.user, collection)
-
-    def get_is_liked(self, collection: Collection) -> bool:
-        return bool(getattr(collection, "is_liked", False))
 
     def get_is_favorited(self, collection: Collection) -> bool:
         return bool(getattr(collection, "is_favorited", False))

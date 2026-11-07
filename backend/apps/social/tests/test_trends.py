@@ -9,7 +9,7 @@ from apps.library.models import Download, Favorite
 from apps.mods.tests.factories import ProjectFactory
 from apps.skins.tests.factories import SkinFactory
 from apps.social import services
-from apps.social.models import Like, Review
+from apps.social.models import Review
 from apps.social.tasks import recalc_trends
 
 pytestmark = pytest.mark.django_db
@@ -25,15 +25,15 @@ def test_recent_events_weigh_more_and_old_ones_drop_out():
     now = timezone.now()
     fresh, old = SkinFactory(), SkinFactory(trend_score=99)
     ct = services.kinds.get_kind("skin").content_type
-    aged(Like, 0, user=UserFactory(), content_type=ct, object_id=fresh.pk)
+    aged(Favorite, 0, user=UserFactory(), content_type=ct, object_id=fresh.pk)
     aged(Favorite, 48, user=UserFactory(), content_type=ct, object_id=fresh.pk)
-    aged(Like, 24 * 20, user=UserFactory(), content_type=ct, object_id=old.pk)
+    aged(Favorite, 24 * 20, user=UserFactory(), content_type=ct, object_id=old.pk)
 
     services.recalc_trends(now=now)
 
     fresh.refresh_from_db()
     old.refresh_from_db()
-    assert fresh.trend_score == pytest.approx(1 + 2 * math.exp(-1), rel=1e-3)
+    assert fresh.trend_score == pytest.approx(2 + 2 * math.exp(-1), rel=1e-3)
     assert old.trend_score == 0
 
 

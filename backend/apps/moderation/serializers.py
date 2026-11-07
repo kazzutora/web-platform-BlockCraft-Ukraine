@@ -6,7 +6,7 @@ from .models import Report
 
 
 class ReportCreateSerializer(serializers.Serializer):
-    kind = serializers.ChoiceField(choices=[*kinds.names(), "comment"])
+    kind = serializers.ChoiceField(choices=kinds.names())
     id = serializers.CharField(max_length=96)
     reason = serializers.ChoiceField(choices=Report.Reason.choices)
     comment = serializers.CharField(max_length=500, required=False, allow_blank=True)

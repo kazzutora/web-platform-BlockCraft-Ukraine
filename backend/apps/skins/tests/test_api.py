@@ -150,7 +150,7 @@ def test_catalog_filters(api_client):
 
 def test_catalog_sorts(api_client):
     SkinFactory(title="Популярний", downloads_count=50)
-    SkinFactory(title="Улюблений", likes_count=30)
+    SkinFactory(title="Улюблений", favorites_count=30)
 
     first = api_client.get("/api/v1/skins").json()["results"][0]["title"]
     top = api_client.get("/api/v1/skins", {"sort": "top"}).json()["results"][0]["title"]
@@ -169,12 +169,10 @@ def test_catalog_has_no_n_plus_one(auth_client, django_assert_max_num_queries):
 
 def test_viewer_state_on_cards(user, auth_client):
     skin = SkinFactory()
-    auth_client.post("/api/v1/likes", {"kind": "skin", "id": skin.pk}, format="json")
     auth_client.post("/api/v1/favorites", {"kind": "skin", "id": skin.pk}, format="json")
 
     card = auth_client.get("/api/v1/skins").json()["results"][0]
 
-    assert (card["is_liked"], card["likes_count"]) == (True, 1)
     assert (card["is_favorited"], card["favorites_count"]) == (True, 1)
 
 

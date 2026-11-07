@@ -83,7 +83,6 @@ class ServerDetailSerializer(ServerCardSerializer):
             "discord_url",
             "website_url",
             "author",
-            "comments_count",
             "ip_copies_count",
             "last_online_at",
             "status",

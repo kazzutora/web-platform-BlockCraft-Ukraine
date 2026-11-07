@@ -7,11 +7,9 @@ import { CardGrid } from "@/components/ui/CardGrid";
 import { Chip } from "@/components/ui/Chip";
 import { Icon } from "@/components/ui/Icon";
 import { AddToCollection } from "@/features/library/AddToCollection";
-import { LikeButton } from "@/features/library/LikeButton";
 import { SaveToggle } from "@/features/library/SaveToggle";
 import { formatCount } from "@/features/mods/format";
 import { ReportButton } from "@/features/moderation/ReportButton";
-import { Comments } from "@/features/social/Comments";
 
 import { downloadUrl, getSimilar, getSkin } from "./api";
 import { skinsCopy } from "./copy";
@@ -79,12 +77,6 @@ export async function SkinDetail({ id }: { id: number }) {
                   className="h-12"
                 />
                 <AddToCollection kind="skin" id={identifier} />
-                <LikeButton
-                  kind="skin"
-                  id={identifier}
-                  liked={skin.is_liked}
-                  count={skin.likes_count}
-                />
               </>
             )}
             {skin.is_mine && <SkinOwnerActions skin={skin} />}
@@ -100,13 +92,6 @@ export async function SkinDetail({ id }: { id: number }) {
           },
           ...(published
             ? [
-                {
-                  value: "comments",
-                  label: skin.comments_count
-                    ? `${copy.tabs.comments} · ${skin.comments_count}`
-                    : copy.tabs.comments,
-                  content: <Comments kind="skin" id={identifier} />,
-                },
                 {
                   value: "similar",
                   label: copy.tabs.similar,

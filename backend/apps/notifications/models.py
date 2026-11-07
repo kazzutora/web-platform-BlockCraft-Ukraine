@@ -8,7 +8,6 @@ class Notification(models.Model):
         REJECTED = "rejected", "Роботу відхилено"
         HIDDEN = "hidden", "Роботу приховано після скарг"
         RESTORED = "restored", "Роботу повернуто"
-        REPLY = "reply", "Відповідь на коментар"
         REVIEW = "review", "Новий відгук"
         WARNING = "warning", "Попередження"
 

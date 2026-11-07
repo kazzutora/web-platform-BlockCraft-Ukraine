@@ -15,7 +15,7 @@ class PacksConfig(AppConfig):
                 model_label="packs.Pack",
                 lookup_field="slug",
                 rating="review",
-                actions=frozenset({"favorite", "review", "comment", "collect", "report"}),
+                actions=frozenset({"favorite", "review", "collect", "report"}),
                 owner_field="author",
             )
         )

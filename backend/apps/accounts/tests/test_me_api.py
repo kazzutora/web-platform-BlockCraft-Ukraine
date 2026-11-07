@@ -113,7 +113,7 @@ def test_settings_can_be_read_and_changed(auth_client):
 
     response = auth_client.patch(
         "/api/v1/me/settings",
-        {"theme": "dark", "who_can_comment": "nobody", "collections_visible": False},
+        {"theme": "dark", "collections_visible": False},
         format="json",
     )
 
@@ -123,7 +123,6 @@ def test_settings_can_be_read_and_changed(auth_client):
         "language": "uk",
         "notify_prefs": {},
         "history_enabled": True,
-        "who_can_comment": "nobody",
         "collections_visible": False,
     }
 

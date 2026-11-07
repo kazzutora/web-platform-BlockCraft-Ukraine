@@ -28,7 +28,6 @@ class PackAdmin(PublicationModerationMixin, admin.ModelAdmin):
         "rating_avg",
         "rating_count",
         "favorites_count",
-        "comments_count",
         "downloads_count",
         "published_at",
     ]

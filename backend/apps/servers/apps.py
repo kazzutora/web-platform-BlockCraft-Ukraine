@@ -15,7 +15,7 @@ class ServersConfig(AppConfig):
                 model_label="servers.Server",
                 lookup_field="slug",
                 rating="review",
-                actions=frozenset({"favorite", "review", "comment", "collect", "report"}),
+                actions=frozenset({"favorite", "review", "collect", "report"}),
                 owner_field="author",
             )
         )

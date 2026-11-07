@@ -19,7 +19,7 @@ class ReportsView(APIView):
         operation_id="reports_create",
         request=ReportCreateSerializer,
         responses={201: ReportCreatedSerializer, **error_responses(400, 401, 404, 429)},
-        description="A report on any reportable kind or a comment; five open ones hide the object.",
+        description="A report on any reportable kind; five open ones hide the object.",
     )
     def post(self, request: Request) -> Response:
         data = ReportCreateSerializer(data=request.data)

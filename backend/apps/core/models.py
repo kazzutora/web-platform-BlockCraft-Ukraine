@@ -51,9 +51,7 @@ class Publishable(models.Model):
 class Engagement(models.Model):
     """Denormalized counters; change them only in services with F() inside a transaction."""
 
-    likes_count = models.PositiveIntegerField(default=0)
     favorites_count = models.PositiveIntegerField(default=0)
-    comments_count = models.PositiveIntegerField(default=0)
     downloads_count = models.PositiveIntegerField(default=0)
     views_count = models.PositiveIntegerField(default=0)
     rating_avg = models.FloatField(default=0)

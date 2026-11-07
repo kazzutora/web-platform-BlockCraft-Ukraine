@@ -16,8 +16,8 @@ class LibraryConfig(AppConfig):
                 name="collection",
                 model_label="library.Collection",
                 lookup_field="pk",
-                rating="like",
-                actions=frozenset({"favorite", "like", "comment", "report"}),
+                rating="favorites",
+                actions=frozenset({"favorite", "report"}),
                 owner_field="owner",
                 visible=selectors.listed_collections,
             )

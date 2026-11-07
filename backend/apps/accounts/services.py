@@ -66,7 +66,6 @@ def update_settings(*, user: User, data: dict[str, Any]) -> UserSettings:
             "language",
             "notify_prefs",
             "history_enabled",
-            "who_can_comment",
             "collections_visible",
         },
     )

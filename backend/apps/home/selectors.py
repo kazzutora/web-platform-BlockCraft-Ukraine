@@ -14,7 +14,7 @@ from apps.mods import selectors as mods
 from apps.packs import selectors as packs
 from apps.servers import selectors as servers
 from apps.skins import selectors as skins
-from apps.social.models import Like, Review
+from apps.social.models import Review
 
 HOME_TTL = 5 * 60
 TOP_TTL = 10 * 60
@@ -57,7 +57,7 @@ def skin_of_week(*, viewer: Viewer):
     def build() -> QuerySet:
         recent = skins.catalog().filter(published_at__gte=timezone.now() - timedelta(days=7))
         source = recent if recent.exists() else skins.catalog()
-        return source.order_by("-trend_score", "-likes_count", "-published_at")[:1]
+        return source.order_by("-trend_score", "-favorites_count", "-published_at")[:1]
 
     found = _in_order(skins.catalog(viewer), _cached_ids("home:skin-of-week", HOME_TTL, build))
     return found[0] if found else None
@@ -106,13 +106,13 @@ CATALOGS = {
 ALL_TIME = {
     "mod": ["-score", "-modrinth_downloads"],
     "pack": ["-score", "-downloads_count", "-modrinth_downloads"],
-    "skin": ["-likes_count", "-downloads_count"],
+    "skin": ["-favorites_count", "-downloads_count"],
     "server": ["-score", "-favorites_count"],
 }
 
 
 def _monthly(queryset: QuerySet, kind_name: str) -> QuerySet:
-    """Likes, saves, reviews (and mod downloads) of the last 30 days, weighted like trends."""
+    """Saves, reviews (and mod downloads) of the last 30 days, weighted like trends."""
     since = timezone.now() - timedelta(days=30)
     kind = get_kind(kind_name)
     target = {
@@ -125,11 +125,9 @@ def _monthly(queryset: QuerySet, kind_name: str) -> QuerySet:
         rows = model.objects.filter(**filters).values(field).annotate(n=Count("pk")).values("n")[:1]
         return Coalesce(Subquery(rows), Value(0))
 
-    # Trend weights ×2 to stay in integers: like 2, save 4, review 6, download 1
-    month = (
-        2 * count(Like, **target)
-        + 4 * count(Favorite, **target)
-        + 6 * count(Review, **target, status=Review.Status.PUBLISHED)
+    # Trend weights ×2 to stay in integers: save 4, review 6, download 1
+    month = 4 * count(Favorite, **target) + 6 * count(
+        Review, **target, status=Review.Status.PUBLISHED
     )
     if kind_name == "mod":
         month = month + count(

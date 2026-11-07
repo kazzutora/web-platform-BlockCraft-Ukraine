@@ -12,9 +12,8 @@ import { useRequireAuth } from "@/features/auth/useRequireAuth";
 import { api } from "@/lib/api/client";
 import { generalError } from "@/lib/api/errors";
 import type { components } from "@/lib/api/schema";
-import { cn } from "@/lib/cn";
 
-type ReportKind = components["schemas"]["ReportKindEnum"];
+type ReportKind = components["schemas"]["KindEnum"];
 type Reason = components["schemas"]["ReasonEnum"];
 
 const copy = {
@@ -40,12 +39,10 @@ const copy = {
 type ReportButtonProps = {
   kind: ReportKind;
   id: string;
-  /** Text button (pages) or a small flag (comments). */
-  compact?: boolean;
 };
 
 /** «Поскаржитися»: reason and an optional note for the moderators. */
-export function ReportButton({ kind, id, compact = false }: ReportButtonProps) {
+export function ReportButton({ kind, id }: ReportButtonProps) {
   const toast = useToast();
   const requireAuth = useRequireAuth();
   const [open, setOpen] = useState(false);
@@ -77,14 +74,9 @@ export function ReportButton({ kind, id, compact = false }: ReportButtonProps) {
       open={open}
       onOpenChange={(next) => (next ? requireAuth(() => setOpen(true)) : setOpen(false))}
       trigger={
-        <Button
-          variant="ghost"
-          aria-label={compact ? copy.open : undefined}
-          title={compact ? copy.open : undefined}
-          className={cn(compact && "size-9 px-0 text-muted")}
-        >
-          <Icon name="flag" size={compact ? 16 : 24} />
-          {!compact && copy.open}
+        <Button variant="ghost">
+          <Icon name="flag" size={24} />
+          {copy.open}
         </Button>
       }
       footer={

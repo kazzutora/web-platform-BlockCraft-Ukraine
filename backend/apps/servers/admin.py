@@ -26,6 +26,5 @@ class ServerAdmin(PublicationModerationMixin, admin.ModelAdmin):
         "rating_avg",
         "rating_count",
         "favorites_count",
-        "comments_count",
         "published_at",
     ]

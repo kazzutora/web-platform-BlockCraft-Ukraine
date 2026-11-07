@@ -19,7 +19,7 @@ group("notification text", () => {
     });
   });
 
-  it("explains rejections and hidden comments", () => {
+  it("explains rejections and hidden objects", () => {
     expect(
       describe({ ...base, type: "rejected", payload: { ...base.payload, reason: "Чужий" } }).text,
     ).toBe("«Мавка» не пройшов модерацію: Чужий");
@@ -27,9 +27,12 @@ group("notification text", () => {
       describe({
         ...base,
         type: "hidden",
-        payload: { kind: "server", id: "sich", excerpt: "спам" },
+        payload: { kind: "server", id: "sich", title: "Січ" },
       }),
-    ).toEqual({ text: "Твій коментар «спам» приховано після скарг.", href: "/servers/sich" });
+    ).toEqual({
+      text: "«Січ» приховано після скарг. Модератори вирішили, що він порушує правила.",
+      href: "/servers/sich",
+    });
   });
 
   it("has no link for warnings", () => {

@@ -7,8 +7,6 @@ from apps.library.models import CollectionItem, Favorite
 from apps.library.tests.factories import CollectionFactory
 from apps.mods.models import Project, ProjectVersion
 from apps.mods.tests.factories import ProjectFactory
-from apps.social import services
-from apps.social.models import Comment, Like
 
 pytestmark = pytest.mark.django_db
 
@@ -17,14 +15,10 @@ def test_deleting_a_collection_removes_what_points_at_it():
     collection = CollectionFactory()
     fan = UserFactory()
     library.add_favorite(user=fan, kind="collection", identifier=str(collection.pk))
-    services.like(user=fan, kind="collection", identifier=str(collection.pk))
-    services.add_comment(user=fan, kind="collection", identifier=str(collection.pk), body="Клас")
 
     collection.delete()
 
     assert not Favorite.objects.exists()
-    assert not Like.objects.exists()
-    assert not Comment.objects.exists()
 
 
 def test_deleting_a_mod_takes_it_out_of_collections():

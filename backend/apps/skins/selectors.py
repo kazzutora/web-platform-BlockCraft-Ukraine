@@ -42,7 +42,7 @@ def similar(*, skin: Skin, viewer: Viewer | None = None) -> list[Skin]:
         .exclude(pk=skin.pk)
         .filter(Q(color_bucket=skin.color_bucket) | Q(style_tags__overlap=skin.style_tags))
     )
-    return list(queryset.order_by("-likes_count", "-downloads_count")[:SIMILAR_LIMIT])
+    return list(queryset.order_by("-favorites_count", "-downloads_count")[:SIMILAR_LIMIT])
 
 
 def my_skins(user: User) -> QuerySet[Skin]:

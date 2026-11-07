@@ -17,31 +17,6 @@ def client_for(user) -> APIClient:
     return client
 
 
-def test_reply_notifies_the_author_of_the_comment():
-    server = ServerFactory()
-    author, replier = UserFactory(), UserFactory(nickname="Mavka")
-    parent = social.add_comment(
-        user=author, kind="server", identifier=server.slug, body="Є вайтліст?"
-    )
-
-    social.add_comment(
-        user=replier, kind="server", identifier=server.slug, body="Ні, заходь", parent_id=parent.pk
-    )
-    social.add_comment(
-        user=author, kind="server", identifier=server.slug, body="Дякую", parent_id=parent.pk
-    )
-
-    note = Notification.objects.get()
-    assert (note.user, note.type) == (author, "reply")
-    assert note.payload == {
-        "kind": "server",
-        "id": server.slug,
-        "title": server.name,
-        "actor": "Mavka",
-        "excerpt": "Ні, заходь",
-    }
-
-
 def test_first_review_notifies_the_owner_and_updates_do_not():
     server = ServerFactory()
     reviewer = UserFactory()
@@ -58,9 +33,9 @@ def test_switched_off_types_are_not_saved():
     user.refresh_from_db()
 
     notify(user=user, type="review", actor="x")
-    notify(user=user, type="reply", actor="x")
+    notify(user=user, type="warning", reason="x")
 
-    assert list(Notification.objects.values_list("type", flat=True)) == ["reply"]
+    assert list(Notification.objects.values_list("type", flat=True)) == ["warning"]
 
 
 def test_list_unread_and_mark_read():

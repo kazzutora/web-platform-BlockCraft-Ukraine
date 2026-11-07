@@ -57,7 +57,6 @@ export const modsCopy = {
       versions: "Версії",
       dependencies: "Залежності",
       reviews: "Відгуки",
-      comments: "Коментарі",
       similar: "Схоже",
     },
     noDescription: "Автор ще не додав опис.",

@@ -17,10 +17,8 @@ class SkinAdmin(PublicationModerationMixin, admin.ModelAdmin):
         "thumbnail",
         "texture_hash",
         "dominant_color",
-        "likes_count",
         "favorites_count",
         "downloads_count",
-        "comments_count",
         "published_at",
     ]
 

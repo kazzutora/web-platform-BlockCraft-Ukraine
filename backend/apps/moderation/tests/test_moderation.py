@@ -17,8 +17,6 @@ from apps.notifications.models import Notification
 from apps.servers.tests.factories import ServerFactory
 from apps.skins.models import Skin
 from apps.skins.tests.factories import SkinFactory
-from apps.social import services as social
-from apps.social.models import Comment
 
 pytestmark = pytest.mark.django_db
 
@@ -69,20 +67,6 @@ def test_five_independent_reports_hide_the_object(api_client):
     assert skin.status == Skin.Status.HIDDEN
     assert api_client.get(f"/api/v1/skins/{skin.pk}").status_code == 404
     assert Report.objects.filter(auto_hidden=True).count() == 5
-
-
-def test_comments_can_be_reported_and_hidden(api_client):
-    server = ServerFactory()
-    comment = social.add_comment(
-        user=UserFactory(), kind="server", identifier=server.slug, body="Підозріле посилання"
-    )
-    for _ in range(5):
-        report(UserFactory(), "comment", comment.pk, reason="scam")
-
-    comment.refresh_from_db()
-    assert comment.status == Comment.Status.HIDDEN
-    listed = api_client.get("/api/v1/comments", {"kind": "server", "id": server.slug}).json()
-    assert listed["results"] == []
 
 
 def test_private_collection_cannot_be_reported():
@@ -192,17 +176,17 @@ def test_admin_report_queue_accepts(admin_client):
 # Sanctions
 
 
-def test_publish_ban_blocks_comments_and_uploads():
+def test_publish_ban_blocks_reviews():
     player = UserFactory()
     server = ServerFactory()
     services.issue_sanction(user=player, type=Sanction.Type.PUBLISH_BAN, reason="Спам")
     client = client_for(player)
 
-    comment = client.post(
-        "/api/v1/comments", {"kind": "server", "id": server.slug, "body": "Привіт"}, format="json"
+    review = client.put(
+        "/api/v1/reviews", {"kind": "server", "id": server.slug, "stars": 5}, format="json"
     )
 
-    assert (comment.status_code, comment.json()["code"]) == (403, "publish_banned")
+    assert (review.status_code, review.json()["code"]) == (403, "publish_banned")
     assert Notification.objects.get(user=player).type == "warning"
 
 
@@ -239,19 +223,19 @@ def test_expired_publish_ban_no_longer_applies():
 # Profanity in user content
 
 
-def test_banned_word_in_a_comment_is_blocked_with_an_explanation():
+def test_banned_word_in_a_review_is_blocked_with_an_explanation():
     server = ServerFactory()
 
-    response = client_for(UserFactory()).post(
-        "/api/v1/comments",
-        {"kind": "server", "id": server.slug, "body": "адмін — мудак"},
+    response = client_for(UserFactory()).put(
+        "/api/v1/reviews",
+        {"kind": "server", "id": server.slug, "stars": 1, "text": "адмін — мудак"},
         format="json",
     )
 
     assert response.status_code == 400
     body = response.json()
     assert body["code"] == "banned_word"
-    assert body["fields"]["body"] == [
+    assert body["fields"]["text"] == [
         "Текст містить слово, яке в нас заборонене. Переформулюй, будь ласка."
     ]
 

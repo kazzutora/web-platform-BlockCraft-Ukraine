@@ -139,7 +139,6 @@ class PackDetailSerializer(PackCardSerializer):
             "items",
             "issues",
             "total_size",
-            "comments_count",
             "status",
             "rejection_reason",
             "is_mine",

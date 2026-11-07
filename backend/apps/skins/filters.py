@@ -6,10 +6,10 @@ from .models import Skin
 from .styles import ColorBucket, Style
 
 SORTS = {
-    "popular": ["-downloads_count", "-likes_count"],
+    "popular": ["-downloads_count", "-favorites_count"],
     "new": ["-published_at"],
-    "top": ["-likes_count", "-downloads_count"],
-    "trend": ["-trend_score", "-likes_count"],
+    "top": ["-favorites_count", "-downloads_count"],
+    "trend": ["-trend_score", "-favorites_count"],
 }
 
 

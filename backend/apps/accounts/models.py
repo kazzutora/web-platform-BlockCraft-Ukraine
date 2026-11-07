@@ -130,11 +130,6 @@ class UserSettings(models.Model):
         UK = "uk", "Українська"
         EN = "en", "English"
 
-    class CommentPolicy(models.TextChoices):
-        ALL = "all", "Усі"
-        FOLLOWERS = "followers", "Лише підписники"
-        NOBODY = "nobody", "Ніхто"
-
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, primary_key=True, related_name="settings"
     )
@@ -142,9 +137,6 @@ class UserSettings(models.Model):
     language = models.CharField(max_length=4, choices=Language.choices, default=Language.UK)
     notify_prefs = models.JSONField(default=dict, blank=True)
     history_enabled = models.BooleanField(default=True)
-    who_can_comment = models.CharField(
-        max_length=16, choices=CommentPolicy.choices, default=CommentPolicy.ALL
-    )
     collections_visible = models.BooleanField(default=True)
 
     class Meta:

@@ -19,7 +19,6 @@ from apps.servers.models import Server
 from apps.servers.selectors import catalog as servers_catalog
 from apps.skins.models import Skin
 from apps.skins.selectors import catalog as skins_catalog
-from apps.social.models import Like
 
 from . import selectors, services
 from .models import Collection, Favorite
@@ -41,12 +40,10 @@ def _with_collection_state(queryset, viewer):
     kind = kinds.get_kind("collection")
     if not viewer.is_authenticated:
         return queryset.annotate(
-            is_liked=Value(False, output_field=BooleanField()),
             is_favorited=Value(False, output_field=BooleanField()),
         )
     target = {"content_type": kind.content_type, "object_id": OuterRef("pk")}
     return queryset.annotate(
-        is_liked=Exists(Like.objects.filter(user=viewer, **target)),
         is_favorited=Exists(Favorite.objects.filter(user=viewer, **target)),
         # «can_edit» for every card in one query instead of one per collection
         viewer_is_editor=Exists(

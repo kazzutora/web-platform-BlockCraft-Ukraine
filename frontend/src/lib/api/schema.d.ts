@@ -124,57 +124,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/comments": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** @description Top-level comments with replies; the first page also brings the pinned one. */
-        get: operations["comments_list"];
-        put?: never;
-        /** @description GET for everyone, writes for signed-in users with a write-only throttle scope. */
-        post: operations["comments_create"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/comments/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        delete: operations["comments_delete"];
-        options?: never;
-        head?: never;
-        patch: operations["comments_update"];
-        trace?: never;
-    };
-    "/api/v1/comments/{id}/pin": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** @description Pins or unpins a top-level comment; one pinned comment per object. */
-        post: operations["comments_pin"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/v1/csrf": {
         parameters: {
             query?: never;
@@ -240,22 +189,6 @@ export interface paths {
         put?: never;
         post?: never;
         delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/likes": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["likes_add"];
-        delete: operations["likes_remove"];
         options?: never;
         head?: never;
         patch?: never;
@@ -767,7 +700,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description A report on any reportable kind or a comment; five open ones hide the object. */
+        /** @description A report on any reportable kind; five open ones hide the object. */
         post: operations["reports_create"];
         delete?: never;
         options?: never;
@@ -1136,12 +1069,10 @@ export interface components {
             readonly visibility: components["schemas"]["VisibilityEnum"];
             readonly owner: components["schemas"]["UserBrief"];
             readonly items_count: number;
-            readonly likes_count: number;
             readonly favorites_count: number;
             readonly is_setup: boolean;
             readonly preview: string[];
             readonly can_edit: boolean;
-            readonly is_liked: boolean;
             readonly is_favorited: boolean;
             /** Format: date-time */
             readonly created_at: string;
@@ -1157,12 +1088,10 @@ export interface components {
             readonly visibility: components["schemas"]["VisibilityEnum"];
             readonly owner: components["schemas"]["UserBrief"];
             readonly items_count: number;
-            readonly likes_count: number;
             readonly favorites_count: number;
             readonly is_setup: boolean;
             readonly preview: string[];
             readonly can_edit: boolean;
-            readonly is_liked: boolean;
             readonly is_favorited: boolean;
             /** Format: date-time */
             readonly created_at: string;
@@ -1207,45 +1136,6 @@ export interface components {
          * @enum {string}
          */
         ColorBucketEnum: "red" | "orange" | "yellow" | "green" | "cyan" | "blue" | "purple" | "pink" | "brown" | "black" | "white" | "gray";
-        Comment: {
-            readonly id: number;
-            readonly user: components["schemas"]["UserBrief"];
-            readonly body: string;
-            readonly is_deleted: boolean;
-            readonly is_pinned: boolean;
-            readonly is_edited: boolean;
-            /** Format: date-time */
-            readonly created_at: string;
-            readonly can_edit: boolean;
-            readonly can_delete: boolean;
-            readonly replies: components["schemas"]["CommentReply"][];
-        };
-        CommentCreateRequest: {
-            kind: components["schemas"]["KindEnum"];
-            id: string;
-            body: string;
-            parent?: number | null;
-        };
-        CommentReply: {
-            readonly id: number;
-            readonly user: components["schemas"]["UserBrief"];
-            readonly body: string;
-            readonly is_deleted: boolean;
-            readonly is_pinned: boolean;
-            readonly is_edited: boolean;
-            /** Format: date-time */
-            readonly created_at: string;
-            readonly can_edit: boolean;
-            readonly can_delete: boolean;
-        };
-        CommentsPage: {
-            can_comment: boolean;
-            can_pin: boolean;
-            comments_count: number;
-            pinned: components["schemas"]["Comment"][];
-            results: components["schemas"]["Comment"][];
-            next_cursor: string | null;
-        };
         CoverUploadRequest: {
             /**
              * Format: binary
@@ -1427,12 +1317,6 @@ export interface components {
          * @enum {string}
          */
         LanguageEnum: "uk" | "en";
-        LikeState: {
-            kind: string;
-            id: string;
-            liked: boolean;
-            likes_count: number;
-        };
         /** @description Result of the latest ping (every 5 minutes); null when there is none yet. */
         LiveStatus: {
             is_online: boolean;
@@ -1517,12 +1401,10 @@ export interface components {
             readonly visibility: components["schemas"]["VisibilityEnum"];
             readonly owner: components["schemas"]["UserBrief"];
             readonly items_count: number;
-            readonly likes_count: number;
             readonly favorites_count: number;
             readonly is_setup: boolean;
             readonly preview: string[];
             readonly can_edit: boolean;
-            readonly is_liked: boolean;
             readonly is_favorited: boolean;
             /** Format: date-time */
             readonly created_at: string;
@@ -1594,12 +1476,11 @@ export interface components {
          *     * `rejected` - Роботу відхилено
          *     * `hidden` - Роботу приховано після скарг
          *     * `restored` - Роботу повернуто
-         *     * `reply` - Відповідь на коментар
          *     * `review` - Новий відгук
          *     * `warning` - Попередження
          * @enum {string}
          */
-        NotificationTypeEnum: "approved" | "rejected" | "hidden" | "restored" | "reply" | "review" | "warning";
+        NotificationTypeEnum: "approved" | "rejected" | "hidden" | "restored" | "review" | "warning";
         NotificationsPage: {
             unread_count: number;
             results: components["schemas"]["Notification"][];
@@ -1691,7 +1572,6 @@ export interface components {
             readonly items: components["schemas"]["PackItem"][];
             readonly issues: components["schemas"]["Issue"][];
             readonly total_size: number;
-            readonly comments_count: number;
             /** Статус */
             readonly status: components["schemas"]["PublishStatusEnum"];
             /** Причина відхилення */
@@ -1903,9 +1783,6 @@ export interface components {
             visibility?: components["schemas"]["VisibilityEnum"];
             editors?: string[];
         };
-        PatchedCommentUpdateRequest: {
-            body?: string;
-        };
         PatchedGameProfileRequest: {
             game_version?: components["schemas"]["GameVersionEnum"] | components["schemas"]["BlankEnum"];
             loader?: components["schemas"]["LoaderEnum"] | components["schemas"]["BlankEnum"];
@@ -1964,7 +1841,6 @@ export interface components {
                 [key: string]: boolean;
             };
             history_enabled?: boolean;
-            who_can_comment?: components["schemas"]["WhoCanCommentEnum"];
             collections_visible?: boolean;
         };
         ProfileSkin: {
@@ -2031,7 +1907,6 @@ export interface components {
             readonly source_url: string;
             readonly modrinth_url: string;
             readonly needs_translation: boolean;
-            readonly comments_count: number;
             /**
              * Опубліковано
              * Format: date-time
@@ -2093,7 +1968,7 @@ export interface components {
             item_ids: number[];
         };
         ReportCreateRequest: {
-            kind: components["schemas"]["ReportKindEnum"];
+            kind: components["schemas"]["KindEnum"];
             id: string;
             reason: components["schemas"]["ReasonEnum"];
             comment?: string;
@@ -2102,16 +1977,6 @@ export interface components {
             id: number;
             status: string;
         };
-        /**
-         * @description * `collection` - collection
-         *     * `mod` - mod
-         *     * `skin` - skin
-         *     * `server` - server
-         *     * `pack` - pack
-         *     * `comment` - comment
-         * @enum {string}
-         */
-        ReportKindEnum: "collection" | "mod" | "skin" | "server" | "pack" | "comment";
         Review: {
             readonly id: number;
             readonly user: components["schemas"]["UserBrief"];
@@ -2258,7 +2123,6 @@ export interface components {
             /** Format: uri */
             readonly website_url: string;
             readonly author: components["schemas"]["UserBrief"];
-            readonly comments_count: number;
             readonly ip_copies_count: number;
             /** Format: date-time */
             readonly last_online_at: string | null;
@@ -2317,11 +2181,9 @@ export interface components {
             /** Колір */
             readonly color_bucket: components["schemas"]["ColorBucketEnum"];
             readonly style_tags: components["schemas"]["SkinStyleEnum"][];
-            readonly likes_count: number;
             readonly favorites_count: number;
             readonly downloads_count: number;
             readonly is_favorited: boolean;
-            readonly is_liked: boolean;
         };
         /** @description Catalog card: the 2D preview (the texture until it is rendered), title, counters. */
         SkinDetail: {
@@ -2338,11 +2200,9 @@ export interface components {
             /** Колір */
             readonly color_bucket: components["schemas"]["ColorBucketEnum"];
             readonly style_tags: components["schemas"]["SkinStyleEnum"][];
-            readonly likes_count: number;
             readonly favorites_count: number;
             readonly downloads_count: number;
             readonly is_favorited: boolean;
-            readonly is_liked: boolean;
             /** Статус */
             readonly status: components["schemas"]["PublishStatusEnum"];
             /** Причина відхилення */
@@ -2353,7 +2213,6 @@ export interface components {
              */
             readonly is_current: boolean;
             readonly is_mine: boolean;
-            readonly comments_count: number;
             /** Format: date-time */
             readonly created_at: string;
             /**
@@ -2443,10 +2302,6 @@ export interface components {
          * @enum {string}
          */
         SuggestResponseStatusEnum: "queued" | "exists";
-        TargetQueryRequest: {
-            kind: components["schemas"]["KindEnum"];
-            id: string;
-        };
         /** @description `{kind, id}`: id is a slug or a number depending on the kind. */
         TargetRequest: {
             kind: components["schemas"]["KindEnum"];
@@ -2485,7 +2340,6 @@ export interface components {
                 [key: string]: boolean;
             };
             history_enabled?: boolean;
-            who_can_comment?: components["schemas"]["WhoCanCommentEnum"];
             collections_visible?: boolean;
         };
         Verification: {
@@ -2514,13 +2368,6 @@ export interface components {
          * @enum {string}
          */
         VisibilityEnum: "private" | "link" | "public";
-        /**
-         * @description * `all` - Усі
-         *     * `followers` - Лише підписники
-         *     * `nobody` - Ніхто
-         * @enum {string}
-         */
-        WhoCanCommentEnum: "all" | "followers" | "nobody";
     };
     responses: never;
     parameters: never;
@@ -2953,273 +2800,6 @@ export interface operations {
             };
         };
     };
-    comments_list: {
-        parameters: {
-            query: {
-                cursor?: string;
-                id: string;
-                /**
-                 * @description * `collection` - collection
-                 *     * `mod` - mod
-                 *     * `skin` - skin
-                 *     * `server` - server
-                 *     * `pack` - pack
-                 */
-                kind: "collection" | "mod" | "skin" | "server" | "pack";
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["CommentsPage"];
-                };
-            };
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-        };
-    };
-    comments_create: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["CommentCreateRequest"];
-                "application/x-www-form-urlencoded": components["schemas"]["CommentCreateRequest"];
-                "multipart/form-data": components["schemas"]["CommentCreateRequest"];
-            };
-        };
-        responses: {
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Comment"];
-                };
-            };
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            429: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-        };
-    };
-    comments_delete: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description No response body */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-        };
-    };
-    comments_update: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "application/json": components["schemas"]["PatchedCommentUpdateRequest"];
-                "application/x-www-form-urlencoded": components["schemas"]["PatchedCommentUpdateRequest"];
-                "multipart/form-data": components["schemas"]["PatchedCommentUpdateRequest"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Comment"];
-                };
-            };
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-        };
-    };
-    comments_pin: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Comment"];
-                };
-            };
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-        };
-    };
     csrf: {
         parameters: {
             query?: never;
@@ -3382,108 +2962,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Home"];
-                };
-            };
-        };
-    };
-    likes_add: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["TargetQueryRequest"];
-                "application/x-www-form-urlencoded": components["schemas"]["TargetQueryRequest"];
-                "multipart/form-data": components["schemas"]["TargetQueryRequest"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["LikeState"];
-                };
-            };
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-        };
-    };
-    likes_remove: {
-        parameters: {
-            query: {
-                id: string;
-                /**
-                 * @description * `collection` - collection
-                 *     * `mod` - mod
-                 *     * `skin` - skin
-                 *     * `server` - server
-                 *     * `pack` - pack
-                 */
-                kind: "collection" | "mod" | "skin" | "server" | "pack";
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["LikeState"];
-                };
-            };
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
                 };
             };
         };

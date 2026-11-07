@@ -1,4 +1,4 @@
-"""Demo content for `make seed`: players, skins, servers, collections, reviews, comments.
+"""Demo content for `make seed`: players, skins, servers, collections, reviews.
 
 Everything goes through the services, so counters, ratings and notifications stay
 consistent. A fixed random seed gives the same site every time.
@@ -85,14 +85,6 @@ REVIEWS = [
     (3, "Нормально, нічого особливого."),
     (4, "Спільнота приємна, адміни відповідають."),
 ]
-COMMENTS = [
-    "А з Sodium працює?",
-    "Дякую, саме те, що треба!",
-    "Під 26.3 вже є?",
-    "Підкажіть, як поставити на Bedrock?",
-    "Найкращий у своєму роді.",
-]
-REPLIES = ["Так, перевіряв.", "Ще ні, чекаємо оновлення.", "Дивись вкладку «Як поставити»."]
 
 
 @dataclass
@@ -102,7 +94,6 @@ class Summary:
     servers: int = 0
     collections: int = 0
     reviews: int = 0
-    comments: int = 0
     packs: int = 0
 
 
@@ -236,11 +227,10 @@ def _library_and_social(
     summary = Summary()
     mods = list(Project.objects.published().order_by("-modrinth_downloads")[:40])
     for index, player in enumerate(players):
-        # Favorites and likes
+        # Favorites
         for skin in rng.sample(made_skins, 4):
             if skin.author_id != player.pk:
                 library.add_favorite(user=player, kind="skin", identifier=str(skin.pk))
-                social.like(user=player, kind="skin", identifier=str(skin.pk))
         for project in rng.sample(mods, min(5, len(mods))):
             library.add_favorite(user=player, kind="mod", identifier=project.slug)
         # Reviews of mods and servers
@@ -279,23 +269,6 @@ def _library_and_social(
                 identifier=str(rng.choice(made_skins).pk),
             )
             summary.collections += 1
-    # Comments with a reply here and there
-    targets = [("mod", p.slug) for p in mods[:10]] + [("server", s.slug) for s in servers]
-    for kind, identifier in targets:
-        author, replier = rng.sample(players, 2)
-        comment = social.add_comment(
-            user=author, kind=kind, identifier=identifier, body=rng.choice(COMMENTS)
-        )
-        summary.comments += 1
-        if rng.random() < 0.6:
-            social.add_comment(
-                user=replier,
-                kind=kind,
-                identifier=identifier,
-                body=rng.choice(REPLIES),
-                parent_id=comment.pk,
-            )
-            summary.comments += 1
     return summary
 
 

@@ -95,8 +95,7 @@ export function PackForm({
     name: ["game_version", "loader"],
   });
   const saved = form.formState.defaultValues;
-  const retargeting =
-    !short && (gameVersion !== saved?.game_version || loader !== saved?.loader);
+  const retargeting = !short && (gameVersion !== saved?.game_version || loader !== saved?.loader);
 
   async function submit(values: PackFormValues) {
     try {

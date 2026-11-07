@@ -41,7 +41,6 @@ export const libraryCopy = {
   },
   card: {
     items: { one: "елемент", few: "елементи", many: "елементів" },
-    likes: (count: number) => `♥ ${count}`,
   },
   collection: {
     chip: "Колекція",
@@ -61,9 +60,8 @@ export const libraryCopy = {
     remove: "Прибрати з колекції",
     moveUp: "Вище",
     moveDown: "Нижче",
-    like: "Подобається",
     tabsLabel: "Розділи колекції",
-    tabs: { items: "Вміст", comments: "Коментарі" },
+    tabs: { items: "Вміст" },
     unknownItem: "Цей елемент більше недоступний.",
   },
   saved: {

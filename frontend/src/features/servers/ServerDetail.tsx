@@ -10,7 +10,6 @@ import { Tabs } from "@/components/ui/Tabs";
 import { AddToCollection } from "@/features/library/AddToCollection";
 import { SaveToggle } from "@/features/library/SaveToggle";
 import { ReportButton } from "@/features/moderation/ReportButton";
-import { Comments } from "@/features/social/Comments";
 import { Reviews } from "@/features/social/Reviews";
 import { cn } from "@/lib/cn";
 
@@ -167,13 +166,6 @@ export async function ServerDetail({ slug }: { slug: string }) {
                         hint={copy.reviewsHint}
                       />
                     ),
-                  },
-                  {
-                    value: "comments",
-                    label: server.comments_count
-                      ? `${copy.tabs.comments} · ${server.comments_count}`
-                      : copy.tabs.comments,
-                    content: <Comments kind="server" id={server.slug} />,
                   },
                 ]
               : []),

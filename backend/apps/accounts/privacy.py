@@ -25,7 +25,7 @@ def export(user: User) -> dict:
     from apps.packs.models import Pack
     from apps.servers.models import Server
     from apps.skins.models import Skin
-    from apps.social.models import Comment, Like, Review
+    from apps.social.models import Review
 
     profile, settings = user.game_profile, user.settings
     return {
@@ -50,15 +50,11 @@ def export(user: User) -> dict:
             "theme": settings.theme,
             "language": settings.language,
             "notify_prefs": settings.notify_prefs,
-            "who_can_comment": settings.who_can_comment,
             "collections_visible": settings.collections_visible,
         },
         "favorites": [
             {**_target(f), "saved_at": f.created_at.isoformat()}
             for f in Favorite.objects.filter(user=user).prefetch_related("target")
-        ],
-        "likes": [
-            _target(like) for like in Like.objects.filter(user=user).prefetch_related("target")
         ],
         "collections": [
             {
@@ -74,10 +70,6 @@ def export(user: User) -> dict:
         "reviews": [
             {**_target(r), "stars": r.stars, "text": r.text, "created_at": r.created_at.isoformat()}
             for r in Review.objects.filter(user=user).prefetch_related("target")
-        ],
-        "comments": [
-            {**_target(c), "body": c.body, "created_at": c.created_at.isoformat()}
-            for c in Comment.objects.filter(user=user, is_deleted=False).prefetch_related("target")
         ],
         "skins": [
             {"id": s.pk, "title": s.title, "status": s.status, "texture": s.file.url}
@@ -154,15 +146,12 @@ def delete(user: User) -> None:
     from apps.library.models import Favorite
     from apps.packs.models import Pack
     from apps.packs.services import recount_forks
-    from apps.social.models import Comment, Like, Review
+    from apps.social.models import Review
     from apps.social.services import recount_targets
 
     rows = [
         *Favorite.objects.filter(user=user).values_list("content_type_id", "object_id"),
-        *Like.objects.filter(user=user).values_list("content_type_id", "object_id"),
         *Review.objects.filter(user=user).values_list("content_type_id", "object_id"),
-        # Replies of others to this player's comments go with them
-        *Comment.objects.filter(user=user).values_list("content_type_id", "object_id"),
     ]
     forked = set(
         Pack.objects.filter(author=user, forked_from__isnull=False).values_list(

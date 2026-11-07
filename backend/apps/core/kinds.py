@@ -17,7 +17,7 @@ from django.http import Http404
 
 from .exceptions import DomainError
 
-Action = Literal["favorite", "like", "review", "comment", "collect", "report"]
+Action = Literal["favorite", "review", "collect", "report"]
 Viewer = Any  # User or AnonymousUser
 
 
@@ -27,10 +27,10 @@ class Kind:
     model_label: str
     #: "slug" or "pk": what `{kind, id}` carries for this kind
     lookup_field: str
-    #: How players rate it: 1–5 stars with a review, or a like
-    rating: Literal["review", "like"]
+    #: How `score` is computed: 1–5 stars with a review, or the number of saves
+    rating: Literal["review", "favorites"]
     actions: frozenset[str]
-    #: Attribute with the owner (pins comments, applies `who_can_comment`); None — nobody
+    #: Attribute with the owner (cannot review own objects); None — nobody
     owner_field: str | None = None
     #: Objects a viewer may see; defaults to `published()` or all objects
     visible: Callable[[Viewer], QuerySet] | None = field(default=None, compare=False)

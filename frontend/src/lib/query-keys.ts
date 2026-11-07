@@ -52,6 +52,5 @@ export const queryKeys = {
     reviews: (kind: string, id: string, sort: string) =>
       ["social", "reviews", kind, id, sort] as const,
     reviewsOf: (kind: string, id: string) => ["social", "reviews", kind, id] as const,
-    comments: (kind: string, id: string) => ["social", "comments", kind, id] as const,
   },
 };

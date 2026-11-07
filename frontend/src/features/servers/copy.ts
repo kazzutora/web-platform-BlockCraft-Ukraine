@@ -59,7 +59,7 @@ export const serversCopy = {
   whitelist: "Вайтліст",
   detail: {
     tabsLabel: "Розділи сервера",
-    tabs: { about: "Про сервер", stats: "Онлайн", reviews: "Відгуки", comments: "Коментарі" },
+    tabs: { about: "Про сервер", stats: "Онлайн", reviews: "Відгуки" },
     noDescription: "Власник ще не додав опису.",
     discord: "Discord",
     website: "Сайт",

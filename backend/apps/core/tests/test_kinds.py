@@ -15,7 +15,7 @@ pytestmark = pytest.mark.django_db
 def test_registered_kinds():
     assert {"mod", "collection"} <= set(kinds.names())
     assert kinds.get_kind("mod").rating == "review"
-    assert kinds.get_kind("collection").rating == "like"
+    assert kinds.get_kind("collection").rating == "favorites"
 
 
 def test_mod_is_resolved_by_slug_only_when_published():

@@ -25,7 +25,7 @@ export const topCopy = {
     TopPeriod,
     string
   >,
-  empty: "За цей період ще нічого не набрало вподобань. Спробуй інший період.",
+  empty: "За цей період ще нічого не набрало збережень і відгуків. Спробуй інший період.",
 };
 
 function href(kind: TopKind, period: TopPeriod): string {

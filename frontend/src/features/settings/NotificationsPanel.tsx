@@ -10,7 +10,7 @@ import { settingsCopy } from "./copy";
 import { type UserSettings, useUpdateSettings } from "./useSettings";
 
 const copy = notificationsCopy.prefs;
-const OPTIONAL = ["reply", "review"] as const;
+const OPTIONAL = ["review"] as const;
 type Optional = (typeof OPTIONAL)[number];
 type Prefs = Record<string, boolean>;
 

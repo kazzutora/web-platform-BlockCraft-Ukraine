@@ -5,7 +5,7 @@ from . import services
 
 @shared_task(name="social.recalc_scores")
 def recalc_scores() -> dict[str, int]:
-    """Hourly: Bayesian rating for reviewed kinds, likes for liked kinds."""
+    """Hourly: Bayesian rating for reviewed kinds, saves for the rest."""
     return services.recalc_scores()
 
 

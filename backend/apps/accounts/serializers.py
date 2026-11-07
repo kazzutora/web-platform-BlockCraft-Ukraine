@@ -97,7 +97,6 @@ class UserSettingsSerializer(serializers.ModelSerializer):
             "language",
             "notify_prefs",
             "history_enabled",
-            "who_can_comment",
             "collections_visible",
         ]
 

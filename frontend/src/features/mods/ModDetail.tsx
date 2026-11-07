@@ -8,7 +8,6 @@ import { gameVersions as supportedVersions } from "@/features/game/labels";
 import { AddToCollection } from "@/features/library/AddToCollection";
 import { SaveToggle } from "@/features/library/SaveToggle";
 import { ReportButton } from "@/features/moderation/ReportButton";
-import { Comments } from "@/features/social/Comments";
 import { Reviews } from "@/features/social/Reviews";
 import { versionDescending } from "@/lib/versions";
 
@@ -140,13 +139,6 @@ export async function ModDetail({ slug, searchParams }: ModDetailProps) {
               ? `${copy.tabs.reviews} · ${project.rating_count}`
               : copy.tabs.reviews,
             content: <Reviews kind="mod" id={project.slug} />,
-          },
-          {
-            value: "comments",
-            label: project.comments_count
-              ? `${copy.tabs.comments} · ${project.comments_count}`
-              : copy.tabs.comments,
-            content: <Comments kind="mod" id={project.slug} />,
           },
           {
             value: "similar",

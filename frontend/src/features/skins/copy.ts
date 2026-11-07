@@ -53,14 +53,13 @@ export const skinsCopy = {
     anyModel: "Будь-яка",
   },
   card: {
-    likes: (count: number) => `♥ ${count}`,
     downloads: (count: string) => `⬇ ${count}`,
   },
   detail: {
     download: "Завантажити PNG",
     by: "Автор",
     tabsLabel: "Розділи скіна",
-    tabs: { install: "Як поставити", comments: "Коментарі", similar: "Схожі" },
+    tabs: { install: "Як поставити", similar: "Схожі" },
     noSimilar: "Схожих скінів поки немає.",
     pending: "Скін на модерації: він з’явиться в каталозі після перевірки.",
     rejected: (reason: string) => `Скін відхилено${reason ? `: ${reason}` : "."}`,

@@ -15,15 +15,6 @@
       "Bash(git show *)",
       "Bash(ls *)"
     ],
-    "ask": [
-      "Bash(git commit *)",
-      "Bash(git push *)",
-      "Bash(git reset *)",
-      "Bash(docker compose down -v *)",
-      "Bash(make reset-db *)",
-      "Bash(uv add *)",
-      "Bash(pnpm add *)"
-    ],
     "deny": [
       "Read(./.env)",
       "Read(./.env.local)",
@@ -32,6 +23,14 @@
       "Read(./frontend/.env.local)",
       "Bash(git push --force *)",
       "Bash(rm -rf *)"
+    ],
+    "ask": [
+      "Bash(git push *)",
+      "Bash(git reset *)",
+      "Bash(docker compose down -v *)",
+      "Bash(make reset-db *)",
+      "Bash(uv add *)",
+      "Bash(pnpm add *)"
     ]
   }
 }

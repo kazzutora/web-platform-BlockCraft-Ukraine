@@ -1,12 +1,12 @@
 # BlockCraft Ukraine
 
-Україномовна платформа спільноти Minecraft: моди, зборки, скіни й сервери — знайти, зберегти, поділитися своїм.
+Україномовний навігатор по контенту Minecraft: Java Edition. Моди, ресурспаки, шейдери, датапаки, збірки, сервери й скіни — з відкритих джерел (Modrinth, MineSkin, Mojang), підібрані під «Мою гру», з перевіркою сумісності та експортом збірок у `.mrpack`. Шлях гравця: знайти → взяти → поділитися.
 
 - Бекенд: Django 5.2 + DRF, Celery, PostgreSQL 17, Redis 7, Meilisearch (`backend/`).
 - Фронтенд: Next.js 16 + React 19 + TypeScript, Tailwind CSS 4 (`frontend/`).
 - Інфраструктура: Docker Compose, Nginx (один origin для фронтенду й API).
 
-Специфікація й етапи — [`docs/tech.md`](docs/tech.md), прогрес — [`docs/PROGRESS.md`](docs/PROGRESS.md).
+Продукт — [`docs/product.md`](docs/product.md), специфікація й етапи ребілду R0–R9 — [`docs/tech.md`](docs/tech.md), прогрес — [`docs/PROGRESS.md`](docs/PROGRESS.md), аудит v1 — [`docs/rebuild/audit.md`](docs/rebuild/audit.md). Перша версія — [`docs/archive/v1/`](docs/archive/v1/).
 
 ## Що потрібно встановити
 
@@ -15,7 +15,7 @@
 | Docker Desktop | Увесь стек розробки | [docker.com](https://www.docker.com/products/docker-desktop/) |
 | Git | Код | `winget install Git.Git` |
 | GNU Make | Команди `make …` | `winget install ezwinports.make` |
-| Node.js 24 LTS + pnpm | Фронтенд на хості, pre-commit | `winget install OpenJS.NodeJS.LTS`, потім `corepack enable` |
+| Node.js 24 LTS + pnpm | Необов'язково: фронтенд на хості (`make up-local`) | `winget install OpenJS.NodeJS.LTS`, потім `corepack enable` |
 | uv | Python-залежності на хості (IDE, pre-commit) | `winget install astral-sh.uv` |
 
 ## Запуск з нуля
@@ -69,7 +69,7 @@ pnpm dev               # сайт однаково відкривається н
 | `make sync-mods` | Синхронізація модів, ресурспаків і шейдерів з Modrinth |
 | `make seed` | Демо-гравці поверх синхронізованих даних (спершу `make sync-mods`): 20 гравців (пароль `Creeper-Aww-Man-2026`), обране, колекції, відгуки, збірки; `--reset` — створити заново |
 | `make reindex` | Перебудувати пошуковий індекс Meilisearch |
-| `make er-diagram` | ER-діаграма моделей у Mermaid (`docs/coursework/er.md`) |
+| `make er-diagram` | ER-діаграма моделей у Mermaid (v1: `docs/archive/v1/coursework/er.md`) |
 
 e2e (Playwright): `ACCOUNT_EMAIL_VERIFICATION=none docker compose up -d`, `sync_mods --limit 20`, `make seed`, далі тести з `e2e/` — див. джоб `e2e` у `.github/workflows/ci.yml`. Продакшн і деплой — [docs/deploy.md](docs/deploy.md).
 
@@ -82,7 +82,7 @@ uv tool install pre-commit
 pre-commit install
 ```
 
-Хуки: ruff, Prettier, ESLint, gitleaks (секрети), великі файли, закінчення рядків LF. Хуки фронтенду викликають `pnpm` на хості, тому потрібні Node.js і `pnpm install` у `frontend/`.
+Хуки: ruff, Prettier, ESLint, gitleaks (секрети), великі файли, закінчення рядків LF. Хуки фронтенду виконуються в контейнері `frontend`, тому перед комітом змін у `frontend/` стек має бути запущений (`make up`); Node.js на хості не потрібен.
 
 ## Структура
 
@@ -91,7 +91,7 @@ backend/     Django: config/ (налаштування base/dev/test/prod, Celer
 frontend/    Next.js: src/app (маршрути), src/features, src/components, src/lib/api
 infra/       Nginx (dev, prod, заголовки безпеки), скрипти TLS і резервних копій
 e2e/         Playwright: ключові сценарії
-docs/        Специфікація, прогрес, деплой, матеріали курсової (docs/coursework)
+docs/        Продукт, специфікація, прогрес, деплой, аудит ребілду; v1 — docs/archive/v1
 ```
 
 Не є офіційним продуктом Minecraft. Не пов'язано з Mojang або Microsoft.

@@ -19,8 +19,10 @@ allowed-tools: Bash(git status *) Bash(git diff *) Bash(git add *) Bash(git comm
 2. Якщо зміни логічно різні (напр. фіча + рефакторинг) — запропонуй розбити на кілька комітів.
 3. Повідомлення англійською за Conventional Commits:
    - тип: `feat`, `fix`, `refactor`, `test`, `docs`, `chore`, `ci`, `style`, `perf`;
-   - scope — застосунок або область: `mods`, `skins`, `servers`, `library`, `social`, `accounts`, `ui`, `infra`, `docs`;
+   - scope — застосунок або область: `sources`, `compat`, `mods`, `packs`, `servers`, `skins`, `library`, `social`, `translations`, `moderation`, `accounts`, `search`, `home`, `ui`, `infra`, `ci`, `docs`;
    - заголовок ≤ 72 символів, у наказовому способі: `feat(mods): add download resolver`;
-   - тіло — 1–4 пункти «що й навіщо», посилання на ID задачі: `Task: 3.6`.
+   - тіло — 1–4 пункти «що й навіщо», посилання на ID задачі: `Task: R2.3`;
+   - видалення API чи полів — `!` після scope і `BREAKING CHANGE:` у тілі;
+   - без трейлерів `Co-Authored-By` — автор лише я.
 4. Покажи мені повідомлення й список файлів, після підтвердження — `git add` потрібних файлів і `git commit`.
 5. Ніколи не роби `git push`.

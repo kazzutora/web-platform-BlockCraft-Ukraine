@@ -1,6 +1,6 @@
 # Setup once: uv tool install pre-commit && pre-commit install
-# Frontend hooks call pnpm on the host: Node.js 24 + `pnpm install` in frontend/.
-exclude: ^frontend/(openapi\.yaml|src/lib/api/schema\.d\.ts|pnpm-lock\.yaml)$
+# Frontend hooks run in the frontend container (no Node.js on the host): start the stack first (make up).
+exclude: ^(frontend/(openapi\.yaml|src/lib/api/schema\.d\.ts|pnpm-lock\.yaml)|e2e/pnpm-lock\.yaml)$
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -35,14 +35,14 @@ repos:
   - repo: local
     hooks:
       - id: prettier
-        name: prettier (frontend)
-        entry: pnpm --dir frontend format
+        name: prettier (frontend, in docker)
+        entry: docker compose exec -T frontend pnpm format
         language: system
         files: ^frontend/
         pass_filenames: false
       - id: eslint
-        name: eslint (frontend)
-        entry: pnpm --dir frontend lint
+        name: eslint (frontend, in docker)
+        entry: docker compose exec -T frontend pnpm lint
         language: system
         files: ^frontend/.*\.(ts|tsx|js|mjs|cjs)$
         pass_filenames: false

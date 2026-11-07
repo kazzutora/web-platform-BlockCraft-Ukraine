@@ -36,7 +36,6 @@ def test_open_profile_is_visible_to_guests(api_client):
     assert data["nickname"] == "Steve_UA"
     assert data["is_private"] is False
     assert data["bio"] == "Будую замки"
-    assert data["level"] == 1
 
 
 def test_closed_profile_shows_only_nickname_to_others(api_client, auth_client):
@@ -47,7 +46,6 @@ def test_closed_profile_shows_only_nickname_to_others(api_client, auth_client):
         assert data["nickname"] == "Hidden"
         assert data["is_private"] is True
         assert data["bio"] is None
-        assert data["level"] is None
         assert data["date_joined"] is None
 
 

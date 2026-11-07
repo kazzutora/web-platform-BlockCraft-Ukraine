@@ -2,11 +2,10 @@ from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
 from apps.home import demo
-from apps.mods.models import Project
 
 
 class Command(BaseCommand):
-    help = "Demo content: 20 players, skins, servers, packs, collections, reviews."
+    help = "Demo players on top of synced Modrinth data: saves, reviews, collections, packs."
 
     def add_arguments(self, parser) -> None:
         parser.add_argument(
@@ -21,16 +20,14 @@ class Command(BaseCommand):
             self.stdout.write(f"Removed {demo.remove()} demo players")
         elif demo.User.objects.filter(email__endswith=f"@{demo.DEMO_DOMAIN}").exists():
             raise CommandError("Demo content is already there; run with --reset to recreate it.")
-        if not Project.objects.published().exists():
-            self.stdout.write(
-                self.style.WARNING("No mods yet: run `make sync-mods` for full demo.")
-            )
-        summary = demo.create(seed=seed)
+        try:
+            summary = demo.create(seed=seed)
+        except demo.NoSyncedMods as error:
+            raise CommandError("No mods yet: run `make sync-mods` first.") from error
         self.stdout.write(
             self.style.SUCCESS(
-                f"Demo: {summary.users} players, {summary.skins} skins, {summary.servers} servers, "
-                f"{summary.collections} collections, {summary.reviews} reviews, "
-                f"{summary.packs} packs "
+                f"Demo: {summary.users} players, {summary.collections} collections, "
+                f"{summary.reviews} reviews, {summary.packs} packs "
                 f"(password for all: {demo.PASSWORD})"
             )
         )

@@ -1,5 +1,3 @@
-import path from "node:path";
-
 import { expect, test } from "@playwright/test";
 
 import { signIn, stamp } from "./helpers";
@@ -34,21 +32,6 @@ test("sign up → onboarding → save a mod → new collection", async ({ page }
 
   await page.goto("/me/collections");
   await expect(page.getByRole("link", { name: "Мій перший сетап" })).toBeVisible();
-});
-
-test("upload a skin and see it in 3D", async ({ page }) => {
-  await signIn(page);
-  await page.goto("/skins/new");
-  await page.locator('input[type="file"]').setInputFiles(path.join(import.meta.dirname, "..", "fixtures", "skin.png"));
-  await expect(page.getByRole("img", { name: /3D-модель/ })).toBeVisible();
-  await expect(page.getByRole("radio", { name: "Тонкі руки" })).toBeChecked();
-  const title = `E2E скін ${stamp()}`;
-  await page.getByLabel("Назва").fill(title);
-  await page.getByRole("button", { name: "Опублікувати" }).click();
-
-  await expect(page).toHaveURL(/\/skins\/\d+$/);
-  await expect(page.getByRole("heading", { name: title })).toBeVisible();
-  await expect(page.getByRole("link", { name: "Завантажити PNG" })).toBeVisible();
 });
 
 test("add a server", async ({ page }) => {

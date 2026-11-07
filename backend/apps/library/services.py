@@ -100,7 +100,6 @@ def add_item(
     kind: str,
     identifier: str,
     note: str = "",
-    slot: str = "",
 ) -> CollectionItem:
     kind_obj, target = kinds.resolve(kind, identifier, viewer=user, action="collect")
     item = CollectionItem.objects.filter(
@@ -117,7 +116,6 @@ def add_item(
                 object_id=target.pk,
                 position=position,
                 note=note,
-                slot=slot,
                 added_by=user,
             )
     except IntegrityError:  # added concurrently
@@ -165,7 +163,6 @@ def copy_collection(*, source: Collection, user: User) -> Collection:
         description=source.description,
         visibility=Collection.Visibility.PRIVATE,
         copied_from=source,
-        is_setup=source.is_setup,
     )
     items = [
         CollectionItem(
@@ -173,7 +170,6 @@ def copy_collection(*, source: Collection, user: User) -> Collection:
             content_type_id=item.content_type_id,
             object_id=item.object_id,
             position=item.position,
-            slot=item.slot,
             note=item.note,
             added_by=user,
         )

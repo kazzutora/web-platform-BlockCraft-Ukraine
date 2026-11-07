@@ -10,9 +10,8 @@ from drf_spectacular.utils import (
     extend_schema,
     extend_schema_view,
 )
-from rest_framework import generics, mixins, status, viewsets
+from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
-from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -32,12 +31,9 @@ from .serializers import (
     LookupResultSerializer,
     SkinCardSerializer,
     SkinDetailSerializer,
-    SkinUpdateSerializer,
-    SkinUploadSerializer,
 )
 
-WRITE_ACTIONS = {"create", "partial_update", "destroy"}
-THROTTLE_SCOPES = {"create": "uploads", "lookup": "lookup"}
+THROTTLE_SCOPES = {"lookup": "lookup"}
 # The router regex hides the type of the pk from drf-spectacular
 SKIN_ID = OpenApiParameter("id", OpenApiTypes.INT, OpenApiParameter.PATH)
 
@@ -48,53 +44,26 @@ SKIN_ID = OpenApiParameter("id", OpenApiTypes.INT, OpenApiParameter.PATH)
         operation_id="skins_retrieve",
         parameters=[SKIN_ID],
         responses={200: SkinDetailSerializer, **error_responses(404)},
-        description="Published skins for everyone; the author also sees pending and rejected.",
-    ),
-    create=extend_schema(
-        operation_id="skins_create",
-        request={"multipart/form-data": SkinUploadSerializer},
-        responses={201: SkinDetailSerializer, **error_responses(400, 401)},
-        description="A new author's first three skins wait for moderation (`pending`).",
-    ),
-    partial_update=extend_schema(
-        operation_id="skins_update",
-        parameters=[SKIN_ID],
-        request=SkinUpdateSerializer,
-        responses={200: SkinDetailSerializer, **error_responses(400, 401, 403, 404)},
-    ),
-    destroy=extend_schema(
-        operation_id="skins_delete",
-        parameters=[SKIN_ID],
-        responses={204: None, **error_responses(401, 403, 404)},
+        description="Published skins for everyone; the author also sees the rest.",
     ),
 )
 class SkinViewSet(
     GuestCachedListMixin,
     mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
-    mixins.CreateModelMixin,
-    mixins.UpdateModelMixin,
-    mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
 ):
     pagination_class = CatalogPagination
     filter_backends = [DjangoFilterBackend]
     filterset_class = SkinFilter
-    http_method_names = ["get", "post", "patch", "delete", "head", "options"]
+    http_method_names = ["get", "head", "options"]
     lookup_value_regex = r"\d+"
+    permission_classes = [AllowAny]
     throttle_scope: str | None = None
-
-    def get_permissions(self):
-        return [IsAuthenticated()] if self.action in WRITE_ACTIONS else [AllowAny()]
 
     def get_throttles(self):
         self.throttle_scope = THROTTLE_SCOPES.get(self.action)
         return super().get_throttles()
-
-    def get_parsers(self):
-        if getattr(self, "action", None) == "create":
-            return [MultiPartParser(), FormParser()]
-        return super().get_parsers()
 
     def get_queryset(self):
         return selectors.catalog(self.request.user)
@@ -104,34 +73,6 @@ class SkinViewSet(
 
     def get_object(self) -> Skin:
         return selectors.get_skin(pk=self.kwargs["pk"], viewer=self.request.user)
-
-    def _detail(self, skin: Skin, *, status_code: int = status.HTTP_200_OK) -> Response:
-        skin = selectors.get_skin(pk=skin.pk, viewer=self.request.user)
-        serializer = SkinDetailSerializer(skin, context={"request": self.request})
-        return Response(serializer.data, status=status_code)
-
-    def create(self, request: Request, *args, **kwargs) -> Response:
-        data = SkinUploadSerializer(data=request.data)
-        data.is_valid(raise_exception=True)
-        skin = services.upload_skin(
-            author=request.user,
-            upload=data.validated_data["file"],
-            title=data.validated_data["title"],
-            style_tags=data.validated_data["style_tags"],
-            model=data.validated_data["model"],
-        )
-        return self._detail(skin, status_code=status.HTTP_201_CREATED)
-
-    def partial_update(self, request: Request, *args, **kwargs) -> Response:
-        skin = self.get_object()
-        data = SkinUpdateSerializer(data=request.data)
-        data.is_valid(raise_exception=True)
-        services.update_skin(skin=skin, user=request.user, **data.validated_data)
-        return self._detail(skin)
-
-    def destroy(self, request: Request, *args, **kwargs) -> Response:
-        services.delete_skin(skin=self.get_object(), user=request.user)
-        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @extend_schema(
         operation_id="skins_download",
@@ -200,18 +141,6 @@ class SkinViewSet(
             "texture": texture,
         }
         return Response(LookupResultSerializer(result).data)
-
-
-@extend_schema_view(
-    get=extend_schema(operation_id="me_skins_list", description="All my skins, any status.")
-)
-class MySkinsView(generics.ListAPIView):
-    permission_classes = [IsAuthenticated]
-    serializer_class = SkinDetailSerializer
-    pagination_class = CatalogPagination
-
-    def get_queryset(self):
-        return selectors.my_skins(self.request.user)
 
 
 class CurrentSkinView(APIView):

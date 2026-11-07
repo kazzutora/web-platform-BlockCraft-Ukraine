@@ -10,7 +10,6 @@ from django.utils import timezone
 from PIL import Image, ImageOps, UnidentifiedImageError
 
 from apps.accounts.models import User
-from apps.core import publishing
 from apps.core.counters import bump
 from apps.core.exceptions import DomainError
 from apps.core.text import slug_from
@@ -79,7 +78,6 @@ def create_server(*, author: User, data: dict) -> Server:
     host, port = clean_address(host=data["host"], port=data.get("port"), edition=data["edition"])
     if Server.objects.filter(host=host, port=port).exists():
         raise _field_error("host", "Цей сервер уже є в каталозі.", code="server_exists")
-    status_ = publishing.initial_status(author)
     server = Server.objects.create(
         author=author,
         name=data["name"].strip(),
@@ -94,10 +92,9 @@ def create_server(*, author: User, data: dict) -> Server:
         discord_url=data.get("discord_url", ""),
         website_url=data.get("website_url", ""),
         has_whitelist=data.get("has_whitelist", False),
-        status=status_,
-        published_at=timezone.now() if status_ == Server.Status.PUBLISHED else None,
+        status=Server.Status.PUBLISHED,
+        published_at=timezone.now(),
     )
-    publishing.published_on_create(server)
     _queue_ping(server)
     return server
 
@@ -139,7 +136,6 @@ def update_server(*, server: Server, user: User, data: dict) -> Server:
 @transaction.atomic
 def delete_server(*, server: Server, user: User) -> None:
     _check_owner(server, user)
-    publishing.withdrawn(server)
     banner = server.banner.name if server.banner else None
     storage = server.banner.storage
     server.delete()

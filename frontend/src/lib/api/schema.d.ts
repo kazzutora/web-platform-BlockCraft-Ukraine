@@ -425,23 +425,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/me/skins": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** @description All my skins, any status. */
-        get: operations["me_skins_list"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/v1/mods": {
         parameters: {
             query?: never;
@@ -898,8 +881,7 @@ export interface paths {
          */
         get: operations["skins_list"];
         put?: never;
-        /** @description A new author's first three skins wait for moderation (`pending`). */
-        post: operations["skins_create"];
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -913,16 +895,14 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Published skins for everyone; the author also sees pending and rejected. */
+        /** @description Published skins for everyone; the author also sees the rest. */
         get: operations["skins_retrieve"];
         put?: never;
         post?: never;
-        /** @description `list()` through `for_guests`; put it before ListModelMixin in the bases. */
-        delete: operations["skins_delete"];
+        delete?: never;
         options?: never;
         head?: never;
-        /** @description `list()` through `for_guests`; put it before ListModelMixin in the bases. */
-        patch: operations["skins_update"];
+        patch?: never;
         trace?: never;
     };
     "/api/v1/skins/{id}/download": {
@@ -1018,7 +998,6 @@ export interface components {
             kind: components["schemas"]["KindEnum"];
             id: string;
             note?: string;
-            slot?: components["schemas"]["SlotEnum"] | components["schemas"]["BlankEnum"];
         };
         /** @description Shape of every error response (see core.exceptions.handler). */
         ApiError: {
@@ -1070,7 +1049,6 @@ export interface components {
             readonly owner: components["schemas"]["UserBrief"];
             readonly items_count: number;
             readonly favorites_count: number;
-            readonly is_setup: boolean;
             readonly preview: string[];
             readonly can_edit: boolean;
             readonly is_favorited: boolean;
@@ -1089,7 +1067,6 @@ export interface components {
             readonly owner: components["schemas"]["UserBrief"];
             readonly items_count: number;
             readonly favorites_count: number;
-            readonly is_setup: boolean;
             readonly preview: string[];
             readonly can_edit: boolean;
             readonly is_favorited: boolean;
@@ -1106,7 +1083,6 @@ export interface components {
             readonly kind: string;
             readonly target_id: string;
             readonly position: number;
-            readonly slot: components["schemas"]["SlotEnum"];
             /** Нотатка */
             readonly note: string;
             readonly mod: components["schemas"]["ProjectCard"] | null;
@@ -1201,7 +1177,6 @@ export interface components {
             game_version?: components["schemas"]["GameVersionEnum"] | components["schemas"]["BlankEnum"];
             loader?: components["schemas"]["LoaderEnum"] | components["schemas"]["BlankEnum"];
             edition?: components["schemas"]["EditionEnum"];
-            interests?: components["schemas"]["InterestsEnum"][];
             readonly onboarding_done: boolean;
         };
         /**
@@ -1273,18 +1248,6 @@ export interface components {
             new_skins: components["schemas"]["SkinCard"][];
             new_servers: components["schemas"]["ServerCard"][];
         };
-        /**
-         * @description * `survival` - Виживання
-         *     * `building` - Будівництво
-         *     * `tech` - Техніка й редстоун
-         *     * `pvp` - PvP
-         *     * `rp` - Рольова гра
-         *     * `adventure` - Пригоди
-         *     * `minigames` - Мініігри
-         *     * `modded` - Моди й зборки
-         * @enum {string}
-         */
-        InterestsEnum: "survival" | "building" | "tech" | "pvp" | "rp" | "adventure" | "minigames" | "modded";
         IpCopies: {
             ip_copies_count: number;
         };
@@ -1360,11 +1323,8 @@ export interface components {
             readonly mc_nickname: string;
             /** Роль */
             readonly role: components["schemas"]["RoleEnum"];
-            readonly level: number;
-            readonly xp: number;
             /** Закритий профіль */
             readonly is_private: boolean;
-            readonly published_count: number;
             /**
              * Дата приєднання
              * Format: date-time
@@ -1402,7 +1362,6 @@ export interface components {
             readonly owner: components["schemas"]["UserBrief"];
             readonly items_count: number;
             readonly favorites_count: number;
-            readonly is_setup: boolean;
             readonly preview: string[];
             readonly can_edit: boolean;
             readonly is_favorited: boolean;
@@ -1472,15 +1431,13 @@ export interface components {
             excerpt?: string;
         };
         /**
-         * @description * `approved` - Роботу опубліковано
-         *     * `rejected` - Роботу відхилено
-         *     * `hidden` - Роботу приховано після скарг
+         * @description * `hidden` - Роботу приховано після скарг
          *     * `restored` - Роботу повернуто
          *     * `review` - Новий відгук
          *     * `warning` - Попередження
          * @enum {string}
          */
-        NotificationTypeEnum: "approved" | "rejected" | "hidden" | "restored" | "review" | "warning";
+        NotificationTypeEnum: "hidden" | "restored" | "review" | "warning";
         NotificationsPage: {
             unread_count: number;
             results: components["schemas"]["Notification"][];
@@ -1493,7 +1450,6 @@ export interface components {
             game_version?: components["schemas"]["GameVersionEnum"] | components["schemas"]["BlankEnum"];
             loader?: components["schemas"]["LoaderEnum"] | components["schemas"]["BlankEnum"];
             edition?: components["schemas"]["EditionEnum"];
-            interests?: components["schemas"]["InterestsEnum"][];
         };
         PackBrief: {
             readonly slug: string;
@@ -1762,21 +1718,6 @@ export interface components {
             previous?: string | null;
             results: components["schemas"]["SkinCard"][];
         };
-        PaginatedSkinDetailList: {
-            /** @example 123 */
-            count: number;
-            /**
-             * Format: uri
-             * @example http://api.example.org/accounts/?page=4
-             */
-            next?: string | null;
-            /**
-             * Format: uri
-             * @example http://api.example.org/accounts/?page=2
-             */
-            previous?: string | null;
-            results: components["schemas"]["SkinDetail"][];
-        };
         PatchedCollectionWriteRequest: {
             title?: string;
             description?: string;
@@ -1787,7 +1728,6 @@ export interface components {
             game_version?: components["schemas"]["GameVersionEnum"] | components["schemas"]["BlankEnum"];
             loader?: components["schemas"]["LoaderEnum"] | components["schemas"]["BlankEnum"];
             edition?: components["schemas"]["EditionEnum"];
-            interests?: components["schemas"]["InterestsEnum"][];
         };
         PatchedMeUpdateRequest: {
             /** Про себе */
@@ -1828,11 +1768,6 @@ export interface components {
             website_url?: string;
             /** @default false */
             has_whitelist: boolean;
-        };
-        PatchedSkinUpdateRequest: {
-            title?: string;
-            style_tags?: components["schemas"]["SkinStyleEnum"][];
-            model?: components["schemas"]["ModelEnum"];
         };
         PatchedUserSettingsRequest: {
             theme?: components["schemas"]["ThemeEnum"];
@@ -1941,7 +1876,6 @@ export interface components {
             avatar_url: string | null;
             bio: string | null;
             mc_nickname: string | null;
-            level: number | null;
             /** Format: date-time */
             date_joined: string | null;
             skin: components["schemas"]["ProfileSkin"] | null;
@@ -2017,12 +1951,11 @@ export interface components {
         };
         /**
          * @description * `user` - Гравець
-         *     * `trusted` - Довірений автор
          *     * `moderator` - Модератор
          *     * `admin` - Адміністратор
          * @enum {string}
          */
-        RoleEnum: "user" | "trusted" | "moderator" | "admin";
+        RoleEnum: "user" | "moderator" | "admin";
         /** @description One saved object; exactly one of the kind fields is filled. */
         SavedItem: {
             kind: string;
@@ -2236,35 +2169,6 @@ export interface components {
          * @enum {string}
          */
         SkinStyleEnum: "casual" | "fantasy" | "medieval" | "scifi" | "anime" | "horror" | "cute" | "mob" | "military" | "sport" | "ukrainian";
-        SkinUploadRequest: {
-            /**
-             * Format: binary
-             * @description PNG 64×64 or 64×32, up to 100 KB.
-             */
-            file: string;
-            title: string;
-            style_tags?: components["schemas"]["SkinStyleEnum"][];
-            /**
-             * @description Empty: detected from the texture.
-             *
-             *     * `classic` - Класична (Стів)
-             *     * `slim` - Тонкі руки (Алекс)
-             * @default
-             */
-            model: components["schemas"]["ModelEnum"] | components["schemas"]["BlankEnum"];
-        };
-        /**
-         * @description * `version` - Версія
-         *     * `loader` - Лоадер
-         *     * `pack` - Зборка
-         *     * `mod` - Мод
-         *     * `resourcepack` - Ресурспак
-         *     * `shader` - Шейдер
-         *     * `skin` - Скін
-         *     * `server` - Сервер
-         * @enum {string}
-         */
-        SlotEnum: "version" | "loader" | "pack" | "mod" | "resourcepack" | "shader" | "skin" | "server";
         /**
          * @description * `idle` - idle
          *     * `checking` - checking
@@ -2326,12 +2230,11 @@ export interface components {
         Unread: {
             unread_count: number;
         };
-        /** @description Author shown next to reviews, comments and collections. */
+        /** @description Author shown next to reviews, packs and collections. */
         UserBrief: {
             /** Нік */
             readonly nickname: string;
             readonly avatar_url: string | null;
-            readonly level: number;
         };
         UserSettings: {
             theme?: components["schemas"]["ThemeEnum"];
@@ -3650,30 +3553,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ApiError"];
-                };
-            };
-        };
-    };
-    me_skins_list: {
-        parameters: {
-            query?: {
-                /** @description A page number within the paginated result set. */
-                page?: number;
-                /** @description Number of results to return per page. */
-                page_size?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PaginatedSkinDetailList"];
                 };
             };
         };
@@ -5438,45 +5317,6 @@ export interface operations {
             };
         };
     };
-    skins_create: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "multipart/form-data": components["schemas"]["SkinUploadRequest"];
-            };
-        };
-        responses: {
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["SkinDetail"];
-                };
-            };
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-        };
-    };
     skins_retrieve: {
         parameters: {
             query?: never;
@@ -5494,109 +5334,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SkinDetail"];
-                };
-            };
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-        };
-    };
-    skins_delete: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description No response body */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-        };
-    };
-    skins_update: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "application/json": components["schemas"]["PatchedSkinUpdateRequest"];
-                "application/x-www-form-urlencoded": components["schemas"]["PatchedSkinUpdateRequest"];
-                "multipart/form-data": components["schemas"]["PatchedSkinUpdateRequest"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["SkinDetail"];
-                };
-            };
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
                 };
             };
             404: {

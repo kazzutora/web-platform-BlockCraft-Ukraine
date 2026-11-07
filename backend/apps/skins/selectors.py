@@ -45,10 +45,5 @@ def similar(*, skin: Skin, viewer: Viewer | None = None) -> list[Skin]:
     return list(queryset.order_by("-favorites_count", "-downloads_count")[:SIMILAR_LIMIT])
 
 
-def my_skins(user: User) -> QuerySet[Skin]:
-    """All of the author's skins, any status."""
-    return _with_state(Skin.objects.filter(author=user), user).order_by("-created_at")
-
-
 def current_skin_of(user: User) -> Skin | None:
     return Skin.objects.filter(author=user, is_current=True, status=Skin.Status.PUBLISHED).first()

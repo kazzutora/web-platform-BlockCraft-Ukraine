@@ -100,7 +100,9 @@ jobs:
           done
           docker compose logs --tail 100
           exit 1
-      - name: Demo content
+      - name: Real catalog data (a small Modrinth sync; the demo invents no content)
+        run: docker compose exec -T backend uv run python manage.py sync_mods --limit 20
+      - name: Demo players on top of it
         run: docker compose exec -T backend uv run python manage.py seed
       - name: Playwright
         run: |

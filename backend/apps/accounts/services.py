@@ -41,7 +41,7 @@ def update_account(*, user: User, data: dict[str, Any]) -> User:
 
 def update_game_profile(*, user: User, data: dict[str, Any]) -> GameProfile:
     profile = user.game_profile
-    changed = _apply(profile, data, {"game_version", "loader", "edition", "interests"})
+    changed = _apply(profile, data, {"game_version", "loader", "edition"})
     if changed:
         profile.save(update_fields=changed)
     return profile
@@ -50,7 +50,7 @@ def update_game_profile(*, user: User, data: dict[str, Any]) -> GameProfile:
 def complete_onboarding(*, user: User, data: dict[str, Any]) -> GameProfile:
     """Saves what the player chose on /welcome; skipping leaves the fields empty."""
     profile = user.game_profile
-    changed = _apply(profile, data, {"game_version", "loader", "edition", "interests"})
+    changed = _apply(profile, data, {"game_version", "loader", "edition"})
     profile.onboarding_done = True
     profile.save(update_fields=[*changed, "onboarding_done"])
     return profile

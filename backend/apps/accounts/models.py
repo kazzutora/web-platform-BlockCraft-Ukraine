@@ -1,5 +1,4 @@
 from django.contrib.auth.models import AbstractUser, BaseUserManager
-from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.db.models.functions import Lower
 
@@ -38,7 +37,6 @@ class User(AbstractUser):
 
     class Role(models.TextChoices):
         USER = "user", "Гравець"
-        TRUSTED = "trusted", "Довірений автор"
         MODERATOR = "moderator", "Модератор"
         ADMIN = "admin", "Адміністратор"
 
@@ -54,10 +52,7 @@ class User(AbstractUser):
     bio = models.CharField("про себе", max_length=160, blank=True)
     mc_nickname = models.CharField("нік у Minecraft", max_length=16, blank=True)
     role = models.CharField("роль", max_length=16, choices=Role.choices, default=Role.USER)
-    xp = models.PositiveIntegerField(default=0)
-    level = models.PositiveSmallIntegerField(default=1)
     is_private = models.BooleanField("закритий профіль", default=False)
-    published_count = models.PositiveIntegerField(default=0)
 
     USERNAME_FIELD = "email"
     EMAIL_FIELD = "email"
@@ -87,17 +82,6 @@ class User(AbstractUser):
         return self.role in {self.Role.MODERATOR, self.Role.ADMIN} or self.is_superuser
 
 
-class Interest(models.TextChoices):
-    SURVIVAL = "survival", "Виживання"
-    BUILDING = "building", "Будівництво"
-    TECH = "tech", "Техніка й редстоун"
-    PVP = "pvp", "PvP"
-    RP = "rp", "Рольова гра"
-    ADVENTURE = "adventure", "Пригоди"
-    MINIGAMES = "minigames", "Мініігри"
-    MODDED = "modded", "Моди й зборки"
-
-
 class GameProfile(models.Model):
     """How the player plays: drives catalog defaults and «for your version»."""
 
@@ -107,9 +91,6 @@ class GameProfile(models.Model):
     game_version = models.CharField(max_length=16, choices=GAME_VERSION_CHOICES, blank=True)
     loader = models.CharField(max_length=16, choices=Loader.choices, blank=True)
     edition = models.CharField(max_length=8, choices=Edition.choices, default=Edition.JAVA)
-    interests = ArrayField(
-        models.CharField(max_length=16, choices=Interest.choices), default=list, blank=True
-    )
     onboarding_done = models.BooleanField(default=False)
 
     class Meta:

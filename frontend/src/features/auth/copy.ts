@@ -19,7 +19,7 @@ export const authCopy = {
   },
   login: {
     title: "Увійти",
-    description: "Твоє обране, колекції й сетап — на будь-якому пристрої.",
+    description: "Твоє обране, колекції й збірки — на будь-якому пристрої.",
     submit: "Увійти",
     forgot: "Забув пароль?",
     noAccount: "Немає акаунта?",
@@ -82,7 +82,7 @@ export const authCopy = {
     profile: "Мій профіль",
     notifications: "Сповіщення",
     collections: "Мої колекції",
-    works: "Мої роботи",
+    works: "Мої збірки",
     settings: "Налаштування",
     logout: "Вийти",
     login: "Увійти",

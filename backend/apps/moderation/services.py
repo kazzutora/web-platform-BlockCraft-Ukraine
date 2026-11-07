@@ -6,7 +6,7 @@ from django.db.models import Model, Q
 from django.utils import timezone
 
 from apps.accounts.models import User
-from apps.core import kinds, publishing
+from apps.core import kinds
 from apps.core.exceptions import DomainError
 from apps.core.models import Publishable
 from apps.library.models import Collection
@@ -16,7 +16,6 @@ from apps.notifications.services import notify
 from .models import Report, Sanction
 
 AUTO_HIDE_REPORTS = 5
-TRUSTED_AFTER = publishing.REVIEWED_FIRST
 
 
 # What can be reported
@@ -42,12 +41,8 @@ def _set_visible(target: Model, visible: bool) -> None:
         )
         target.save(update_fields=["visibility", "updated_at"])
         return
-    status = Publishable.Status.PUBLISHED if visible else Publishable.Status.HIDDEN
-    if hasattr(target, "author_id"):
-        publishing.set_status(target, status)  # keeps the author's published count
-    else:
-        target.status = status
-        target.save(update_fields=["status"])
+    target.status = Publishable.Status.PUBLISHED if visible else Publishable.Status.HIDDEN
+    target.save(update_fields=["status"])
 
 
 def _hide(target: Model) -> None:
@@ -133,28 +128,6 @@ def reject_reports(*, reports: Iterable[Report], moderator: User | None) -> int:
             status=Report.Status.REJECTED, handled_by=moderator, handled_at=timezone.now()
         )
     return len(targets)
-
-
-# Publications (skins, servers): the first three of a new author wait for a moderator
-
-
-@transaction.atomic
-def approve(*, obj: Model, moderator: User | None = None) -> Model:
-    publishing.set_status(obj, Publishable.Status.PUBLISHED)
-    author = obj.author
-    author.refresh_from_db(fields=["published_count", "role"])
-    if author.role == User.Role.USER and author.published_count >= TRUSTED_AFTER:
-        author.role = User.Role.TRUSTED
-        author.save(update_fields=["role"])
-    notify(user=author, type=Notification.Type.APPROVED, target=obj)
-    return obj
-
-
-@transaction.atomic
-def reject(*, obj: Model, reason: str, moderator: User | None = None) -> Model:
-    publishing.set_status(obj, Publishable.Status.REJECTED, reason=reason)
-    notify(user=obj.author, type=Notification.Type.REJECTED, target=obj, reason=reason)
-    return obj
 
 
 # Sanctions

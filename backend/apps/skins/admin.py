@@ -1,13 +1,11 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from apps.moderation.admin_actions import PublicationModerationMixin
-
 from .models import Skin
 
 
 @admin.register(Skin)
-class SkinAdmin(PublicationModerationMixin, admin.ModelAdmin):
+class SkinAdmin(admin.ModelAdmin):
     list_display = ["thumbnail", "title", "author", "status", "model", "color_bucket", "created_at"]
     list_display_links = ["thumbnail", "title"]
     list_filter = ["status", "model", "color_bucket"]

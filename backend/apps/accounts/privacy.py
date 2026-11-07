@@ -44,7 +44,6 @@ def export(user: User) -> dict:
             "game_version": profile.game_version,
             "loader": profile.loader,
             "edition": profile.edition,
-            "interests": profile.interests,
         },
         "settings": {
             "theme": settings.theme,

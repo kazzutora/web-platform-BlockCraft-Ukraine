@@ -283,7 +283,6 @@ class CollectionItemsView(CollectionAccess):
             kind=data.validated_data["kind"],
             identifier=data.validated_data["id"],
             note=data.validated_data.get("note", ""),
-            slot=data.validated_data.get("slot", ""),
         )
         return self._detail(request, collection)
 

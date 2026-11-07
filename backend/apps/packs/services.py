@@ -11,11 +11,11 @@ from django.core.files.base import ContentFile
 from django.core.files.uploadedfile import UploadedFile
 from django.db import transaction
 from django.db.models import Count, Max
+from django.utils import timezone
 from PIL import Image, ImageOps, UnidentifiedImageError
 from pydantic import ValidationError
 
 from apps.accounts.models import User
-from apps.core import publishing
 from apps.core.counters import bump
 from apps.core.exceptions import DomainError
 from apps.core.game import GAME_VERSIONS
@@ -163,7 +163,6 @@ def update_pack(*, pack: Pack, user: User, data: dict) -> Pack:
 @transaction.atomic
 def delete_pack(*, pack: Pack, user: User) -> None:
     _check_owner(pack, user)
-    publishing.withdrawn(pack)
     if pack.forked_from_id:
         bump(pack.forked_from, "forks_count", -1)
     cover = pack.cover.name if pack.cover else None
@@ -175,7 +174,7 @@ def delete_pack(*, pack: Pack, user: User) -> None:
 
 @transaction.atomic
 def publish_pack(*, pack: Pack, user: User) -> Pack:
-    """Draft (or rejected) → pending, or published right away for trusted authors."""
+    """Draft (or rejected) → published; reports and the word filter moderate afterwards."""
     _check_owner(pack, user)
     moderation.ensure_can_publish(user)
     if pack.status not in (Pack.Status.DRAFT, Pack.Status.REJECTED):
@@ -186,7 +185,11 @@ def publish_pack(*, pack: Pack, user: User) -> Pack:
         raise _error("too_few")
     if any(item.version_id is None for item in items):
         raise _error("unresolved")
-    publishing.set_status(pack, publishing.initial_status(pack.author))
+    pack.status = Pack.Status.PUBLISHED
+    pack.rejection_reason = ""
+    if pack.published_at is None:
+        pack.published_at = timezone.now()
+    pack.save(update_fields=["status", "rejection_reason", "published_at", "updated_at"])
     return pack
 
 
@@ -498,9 +501,7 @@ def official_author() -> User:
     """The account official packs belong to; nobody can sign in as it (no password)."""
     user = User.objects.filter(email=OFFICIAL_EMAIL).first()
     if user is None:
-        user = User.objects.create_user(
-            email=OFFICIAL_EMAIL, nickname=OFFICIAL_NICKNAME, role=User.Role.TRUSTED
-        )
+        user = User.objects.create_user(email=OFFICIAL_EMAIL, nickname=OFFICIAL_NICKNAME)
     return user
 
 
@@ -590,7 +591,6 @@ def _store_official(
 ) -> Pack:
     loader = next(loader for loader in version.loaders if loader in PackLoader.values)
     game_version = latest_release([gv for gv in version.game_versions if gv in GAME_VERSIONS])
-    created = pack is None
     if pack is None:
         pack = Pack(
             author=official_author(),
@@ -642,8 +642,6 @@ def _store_official(
     # More files take more memory: a rough floor for the requirements block
     pack.ram_min_gb = 4 if len(items) < 100 else 6 if len(items) < 200 else 8
     pack.save()
-    if created:
-        publishing.published_on_create(pack)
     pack.items.all().delete()
     for item in items.values():
         item.pack = pack

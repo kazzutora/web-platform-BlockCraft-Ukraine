@@ -1177,34 +1177,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiError'
           description: ''
-  /api/v1/me/skins:
-    get:
-      operationId: me_skins_list
-      description: All my skins, any status.
-      parameters:
-      - name: page
-        required: false
-        in: query
-        description: A page number within the paginated result set.
-        schema:
-          type: integer
-      - name: page_size
-        required: false
-        in: query
-        description: Number of results to return per page.
-        schema:
-          type: integer
-      tags:
-      - me
-      security:
-      - cookieAuth: []
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PaginatedSkinDetailList'
-          description: ''
   /api/v1/mods:
     get:
       operationId: mods_list
@@ -3144,43 +3116,10 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedSkinCardList'
           description: ''
-    post:
-      operationId: skins_create
-      description: A new author's first three skins wait for moderation (`pending`).
-      tags:
-      - skins
-      requestBody:
-        content:
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/SkinUploadRequest'
-        required: true
-      security:
-      - cookieAuth: []
-      responses:
-        '201':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SkinDetail'
-          description: ''
-        '400':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
-          description: ''
-        '401':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
-          description: ''
   /api/v1/skins/{id}:
     get:
       operationId: skins_retrieve
-      description: Published skins for everyone; the author also sees pending and
-        rejected.
+      description: Published skins for everyone; the author also sees the rest.
       parameters:
       - in: path
         name: id
@@ -3198,97 +3137,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SkinDetail'
-          description: ''
-        '404':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
-          description: ''
-    patch:
-      operationId: skins_update
-      description: '`list()` through `for_guests`; put it before ListModelMixin in
-        the bases.'
-      parameters:
-      - in: path
-        name: id
-        schema:
-          type: integer
-        required: true
-      tags:
-      - skins
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PatchedSkinUpdateRequest'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/PatchedSkinUpdateRequest'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/PatchedSkinUpdateRequest'
-      security:
-      - cookieAuth: []
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SkinDetail'
-          description: ''
-        '400':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
-          description: ''
-        '401':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
-          description: ''
-        '403':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
-          description: ''
-        '404':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
-          description: ''
-    delete:
-      operationId: skins_delete
-      description: '`list()` through `for_guests`; put it before ListModelMixin in
-        the bases.'
-      parameters:
-      - in: path
-        name: id
-        schema:
-          type: integer
-        required: true
-      tags:
-      - skins
-      security:
-      - cookieAuth: []
-      responses:
-        '204':
-          description: No response body
-        '401':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
-          description: ''
-        '403':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
           description: ''
         '404':
           content:
@@ -3558,10 +3406,6 @@ components:
         note:
           type: string
           maxLength: 140
-        slot:
-          oneOf:
-          - $ref: '#/components/schemas/SlotEnum'
-          - $ref: '#/components/schemas/BlankEnum'
       required:
       - id
       - kind
@@ -3666,9 +3510,6 @@ components:
         favorites_count:
           type: integer
           readOnly: true
-        is_setup:
-          type: boolean
-          readOnly: true
         preview:
           type: array
           items:
@@ -3696,7 +3537,6 @@ components:
       - favorites_count
       - id
       - is_favorited
-      - is_setup
       - items_count
       - owner
       - preview
@@ -3730,9 +3570,6 @@ components:
           readOnly: true
         favorites_count:
           type: integer
-          readOnly: true
-        is_setup:
-          type: boolean
           readOnly: true
         preview:
           type: array
@@ -3776,7 +3613,6 @@ components:
       - favorites_count
       - id
       - is_favorited
-      - is_setup
       - items
       - items_count
       - owner
@@ -3799,10 +3635,6 @@ components:
           readOnly: true
         position:
           type: integer
-          readOnly: true
-        slot:
-          allOf:
-          - $ref: '#/components/schemas/SlotEnum'
           readOnly: true
         note:
           type: string
@@ -3837,7 +3669,6 @@ components:
       - position
       - server
       - skin
-      - slot
       - target_id
     CollectionWriteRequest:
       type: object
@@ -4030,11 +3861,6 @@ components:
           - $ref: '#/components/schemas/BlankEnum'
         edition:
           $ref: '#/components/schemas/EditionEnum'
-        interests:
-          type: array
-          items:
-            $ref: '#/components/schemas/InterestsEnum'
-          maxItems: 8
         onboarding_done:
           type: boolean
           readOnly: true
@@ -4190,26 +4016,6 @@ components:
       - packs
       - servers_online
       - skin_of_week
-    InterestsEnum:
-      enum:
-      - survival
-      - building
-      - tech
-      - pvp
-      - rp
-      - adventure
-      - minigames
-      - modded
-      type: string
-      description: |-
-        * `survival` - Виживання
-        * `building` - Будівництво
-        * `tech` - Техніка й редстоун
-        * `pvp` - PvP
-        * `rp` - Рольова гра
-        * `adventure` - Пригоди
-        * `minigames` - Мініігри
-        * `modded` - Моди й зборки
     IpCopies:
       type: object
       properties:
@@ -4370,19 +4176,10 @@ components:
           - $ref: '#/components/schemas/RoleEnum'
           readOnly: true
           title: Роль
-        level:
-          type: integer
-          readOnly: true
-        xp:
-          type: integer
-          readOnly: true
         is_private:
           type: boolean
           readOnly: true
           title: Закритий профіль
-        published_count:
-          type: integer
-          readOnly: true
         date_joined:
           type: string
           format: date-time
@@ -4400,12 +4197,9 @@ components:
       - game_profile
       - id
       - is_private
-      - level
       - mc_nickname
       - nickname
-      - published_count
       - role
-      - xp
     ModelEnum:
       enum:
       - classic
@@ -4466,9 +4260,6 @@ components:
         favorites_count:
           type: integer
           readOnly: true
-        is_setup:
-          type: boolean
-          readOnly: true
         preview:
           type: array
           items:
@@ -4506,7 +4297,6 @@ components:
       - favorites_count
       - id
       - is_favorited
-      - is_setup
       - item_id
       - items_count
       - owner
@@ -4687,16 +4477,12 @@ components:
           type: string
     NotificationTypeEnum:
       enum:
-      - approved
-      - rejected
       - hidden
       - restored
       - review
       - warning
       type: string
       description: |-
-        * `approved` - Роботу опубліковано
-        * `rejected` - Роботу відхилено
         * `hidden` - Роботу приховано після скарг
         * `restored` - Роботу повернуто
         * `review` - Новий відгук
@@ -4734,11 +4520,6 @@ components:
           - $ref: '#/components/schemas/BlankEnum'
         edition:
           $ref: '#/components/schemas/EditionEnum'
-        interests:
-          type: array
-          items:
-            $ref: '#/components/schemas/InterestsEnum'
-          maxItems: 8
     PackBrief:
       type: object
       properties:
@@ -5411,29 +5192,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/SkinCard'
-    PaginatedSkinDetailList:
-      type: object
-      required:
-      - count
-      - results
-      properties:
-        count:
-          type: integer
-          example: 123
-        next:
-          type: string
-          nullable: true
-          format: uri
-          example: http://api.example.org/accounts/?page=4
-        previous:
-          type: string
-          nullable: true
-          format: uri
-          example: http://api.example.org/accounts/?page=2
-        results:
-          type: array
-          items:
-            $ref: '#/components/schemas/SkinDetail'
     PatchedCollectionWriteRequest:
       type: object
       properties:
@@ -5466,11 +5224,6 @@ components:
           - $ref: '#/components/schemas/BlankEnum'
         edition:
           $ref: '#/components/schemas/EditionEnum'
-        interests:
-          type: array
-          items:
-            $ref: '#/components/schemas/InterestsEnum'
-          maxItems: 8
     PatchedMeUpdateRequest:
       type: object
       properties:
@@ -5574,19 +5327,6 @@ components:
         has_whitelist:
           type: boolean
           default: false
-    PatchedSkinUpdateRequest:
-      type: object
-      properties:
-        title:
-          type: string
-          minLength: 1
-          maxLength: 60
-        style_tags:
-          type: array
-          items:
-            $ref: '#/components/schemas/SkinStyleEnum'
-        model:
-          $ref: '#/components/schemas/ModelEnum'
     PatchedUserSettingsRequest:
       type: object
       properties:
@@ -5906,9 +5646,6 @@ components:
         mc_nickname:
           type: string
           nullable: true
-        level:
-          type: integer
-          nullable: true
         date_joined:
           type: string
           format: date-time
@@ -5922,7 +5659,6 @@ components:
       - bio
       - date_joined
       - is_private
-      - level
       - mc_nickname
       - nickname
       - skin
@@ -6108,13 +5844,11 @@ components:
     RoleEnum:
       enum:
       - user
-      - trusted
       - moderator
       - admin
       type: string
       description: |-
         * `user` - Гравець
-        * `trusted` - Довірений автор
         * `moderator` - Модератор
         * `admin` - Адміністратор
     SavedItem:
@@ -6739,54 +6473,6 @@ components:
         * `military` - Військовий
         * `sport` - Спорт
         * `ukrainian` - Український
-    SkinUploadRequest:
-      type: object
-      properties:
-        file:
-          type: string
-          format: binary
-          description: PNG 64×64 or 64×32, up to 100 KB.
-        title:
-          type: string
-          minLength: 1
-          maxLength: 60
-        style_tags:
-          type: array
-          items:
-            $ref: '#/components/schemas/SkinStyleEnum'
-        model:
-          default: ''
-          description: |-
-            Empty: detected from the texture.
-
-            * `classic` - Класична (Стів)
-            * `slim` - Тонкі руки (Алекс)
-          oneOf:
-          - $ref: '#/components/schemas/ModelEnum'
-          - $ref: '#/components/schemas/BlankEnum'
-      required:
-      - file
-      - title
-    SlotEnum:
-      enum:
-      - version
-      - loader
-      - pack
-      - mod
-      - resourcepack
-      - shader
-      - skin
-      - server
-      type: string
-      description: |-
-        * `version` - Версія
-        * `loader` - Лоадер
-        * `pack` - Зборка
-        * `mod` - Мод
-        * `resourcepack` - Ресурспак
-        * `shader` - Шейдер
-        * `skin` - Скін
-        * `server` - Сервер
     StateEnum:
       enum:
       - idle
@@ -6927,7 +6613,7 @@ components:
       - unread_count
     UserBrief:
       type: object
-      description: Author shown next to reviews, comments and collections.
+      description: Author shown next to reviews, packs and collections.
       properties:
         nickname:
           type: string
@@ -6937,12 +6623,8 @@ components:
           type: string
           nullable: true
           readOnly: true
-        level:
-          type: integer
-          readOnly: true
       required:
       - avatar_url
-      - level
       - nickname
     UserSettings:
       type: object

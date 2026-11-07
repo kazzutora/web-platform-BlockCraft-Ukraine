@@ -132,8 +132,6 @@ def test_import_modpack_creates_an_official_pack(fake):
     assert pack.status == Pack.Status.PUBLISHED
     assert pack.author.nickname == "BlockCraft"
     assert not pack.author.has_usable_password()
-    pack.author.refresh_from_db()
-    assert pack.author.published_count == 1
     assert (pack.game_version, pack.loader, pack.loader_version) == ("26.3", "fabric", "0.17.2")
     assert pack.style_tags == ["performance", "lightweight"]
     assert pack.source_file_url == MRPACK_URL
@@ -172,8 +170,6 @@ def test_import_modpack_again_only_refreshes_downloads_until_a_new_version(fake)
     pack.refresh_from_db()
     assert pack.modrinth_version_id == "PACKV002"
     assert Pack.objects.count() == 1
-    pack.author.refresh_from_db()
-    assert pack.author.published_count == 1
 
 
 def test_modpacks_without_a_supported_version_are_skipped(fake):

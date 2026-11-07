@@ -5,7 +5,7 @@ from rest_framework import serializers
 
 from apps.core.game import GAME_VERSIONS, Edition, Loader
 
-from .models import GameProfile, Interest, User, UserSettings
+from .models import GameProfile, User, UserSettings
 
 MC_NICKNAME_RE = re.compile(r"^[A-Za-z0-9_]{3,16}$")
 
@@ -15,13 +15,9 @@ def avatar_url(user: User) -> str | None:
 
 
 class GameProfileSerializer(serializers.ModelSerializer):
-    interests = serializers.ListField(
-        child=serializers.ChoiceField(choices=Interest.choices), required=False, max_length=8
-    )
-
     class Meta:
         model = GameProfile
-        fields = ["game_version", "loader", "edition", "interests", "onboarding_done"]
+        fields = ["game_version", "loader", "edition", "onboarding_done"]
         read_only_fields = ["onboarding_done"]
 
 
@@ -31,9 +27,6 @@ class OnboardingSerializer(serializers.Serializer):
     game_version = serializers.ChoiceField(choices=GAME_VERSIONS, required=False, allow_blank=True)
     loader = serializers.ChoiceField(choices=Loader.choices, required=False, allow_blank=True)
     edition = serializers.ChoiceField(choices=Edition.choices, required=False)
-    interests = serializers.ListField(
-        child=serializers.ChoiceField(choices=Interest.choices), required=False, max_length=8
-    )
 
 
 class MeSerializer(serializers.ModelSerializer):
@@ -50,10 +43,7 @@ class MeSerializer(serializers.ModelSerializer):
             "bio",
             "mc_nickname",
             "role",
-            "level",
-            "xp",
             "is_private",
-            "published_count",
             "date_joined",
             "game_profile",
         ]
@@ -115,7 +105,6 @@ class PublicProfileSerializer(serializers.Serializer):
     avatar_url = serializers.CharField(allow_null=True)
     bio = serializers.CharField(allow_null=True)
     mc_nickname = serializers.CharField(allow_null=True)
-    level = serializers.IntegerField(allow_null=True)
     date_joined = serializers.DateTimeField(allow_null=True)
     #: The published skin the player picked; null — show the skin of `mc_nickname` if any
     skin = ProfileSkinSerializer(allow_null=True)
@@ -134,20 +123,19 @@ class PublicProfileSerializer(serializers.Serializer):
             "avatar_url": avatar_url(user) if full else None,
             "bio": user.bio if full else None,
             "mc_nickname": user.mc_nickname if full else None,
-            "level": user.level if full else None,
             "date_joined": user.date_joined if full else None,
         }
         return cls(data)
 
 
 class UserBriefSerializer(serializers.ModelSerializer):
-    """Author shown next to reviews, comments and collections."""
+    """Author shown next to reviews, packs and collections."""
 
     avatar_url = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = ["nickname", "avatar_url", "level"]
+        fields = ["nickname", "avatar_url"]
         read_only_fields = fields
 
     @extend_schema_field(serializers.CharField(allow_null=True))

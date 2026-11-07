@@ -18,7 +18,7 @@ import { PackCover } from "./PackCover";
 
 const copy = { empty: "Зборок поки немає — збери першу з улюблених модів." };
 
-/** /me/works → «Зборки»: drafts lead to the constructor, the rest to their page. */
+/** /me/packs → «Зборки»: drafts lead to the constructor, the rest to their page. */
 export function MyPacks() {
   const packs = useQuery({
     queryKey: queryKeys.packs.mine(),

@@ -7,11 +7,9 @@ import { Select } from "@/components/ui/Select";
 import {
   type Edition,
   type GameVersion,
-  type Interest,
   type Loader,
   editionOptions,
   gameVersionOptions,
-  interestOptions,
   loaderOptions,
 } from "./labels";
 
@@ -24,14 +22,12 @@ const copy = {
   howToBedrock: "Bedrock: «Налаштування» — номер версії в самому низу сторінки.",
   loader: "Лоадер модів",
   edition: "Видання",
-  interests: "Що тобі цікаво",
 };
 
 export type GameProfileValues = {
   game_version: GameVersion | "";
   loader: Loader | "";
   edition: Edition;
-  interests: Interest[];
 };
 
 type Props = {
@@ -40,7 +36,7 @@ type Props = {
   errors?: Partial<Record<keyof GameProfileValues, string>>;
 };
 
-/** Version, loader, edition and interests — shared by onboarding and settings. */
+/** Version, loader and edition — shared by onboarding and settings. */
 export function GameProfileFields({ values, onChange, errors = {} }: Props) {
   const set = <K extends keyof GameProfileValues>(key: K, value: GameProfileValues[K]) =>
     onChange({ ...values, [key]: value });
@@ -87,14 +83,6 @@ export function GameProfileFields({ values, onChange, errors = {} }: Props) {
           error={errors.loader}
         />
       )}
-      <ChoiceChips
-        multiple
-        label={copy.interests}
-        options={interestOptions}
-        value={values.interests}
-        onChange={(value) => set("interests", value)}
-        error={errors.interests}
-      />
     </div>
   );
 }

@@ -49,7 +49,7 @@ export function MobileMenu() {
             [
               ["/me/notifications", copy.notifications],
               ["/me/collections", copy.collections],
-              ["/me/works", copy.works],
+              ["/me/packs", copy.works],
               ["/me/settings", copy.settings],
             ] as const
           ).map(([href, label]) => (

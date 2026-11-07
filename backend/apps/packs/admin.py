@@ -1,7 +1,5 @@
 from django.contrib import admin
 
-from apps.moderation.admin_actions import PublicationModerationMixin
-
 from .models import LoaderRelease, Pack, PackItem
 
 
@@ -13,7 +11,7 @@ class PackItemInline(admin.TabularInline):
 
 
 @admin.register(Pack)
-class PackAdmin(PublicationModerationMixin, admin.ModelAdmin):
+class PackAdmin(admin.ModelAdmin):
     list_display = ["title", "author", "game_version", "loader", "is_official", "status"]
     list_filter = ["status", "is_official", "loader", "game_version"]
     search_fields = ["title", "slug", "author__nickname"]

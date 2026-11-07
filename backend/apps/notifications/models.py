@@ -4,8 +4,6 @@ from django.db import models
 
 class Notification(models.Model):
     class Type(models.TextChoices):
-        APPROVED = "approved", "Роботу опубліковано"
-        REJECTED = "rejected", "Роботу відхилено"
         HIDDEN = "hidden", "Роботу приховано після скарг"
         RESTORED = "restored", "Роботу повернуто"
         REVIEW = "review", "Новий відгук"

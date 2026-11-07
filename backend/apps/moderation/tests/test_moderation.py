@@ -5,7 +5,6 @@ from django.urls import reverse
 from django.utils import timezone
 from rest_framework.test import APIClient
 
-from apps.accounts.models import User
 from apps.accounts.tests.factories import UserFactory
 from apps.core.kinds import get_kind
 from apps.library.models import Collection
@@ -111,53 +110,6 @@ def test_rejecting_reports_brings_an_auto_hidden_object_back():
     assert collection.visibility == Collection.Visibility.PUBLIC
     assert Notification.objects.get(user=collection.owner).type == "restored"
     assert set(Report.objects.values_list("status", flat=True)) == {"rejected"}
-
-
-# Publications
-
-
-def test_approval_notifies_and_the_third_one_makes_the_author_trusted():
-    author = UserFactory(published_count=2)
-    skin = SkinFactory(author=author, status=Skin.Status.PENDING, published_at=None)
-
-    services.approve(obj=skin)
-
-    author.refresh_from_db()
-    assert (author.published_count, author.role) == (3, User.Role.TRUSTED)
-    assert Notification.objects.get(user=author).type == "approved"
-
-
-def test_rejection_tells_the_reason():
-    server = ServerFactory(status="pending")
-
-    services.reject(obj=server, reason="Адреса не відповідає")
-
-    note = Notification.objects.get(user=server.author)
-    assert (note.type, note.payload["reason"], note.payload["id"]) == (
-        "rejected",
-        "Адреса не відповідає",
-        server.slug,
-    )
-
-
-def test_admin_rejects_with_a_custom_reason(admin_client):
-    skin = SkinFactory(status=Skin.Status.PENDING)
-    url = reverse("admin:skins_skin_changelist")
-
-    form = admin_client.post(url, {"action": "reject_selected", "_selected_action": [skin.pk]})
-    assert "Причина відхилення" in form.content.decode()
-    admin_client.post(
-        url,
-        {
-            "action": "reject_selected",
-            "_selected_action": [skin.pk],
-            "apply": "1",
-            "reason": "Це скін з іншого сайту",
-        },
-    )
-
-    skin.refresh_from_db()
-    assert (skin.status, skin.rejection_reason) == (Skin.Status.REJECTED, "Це скін з іншого сайту")
 
 
 def test_admin_report_queue_accepts(admin_client):

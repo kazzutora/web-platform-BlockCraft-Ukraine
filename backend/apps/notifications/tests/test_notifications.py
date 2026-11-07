@@ -41,7 +41,7 @@ def test_switched_off_types_are_not_saved():
 def test_list_unread_and_mark_read():
     user = UserFactory()
     for n in range(23):
-        Notification.objects.create(user=user, type="approved", payload={"title": f"Скін {n}"})
+        Notification.objects.create(user=user, type="review", payload={"title": f"Скін {n}"})
     client = client_for(user)
 
     page = client.get("/api/v1/me/notifications").json()
@@ -59,7 +59,7 @@ def test_list_unread_and_mark_read():
 
 
 def test_notifications_are_private(api_client):
-    Notification.objects.create(user=UserFactory(), type="approved")
+    Notification.objects.create(user=UserFactory(), type="review")
 
     assert api_client.get("/api/v1/me/notifications").status_code == 401
     assert client_for(UserFactory()).get("/api/v1/me/notifications").json()["results"] == []

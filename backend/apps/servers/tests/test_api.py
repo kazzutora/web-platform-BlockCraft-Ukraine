@@ -7,7 +7,6 @@ from django.utils import timezone
 from PIL import Image
 from rest_framework.test import APIClient
 
-from apps.accounts.models import User
 from apps.accounts.tests.factories import UserFactory
 from apps.servers import services, status
 from apps.servers.models import Server
@@ -42,13 +41,13 @@ def create(client, **changes):
 # Adding
 
 
-def test_new_server_waits_for_moderation_and_gets_a_slug(auth_client):
+def test_new_server_is_published_with_a_slug_and_a_code(auth_client):
     response = create(auth_client)
 
     assert response.status_code == 201, response.json()
     body = response.json()
     assert body["slug"] == "kozatska-sich"
-    assert body["status"] == "pending"
+    assert body["status"] == "published"
     assert body["address"] == "play.sich.example.com"
     assert body["verify_code"].startswith("bc-")
     assert body["is_verified"] is False
@@ -237,13 +236,12 @@ def test_others_cannot_edit_or_delete():
 
 
 def test_owner_deletes_the_server():
-    author = UserFactory(published_count=1)
+    author = UserFactory()
     server = ServerFactory(author=author)
 
     assert client_for(author).delete(f"/api/v1/servers/{server.slug}").status_code == 204
 
-    author.refresh_from_db()
-    assert (Server.objects.count(), author.published_count) == (0, 0)
+    assert not Server.objects.exists()
 
 
 def banner_file(size=(1600, 900), image_format="PNG"):
@@ -413,9 +411,3 @@ def test_my_servers_include_every_status():
     results = client_for(author).get("/api/v1/me/servers").json()["results"]
 
     assert sorted(s["status"] for s in results) == ["pending", "published"]
-
-
-def test_trusted_owner_publishes_right_away():
-    trusted = UserFactory(role=User.Role.TRUSTED)
-
-    assert create(client_for(trusted)).json()["status"] == "published"

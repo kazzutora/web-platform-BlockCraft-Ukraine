@@ -58,7 +58,6 @@ class CollectionSerializer(serializers.ModelSerializer):
             "owner",
             "items_count",
             "favorites_count",
-            "is_setup",
             "preview",
             "can_edit",
             "is_favorited",
@@ -109,7 +108,6 @@ class CollectionItemSerializer(serializers.ModelSerializer):
             "kind",
             "target_id",
             "position",
-            "slot",
             "note",
             "mod",
             "skin",
@@ -193,9 +191,6 @@ class CollectionWriteSerializer(serializers.Serializer):
 
 class AddItemSerializer(TargetSerializer):
     note = serializers.CharField(max_length=140, required=False, allow_blank=True)
-    slot = serializers.ChoiceField(
-        choices=CollectionItem.Slot.choices, required=False, allow_blank=True
-    )
 
 
 class ReorderSerializer(serializers.Serializer):

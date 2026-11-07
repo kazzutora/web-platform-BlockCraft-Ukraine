@@ -1,12 +1,10 @@
 from django.contrib import admin
 
-from apps.moderation.admin_actions import PublicationModerationMixin
-
 from .models import Server
 
 
 @admin.register(Server)
-class ServerAdmin(PublicationModerationMixin, admin.ModelAdmin):
+class ServerAdmin(admin.ModelAdmin):
     list_display = [
         "name",
         "address",

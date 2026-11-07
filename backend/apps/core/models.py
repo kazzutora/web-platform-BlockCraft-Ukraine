@@ -53,7 +53,6 @@ class Engagement(models.Model):
 
     favorites_count = models.PositiveIntegerField(default=0)
     downloads_count = models.PositiveIntegerField(default=0)
-    views_count = models.PositiveIntegerField(default=0)
     rating_avg = models.FloatField(default=0)
     rating_count = models.PositiveIntegerField(default=0)
     score = models.FloatField("рейтинг (байєсівський)", default=0, db_index=True)

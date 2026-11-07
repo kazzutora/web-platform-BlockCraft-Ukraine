@@ -46,7 +46,6 @@ class Collection(TimeStamped, Engagement):
         max_length=8, choices=Visibility.choices, default=Visibility.PRIVATE, db_index=True
     )
     share_token = models.CharField(max_length=32, unique=True, default=new_share_token)
-    is_setup = models.BooleanField(default=False)
     editors = models.ManyToManyField(
         settings.AUTH_USER_MODEL, blank=True, related_name="editable_collections"
     )
@@ -65,19 +64,8 @@ class Collection(TimeStamped, Engagement):
 
 
 class CollectionItem(GenericTarget):
-    class Slot(models.TextChoices):
-        VERSION = "version", "Версія"
-        LOADER = "loader", "Лоадер"
-        PACK = "pack", "Зборка"
-        MOD = "mod", "Мод"
-        RESOURCEPACK = "resourcepack", "Ресурспак"
-        SHADER = "shader", "Шейдер"
-        SKIN = "skin", "Скін"
-        SERVER = "server", "Сервер"
-
     collection = models.ForeignKey(Collection, on_delete=models.CASCADE, related_name="items")
     position = models.PositiveIntegerField(default=0)
-    slot = models.CharField(max_length=16, choices=Slot.choices, blank=True)
     note = models.CharField("нотатка", max_length=140, blank=True)
     added_by = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, related_name="+"

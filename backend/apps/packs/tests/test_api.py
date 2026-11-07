@@ -181,7 +181,7 @@ def test_constructor_flow(auth_client, user):
     auth_client.post(f"{url}/items", {"project": "sodium"}, format="json")
 
     body = auth_client.post(f"{url}/publish").json()
-    assert body["status"] == "pending"
+    assert body["status"] == "published"
 
 
 def test_add_item_errors(auth_client, draft):

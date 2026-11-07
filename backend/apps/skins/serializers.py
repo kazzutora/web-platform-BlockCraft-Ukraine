@@ -4,7 +4,6 @@ from apps.accounts.serializers import UserBriefSerializer
 
 from .models import Skin
 from .mojang import NICKNAME
-from .styles import MAX_STYLES, Style
 
 
 class SkinCardSerializer(serializers.ModelSerializer):
@@ -62,30 +61,6 @@ class SkinDetailSerializer(SkinCardSerializer):
     def get_is_mine(self, skin: Skin) -> bool:
         request = self.context.get("request")
         return bool(request and request.user.is_authenticated and skin.author_id == request.user.pk)
-
-
-class StyleTagsField(serializers.ListField):
-    child = serializers.ChoiceField(choices=Style.choices)
-    max_length = MAX_STYLES
-
-
-class SkinUploadSerializer(serializers.Serializer):
-    file = serializers.FileField(help_text="PNG 64×64 or 64×32, up to 100 KB.")
-    title = serializers.CharField(max_length=60)
-    style_tags = StyleTagsField(required=False, default=list)
-    model = serializers.ChoiceField(
-        choices=Skin.Model.choices,
-        required=False,
-        allow_blank=True,
-        default="",
-        help_text="Empty: detected from the texture.",
-    )
-
-
-class SkinUpdateSerializer(serializers.Serializer):
-    title = serializers.CharField(max_length=60, required=False)
-    style_tags = StyleTagsField(required=False)
-    model = serializers.ChoiceField(choices=Skin.Model.choices, required=False)
 
 
 class LookupQuerySerializer(serializers.Serializer):

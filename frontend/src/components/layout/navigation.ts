@@ -3,7 +3,7 @@ import type { IconName } from "@/components/ui/Icon";
 export type NavItem = { href: string; label: string };
 export type TabBarItem = NavItem & { icon: IconName };
 
-/** Sections in the header; moments and worlds join in later stages. */
+/** Sections in the header. */
 export const sections: NavItem[] = [
   { href: "/mods", label: "Моди" },
   { href: "/packs", label: "Зборки" },
@@ -15,7 +15,7 @@ export const sections: NavItem[] = [
 export const tabBar: TabBarItem[] = [
   { href: "/", label: "Головна", icon: "home" },
   { href: "/search", label: "Пошук", icon: "search" },
-  { href: "/create", label: "Додати", icon: "plus" },
+  { href: "/packs/new", label: "Зібрати", icon: "plus" },
   { href: "/me/saved", label: "Обране", icon: "bookmark" },
 ];
 

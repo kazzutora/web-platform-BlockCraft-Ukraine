@@ -5,7 +5,7 @@ import type { Notification } from "./types";
 
 const base: Notification = {
   id: 1,
-  type: "approved",
+  type: "restored",
   payload: { kind: "skin", id: "7", title: "Мавка" },
   is_read: false,
   created_at: "2026-10-18T10:00:00Z",
@@ -14,15 +14,12 @@ const base: Notification = {
 group("notification text", () => {
   it("links to the object", () => {
     expect(describe(base)).toEqual({
-      text: "«Мавка» опубліковано — тепер його бачать усі.",
+      text: "«Мавка» знову доступний: скарги не підтвердилися.",
       href: "/skins/7",
     });
   });
 
-  it("explains rejections and hidden objects", () => {
-    expect(
-      describe({ ...base, type: "rejected", payload: { ...base.payload, reason: "Чужий" } }).text,
-    ).toBe("«Мавка» не пройшов модерацію: Чужий");
+  it("explains hidden objects", () => {
     expect(
       describe({
         ...base,

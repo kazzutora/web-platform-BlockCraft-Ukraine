@@ -34,7 +34,7 @@ export function PackOwnerActions({ slug }: { slug: string }) {
     onSuccess: async () => {
       toast({ title: copy.deleted });
       await queryClient.invalidateQueries({ queryKey: queryKeys.packs.all });
-      router.push("/me/works");
+      router.push("/me/packs");
     },
   });
 

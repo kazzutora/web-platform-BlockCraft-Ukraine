@@ -1,32 +1,24 @@
-"""Demo content for `make seed`: players, skins, servers, collections, reviews.
+"""Demo players for `make seed` on top of synced Modrinth data: saves, reviews, collections, packs.
 
+No made-up content: every mod, pack item and review target is a real synced project.
 Everything goes through the services, so counters, ratings and notifications stay
 consistent. A fixed random seed gives the same site every time.
 """
 
 import random
 from dataclasses import dataclass
-from datetime import timedelta
-from io import BytesIO
 
 from allauth.account.models import EmailAddress
-from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db import transaction
 from django.utils import timezone
-from PIL import Image
 
 from apps.accounts import privacy
 from apps.accounts import services as accounts
 from apps.accounts.models import User
-from apps.core import publishing
 from apps.library import services as library
 from apps.mods.models import Project
 from apps.packs import services as packs
 from apps.packs.models import Pack
-from apps.servers.models import Server, ServerSnapshot
-from apps.servers.services import create_server
-from apps.skins import services as skins
-from apps.skins.models import Skin
 from apps.social import services as social
 
 DEMO_DOMAIN = "demo.blockcraft.test"
@@ -48,36 +40,6 @@ BIOS = [
 ]
 VERSIONS = ["26.3", "1.21.11", "1.21.1", "1.20.1"]
 LOADERS = ["fabric", "neoforge", "forge", "vanilla"]
-SKIN_COLORS = [
-    ("Козак у червоному", (190, 35, 35)),
-    ("Лісова мавка", (45, 140, 60)),
-    ("Морський вовк", (35, 75, 190)),
-    ("Соняшникова", (230, 190, 40)),
-    ("Нічна відьма", (95, 45, 160)),
-    ("Пісочний мандрівник", (130, 85, 40)),
-    ("Сніговик", (235, 235, 240)),
-    ("Бірюзова хвиля", (40, 170, 180)),
-    ("Рожева хмарка", (225, 90, 160)),
-    ("Тінь", (30, 30, 34)),
-]
-SKIN_STYLES = [
-    ["ukrainian", "medieval"],
-    ["fantasy"],
-    ["casual"],
-    ["cute"],
-    ["horror"],
-    ["casual", "sport"],
-]
-SERVERS = [
-    ("Козацька Січ", ["survival", "rp"], "java", "uk", "1.20–1.21"),
-    ("Карпатське виживання", ["survival", "smp"], "java", "uk", "1.21"),
-    ("Редстоун Лабораторія", ["creative"], "java", "uk", "26.3"),
-    ("Анархія Дике Поле", ["anarchy", "pvp"], "java", "multi", "1.12–1.21"),
-    ("Мініігри Хортиця", ["minigames", "pvp"], "both", "uk", "1.21"),
-    ("Скайблок Небо", ["skyblock"], "bedrock", "uk", "1.21"),
-    ("Модпак Техно", ["modded", "survival"], "java", "uk", "1.20.1"),
-    ("Хардкор Острів", ["hardcore", "survival"], "java", "multi", "1.21"),
-]
 REVIEWS = [
     (5, "Чудово працює, раджу."),
     (4, "Добре, але є дрібні баги."),
@@ -90,8 +52,6 @@ REVIEWS = [
 @dataclass
 class Summary:
     users: int = 0
-    skins: int = 0
-    servers: int = 0
     collections: int = 0
     reviews: int = 0
     packs: int = 0
@@ -106,46 +66,17 @@ def remove() -> int:
     players = list(User.objects.filter(email__endswith=f"@{DEMO_DOMAIN}"))
     for player in players:
         privacy.delete(player)
-    Project.objects.filter(modrinth_id__startswith="DEMO").delete()
     return len(players)
-
-
-def _skin_png(rng: random.Random, color: tuple[int, int, int], slim: bool) -> bytes:
-    """A simple 64×64 skin: shirt in the main colour, darker trousers, a face."""
-    image = Image.new("RGBA", (64, 64), (0, 0, 0, 0))
-    skin_tone = rng.choice([(240, 200, 170), (205, 160, 120), (150, 105, 75)])
-    trousers = tuple(max(0, c - 70) for c in color)
-    for box, fill in (
-        ((0, 0, 32, 16), skin_tone),  # head
-        ((16, 16, 40, 32), color),  # body
-        ((40, 16, 56, 32), color),  # right arm
-        ((32, 48, 48, 64), color),  # left arm
-        ((0, 16, 16, 32), trousers),  # right leg
-        ((16, 48, 32, 64), trousers),  # left leg
-    ):
-        image.paste((*fill, 255), box)
-    hair = rng.choice([(40, 30, 20), (120, 80, 40), (230, 200, 120), (20, 20, 20)])
-    image.paste((*hair, 255), (8, 0, 24, 8))  # top of the head
-    image.paste((*hair, 255), (8, 8, 16, 10))  # fringe
-    image.paste((30, 30, 30, 255), (10, 12, 11, 13))  # eyes
-    image.paste((30, 30, 30, 255), (13, 12, 14, 13))
-    if slim:
-        for x, y, w, h in ((54, 20, 2, 12), (50, 16, 2, 4), (46, 52, 2, 12), (42, 48, 2, 4)):
-            image.paste((0, 0, 0, 0), (x, y, x + w, y + h))
-    buffer = BytesIO()
-    image.save(buffer, format="PNG")
-    return buffer.getvalue()
 
 
 def _players(rng: random.Random) -> list[User]:
     players = []
-    for index, nickname in enumerate(NICKNAMES):
+    for nickname in NICKNAMES:
         user = User.objects.create_user(
             email=_email(nickname),
             password=PASSWORD,
             nickname=nickname,
             bio=rng.choice(BIOS),
-            role=User.Role.TRUSTED if index < 8 else User.Role.USER,
         )
         EmailAddress.objects.create(user=user, email=user.email, verified=True, primary=True)
         accounts.complete_onboarding(
@@ -153,100 +84,26 @@ def _players(rng: random.Random) -> list[User]:
             data={
                 "game_version": rng.choice(VERSIONS),
                 "loader": rng.choice(LOADERS),
-                "interests": rng.sample(["survival", "building", "tech", "pvp", "rp"], 2),
             },
         )
         players.append(user)
     return players
 
 
-def _skins(rng: random.Random, players: list[User]) -> list[Skin]:
-    made = []
-    for index, (title, color) in enumerate(SKIN_COLORS * 2):
-        author = players[index % len(players)]
-        upload = SimpleUploadedFile(
-            "skin.png", _skin_png(rng, color, slim=index % 3 == 0), content_type="image/png"
-        )
-        skin = skins.upload_skin(
-            author=author,
-            upload=upload,
-            title=title if index < len(SKIN_COLORS) else f"{title} II",
-            style_tags=rng.choice(SKIN_STYLES),
-        )
-        if skin.status != Skin.Status.PUBLISHED:
-            publishing.set_status(skin, Skin.Status.PUBLISHED)
-        # Back-date publication so «new» and «skin of the week» have something to choose from
-        Skin.objects.filter(pk=skin.pk).update(
-            published_at=timezone.now() - timedelta(days=rng.randint(0, 20))
-        )
-        skins.render_preview(skin_id=skin.pk)
-        made.append(skin)
-    return made
-
-
-def _servers(rng: random.Random, players: list[User]) -> list[Server]:
-    made = []
-    now = timezone.now()
-    for index, (name, modes, edition, language, versions) in enumerate(SERVERS):
-        server = create_server(
-            author=players[index],
-            data={
-                "name": name,
-                "host": f"play{index + 1}.{DEMO_DOMAIN}",
-                "edition": edition,
-                "modes": modes,
-                "language": language,
-                "versions_label": versions,
-                "description": f"{name}: дружня спільнота, щотижневі події й адекватні адміни.",
-                "discord_url": "https://discord.gg/blockcraft",
-            },
-        )
-        if server.status != Server.Status.PUBLISHED:
-            publishing.set_status(server, Server.Status.PUBLISHED)
-        # A day of history for the charts: a gentle evening peak
-        peak = rng.randint(20, 160)
-        ServerSnapshot.objects.bulk_create(
-            ServerSnapshot(
-                server=server,
-                ts=now - timedelta(minutes=5 * step),
-                is_online=step % 97 != 0,
-                players_online=max(0, int(peak * (0.5 + 0.5 * ((step % 288) / 288)))),
-                players_max=200,
-                latency_ms=rng.randint(20, 90),
-                version_name=versions,
-            )
-            for step in range(1, 289)
-        )
-        made.append(server)
-    return made
-
-
-def _library_and_social(
-    rng: random.Random, players: list[User], made_skins: list[Skin], servers: list[Server]
-) -> Summary:
+def _library_and_social(rng: random.Random, players: list[User]) -> Summary:
     summary = Summary()
     mods = list(Project.objects.published().order_by("-modrinth_downloads")[:40])
     for index, player in enumerate(players):
         # Favorites
-        for skin in rng.sample(made_skins, 4):
-            if skin.author_id != player.pk:
-                library.add_favorite(user=player, kind="skin", identifier=str(skin.pk))
         for project in rng.sample(mods, min(5, len(mods))):
             library.add_favorite(user=player, kind="mod", identifier=project.slug)
-        # Reviews of mods and servers
+        # Reviews of mods
         for project in rng.sample(mods, min(3, len(mods))):
             stars, text = rng.choice(REVIEWS)
             social.upsert_review(
                 user=player, kind="mod", identifier=project.slug, stars=stars, text=text
             )
             summary.reviews += 1
-        for server in rng.sample(servers, 2):
-            if server.author_id != player.pk:
-                stars, text = rng.choice(REVIEWS)
-                social.upsert_review(
-                    user=player, kind="server", identifier=server.slug, stars=stars, text=text
-                )
-                summary.reviews += 1
         # A public collection for half of the players
         if index % 2 == 0 and mods:
             collection = library.create_collection(
@@ -262,12 +119,6 @@ def _library_and_social(
                 library.add_item(
                     collection=collection, user=player, kind="mod", identifier=project.slug
                 )
-            library.add_item(
-                collection=collection,
-                user=player,
-                kind="skin",
-                identifier=str(rng.choice(made_skins).pk),
-            )
             summary.collections += 1
     return summary
 
@@ -327,7 +178,9 @@ def _packs(rng: random.Random, players: list[User]) -> list[Pack]:
         for project in rng.sample(fitting, min(len(fitting), rng.randint(4, 8))):
             if not pack.items.filter(project=project).exists():
                 packs.add_item(pack=pack, user=author, project_slug=project.slug)
-        publishing.set_status(pack, Pack.Status.PUBLISHED)
+        pack.status = Pack.Status.PUBLISHED
+        pack.published_at = timezone.now()
+        pack.save(update_fields=["status", "published_at", "updated_at"])
         for reviewer in rng.sample([p for p in players if p != author], 2):
             stars, text = rng.choice(REVIEWS)
             social.upsert_review(
@@ -337,45 +190,19 @@ def _packs(rng: random.Random, players: list[User]) -> list[Pack]:
     return made
 
 
-DEMO_MODS = [
-    ("demo-fast-render", "Швидкий рендер", "mod", "Більше FPS без зміни вигляду гри."),
-    ("demo-mini-map", "Мінікарта", "mod", "Карта в кутку екрана й мітки шляху."),
-    ("demo-inventory-sort", "Сортування інвентарю", "mod", "Одна клавіша — і скриня в порядку."),
-    ("demo-shaders-light", "Легкі шейдери", "shader", "Тіні й вода для слабких відеокарт."),
-    ("demo-pixel-pack", "Чіткі пікселі", "resourcepack", "Текстури 32×32 у стилі гри."),
-    ("demo-recipes", "Довідник рецептів", "mod", "Усі крафти під рукою."),
-]
-
-
-def _demo_mods(rng: random.Random) -> None:
-    """Stand-ins when Modrinth was never synced (CI, a fresh laptop): no files, no links."""
-    for index, (slug, title, project_type, summary) in enumerate(DEMO_MODS):
-        Project.objects.create(
-            modrinth_id=f"DEMO{index:04d}",
-            slug=slug,
-            title=title,
-            summary=summary,
-            summary_uk=summary,
-            project_type=project_type,
-            loaders=["fabric", "neoforge"] if project_type == "mod" else ["minecraft"],
-            game_versions=VERSIONS,
-            modrinth_downloads=rng.randint(10_000, 5_000_000),
-            status=Project.Status.PUBLISHED,
-            published_at=timezone.now() - timedelta(days=rng.randint(30, 600)),
-        )
+class NoSyncedMods(Exception):
+    """The demo is built on real projects: sync Modrinth first."""
 
 
 @transaction.atomic
 def create(*, seed: int = 42) -> Summary:
-    rng = random.Random(seed)
     if not Project.objects.published().exists():
-        _demo_mods(rng)
+        raise NoSyncedMods
+    rng = random.Random(seed)
     players = _players(rng)
-    made_skins = _skins(rng, players)
-    servers = _servers(rng, players)
-    summary = _library_and_social(rng, players, made_skins, servers)
+    summary = _library_and_social(rng, players)
     summary.packs = len(_packs(rng, players))
     social.recalc_scores()
     social.recalc_trends()
-    summary.users, summary.skins, summary.servers = len(players), len(made_skins), len(servers)
+    summary.users = len(players)
     return summary

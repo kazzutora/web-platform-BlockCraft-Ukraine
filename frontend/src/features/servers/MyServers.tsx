@@ -7,14 +7,13 @@ import { ButtonLink } from "@/components/ui/ButtonLink";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Icon } from "@/components/ui/Icon";
 import { Skeleton } from "@/components/ui/Skeleton";
-import { skinsCopy } from "@/features/skins/copy";
 import { api } from "@/lib/api/client";
 import { queryKeys } from "@/lib/query-keys";
 
 import { serversCopy } from "./copy";
 import { ServerRow } from "./ServerRow";
 
-/** /me/works → «Сервери»: my servers with their moderation status. */
+/** /me/packs → «Сервери»: my servers with their moderation status. */
 export function MyServers() {
   const servers = useQuery({
     queryKey: queryKeys.servers.mine(),
@@ -50,7 +49,7 @@ export function MyServers() {
             server={server}
             badge={
               server.status !== "published" && (
-                <Badge tone="accent">{skinsCopy.mine.status[server.status]}</Badge>
+                <Badge tone="accent">{serversCopy.mine.status[server.status]}</Badge>
               )
             }
           />

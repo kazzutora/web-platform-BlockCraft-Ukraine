@@ -279,30 +279,17 @@ def test_publish_needs_two_mods_with_files(draft, user):
     assert error.value.code == "unresolved"
 
 
-def test_publish_sends_a_new_authors_pack_to_moderation(draft, user):
+def test_publish_goes_live_at_once(draft, user):
     add(draft, mod(slug="sodium"))
     add(draft, mod(slug="lithium"))
 
     services.publish_pack(pack=draft, user=user)
 
-    assert draft.status == Pack.Status.PENDING
+    assert draft.status == Pack.Status.PUBLISHED
+    assert draft.published_at is not None
     with pytest.raises(DomainError) as error:
         services.publish_pack(pack=draft, user=user)
     assert error.value.code == "already_published"
-
-
-def test_publish_of_a_trusted_author_goes_live(user):
-    trusted = UserFactory(role=User.Role.TRUSTED)
-    pack = PackFactory(author=trusted, status=Pack.Status.DRAFT, published_at=None)
-    add(pack, mod(slug="sodium"))
-    add(pack, mod(slug="lithium"))
-
-    services.publish_pack(pack=pack, user=trusted)
-
-    trusted.refresh_from_db()
-    assert pack.status == Pack.Status.PUBLISHED
-    assert pack.published_at is not None
-    assert trusted.published_count == 1
 
 
 def test_fork_copies_the_pack_as_a_draft_and_counts_it(user):
@@ -324,14 +311,11 @@ def test_fork_copies_the_pack_as_a_draft_and_counts_it(user):
     assert original.forks_count == 0
 
 
-def test_delete_pack_withdraws_a_published_one(user):
+def test_delete_pack(user):
     pack = PackFactory(author=user)
-    User.objects.filter(pk=user.pk).update(published_count=1)
 
     services.delete_pack(pack=pack, user=user)
 
-    user.refresh_from_db()
-    assert user.published_count == 0
     assert not Pack.objects.exists()
 
 

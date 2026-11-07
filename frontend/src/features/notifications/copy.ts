@@ -12,9 +12,6 @@ export const notificationsCopy = {
   error: "Не вдалося завантажити сповіщення.",
   someone: "Хтось",
   texts: {
-    approved: (p: Payload) => `«${p.title}» опубліковано — тепер його бачать усі.`,
-    rejected: (p: Payload) =>
-      `«${p.title}» не пройшов модерацію${p.reason ? `: ${p.reason}` : "."}`,
     hidden: (p: Payload) =>
       `«${p.title}» приховано після скарг. Модератори вирішили, що він порушує правила.`,
     restored: (p: Payload) => `«${p.title}» знову доступний: скарги не підтвердилися.`,

@@ -6,23 +6,21 @@ import { packsCopy } from "@/features/packs/copy";
 import { MyPacks } from "@/features/packs/MyPacks";
 import { serversCopy } from "@/features/servers/copy";
 import { MyServers } from "@/features/servers/MyServers";
-import { skinsCopy } from "@/features/skins/copy";
-import { MySkins } from "@/features/skins/MySkins";
 
-const copy = { title: "Мої роботи", tabsLabel: "Типи робіт" };
+const copy = { title: "Мої збірки", tabsLabel: "Що я поширюю" };
 
 export const metadata: Metadata = { title: copy.title };
 
-export default function MyWorksPage() {
+/** /me/packs: the player's packs and servers (the full «Моє» cabinet comes in R7.4). */
+export default function MyPacksPage() {
   return (
     <Container className="flex flex-col gap-10 py-12 md:py-16">
       <h1 className="text-h1">{copy.title}</h1>
       <Tabs
         label={copy.tabsLabel}
         items={[
-          { value: "skins", label: skinsCopy.title, content: <MySkins /> },
-          { value: "servers", label: serversCopy.title, content: <MyServers /> },
           { value: "packs", label: packsCopy.title, content: <MyPacks /> },
+          { value: "servers", label: serversCopy.title, content: <MyServers /> },
         ]}
       />
     </Container>

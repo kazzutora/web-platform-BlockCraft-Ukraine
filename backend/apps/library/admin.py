@@ -6,13 +6,13 @@ from .models import Collection, CollectionItem, Download, Favorite
 class CollectionItemInline(admin.TabularInline):
     model = CollectionItem
     extra = 0
-    fields = ["content_type", "object_id", "position", "slot", "note"]
+    fields = ["content_type", "object_id", "position", "note"]
 
 
 @admin.register(Collection)
 class CollectionAdmin(admin.ModelAdmin):
     list_display = ["title", "owner", "visibility", "items_count", "favorites_count", "updated_at"]
-    list_filter = ["visibility", "is_setup"]
+    list_filter = ["visibility"]
     search_fields = ["title", "owner__nickname"]
     raw_id_fields = ["owner", "copied_from"]
     filter_horizontal = ["editors"]

@@ -11,22 +11,21 @@ import { type PublicProfile, getProfileWorks } from "./api";
 import { ProfileSkin } from "./ProfileSkin";
 
 const copy = {
-  level: (level: number) => `Рівень ${level}`,
   since: (date: string) =>
     `З нами з ${new Date(date).toLocaleDateString("uk-UA", { month: "long", year: "numeric" })}`,
   private: "Закритий профіль",
   privateText: "Гравець вирішив не показувати свій профіль.",
   tabsLabel: "Розділи профілю",
-  tabs: { works: "Скіни", collections: "Колекції", setup: "Сетап" },
+  tabs: { works: "Скіни", collections: "Колекції" },
   empty: {
     works: "Гравець ще не опублікував жодного скіна.",
     collections: "Публічних колекцій поки немає.",
-    setup: "Сетап — версія, моди й скін — з’явиться пізніше.",
   },
 };
 
 export async function ProfileView({ profile }: { profile: PublicProfile }) {
-  if (profile.is_private && profile.level === null) {
+  // A closed profile seen by someone else comes with everything but the nickname null
+  if (profile.is_private && profile.date_joined === null) {
     return (
       <Container className="flex flex-col items-start gap-6 py-12 md:py-16">
         <Avatar name={profile.nickname} size={128} />
@@ -47,7 +46,6 @@ export async function ProfileView({ profile }: { profile: PublicProfile }) {
           <div className="flex flex-col gap-3">
             <h1 className="text-h1">{profile.nickname}</h1>
             <div className="flex flex-wrap items-center gap-3">
-              {profile.level !== null && <Badge tone="accent">{copy.level(profile.level)}</Badge>}
               {profile.is_private && <Badge icon="lock">{copy.private}</Badge>}
               {profile.date_joined && (
                 <span className="text-meta text-muted">{copy.since(profile.date_joined)}</span>
@@ -92,11 +90,6 @@ export async function ProfileView({ profile }: { profile: PublicProfile }) {
             ) : (
               <EmptyState title={copy.empty.collections} illustration="packs" />
             ),
-          },
-          {
-            value: "setup",
-            label: copy.tabs.setup,
-            content: <EmptyState title={copy.empty.setup} illustration="mods" />,
           },
         ]}
       />

@@ -38,6 +38,3 @@ export const styles: Style[] = [
   "military",
   "sport",
 ];
-
-export const MAX_STYLES = 3;
-export const MAX_FILE_BYTES = 100 * 1024;

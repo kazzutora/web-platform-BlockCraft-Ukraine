@@ -36,7 +36,6 @@ function OnboardingFields({ me }: { me: Me }) {
     game_version: profile.game_version ?? "",
     loader: profile.loader ?? "",
     edition: profile.edition ?? "java",
-    interests: profile.interests ?? [],
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState<"save" | "skip" | null>(null);

@@ -47,7 +47,7 @@ export function AccountMenu({ signedIn }: { signedIn: boolean }) {
           <MenuLink href="/me/collections" onClick={() => setOpen(false)}>
             {copy.collections}
           </MenuLink>
-          <MenuLink href="/me/works" onClick={() => setOpen(false)}>
+          <MenuLink href="/me/packs" onClick={() => setOpen(false)}>
             {copy.works}
           </MenuLink>
           <MenuLink href="/me/settings" onClick={() => setOpen(false)}>

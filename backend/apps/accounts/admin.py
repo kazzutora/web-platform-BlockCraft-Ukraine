@@ -28,7 +28,7 @@ class UserAdmin(BaseUserAdmin):
     fieldsets = [
         (None, {"fields": ["email", "password"]}),
         ("Профіль", {"fields": ["nickname", "avatar", "bio", "mc_nickname", "is_private"]}),
-        ("Роль і прогрес", {"fields": ["role", "xp", "level", "published_count"]}),
+        ("Роль", {"fields": ["role"]}),
         (
             "Доступ",
             {"fields": ["is_active", "is_staff", "is_superuser", "groups", "user_permissions"]},

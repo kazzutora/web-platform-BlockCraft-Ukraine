@@ -32,12 +32,11 @@ def test_me_returns_account_with_game_profile(auth_client, user):
     assert data["nickname"] == user.nickname
     assert data["email"] == user.email
     assert data["avatar_url"] is None
-    assert data["level"] == 1
+    assert "level" not in data
     assert data["game_profile"] == {
         "game_version": "",
         "loader": "",
         "edition": "java",
-        "interests": [],
         "onboarding_done": False,
     }
 
@@ -76,7 +75,6 @@ def test_onboarding_saves_choices(auth_client, user):
             "game_version": "26.3",
             "loader": "fabric",
             "edition": "java",
-            "interests": ["building", "tech"],
         },
         format="json",
     )
@@ -85,7 +83,6 @@ def test_onboarding_saves_choices(auth_client, user):
     user.game_profile.refresh_from_db()
     assert user.game_profile.onboarding_done is True
     assert user.game_profile.game_version == "26.3"
-    assert user.game_profile.interests == ["building", "tech"]
 
 
 def test_onboarding_can_be_skipped(auth_client, user):
@@ -100,12 +97,12 @@ def test_onboarding_can_be_skipped(auth_client, user):
 def test_game_profile_rejects_unknown_version_and_loader(auth_client):
     response = auth_client.patch(
         "/api/v1/me/game-profile",
-        {"game_version": "9.99", "loader": "optifine", "interests": ["sleeping"]},
+        {"game_version": "9.99", "loader": "optifine"},
         format="json",
     )
 
     assert response.status_code == 400
-    assert set(response.json()["fields"]) == {"game_version", "loader", "interests.0"}
+    assert set(response.json()["fields"]) == {"game_version", "loader"}
 
 
 def test_settings_can_be_read_and_changed(auth_client):

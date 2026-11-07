@@ -25,10 +25,6 @@ export async function SkinsCatalog({ filters }: { filters: Filters }) {
       filters={
         <div className="flex flex-col gap-6">
           <div className="flex flex-wrap gap-3">
-            <ButtonLink href="/skins/new">
-              <Icon name="upload" />
-              {skinsCopy.upload}
-            </ButtonLink>
             <ButtonLink href="/skins/lookup" variant="secondary">
               <Icon name="search" />
               {skinsCopy.lookup}

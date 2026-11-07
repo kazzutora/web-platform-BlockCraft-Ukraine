@@ -15,7 +15,6 @@ import { downloadUrl, getSimilar, getSkin } from "./api";
 import { skinsCopy } from "./copy";
 import { HowToInstall } from "./HowToInstall";
 import { SkinCard } from "./SkinCard";
-import { SkinOwnerActions } from "./SkinOwnerActions";
 import { SkinViewer } from "./SkinViewer";
 
 const copy = skinsCopy.detail;
@@ -79,7 +78,6 @@ export async function SkinDetail({ id }: { id: number }) {
                 <AddToCollection kind="skin" id={identifier} />
               </>
             )}
-            {skin.is_mine && <SkinOwnerActions skin={skin} />}
             {published && !skin.is_mine && <ReportButton kind="skin" id={identifier} />}
           </>
         }

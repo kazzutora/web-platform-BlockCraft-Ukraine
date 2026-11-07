@@ -5,7 +5,6 @@ type Schemas = components["schemas"];
 export type GameVersion = Schemas["GameVersionEnum"];
 export type Loader = Schemas["LoaderEnum"];
 export type Edition = Schemas["EditionEnum"];
-export type Interest = Schemas["InterestsEnum"];
 
 /** Ukrainian labels for the game vocabulary (values come from the API schema). */
 export const loaderOptions: ChoiceOption<Loader>[] = [
@@ -19,17 +18,6 @@ export const loaderOptions: ChoiceOption<Loader>[] = [
 export const editionOptions: ChoiceOption<Edition>[] = [
   { value: "java", label: "Java" },
   { value: "bedrock", label: "Bedrock" },
-];
-
-export const interestOptions: ChoiceOption<Interest>[] = [
-  { value: "survival", label: "Виживання" },
-  { value: "building", label: "Будівництво" },
-  { value: "tech", label: "Техніка й редстоун" },
-  { value: "pvp", label: "PvP" },
-  { value: "rp", label: "Рольова гра" },
-  { value: "adventure", label: "Пригоди" },
-  { value: "minigames", label: "Мініігри" },
-  { value: "modded", label: "Моди й зборки" },
 ];
 
 /** Newest first; the list is bounded by the backend (apps/core/game.py). */

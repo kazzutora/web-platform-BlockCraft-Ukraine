@@ -304,7 +304,8 @@ SYNC_LIMITS = {
     "resourcepack": env.int("SYNC_LIMIT_RESOURCEPACK", default=300),
     "shader": env.int("SYNC_LIMIT_SHADER", default=200),
     "datapack": env.int("SYNC_LIMIT_DATAPACK", default=200),
-    "modpack": env.int("SYNC_LIMIT_MODPACK", default=200),
+    # Each modpack reads its .mrpack index and imports its mods: kept small until R4.4
+    "modpack": env.int("SYNC_LIMIT_MODPACK", default=20),
     "servers": env.int("SYNC_LIMIT_SERVERS", default=500),
 }
 SYNC_SKINS_PER_RUN = env.int("SYNC_SKINS_PER_RUN", default=300)

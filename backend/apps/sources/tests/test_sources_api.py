@@ -35,7 +35,12 @@ def test_every_registered_source_is_listed_even_before_any_sync(api_client):
     assert modrinth["name"] == "Modrinth"
     assert modrinth["terms_url"] == "https://modrinth.com/legal/terms"
     assert modrinth["last_sync"] is None
-    assert [job["key"] for job in modrinth["jobs"]] == ["game_versions", "catalog", "versions"]
+    assert [job["key"] for job in modrinth["jobs"]] == [
+        "game_versions",
+        "catalog",
+        "versions",
+        "modpacks",
+    ]
     assert body["mojang"]["jobs"] == []
 
 

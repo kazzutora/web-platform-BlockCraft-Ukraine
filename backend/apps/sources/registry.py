@@ -66,6 +66,12 @@ SOURCES: tuple[SourceInfo, ...] = (
                 title="Версії проєктів, які гравці завантажують і додають у збірки",
                 task="apps.mods.tasks.sync_versions_for_tracked",
             ),
+            Job(
+                key="modpacks",
+                title="Найпопулярніші модпаки як готові збірки",
+                task="apps.packs.tasks.import_official",
+                accepts_limit=True,
+            ),
         ),
     ),
     SourceInfo(

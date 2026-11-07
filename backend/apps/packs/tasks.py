@@ -3,6 +3,7 @@ import logging
 from celery import shared_task
 from django.conf import settings
 
+from apps.core.models import Source
 from apps.mods.tasks import LONG_TASK
 from apps.sources.clients.loaders import LoaderClient
 from apps.sources.clients.modrinth import ModrinthClient, ModrinthError
@@ -35,8 +36,11 @@ def refresh_loader_versions() -> dict[str, int]:
 
 
 @shared_task(name="packs.import_official", **LONG_TASK)
-def import_official(limit: int | None = None) -> list[str]:
-    with ModrinthClient() as client:
-        return services.import_popular_modpacks(
-            client=client, limit=limit or settings.SYNC_LIMITS["modpack"]
-        )
+def import_official(limit: int | None = None) -> dict[str, int]:
+    limit = limit or settings.SYNC_LIMITS["modpack"]
+    with (
+        sync_run(Source.MODRINTH, "modrinth.modpacks", {"limit": limit}) as run,
+        ModrinthClient() as client,
+    ):
+        services.import_popular_modpacks(client=client, limit=limit, run=run)
+    return run.as_dict()

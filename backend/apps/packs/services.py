@@ -26,7 +26,8 @@ from apps.mods.markdown import render_markdown
 from apps.mods.models import Project, ProjectType, ProjectVersion
 from apps.mods.selectors import dependencies_of, resolve_version
 from apps.mods.services import import_missing
-from apps.sources.clients.modrinth import ModrinthClient, ModrinthError
+from apps.sources.clients.modrinth import ModrinthClient
+from apps.sources.runs import SyncCounter
 from apps.sources.schemas.modrinth import ModrinthProject, ModrinthVersion, VersionFile
 from apps.sources.services import supported_game_versions
 
@@ -653,20 +654,40 @@ def _store_official(
     return pack
 
 
-def import_popular_modpacks(*, client: ModrinthClient, limit: int) -> list[str]:
+SEARCH_PAGE = 100  # Modrinth's maximum `limit`
+
+
+def import_popular_modpacks(
+    *, client: ModrinthClient, limit: int, run: SyncCounter | None = None
+) -> list[str]:
     """The `limit` most downloaded modpacks for supported versions, as official packs."""
-    page = client.search(
-        project_type="modpack", game_versions=supported_game_versions(), limit=limit
-    )
+    run = run if run is not None else SyncCounter()
+    game_versions = supported_game_versions()
+    ids: list[str] = []
+    while len(ids) < limit:
+        page = client.search(
+            project_type="modpack",
+            game_versions=game_versions,
+            offset=len(ids),
+            limit=min(SEARCH_PAGE, limit - len(ids)),
+        )
+        ids.extend(hit.project_id for hit in page.hits)
+        if not page.hits or len(ids) >= page.total_hits:
+            break
     imported = []
-    for data in client.get_projects([hit.project_id for hit in page.hits]):
-        try:
-            pack = import_modpack(client=client, data=data)
-        except (DomainError, ModrinthError):
-            logger.warning("Could not import modpack %s", data.slug, exc_info=True)
-            continue
-        if pack is not None:
-            imported.append(pack.slug)
+    for start in range(0, len(ids), SEARCH_PAGE):
+        for data in client.get_projects(ids[start : start + SEARCH_PAGE]):
+            known = Pack.objects.filter(modrinth_id=data.id).exists()
+            with run.item(modpack=data.slug):
+                pack = import_modpack(client=client, data=data)
+                if pack is None:
+                    run.skipped += 1
+                    continue
+                if known:
+                    run.updated += 1
+                else:
+                    run.created += 1
+                imported.append(pack.slug)
     return imported
 
 

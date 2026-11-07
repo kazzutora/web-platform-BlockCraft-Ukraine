@@ -13,6 +13,7 @@ from apps.mods.tests.payloads import project_payload, version_payload
 from apps.mods.tests.test_sync import FakeModrinth
 from apps.packs import services, tasks
 from apps.packs.models import LoaderRelease, Pack
+from apps.sources.models import SyncRun
 from apps.sources.schemas.modrinth import ModrinthProject, ModrinthVersion, VersionFile
 
 from .factories import PackFactory, mod
@@ -249,7 +250,10 @@ def test_import_official_task(fake, settings):
     settings.SYNC_LIMITS = {**settings.SYNC_LIMITS, "modpack": 3}
 
     with modrinth(fake):
-        assert tasks.import_official.delay().get() == ["fabulously-optimized"]
+        result = tasks.import_official.delay().get()
+
+    assert result["created"] == 1
+    assert SyncRun.objects.get(job="modrinth.modpacks").params == {"limit": 3}
 
 
 def test_fill_dependencies_task_brings_in_and_adds_missing_ones(user):

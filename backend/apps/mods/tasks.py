@@ -68,12 +68,13 @@ def sync_versions_for_tracked(days: int = 90) -> dict[str, int]:
         sync_run(Source.MODRINTH, "modrinth.versions", {"days": days}) as run,
         ModrinthClient() as client,
     ):
+        game_versions = supported_game_versions()
         for project in Project.objects.filter(pk__in=list(project_ids)).iterator(chunk_size=100):
             with run.item(project=project.slug):
                 services.sync_project_versions(
                     client=client,
                     project=project,
-                    game_versions=supported_game_versions(),
+                    game_versions=game_versions,
                 )
                 run.updated += 1
     return run.as_dict()

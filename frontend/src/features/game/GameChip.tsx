@@ -21,9 +21,12 @@ import { useGameVersions } from "./useGameVersions";
 
 const copy = gameCopy.chip;
 
+function loaderLabel(loader: string): string {
+  return loaderOptions.find((option) => option.value === loader)?.label ?? "";
+}
+
 export function gameLabel({ game_version, loader }: MyGame): string {
-  const loaderLabel = loaderOptions.find((option) => option.value === loader)?.label;
-  return [game_version, loaderLabel].filter(Boolean).join(" · ");
+  return [game_version, loaderLabel(loader)].filter(Boolean).join(" · ");
 }
 
 type GameChipProps = { initial: GameContext; signedIn: boolean };
@@ -79,13 +82,25 @@ export function GameChip({ initial, signedIn }: GameChipProps) {
           type="button"
           aria-label={current ? copy.label(current) : copy.empty}
           aria-busy={refreshing}
-          className="inline-flex h-9 max-w-40 items-center gap-1.5 border border-line px-2.5 text-meta font-medium whitespace-nowrap tabular-nums transition-colors hover:border-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent sm:max-w-none"
+          className="inline-flex h-9 max-w-32 items-center gap-1.5 border border-line px-2 text-meta font-medium whitespace-nowrap tabular-nums transition-colors hover:border-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent sm:max-w-none"
         >
           <span
             aria-hidden
             className={current ? "size-2 bg-accent" : "size-2 border border-muted"}
           />
-          <span className="truncate">{current || copy.empty}</span>
+          {/* Phones show the version only: the header has no room for both */}
+          <span className="truncate">
+            {initial.game_version ? (
+              <>
+                {initial.game_version}
+                {initial.loader && (
+                  <span className="hidden sm:inline"> · {loaderLabel(initial.loader)}</span>
+                )}
+              </>
+            ) : (
+              loaderLabel(initial.loader) || copy.empty
+            )}
+          </span>
           <Icon name="chevron-down" className="size-4 shrink-0" />
         </button>
       }

@@ -5,7 +5,7 @@ export const sourcesCopy = {
   site: "Сайт",
   terms: "Умови використання",
   openLabel: (name: string, what: string) => `${what}: ${name}`,
-  onDemand: "Без регулярної синхронізації: запит іде лише тоді, коли гравець щось шукає.",
+  onDemand: "Регулярної синхронізації поки немає.",
   never: "Ще не синхронізували.",
   lastSync: "Остання синхронізація",
   running: "Іде зараз",

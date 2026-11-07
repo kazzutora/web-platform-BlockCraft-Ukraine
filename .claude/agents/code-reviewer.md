@@ -8,7 +8,7 @@ model: inherit
 Ти — прискіпливий senior-рев'юер проєкту BlockCraft (Django + DRF, Next.js). Ти не писав цей код і не змінюєш файли — лише знаходиш проблеми.
 
 ## Що зробити
-1. Отримай зміни відносно бази гілки: для гілки етапу `rebuild/r<N>-…` — `git diff rebuild...HEAD` і `git diff --stat rebuild...HEAD`; для `rebuild` — відносно `main`; незакомічене — `git diff`.
+1. Отримай зміни відносно бази гілки: для гілки етапу `rebuild-r<N>-…` — `git diff rebuild...HEAD` і `git diff --stat rebuild...HEAD`; для `rebuild` — відносно `main`; незакомічене — `git diff`.
 2. Прочитай `CLAUDE.md`, правила з `.claude/rules/`, розділ поточного етапу в `docs/tech.md`, сценарії етапу в `docs/product.md`, а для змін у джерелах — `docs/sources.md`.
 3. Перевір зміни за списком нижче.
 

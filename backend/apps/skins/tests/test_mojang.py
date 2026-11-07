@@ -6,14 +6,16 @@ import pytest
 import respx
 from PIL import Image
 
-from apps.skins import mojang
+from apps.sources.clients import base
+from apps.sources.clients.mojang import API_URL
+from apps.sources.clients.mojang import SESSION_URL as SESSION
 
 from .factories import png_bytes, skin_image, skin_png
 
 UUID = "069a79f444e94726a5befca90e38aaf5"
 TEXTURE_URL = "http://textures.minecraft.net/texture/abc123"
-PROFILE_URL = f"{mojang.API_URL}/users/profiles/minecraft/Mavka"
-SESSION_URL = f"{mojang.SESSION_URL}/session/minecraft/profile/{UUID}"
+PROFILE_URL = f"{API_URL}/users/profiles/minecraft/Mavka"
+SESSION_URL = f"{SESSION}/session/minecraft/profile/{UUID}"
 
 
 def session_payload(*, url: str | None = TEXTURE_URL, model: str | None = "slim") -> dict:
@@ -44,7 +46,7 @@ def lookup(client, nickname="Mavka"):
 
 @pytest.fixture(autouse=True)
 def no_sleep(monkeypatch):
-    monkeypatch.setattr(mojang.time, "sleep", lambda seconds: None)
+    monkeypatch.setattr(base.time, "sleep", lambda seconds: None)
 
 
 @respx.mock
@@ -72,7 +74,7 @@ def test_answers_are_cached(api_client):
 
 @respx.mock
 def test_unknown_player_is_404_and_cached(api_client):
-    route = respx.get(f"{mojang.API_URL}/users/profiles/minecraft/Nobody").respond(404)
+    route = respx.get(f"{API_URL}/users/profiles/minecraft/Nobody").respond(404)
 
     first = lookup(api_client, nickname="Nobody")
     lookup(api_client, nickname="Nobody")

@@ -15,8 +15,9 @@ from apps.core.exceptions import DomainError
 from apps.core.text import slug_from
 from apps.moderation import services as moderation
 from apps.moderation import words
+from apps.sources.clients import ping as clients
 
-from . import clients, status, validators
+from . import status, validators
 from .choices import DEFAULT_PORTS, MAX_MODES
 from .models import Server, ServerSnapshot, new_verify_code
 

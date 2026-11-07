@@ -33,7 +33,7 @@ cp .env.example .env
 | `EMAIL_BACKEND` | `django.core.mail.backends.smtp.EmailBackend` |
 | `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `DEFAULT_FROM_EMAIL` | дані SMTP |
 | `DISCORD_*`, `GOOGLE_*` | ключі OAuth (callback: `https://DOMAIN/accounts/<provider>/login/callback/`) |
-| `MODRINTH_USER_AGENT` | `blockcraft-ua/1.0 (contact: ваша-пошта)` |
+| `SOURCES_USER_AGENT` | `blockcraft-ua/2.0 (contact: ваша-пошта)` |
 
 Збірка, сертифікат і старт:
 

@@ -1,4 +1,4 @@
-"""Server List Ping via mcstatus. Call it only from Celery tasks."""
+"""Server List Ping via mcstatus (docs/sources.md). Celery only; SSRF checks before each ping."""
 
 import asyncio
 import logging
@@ -8,8 +8,8 @@ from dataclasses import dataclass
 
 from mcstatus import BedrockServer, JavaServer
 
-from . import validators
-from .choices import Edition
+from apps.core.game import Edition
+from apps.servers import validators
 
 logger = logging.getLogger(__name__)
 

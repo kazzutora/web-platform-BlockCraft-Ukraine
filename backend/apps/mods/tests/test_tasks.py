@@ -5,8 +5,8 @@ import pytest
 
 from apps.library.models import Download
 from apps.mods import tasks
-from apps.mods.clients import ModrinthError
 from apps.mods.models import Project
+from apps.sources.clients.modrinth import ModrinthError
 from apps.sources.models import SyncRun
 
 from .factories import ProjectFactory, VersionFactory
@@ -25,7 +25,7 @@ def modrinth(fake: FakeModrinth):
 
 
 def test_sync_popular_task_writes_a_sync_run_per_type(settings):
-    settings.MODRINTH_SYNC_LIMITS = {"mod": 5, "shader": 5}
+    settings.SYNC_LIMITS = {"mod": 5, "resourcepack": 5, "shader": 5}
     fake = FakeModrinth([project_payload()], {"AANobbMI": [version_payload()]})
 
     with modrinth(fake):
@@ -42,17 +42,18 @@ def test_sync_popular_task_writes_a_sync_run_per_type(settings):
 
 
 def test_sync_popular_task_limit_overrides_settings(settings):
-    settings.MODRINTH_SYNC_LIMITS = {"mod": 300}
+    settings.SYNC_LIMITS = {"mod": 300, "resourcepack": 300, "shader": 300}
     fake = FakeModrinth([project_payload()], {"AANobbMI": [version_payload()]})
 
     with modrinth(fake):
         tasks.sync_popular.delay(limit=20).get()
 
-    assert SyncRun.objects.get().params == {"limit": 20}
+    assert SyncRun.objects.count() == 3  # mods, resource packs, shaders
+    assert all(run.params == {"limit": 20} for run in SyncRun.objects.all())
 
 
 def test_a_failing_project_is_counted_and_the_rest_synced(settings):
-    settings.MODRINTH_SYNC_LIMITS = {"mod": 5}
+    settings.SYNC_LIMITS = {"mod": 5, "resourcepack": 5, "shader": 5}
     fake = FakeModrinth(
         [project_payload(), project_payload("IRIS0001", "iris")],
         {"IRIS0001": [version_payload("i1", project_id="IRIS0001")]},
@@ -70,7 +71,7 @@ def test_a_failing_project_is_counted_and_the_rest_synced(settings):
 
     assert result["mod"]["created"] == 1
     assert result["mod"]["failed"] == 1
-    run = SyncRun.objects.get()
+    run = SyncRun.objects.get(job="modrinth.catalog:mod")
     assert run.status == SyncRun.Status.PARTIAL
     assert run.errors[0]["type"] == "ModrinthError"
     assert run.errors[0]["context"] == {"project": "sodium"}

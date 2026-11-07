@@ -23,12 +23,12 @@ from apps.core.text import slug_from
 from apps.core.versions import latest_release
 from apps.moderation import services as moderation
 from apps.moderation import words
-from apps.mods.clients import ModrinthClient, ModrinthError
 from apps.mods.markdown import render_markdown
 from apps.mods.models import Project, ProjectType, ProjectVersion
-from apps.mods.schemas import ModrinthProject, ModrinthVersion, VersionFile
 from apps.mods.selectors import dependencies_of, resolve_version
 from apps.mods.services import import_missing
+from apps.sources.clients.modrinth import ModrinthClient, ModrinthError
+from apps.sources.schemas.modrinth import ModrinthProject, ModrinthVersion, VersionFile
 
 from . import selectors
 from .choices import MAX_ITEMS, MAX_STYLES, MRPACK_LOADER_KEYS, PackLoader, Style

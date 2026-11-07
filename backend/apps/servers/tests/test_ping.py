@@ -4,9 +4,10 @@ from types import SimpleNamespace
 import pytest
 from django.core.cache import cache
 
-from apps.servers import clients, services, status, validators
+from apps.servers import services, status, validators
 from apps.servers.models import Server, ServerSnapshot
 from apps.servers.tasks import ping_all
+from apps.sources.clients import ping as clients
 
 from .factories import ServerFactory, fake_probe, online
 

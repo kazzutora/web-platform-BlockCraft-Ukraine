@@ -4,12 +4,12 @@ from celery import shared_task
 from django.conf import settings
 
 from apps.core.game import GAME_VERSIONS
-from apps.mods.clients import ModrinthClient, ModrinthError
 from apps.mods.tasks import LONG_TASK
+from apps.sources.clients.loaders import LoaderClient
+from apps.sources.clients.modrinth import ModrinthClient, ModrinthError
 from apps.sources.runs import sync_run
 
 from . import services
-from .clients import LoaderClient
 from .models import Pack
 
 logger = logging.getLogger(__name__)
@@ -38,5 +38,5 @@ def refresh_loader_versions() -> dict[str, int]:
 def import_official(limit: int | None = None) -> list[str]:
     with ModrinthClient() as client:
         return services.import_popular_modpacks(
-            client=client, limit=limit or settings.MODRINTH_OFFICIAL_PACKS
+            client=client, limit=limit or settings.SYNC_LIMITS["modpack"]
         )

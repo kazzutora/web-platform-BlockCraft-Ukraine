@@ -9,11 +9,11 @@ from django.utils import timezone
 from apps.accounts.models import User
 from apps.core.exceptions import DomainError
 from apps.library.models import Download
+from apps.sources.clients.modrinth import ModrinthClient
 from apps.sources.runs import SyncCounter
+from apps.sources.schemas import modrinth as schemas
 
-from . import schemas
 from .categories import category_name_uk, gpu_load_for
-from .clients import ModrinthClient
 from .markdown import render_markdown
 from .models import Category, Project, ProjectType, ProjectVersion
 

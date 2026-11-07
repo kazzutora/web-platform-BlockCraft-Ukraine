@@ -286,16 +286,22 @@ SEARCH_INDEX = env("SEARCH_INDEX", default="content")
 # Signals queue index updates; tests switch it off and mock the search engine
 SEARCH_INDEXING = env.bool("SEARCH_INDEXING", default=True)
 
-# Modrinth
+# Content sources (apps/sources, docs/sources.md)
 
-MODRINTH_USER_AGENT = env(
-    "MODRINTH_USER_AGENT", default="blockcraft-ua/1.0 (contact: you@example.com)"
+# Modrinth requires a unique User-Agent with contact info; MODRINTH_USER_AGENT is the v1 name
+SOURCES_USER_AGENT = env(
+    "SOURCES_USER_AGENT",
+    default=env("MODRINTH_USER_AGENT", default="blockcraft-ua/2.0 (contact: you@example.com)"),
 )
-# Projects and versions are synced for the releases listed in apps/core/game.py
-MODRINTH_SYNC_LIMITS = {
-    "mod": env.int("MODRINTH_SYNC_LIMIT_MODS", default=300),
-    "resourcepack": env.int("MODRINTH_SYNC_LIMIT_RESOURCEPACKS", default=100),
-    "shader": env.int("MODRINTH_SYNC_LIMIT_SHADERS", default=100),
+# How many items each sync takes: top-N by downloads per project type, servers, skins per run
+SYNC_LIMITS = {
+    "mod": env.int("SYNC_LIMIT_MOD", default=1000),
+    "resourcepack": env.int("SYNC_LIMIT_RESOURCEPACK", default=300),
+    "shader": env.int("SYNC_LIMIT_SHADER", default=200),
+    "datapack": env.int("SYNC_LIMIT_DATAPACK", default=200),
+    "modpack": env.int("SYNC_LIMIT_MODPACK", default=200),
+    "servers": env.int("SYNC_LIMIT_SERVERS", default=500),
 }
-# Most downloaded Modrinth modpacks imported as official packs (stage 10)
-MODRINTH_OFFICIAL_PACKS = env.int("MODRINTH_OFFICIAL_PACKS", default=10)
+SYNC_SKINS_PER_RUN = env.int("SYNC_SKINS_PER_RUN", default=300)
+# Optional free key from account.mineskin.org; without it the API answers with a warning
+MINESKIN_API_KEY = env("MINESKIN_API_KEY", default="")

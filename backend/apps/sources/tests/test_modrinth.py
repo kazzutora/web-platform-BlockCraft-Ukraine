@@ -7,9 +7,13 @@ import httpx
 import pytest
 import respx
 
-from apps.mods.clients import BASE_URL, ModrinthClient, ModrinthError, ModrinthNotFoundError
-
-from .payloads import CATEGORIES, project_payload, version_payload
+from apps.mods.tests.payloads import CATEGORIES, project_payload, version_payload
+from apps.sources.clients.modrinth import (
+    BASE_URL,
+    ModrinthClient,
+    ModrinthError,
+    ModrinthNotFoundError,
+)
 
 
 @pytest.fixture

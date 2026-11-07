@@ -1,4 +1,4 @@
-"""Pydantic models for the Mojang API answers we read."""
+"""Mojang API answers we read (fixtures: mojang/)."""
 
 from pydantic import BaseModel, Field
 

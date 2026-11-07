@@ -8,12 +8,12 @@ import pytest
 
 from apps.core.exceptions import DomainError
 from apps.mods.models import Project
-from apps.mods.schemas import ModrinthProject, ModrinthVersion, VersionFile
 from apps.mods.tests.factories import ProjectFactory, VersionFactory
 from apps.mods.tests.payloads import project_payload, version_payload
 from apps.mods.tests.test_sync import FakeModrinth
 from apps.packs import services, tasks
 from apps.packs.models import LoaderRelease, Pack
+from apps.sources.schemas.modrinth import ModrinthProject, ModrinthVersion, VersionFile
 
 from .factories import PackFactory, mod
 
@@ -246,7 +246,7 @@ def modrinth(fake):
 
 
 def test_import_official_task(fake, settings):
-    settings.MODRINTH_OFFICIAL_PACKS = 3
+    settings.SYNC_LIMITS = {**settings.SYNC_LIMITS, "modpack": 3}
 
     with modrinth(fake):
         assert tasks.import_official.delay().get() == ["fabulously-optimized"]

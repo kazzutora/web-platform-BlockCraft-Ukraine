@@ -1,4 +1,4 @@
-"""Modrinth API v2 responses: only the fields BlockCraft uses."""
+"""Modrinth API v2 responses: only the fields BlockCraft uses (fixtures: modrinth/)."""
 
 from datetime import datetime
 
@@ -87,6 +87,15 @@ class ModrinthVersion(BaseModel):
         return next((file for file in self.files if file.primary), None) or next(
             iter(self.files), None
         )
+
+
+class ModrinthGameVersion(BaseModel):
+    """`/tag/game_version`: `major` is Modrinth's flag, not our «supported» (sources.md)."""
+
+    version: str
+    version_type: str
+    date: datetime
+    major: bool = False
 
 
 class ModrinthCategory(BaseModel):

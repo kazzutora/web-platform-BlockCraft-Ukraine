@@ -10,11 +10,11 @@ from apps.accounts.models import User
 from apps.core.exceptions import DomainError
 from apps.core.game import GAME_VERSIONS
 from apps.core.models import Source
+from apps.sources.clients.modrinth import ModrinthClient, ModrinthError, ModrinthNotFoundError
 from apps.sources.runs import sync_run
 
 from . import services
-from .clients import ModrinthClient, ModrinthError, ModrinthNotFoundError
-from .models import Project
+from .models import Project, ProjectType
 
 logger = logging.getLogger(__name__)
 
@@ -25,11 +25,10 @@ LONG_TASK = {"time_limit": 60 * 60, "soft_time_limit": 55 * 60}
 @shared_task(name="mods.sync_popular", **LONG_TASK)
 def sync_popular(limit: int | None = None) -> dict[str, dict[str, int]]:
     """One `SyncRun` per project type (`modrinth.catalog:<type>`); `limit` overrides settings."""
-    limits = (
-        dict.fromkeys(settings.MODRINTH_SYNC_LIMITS, limit)
-        if limit
-        else settings.MODRINTH_SYNC_LIMITS
-    )
+    limits = {
+        project_type: limit or settings.SYNC_LIMITS[project_type]
+        for project_type in ProjectType.values
+    }
     counts: dict[str, dict[str, int]] = {}
     with ModrinthClient() as client:
         for project_type, type_limit in limits.items():

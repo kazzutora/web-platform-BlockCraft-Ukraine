@@ -2,7 +2,7 @@ import httpx
 import pytest
 import respx
 
-from apps.packs.clients import (
+from apps.sources.clients.loaders import (
     FABRIC_META,
     FORGE_PROMOTIONS,
     NEOFORGE_VERSIONS,

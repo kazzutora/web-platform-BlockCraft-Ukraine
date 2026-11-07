@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     "allauth.headless",
     "apps.core",
     "apps.accounts",
+    "apps.sources",
     "apps.library",
     "apps.social",
     "apps.mods",

@@ -5,9 +5,9 @@ Claude Code читає цей файл на початку кожної зада
 ## Зараз
 
 - **Етап:** R1 — Шар джерел (R0 завершено)
-- **Наступна задача:** R1.1 — план етапу погоджено
+- **Наступна задача:** R1.2 — спайк джерел, фікстури, `docs/sources.md` (показати)
 - **Гілка:** `rebuild-r1-sources`
-- **Блокери:** GNU Make встановлюється (`winget install ezwinports.make`); Node.js на хості не потрібен — фронтенд і його pre-commit-хуки працюють у Docker
+- **Блокери:** GNU Make ще не в PATH цієї сесії — команди `make` виконуються їхніми рецептами напряму; Node.js на хості не потрібен — фронтенд і його pre-commit-хуки працюють у Docker
 
 ## Етапи
 
@@ -19,7 +19,7 @@ Claude Code читає цей файл на початку кожної зада
 - [x] R0.5 Оновити `.claude/` (rules, design-system, next-stage, code-reviewer)
 
 ### R1 — Шар джерел
-- [ ] R1.1 `apps/sources`: `Sourced`, `SyncRun`, реєстр, адмінка, `make sync`
+- [x] R1.1 `apps/sources`: `Sourced`, `SyncRun`, реєстр, адмінка, `make sync`
 - [ ] R1.2 Спайк джерел, фікстури, `docs/sources.md` — показати мені
 - [ ] R1.3 Клієнти в `sources/clients/` (перенести v1 + Modrinth v3, MineSkin)
 - [ ] R1.4 `GameVersion` з Modrinth, `GET /meta`, без статичних списків
@@ -142,6 +142,10 @@ Claude Code читає цей файл на початку кожної зада
 - 2026-11-07 · R0.5 · Скіли лишаються на `make`; розробник ставить GNU Make · CLAUDE.md і Makefile вже на це розраховані.
 - 2026-11-07 · R0.4 · Dev-БД: `seed --reset`, видалено тестовий «CubeCraft», 5 чернеток `test-konstruktora*` і 7 завантажених скінів тестових акаунтів · контент лише з джерел.
 - 2026-11-07 · R1 · Гілки етапів — `rebuild-r<N>-<name>`, а не `rebuild/r<N>-<name>` · git не може мати гілку `rebuild/x` поруч із `rebuild` (`cannot lock ref`); перейменовувати інтеграційну гілку гірше.
+- 2026-11-07 · R1.1 · `SyncRun.source` — ключ реєстру (рядок без choices), реєстр має й не-контентне джерело `loaders` (мета лоадерів) · нове джерело не потребує міграції; `Source` (TextChoices) — лише для `Sourced` на об'єктах.
+- 2026-11-07 · R1.1 · Синхронізації v1 (`mods.sync_popular`, `mods.sync_versions_for_tracked`, `packs.refresh_loader_versions`) загорнуто в `sync_run`: каталог — окремий `SyncRun` на тип (`modrinth.catalog:<type>`), збій одного проєкту рахується в `failed` і не зупиняє решту; «без змін» не визначаємо до importer-а R2.1 · «Готово, коли» R1 вимагає `SyncRun` з лічильниками вже зараз.
+- 2026-11-07 · R1.1 · `sync_mods` і `make sync-mods` видалено → `make sync [s=<джерело>] [j=<задача>] [limit=N]` (команда `sync`); CI робить `sync --source modrinth --job catalog --limit 20` · одна точка входу для всіх джерел.
+- 2026-11-07 · R1.1 · Міксин `Sourced` створено без застосування; на моделі він стає в R2.1 (`Project`), R5.1 (`Server`), R6.1 (`Skin`) · ці етапи переробляють відповідні моделі.
 
 ## Відомі проблеми й борг (перенесено з v1)
 

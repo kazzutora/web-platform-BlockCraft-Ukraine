@@ -136,7 +136,7 @@ blockcraft/
 
 ### 6.2 sources (НОВЕ)
 
-- `SyncRun`: `source`, `job` (напр. `modrinth.catalog:shader`), `status` (running / ok / partial / failed), `started_at`, `finished_at`, `created`, `updated`, `unchanged`, `skipped`, `failed`, `errors` (JSON, до 20 прикладів з контекстом), `params` (JSON). Індекс `(source, -started_at)`. Пишеться контекст-менеджером `sync_run(source, job, params)`.
+- `SyncRun`: `source` (ключ `registry.py`, без choices), `job` (напр. `modrinth.catalog:shader`), `status` (running / ok / partial / failed), `started_at`, `finished_at`, `created`, `updated`, `unchanged`, `skipped`, `failed`, `errors` (JSON, до 20 прикладів з контекстом), `params` (JSON). Індекс `(source, -started_at)`. Пишеться контекст-менеджером `sync_run(source, job, params)`.
 - `GameVersion`: `version` (PK, рядок), `version_type` (release / snapshot / beta / alpha), `released_at`, `is_major`, `is_supported` (показуємо в «Моїй грі» й синхронізуємо версії файлів). Підтримувані: релізи від 1.16 + `SUPPORTED_LEGACY_VERSIONS` (за замовчуванням `1.12.2,1.8.9`). Порядок — `released_at`.
 - Лоадери — `Loader` TextChoices у коді (fabric, forge, neoforge, quilt + vanilla для «Моєї гри»): змінюються рідко, а від них залежать правила сумісності.
 
@@ -487,7 +487,7 @@ MINESKIN_API_KEY=                  # безкоштовний ключ account.m
 ### R1 — Шар джерел (M)
 **Мета:** усі зовнішні API в одному місці, кожна синхронізація видна в журналі, версії гри — живі, «Моя гра» працює й для гостя.
 
-- **R1.1** `apps/sources`: міксин `Sourced` (у `core`), `SyncRun` + `sync_run(...)`, `registry.py` (назва, опис українською, сайт, умови, задачі), адмінка «Синхронізації» (фільтри за джерелом і статусом), `make sync` і `make sync s=<source>`.
+- **R1.1** `apps/sources`: міксин `Sourced` (у `core`), `SyncRun` + `sync_run(...)`, `registry.py` (назва, опис українською, сайт, умови, задачі), адмінка «Синхронізації» (фільтри за джерелом і статусом), `make sync` і `make sync s=<source>` (+ `j=<job>`, `limit=N`).
 - **R1.2** Спайк джерел: Modrinth v2, Modrinth v3 (сервери), MineSkin v2, Mojang — реальні запити з контейнера, 2–3 відповіді в `apps/sources/tests/fixtures/<source>/`. `docs/sources.md`: ендпоінти, поля, ліміти, умови використання й атрибуції, ризики. **Показати мені `sources.md`.**
 - **R1.3** Клієнти в `sources/clients/`: перенести Modrinth (v1 `mods/clients.py`), Mojang (v1 skins), лоадери (WIP `packs/clients.py`), пінг (v1 servers); нові — `modrinth_v3.py`, `mineskin.py`. Спільна база з 8.
 - **R1.4** `GameVersion` з `/tag/game_version` (`sources.sync_game_versions`), `GET /meta`; видалити статичні `GAME_VERSIONS` (бекенд) і `features/game/labels.ts` (фронтенд), профіль посилається на `GameVersion`.

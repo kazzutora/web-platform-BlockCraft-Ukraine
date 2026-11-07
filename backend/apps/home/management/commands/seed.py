@@ -23,7 +23,7 @@ class Command(BaseCommand):
         try:
             summary = demo.create(seed=seed)
         except demo.NoSyncedMods as error:
-            raise CommandError("No mods yet: run `make sync-mods` first.") from error
+            raise CommandError("No mods yet: run `make sync s=modrinth` first.") from error
         self.stdout.write(
             self.style.SUCCESS(
                 f"Demo: {summary.users} players, {summary.collections} collections, "

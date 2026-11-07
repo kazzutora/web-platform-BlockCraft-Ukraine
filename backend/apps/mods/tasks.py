@@ -9,6 +9,8 @@ from django.utils import timezone
 from apps.accounts.models import User
 from apps.core.exceptions import DomainError
 from apps.core.game import GAME_VERSIONS
+from apps.core.models import Source
+from apps.sources.runs import sync_run
 
 from . import services
 from .clients import ModrinthClient, ModrinthError, ModrinthNotFoundError
@@ -21,22 +23,31 @@ LONG_TASK = {"time_limit": 60 * 60, "soft_time_limit": 55 * 60}
 
 
 @shared_task(name="mods.sync_popular", **LONG_TASK)
-def sync_popular() -> dict:
+def sync_popular(limit: int | None = None) -> dict[str, dict[str, int]]:
+    """One `SyncRun` per project type (`modrinth.catalog:<type>`); `limit` overrides settings."""
+    limits = (
+        dict.fromkeys(settings.MODRINTH_SYNC_LIMITS, limit)
+        if limit
+        else settings.MODRINTH_SYNC_LIMITS
+    )
+    counts: dict[str, dict[str, int]] = {}
     with ModrinthClient() as client:
-        result = services.sync_popular(
-            client=client,
-            limits=settings.MODRINTH_SYNC_LIMITS,
-            game_versions=list(GAME_VERSIONS),
-        )
-    return {
-        "categories": result.categories,
-        "projects": result.projects,
-        "versions": result.versions,
-    }
+        for project_type, type_limit in limits.items():
+            with sync_run(
+                Source.MODRINTH, f"modrinth.catalog:{project_type}", {"limit": type_limit}
+            ) as run:
+                services.sync_popular(
+                    client=client,
+                    limits={project_type: type_limit},
+                    game_versions=list(GAME_VERSIONS),
+                    run=run,
+                )
+            counts[project_type] = run.as_dict()
+    return counts
 
 
 @shared_task(name="mods.sync_versions_for_tracked", **LONG_TASK)
-def sync_versions_for_tracked(days: int = 90) -> int:
+def sync_versions_for_tracked(days: int = 90) -> dict[str, int]:
     """Refreshes versions of recently downloaded projects and of those in packs.
 
     Projects outside the popular sync (pack dependencies, modpack contents) stay fresh this
@@ -54,19 +65,19 @@ def sync_versions_for_tracked(days: int = 90) -> int:
         .values_list("pk", flat=True)
         .distinct()
     )
-    synced = 0
-    with ModrinthClient() as client:
+    with (
+        sync_run(Source.MODRINTH, "modrinth.versions", {"days": days}) as run,
+        ModrinthClient() as client,
+    ):
         for project in Project.objects.filter(pk__in=list(project_ids)).iterator(chunk_size=100):
-            try:
+            with run.item(project=project.slug):
                 services.sync_project_versions(
                     client=client,
                     project=project,
                     game_versions=list(GAME_VERSIONS),
                 )
-                synced += 1
-            except ModrinthError:
-                logger.warning("Could not refresh versions of %s", project.slug, exc_info=True)
-    return synced
+                run.updated += 1
+    return run.as_dict()
 
 
 @shared_task(

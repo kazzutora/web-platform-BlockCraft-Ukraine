@@ -9,6 +9,7 @@ from django.utils import timezone
 from apps.accounts.models import User
 from apps.core.exceptions import DomainError
 from apps.library.models import Download
+from apps.sources.runs import SyncCounter
 
 from . import schemas
 from .categories import category_name_uk, gpu_load_for
@@ -139,11 +140,14 @@ def sync_popular(
     limits: dict[str, int],
     game_versions: list[str],
     progress: Callable[[str], None] = logger.info,
+    run: SyncCounter | None = None,
 ) -> SyncResult:
     """Top-N projects of every type by downloads, with their versions for supported releases.
 
-    Idempotent: running it again only refreshes data.
+    Idempotent: running it again only refreshes data. A project that fails is counted in
+    `run` and skipped; the rest of the batch goes on.
     """
+    run = run if run is not None else SyncCounter()
     result = SyncResult(categories=upsert_categories(client.get_categories()))
     for project_type, limit in limits.items():
         ids: list[str] = []
@@ -163,12 +167,23 @@ def sync_popular(
 
         synced = 0
         for start in range(0, len(ids), BATCH):
-            for data in client.get_projects(ids[start : start + BATCH]):
-                project = upsert_project(data)
-                result.versions += sync_project_versions(
-                    client=client, project=project, game_versions=game_versions
+            batch = client.get_projects(ids[start : start + BATCH])
+            known = set(
+                Project.objects.filter(modrinth_id__in=[data.id for data in batch]).values_list(
+                    "modrinth_id", flat=True
                 )
-                synced += 1
+            )
+            for data in batch:
+                with run.item(project=data.slug):
+                    project = upsert_project(data)
+                    result.versions += sync_project_versions(
+                        client=client, project=project, game_versions=game_versions
+                    )
+                    if data.id in known:
+                        run.updated += 1
+                    else:
+                        run.created += 1
+                    synced += 1
             progress(f"{project_type}: {synced}/{len(ids)} synced")
         result.projects[project_type] = synced
     return result

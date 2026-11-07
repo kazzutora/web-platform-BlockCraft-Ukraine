@@ -40,7 +40,7 @@ def test_reset_replaces_the_demo_and_fixes_counters():
 
 
 def test_seed_needs_synced_mods_and_invents_nothing():
-    with pytest.raises(CommandError, match="sync-mods"):
+    with pytest.raises(CommandError, match="make sync s=modrinth"):
         call_command("seed", "--reset")
 
     assert not Project.objects.exists()

@@ -280,7 +280,7 @@ def test_refresh_loader_versions_task_stores_builds():
 
     with mock.patch("apps.packs.tasks.LoaderClient") as factory:
         factory.return_value.__enter__.return_value.latest_many.return_value = found
-        assert tasks.refresh_loader_versions.delay().get() == 2
+        assert tasks.refresh_loader_versions.delay().get()["updated"] == 2
 
     assert dict(LoaderRelease.objects.values_list("loader", "version")) == {
         "fabric": "0.17.2",
@@ -298,7 +298,7 @@ def test_versions_of_projects_in_packs_are_kept_fresh(user):
 
     with mock.patch("apps.mods.tasks.ModrinthClient") as factory:
         factory.return_value.__enter__.return_value = fake
-        assert mod_tasks.sync_versions_for_tracked.delay().get() == 1
+        assert mod_tasks.sync_versions_for_tracked.delay().get()["updated"] == 1
 
     # The file left Modrinth: the item stays and waits for another pick
     item = pack.items.get()

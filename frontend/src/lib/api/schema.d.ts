@@ -975,6 +975,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/sources": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description «Звідки дані»: every source, its terms and when we last synced it. */
+        get: operations["sources_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/top": {
         parameters: {
             query?: never;
@@ -1406,6 +1423,7 @@ export interface components {
             readonly modrinth_downloads: number;
             readonly is_favorited: boolean;
             readonly my_review_stars: number | null;
+            readonly source: components["schemas"]["SourceRef"] | null;
             /** Статус */
             readonly status: components["schemas"]["PublishStatusEnum"];
             /** Причина відхилення */
@@ -1490,6 +1508,7 @@ export interface components {
             readonly modrinth_downloads: number;
             readonly is_favorited: boolean;
             readonly my_review_stars: number | null;
+            readonly source: components["schemas"]["SourceRef"] | null;
         };
         /** @description Catalog card: cover (or the first mod icons), target and counters. */
         PackDetail: {
@@ -1517,6 +1536,7 @@ export interface components {
             readonly modrinth_downloads: number;
             readonly is_favorited: boolean;
             readonly my_review_stars: number | null;
+            readonly source: components["schemas"]["SourceRef"] | null;
             /** Версія лоадера */
             readonly loader_version: string;
             /** @description What the .mrpack will ask for: pinned by the author or the latest stable build. */
@@ -1541,8 +1561,6 @@ export interface components {
             /** Причина відхилення */
             readonly rejection_reason: string;
             readonly is_mine: boolean;
-            /** Format: uri */
-            readonly modrinth_url: string | null;
             /** Format: date-time */
             readonly created_at: string;
             /** Format: date-time */
@@ -1813,6 +1831,7 @@ export interface components {
             readonly favorites_count: number;
             readonly is_favorited: boolean;
             readonly my_review_stars: number | null;
+            readonly source: components["schemas"]["SourceRef"];
         };
         /** @description Catalog card: one image, title, one line of metadata. */
         ProjectDetail: {
@@ -1836,6 +1855,7 @@ export interface components {
             readonly favorites_count: number;
             readonly is_favorited: boolean;
             readonly my_review_stars: number | null;
+            readonly source: components["schemas"]["SourceRef"];
             readonly summary_en: string;
             /**
              * Короткий опис українською
@@ -1849,7 +1869,6 @@ export interface components {
             readonly license: string;
             /** Format: uri */
             readonly source_url: string;
-            readonly modrinth_url: string;
             readonly needs_translation: boolean;
             /**
              * Опубліковано
@@ -1972,6 +1991,26 @@ export interface components {
          * @enum {string}
          */
         RoleEnum: "user" | "moderator" | "admin";
+        RunSummary: {
+            status: components["schemas"]["RunSummaryStatusEnum"];
+            /** Format: date-time */
+            started_at: string;
+            /** Format: date-time */
+            finished_at: string | null;
+            created: number;
+            updated: number;
+            unchanged: number;
+            skipped: number;
+            failed: number;
+        };
+        /**
+         * @description * `running` - Виконується
+         *     * `ok` - Успішно
+         *     * `partial` - З помилками
+         *     * `failed` - Не вдалася
+         * @enum {string}
+         */
+        RunSummaryStatusEnum: "running" | "ok" | "partial" | "failed";
         /** @description One saved object; exactly one of the kind fields is filled. */
         SavedItem: {
             kind: string;
@@ -2185,6 +2224,30 @@ export interface components {
          * @enum {string}
          */
         SkinStyleEnum: "casual" | "fantasy" | "medieval" | "scifi" | "anime" | "horror" | "cute" | "mob" | "military" | "sport" | "ukrainian";
+        Source: {
+            key: string;
+            name: string;
+            description: string;
+            /** Format: uri */
+            url: string;
+            terms_url: string;
+            /** @description The latest run of any job. */
+            last_sync: components["schemas"]["RunSummary"] | null;
+            jobs: components["schemas"]["SourceJob"][];
+        };
+        SourceJob: {
+            key: string;
+            title: string;
+            last_run: components["schemas"]["RunSummary"] | null;
+        };
+        SourceRef: {
+            name: string;
+            /**
+             * Format: uri
+             * @description The object's own page at the source.
+             */
+            url: string;
+        };
         /**
          * @description * `idle` - idle
          *     * `checking` - checking
@@ -5496,6 +5559,25 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    sources_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Source"][];
                 };
             };
         };

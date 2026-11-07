@@ -3,7 +3,7 @@ from rest_framework import serializers
 from apps.core.game import Loader
 from apps.mods.serializers import CategorySerializer
 
-from .models import GameVersion
+from .models import GameVersion, SyncRun
 
 UNSUPPORTED_VERSION = "Цієї версії гри немає серед підтримуваних."
 
@@ -44,3 +44,30 @@ class MetaSerializer(serializers.Serializer):
     game_versions = GameVersionSerializer(many=True, help_text="Supported, newest first.")
     loaders = serializers.ListField(child=serializers.ChoiceField(choices=Loader.choices))
     categories = CategorySerializer(many=True)
+
+
+class RunSummarySerializer(serializers.Serializer):
+    status = serializers.ChoiceField(choices=SyncRun.Status.choices)
+    started_at = serializers.DateTimeField()
+    finished_at = serializers.DateTimeField(allow_null=True)
+    created = serializers.IntegerField()
+    updated = serializers.IntegerField()
+    unchanged = serializers.IntegerField()
+    skipped = serializers.IntegerField()
+    failed = serializers.IntegerField()
+
+
+class SourceJobSerializer(serializers.Serializer):
+    key = serializers.CharField()
+    title = serializers.CharField()
+    last_run = RunSummarySerializer(allow_null=True)
+
+
+class SourceSerializer(serializers.Serializer):
+    key = serializers.CharField()
+    name = serializers.CharField()
+    description = serializers.CharField()
+    url = serializers.URLField()
+    terms_url = serializers.CharField(allow_blank=True)
+    last_sync = RunSummarySerializer(allow_null=True, help_text="The latest run of any job.")
+    jobs = SourceJobSerializer(many=True)

@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { DetailPage } from "@/components/layout/DetailPage";
 import { CardGrid } from "@/components/ui/CardGrid";
 import { Chip } from "@/components/ui/Chip";
-import { Icon } from "@/components/ui/Icon";
+import { SourceBadge } from "@/components/ui/SourceBadge";
 import { getGameContext } from "@/features/game/context";
 import { getGameVersions } from "@/features/game/meta";
 import { AddToCollection } from "@/features/library/AddToCollection";
@@ -90,15 +90,11 @@ export async function ModDetail({ slug, searchParams }: ModDetailProps) {
               className="h-12"
             />
             <AddToCollection kind="mod" id={project.slug} />
-            <a
-              href={project.modrinth_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-sm underline underline-offset-4"
-            >
-              <Icon name="external-link" size={16} />
-              {copy.modrinth}
-            </a>
+            <SourceBadge
+              {...project.source}
+              label={copy.source(project.title, project.source.name)}
+              className="text-sm"
+            />
             <ReportButton kind="mod" id={project.slug} />
           </>
         }

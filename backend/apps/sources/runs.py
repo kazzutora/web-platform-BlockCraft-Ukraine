@@ -95,3 +95,7 @@ def _finish(run: SyncRun, counter: SyncCounter, status: str) -> None:
     run.status = status
     run.finished_at = timezone.now()
     run.save()
+    # /sources shows the new run right away instead of after its cache expires
+    from .selectors import forget_sources
+
+    forget_sources()

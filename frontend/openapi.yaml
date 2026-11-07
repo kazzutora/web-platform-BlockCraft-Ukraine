@@ -3280,6 +3280,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiError'
           description: ''
+  /api/v1/sources:
+    get:
+      operationId: sources_list
+      description: '«Звідки дані»: every source, its terms and when we last synced
+        it.'
+      tags:
+      - sources
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Source'
+          description: ''
   /api/v1/top:
     get:
       operationId: top
@@ -4327,6 +4346,11 @@ components:
           type: integer
           nullable: true
           readOnly: true
+        source:
+          allOf:
+          - $ref: '#/components/schemas/SourceRef'
+          nullable: true
+          readOnly: true
         status:
           allOf:
           - $ref: '#/components/schemas/PublishStatusEnum'
@@ -4357,6 +4381,7 @@ components:
       - rating_count
       - rejection_reason
       - slug
+      - source
       - status
       - style_tags
       - summary
@@ -4557,6 +4582,11 @@ components:
           type: integer
           nullable: true
           readOnly: true
+        source:
+          allOf:
+          - $ref: '#/components/schemas/SourceRef'
+          nullable: true
+          readOnly: true
       required:
       - author
       - cover_url
@@ -4573,6 +4603,7 @@ components:
       - rating_avg
       - rating_count
       - slug
+      - source
       - style_tags
       - summary
       - title
@@ -4649,6 +4680,11 @@ components:
           type: integer
           nullable: true
           readOnly: true
+        source:
+          allOf:
+          - $ref: '#/components/schemas/SourceRef'
+          nullable: true
+          readOnly: true
         loader_version:
           type: string
           readOnly: true
@@ -4713,11 +4749,6 @@ components:
         is_mine:
           type: boolean
           readOnly: true
-        modrinth_url:
-          type: string
-          format: uri
-          nullable: true
-          readOnly: true
         created_at:
           type: string
           format: date-time
@@ -4750,7 +4781,6 @@ components:
       - loader
       - loader_version
       - modrinth_downloads
-      - modrinth_url
       - mods_count
       - my_review_stars
       - ram_min_gb
@@ -4758,6 +4788,7 @@ components:
       - rating_count
       - rejection_reason
       - slug
+      - source
       - status
       - style_tags
       - summary
@@ -5370,6 +5401,10 @@ components:
           type: integer
           nullable: true
           readOnly: true
+        source:
+          allOf:
+          - $ref: '#/components/schemas/SourceRef'
+          readOnly: true
       required:
       - categories
       - downloads
@@ -5384,6 +5419,7 @@ components:
       - rating_avg
       - rating_count
       - slug
+      - source
       - summary
       - title
     ProjectDetail:
@@ -5451,6 +5487,10 @@ components:
           type: integer
           nullable: true
           readOnly: true
+        source:
+          allOf:
+          - $ref: '#/components/schemas/SourceRef'
+          readOnly: true
         summary_en:
           type: string
           readOnly: true
@@ -5481,9 +5521,6 @@ components:
           type: string
           format: uri
           readOnly: true
-        modrinth_url:
-          type: string
-          readOnly: true
         needs_translation:
           type: boolean
           readOnly: true
@@ -5511,7 +5548,6 @@ components:
       - latest_game_version
       - license
       - loaders
-      - modrinth_url
       - my_review_stars
       - needs_translation
       - project_type
@@ -5519,6 +5555,7 @@ components:
       - rating_avg
       - rating_count
       - slug
+      - source
       - source_url
       - summary
       - summary_en
@@ -5814,6 +5851,49 @@ components:
         * `user` - Гравець
         * `moderator` - Модератор
         * `admin` - Адміністратор
+    RunSummary:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/RunSummaryStatusEnum'
+        started_at:
+          type: string
+          format: date-time
+        finished_at:
+          type: string
+          format: date-time
+          nullable: true
+        created:
+          type: integer
+        updated:
+          type: integer
+        unchanged:
+          type: integer
+        skipped:
+          type: integer
+        failed:
+          type: integer
+      required:
+      - created
+      - failed
+      - finished_at
+      - skipped
+      - started_at
+      - status
+      - unchanged
+      - updated
+    RunSummaryStatusEnum:
+      enum:
+      - running
+      - ok
+      - partial
+      - failed
+      type: string
+      description: |-
+        * `running` - Виконується
+        * `ok` - Успішно
+        * `partial` - З помилками
+        * `failed` - Не вдалася
     SavedItem:
       type: object
       description: One saved object; exactly one of the kind fields is filled.
@@ -6436,6 +6516,64 @@ components:
         * `military` - Військовий
         * `sport` - Спорт
         * `ukrainian` - Український
+    Source:
+      type: object
+      properties:
+        key:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        url:
+          type: string
+          format: uri
+        terms_url:
+          type: string
+        last_sync:
+          allOf:
+          - $ref: '#/components/schemas/RunSummary'
+          nullable: true
+          description: The latest run of any job.
+        jobs:
+          type: array
+          items:
+            $ref: '#/components/schemas/SourceJob'
+      required:
+      - description
+      - jobs
+      - key
+      - last_sync
+      - name
+      - terms_url
+      - url
+    SourceJob:
+      type: object
+      properties:
+        key:
+          type: string
+        title:
+          type: string
+        last_run:
+          allOf:
+          - $ref: '#/components/schemas/RunSummary'
+          nullable: true
+      required:
+      - key
+      - last_run
+      - title
+    SourceRef:
+      type: object
+      properties:
+        name:
+          type: string
+        url:
+          type: string
+          format: uri
+          description: The object's own page at the source.
+      required:
+      - name
+      - url
     StateEnum:
       enum:
       - idle

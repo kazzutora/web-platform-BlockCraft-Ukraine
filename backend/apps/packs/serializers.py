@@ -2,7 +2,9 @@ from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
 from apps.accounts.serializers import UserBriefSerializer
+from apps.core.models import Source
 from apps.mods.models import Project, ProjectVersion
+from apps.sources.attribution import SourceRef, SourceRefSerializer, source_ref
 from apps.sources.serializers import validate_supported_version
 
 from . import selectors
@@ -66,6 +68,7 @@ class PackCardSerializer(serializers.ModelSerializer):
     # Viewer state from social.selectors.with_viewer_state (false/null for guests)
     is_favorited = serializers.SerializerMethodField()
     my_review_stars = serializers.SerializerMethodField()
+    source = serializers.SerializerMethodField()
 
     class Meta:
         model = Pack
@@ -88,8 +91,16 @@ class PackCardSerializer(serializers.ModelSerializer):
             "modrinth_downloads",
             "is_favorited",
             "my_review_stars",
+            "source",
         ]
         read_only_fields = fields
+
+    @extend_schema_field(SourceRefSerializer(allow_null=True))
+    def get_source(self, pack: Pack) -> SourceRef | None:
+        """Modpacks from Modrinth link back; community packs are made here."""
+        if not pack.modrinth_id:
+            return None
+        return source_ref(Source.MODRINTH, f"https://modrinth.com/modpack/{pack.modrinth_id}")
 
     @extend_schema_field(serializers.CharField(allow_null=True))
     def get_cover_url(self, pack: Pack) -> str | None:
@@ -121,7 +132,6 @@ class PackDetailSerializer(PackCardSerializer):
     effective_loader_version = serializers.SerializerMethodField()
     total_size = serializers.SerializerMethodField()
     is_mine = serializers.SerializerMethodField()
-    modrinth_url = serializers.SerializerMethodField()
 
     class Meta(PackCardSerializer.Meta):
         fields = [
@@ -142,7 +152,6 @@ class PackDetailSerializer(PackCardSerializer):
             "status",
             "rejection_reason",
             "is_mine",
-            "modrinth_url",
             "created_at",
             "updated_at",
         ]
@@ -171,10 +180,6 @@ class PackDetailSerializer(PackCardSerializer):
     def get_is_mine(self, pack: Pack) -> bool:
         request = self.context.get("request")
         return bool(request and request.user.is_authenticated and pack.author_id == request.user.pk)
-
-    @extend_schema_field(serializers.URLField(allow_null=True))
-    def get_modrinth_url(self, pack: Pack) -> str | None:
-        return f"https://modrinth.com/modpack/{pack.modrinth_id}" if pack.modrinth_id else None
 
 
 class PackWriteSerializer(serializers.Serializer):

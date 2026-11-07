@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import { sourcesCopy } from "@/features/sources/copy";
+
 import { Container } from "./Container";
 import { Logo } from "./Logo";
 
@@ -7,6 +9,7 @@ const copy = {
   tagline: "Моди, скіни й сервери Minecraft українською.",
   disclaimer: "Не є офіційним продуктом Minecraft. Не пов’язано з Mojang або Microsoft.",
   links: [
+    { href: "/sources", label: "Звідки дані" },
     { href: "/rules", label: "Правила" },
     { href: "/privacy", label: "Приватність" },
   ],
@@ -22,7 +25,7 @@ export function Footer() {
           <p className="text-muted">{copy.tagline}</p>
         </div>
         <nav aria-label={copy.linksLabel}>
-          <ul className="flex gap-6">
+          <ul className="flex flex-wrap gap-x-6 gap-y-2">
             {copy.links.map((link) => (
               <li key={link.href}>
                 <Link href={link.href} className="caps text-muted hover:text-text">
@@ -33,7 +36,12 @@ export function Footer() {
           </ul>
         </nav>
       </Container>
-      <Container className="mt-8">
+      <Container className="mt-8 flex flex-col gap-1">
+        <p className="text-meta text-muted">
+          <Link href="/sources" className="underline-offset-4 hover:text-text hover:underline">
+            {sourcesCopy.footer}
+          </Link>
+        </p>
         <p className="text-meta text-muted">{copy.disclaimer}</p>
       </Container>
     </footer>

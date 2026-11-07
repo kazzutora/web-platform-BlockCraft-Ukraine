@@ -131,7 +131,7 @@ def test_pack_page_shows_files_issues_and_requirements(api_client):
         }
     ]
     assert body["is_mine"] is False
-    assert body["modrinth_url"] is None
+    assert body["source"] is None
 
 
 def test_drafts_are_seen_only_by_their_author(api_client, draft, user):

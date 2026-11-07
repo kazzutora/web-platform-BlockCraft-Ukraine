@@ -48,7 +48,7 @@ export const modsCopy = {
     noFileAtAll: "У цього проєкту поки немає файлів для підтримуваних версій.",
     pickerVersion: "Версія гри",
     pickerLoader: "Лоадер",
-    modrinth: "Відкрити на Modrinth",
+    source: (title: string, source: string) => `${title} на ${source}`,
     license: "Ліцензія",
     updated: (date: string) => `Оновлено ${date}`,
     tabsLabel: "Сторінка проєкту",

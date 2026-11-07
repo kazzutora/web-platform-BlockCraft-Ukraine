@@ -115,7 +115,10 @@ def test_detail_includes_description_and_translation_flag(api_client):
     assert response.status_code == 200
     assert response.json()["body_html"] == "<p>Hi</p>"
     assert response.json()["needs_translation"] is True
-    assert response.json()["modrinth_url"] == "https://modrinth.com/mod/sodium"
+    assert response.json()["source"] == {
+        "name": "Modrinth",
+        "url": "https://modrinth.com/mod/sodium",
+    }
 
 
 def test_detail_of_unpublished_project_is_404(api_client):

@@ -1,4 +1,5 @@
 import { Card } from "@/components/ui/Card";
+import { SourceBadge } from "@/components/ui/SourceBadge";
 import { SaveToggle } from "@/features/library/SaveToggle";
 import { formatCount } from "@/features/mods/format";
 import { plural } from "@/lib/plural";
@@ -25,7 +26,19 @@ export function PackCard({ pack, eager = false }: { pack: PackCardData; eager?: 
     <Card
       href={`/packs/${pack.slug}`}
       title={pack.title}
-      meta={meta(pack)}
+      meta={
+        pack.source ? (
+          <>
+            {meta(pack)} ·{" "}
+            <SourceBadge
+              {...pack.source}
+              label={packsCopy.detail.source(pack.title, pack.source.name)}
+            />
+          </>
+        ) : (
+          meta(pack)
+        )
+      }
       action={<SaveToggle kind="pack" id={pack.slug} saved={pack.is_favorited} />}
       cover={<PackCover coverUrl={pack.cover_url} icons={pack.icons} eager={eager} />}
     />

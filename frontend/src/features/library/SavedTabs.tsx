@@ -12,6 +12,8 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { Tabs } from "@/components/ui/Tabs";
 import { useMe } from "@/features/auth/useMe";
 import { ModCard } from "@/features/mods/ModCard";
+import { PackCard } from "@/features/packs/PackCard";
+import { ServerRow } from "@/features/servers/ServerRow";
 import { SkinCard } from "@/features/skins/SkinCard";
 import { api } from "@/lib/api/client";
 import { queryKeys } from "@/lib/query-keys";
@@ -20,10 +22,22 @@ import { CollectionCard } from "./CollectionCard";
 import { libraryCopy } from "./copy";
 
 const copy = libraryCopy.saved;
-type SavedKind = "mod" | "skin" | "collection";
+type SavedKind = "mod" | "pack" | "skin" | "server" | "collection";
 
-const browseHref: Record<SavedKind, string> = { mod: "/mods", skin: "/skins", collection: "/mods" };
-const emptyArt = { mod: "mods", skin: "skins", collection: "packs" } as const;
+const browseHref: Record<SavedKind, string> = {
+  mod: "/mods",
+  pack: "/packs",
+  skin: "/skins",
+  server: "/servers",
+  collection: "/mods",
+};
+const emptyArt = {
+  mod: "mods",
+  pack: "packs",
+  skin: "skins",
+  server: "servers",
+  collection: "packs",
+} as const;
 
 function SavedList({ kind, gameVersion }: { kind: SavedKind; gameVersion: string }) {
   const saved = useQuery({
@@ -58,11 +72,22 @@ function SavedList({ kind, gameVersion }: { kind: SavedKind; gameVersion: string
       />
     );
   }
+  if (kind === "server") {
+    return (
+      <ul className="flex flex-col border-t border-line">
+        {items.map((item) =>
+          item.server ? <ServerRow key={item.id} server={item.server} /> : null,
+        )}
+      </ul>
+    );
+  }
   return (
     <CardGrid>
       {items.map((item) =>
         item.mod ? (
           <ModCard key={item.id} project={item.mod} />
+        ) : item.pack ? (
+          <PackCard key={item.id} pack={item.pack} />
         ) : item.skin ? (
           <SkinCard key={item.id} skin={item.skin} />
         ) : item.collection ? (
@@ -104,9 +129,19 @@ export function SavedTabs() {
           ),
         },
         {
+          value: "pack",
+          label: copy.tabs.pack,
+          content: <SavedList kind="pack" gameVersion="" />,
+        },
+        {
           value: "skin",
           label: copy.tabs.skin,
           content: <SavedList kind="skin" gameVersion="" />,
+        },
+        {
+          value: "server",
+          label: copy.tabs.server,
+          content: <SavedList kind="server" gameVersion="" />,
         },
         {
           value: "collection",

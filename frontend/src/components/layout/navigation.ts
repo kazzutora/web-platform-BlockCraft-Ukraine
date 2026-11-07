@@ -3,9 +3,10 @@ import type { IconName } from "@/components/ui/Icon";
 export type NavItem = { href: string; label: string };
 export type TabBarItem = NavItem & { icon: IconName };
 
-/** Sections in the header (MVP). Packs, moments and worlds join after the MVP. */
+/** Sections in the header; moments and worlds join in later stages. */
 export const sections: NavItem[] = [
   { href: "/mods", label: "Моди" },
+  { href: "/packs", label: "Зборки" },
   { href: "/skins", label: "Скіни" },
   { href: "/servers", label: "Сервери" },
 ];

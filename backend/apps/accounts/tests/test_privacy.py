@@ -9,6 +9,8 @@ from apps.core.kinds import get_kind
 from apps.library.models import Favorite
 from apps.mods.models import Project
 from apps.mods.tests.factories import ProjectFactory
+from apps.packs.models import Pack
+from apps.packs.tests.factories import PackFactory
 from apps.servers.tests.factories import ServerFactory
 from apps.skins.models import Skin
 from apps.skins.tests.factories import SkinFactory
@@ -36,6 +38,8 @@ def player():
     server = ServerFactory()
     social.add_comment(user=user, kind="server", identifier=server.slug, body="Класний сервер")
     SkinFactory(author=user, title="Мій скін")
+    original = PackFactory(slug="original", forks_count=1)
+    PackFactory(author=user, slug="my-fork", forked_from=original)
     return user
 
 
@@ -50,6 +54,7 @@ def test_export_contains_everything_about_the_player(player):
     assert data["favorites"][0]["id"] == "sodium"
     assert data["comments"][0]["body"] == "Класний сервер"
     assert data["skins"][0]["title"] == "Мій скін"
+    assert data["packs"][0] == {**data["packs"][0], "slug": "my-fork", "mods": []}
 
 
 def test_delete_needs_the_nickname(player):
@@ -89,3 +94,4 @@ def test_delete_removes_everything_and_fixes_counters(player):
     assert (sodium.rating_count, sodium.rating_avg, sodium.favorites_count) == (0, 0, 0)
     server = ServerFactory._meta.model.objects.get()
     assert server.comments_count == 0
+    assert Pack.objects.get().forks_count == 0

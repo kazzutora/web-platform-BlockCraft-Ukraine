@@ -121,6 +121,8 @@ class ProjectVersion(models.Model):
     file_name = models.CharField(max_length=256)
     file_size = models.PositiveBigIntegerField(default=0)
     sha1 = models.CharField(max_length=40, blank=True)
+    #: .mrpack exports must carry both hashes (Modrinth pack format)
+    sha512 = models.CharField(max_length=128, blank=True)
     dependencies = models.JSONField(default=list, blank=True)
     released_at = models.DateTimeField(db_index=True)
 

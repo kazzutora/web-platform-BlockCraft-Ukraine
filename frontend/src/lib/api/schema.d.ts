@@ -408,6 +408,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/me/packs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description All my packs, drafts included. */
+        get: operations["me_packs_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/me/saved": {
         parameters: {
             query?: never;
@@ -499,7 +516,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Catalog of mods, packs and shaders */
+        /**
+         * Catalog of mods, packs and shaders
+         * @description `list()` through `for_guests`; put it before ListModelMixin in the bases.
+         */
         get: operations["mods_list"];
         put?: never;
         post?: never;
@@ -516,6 +536,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /** @description `list()` through `for_guests`; put it before ListModelMixin in the bases. */
         get: operations["mods_retrieve"];
         put?: never;
         post?: never;
@@ -549,6 +570,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /** @description `list()` through `for_guests`; put it before ListModelMixin in the bases. */
         get: operations["mods_similar"];
         put?: never;
         post?: never;
@@ -565,6 +587,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /** @description `list()` through `for_guests`; put it before ListModelMixin in the bases. */
         get: operations["mods_versions"];
         put?: never;
         post?: never;
@@ -585,6 +608,150 @@ export interface paths {
         put?: never;
         /** @description Queue a Modrinth project for import; it waits for moderation. */
         post: operations["mods_suggest"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/packs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Catalog of published packs
+         * @description No PUT on the pack itself: edits are PATCH, PUT is the cover upload.
+         */
+        get: operations["packs_list"];
+        put?: never;
+        /** @description A draft: add mods with `items`, then `publish`. */
+        post: operations["packs_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/packs/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Published packs for everyone; the author also sees drafts. */
+        get: operations["packs_retrieve"];
+        put?: never;
+        post?: never;
+        /** @description No PUT on the pack itself: edits are PATCH, PUT is the cover upload. */
+        delete: operations["packs_delete"];
+        options?: never;
+        head?: never;
+        /** @description Changing the game version or loader picks every file again. */
+        patch: operations["packs_update"];
+        trace?: never;
+    };
+    "/api/v1/packs/{slug}/cover": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** @description No PUT on the pack itself: edits are PATCH, PUT is the cover upload. */
+        put: operations["packs_cover_upload"];
+        post?: never;
+        /** @description No PUT on the pack itself: edits are PATCH, PUT is the cover upload. */
+        delete: operations["packs_cover_delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/packs/{slug}/export.mrpack": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description modrinth.index.json in a zip; the files themselves stay on Modrinth. */
+        get: operations["packs_export"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/packs/{slug}/fork": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description A draft copy owned by the caller. */
+        post: operations["packs_fork"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/packs/{slug}/items": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Adds the file for the pack's version and loader and its required dependencies (`added_as_dependency`). Dependencies missing from the catalog are brought in from Modrinth in the background. */
+        post: operations["packs_items_add"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/packs/{slug}/items/{project_slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** @description Dependencies nothing else needs leave with it. */
+        delete: operations["packs_item_remove"];
+        options?: never;
+        head?: never;
+        /** @description No PUT on the pack itself: edits are PATCH, PUT is the cover upload. */
+        patch: operations["packs_item_update"];
+        trace?: never;
+    };
+    "/api/v1/packs/{slug}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description A new author's first three works wait for moderation (`pending`). */
+        post: operations["packs_publish"];
         delete?: never;
         options?: never;
         head?: never;
@@ -792,7 +959,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Catalog of published skins */
+        /**
+         * Catalog of published skins
+         * @description `list()` through `for_guests`; put it before ListModelMixin in the bases.
+         */
         get: operations["skins_list"];
         put?: never;
         /** @description A new author's first three skins wait for moderation (`pending`). */
@@ -814,9 +984,11 @@ export interface paths {
         get: operations["skins_retrieve"];
         put?: never;
         post?: never;
+        /** @description `list()` through `for_guests`; put it before ListModelMixin in the bases. */
         delete: operations["skins_delete"];
         options?: never;
         head?: never;
+        /** @description `list()` through `for_guests`; put it before ListModelMixin in the bases. */
         patch: operations["skins_update"];
         trace?: never;
     };
@@ -844,6 +1016,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /** @description `list()` through `for_guests`; put it before ListModelMixin in the bases. */
         get: operations["skins_similar"];
         put?: never;
         post?: never;
@@ -1009,6 +1182,8 @@ export interface components {
             readonly note: string;
             readonly mod: components["schemas"]["ProjectCard"] | null;
             readonly skin: components["schemas"]["SkinCard"] | null;
+            readonly server: components["schemas"]["ServerCard"] | null;
+            readonly pack: components["schemas"]["PackCard"] | null;
         };
         CollectionWriteRequest: {
             title: string;
@@ -1070,6 +1245,13 @@ export interface components {
             pinned: components["schemas"]["Comment"][];
             results: components["schemas"]["Comment"][];
             next_cursor: string | null;
+        };
+        CoverUploadRequest: {
+            /**
+             * Format: binary
+             * @description PNG, JPEG or WebP up to 2 MB; cropped to 1200×630.
+             */
+            cover: string;
         };
         CurrentSkinRequest: {
             skin_id: number;
@@ -1195,6 +1377,7 @@ export interface components {
         };
         Home: {
             for_you: components["schemas"]["ForYou"];
+            packs: components["schemas"]["PackCard"][];
             skin_of_week: components["schemas"]["SkinCard"] | null;
             servers_online: components["schemas"]["ServerCard"][];
             new_skins: components["schemas"]["SkinCard"][];
@@ -1215,14 +1398,29 @@ export interface components {
         IpCopies: {
             ip_copies_count: number;
         };
+        Issue: {
+            type: components["schemas"]["IssueTypeEnum"];
+            project: components["schemas"]["PackIcon"];
+            other: components["schemas"]["PackIcon"] | null;
+            other_modrinth_id: string;
+            message: string;
+        };
+        /**
+         * @description * `no_version` - no_version
+         *     * `missing_dependency` - missing_dependency
+         *     * `conflict` - conflict
+         * @enum {string}
+         */
+        IssueTypeEnum: "no_version" | "missing_dependency" | "conflict";
         /**
          * @description * `collection` - collection
          *     * `mod` - mod
          *     * `skin` - skin
          *     * `server` - server
+         *     * `pack` - pack
          * @enum {string}
          */
-        KindEnum: "collection" | "mod" | "skin" | "server";
+        KindEnum: "collection" | "mod" | "skin" | "server" | "pack";
         /**
          * @description * `uk` - Українська
          *     * `en` - English
@@ -1334,6 +1532,39 @@ export interface components {
             /** @description Item of the requested object in this collection, to remove it again. */
             readonly item_id: number | null;
         };
+        /** @description «Мої роботи»: drafts and the moderation outcome too. */
+        MyPack: {
+            readonly slug: string;
+            /** Назва */
+            readonly title: string;
+            /** Коротко */
+            readonly summary: string;
+            readonly author: components["schemas"]["UserBrief"];
+            readonly cover_url: string | null;
+            readonly icons: components["schemas"]["PackIcon"][];
+            readonly style_tags: components["schemas"]["PackStyleEnum"][];
+            /** Версія гри */
+            readonly game_version: components["schemas"]["GameVersionEnum"];
+            /** Лоадер */
+            readonly loader: components["schemas"]["PackLoaderEnum"];
+            /** Офіційна */
+            readonly is_official: boolean;
+            readonly mods_count: number;
+            /** Format: double */
+            readonly rating_avg: number;
+            readonly rating_count: number;
+            readonly favorites_count: number;
+            readonly downloads_count: number;
+            readonly modrinth_downloads: number;
+            readonly is_favorited: boolean;
+            readonly my_review_stars: number | null;
+            /** Статус */
+            readonly status: components["schemas"]["PublishStatusEnum"];
+            /** Причина відхилення */
+            readonly rejection_reason: string;
+            /** Format: date-time */
+            readonly updated_at: string;
+        };
         NoVersionError: {
             detail: string;
             code: string;
@@ -1383,6 +1614,168 @@ export interface components {
             edition?: components["schemas"]["EditionEnum"];
             interests?: components["schemas"]["InterestsEnum"][];
         };
+        PackBrief: {
+            readonly slug: string;
+            /** Назва */
+            readonly title: string;
+        };
+        /** @description Catalog card: cover (or the first mod icons), target and counters. */
+        PackCard: {
+            readonly slug: string;
+            /** Назва */
+            readonly title: string;
+            /** Коротко */
+            readonly summary: string;
+            readonly author: components["schemas"]["UserBrief"];
+            readonly cover_url: string | null;
+            readonly icons: components["schemas"]["PackIcon"][];
+            readonly style_tags: components["schemas"]["PackStyleEnum"][];
+            /** Версія гри */
+            readonly game_version: components["schemas"]["GameVersionEnum"];
+            /** Лоадер */
+            readonly loader: components["schemas"]["PackLoaderEnum"];
+            /** Офіційна */
+            readonly is_official: boolean;
+            readonly mods_count: number;
+            /** Format: double */
+            readonly rating_avg: number;
+            readonly rating_count: number;
+            readonly favorites_count: number;
+            readonly downloads_count: number;
+            readonly modrinth_downloads: number;
+            readonly is_favorited: boolean;
+            readonly my_review_stars: number | null;
+        };
+        /** @description Catalog card: cover (or the first mod icons), target and counters. */
+        PackDetail: {
+            readonly slug: string;
+            /** Назва */
+            readonly title: string;
+            /** Коротко */
+            readonly summary: string;
+            readonly author: components["schemas"]["UserBrief"];
+            readonly cover_url: string | null;
+            readonly icons: components["schemas"]["PackIcon"][];
+            readonly style_tags: components["schemas"]["PackStyleEnum"][];
+            /** Версія гри */
+            readonly game_version: components["schemas"]["GameVersionEnum"];
+            /** Лоадер */
+            readonly loader: components["schemas"]["PackLoaderEnum"];
+            /** Офіційна */
+            readonly is_official: boolean;
+            readonly mods_count: number;
+            /** Format: double */
+            readonly rating_avg: number;
+            readonly rating_count: number;
+            readonly favorites_count: number;
+            readonly downloads_count: number;
+            readonly modrinth_downloads: number;
+            readonly is_favorited: boolean;
+            readonly my_review_stars: number | null;
+            /** Версія лоадера */
+            readonly loader_version: string;
+            /** @description What the .mrpack will ask for: pinned by the author or the latest stable build. */
+            readonly effective_loader_version: string;
+            /** Мінімум RAM, ГБ */
+            readonly ram_min_gb: number;
+            /** Відеокарта */
+            readonly gpu_note: string;
+            /** Як встановити */
+            readonly install_md: string;
+            readonly install_html: string;
+            /** Що нового */
+            readonly changelog_md: string;
+            readonly changelog_html: string;
+            readonly forked_from: components["schemas"]["PackBrief"] | null;
+            readonly forks_count: number;
+            readonly items: components["schemas"]["PackItem"][];
+            readonly issues: components["schemas"]["Issue"][];
+            readonly total_size: number;
+            readonly comments_count: number;
+            /** Статус */
+            readonly status: components["schemas"]["PublishStatusEnum"];
+            /** Причина відхилення */
+            readonly rejection_reason: string;
+            readonly is_mine: boolean;
+            /** Format: uri */
+            readonly modrinth_url: string | null;
+            /** Format: date-time */
+            readonly created_at: string;
+            /** Format: date-time */
+            readonly updated_at: string;
+        };
+        PackFile: {
+            readonly id: number;
+            readonly version_number: string;
+            readonly file_name: string;
+            readonly file_size: number;
+            readonly game_versions: string[];
+            readonly loaders: string[];
+        };
+        PackIcon: {
+            readonly slug: string;
+            /** Назва */
+            readonly title: string;
+            /** Format: uri */
+            readonly icon_url: string;
+        };
+        PackItem: {
+            readonly project: components["schemas"]["PackProject"];
+            readonly version: components["schemas"]["PackFile"] | null;
+            /** Обов'язковий */
+            readonly is_required: boolean;
+            /** Додано як залежність */
+            readonly added_as_dependency: boolean;
+        };
+        PackItemAddRequest: {
+            /** @description Slug of a catalog project. */
+            project: string;
+        };
+        /**
+         * @description * `fabric` - Fabric
+         *     * `forge` - Forge
+         *     * `neoforge` - NeoForge
+         *     * `quilt` - Quilt
+         * @enum {string}
+         */
+        PackLoaderEnum: "fabric" | "forge" | "neoforge" | "quilt";
+        PackProject: {
+            readonly slug: string;
+            /** Назва */
+            readonly title: string;
+            /** Format: uri */
+            readonly icon_url: string;
+            readonly project_type: components["schemas"]["ProjectTypeEnum"];
+            /** Короткий опис (Modrinth) */
+            readonly summary: string;
+        };
+        /**
+         * @description * `performance` - Оптимізація
+         *     * `vanilla-plus` - Ванілла+
+         *     * `tech` - Техніка
+         *     * `magic` - Магія
+         *     * `adventure` - Пригоди
+         *     * `building` - Будівництво
+         *     * `survival` - Виживання
+         *     * `quests` - Квести
+         *     * `multiplayer` - Для друзів
+         *     * `lightweight` - Для слабких ПК
+         * @enum {string}
+         */
+        PackStyleEnum: "performance" | "vanilla-plus" | "tech" | "magic" | "adventure" | "building" | "survival" | "quests" | "multiplayer" | "lightweight";
+        PackWriteRequest: {
+            title: string;
+            summary?: string;
+            style_tags?: components["schemas"]["PackStyleEnum"][];
+            game_version: components["schemas"]["GameVersionEnum"];
+            loader: components["schemas"]["PackLoaderEnum"];
+            /** @description Empty: the latest stable build at export time. */
+            loader_version?: string;
+            ram_min_gb?: number;
+            gpu_note?: string;
+            install_md?: string;
+            changelog_md?: string;
+        };
         PaginatedCollectionList: {
             count: number;
             /** Format: uri */
@@ -1390,6 +1783,36 @@ export interface components {
             /** Format: uri */
             previous: string | null;
             results: components["schemas"]["Collection"][];
+        };
+        PaginatedMyPackList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["MyPack"][];
+        };
+        PaginatedPackCardList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["PackCard"][];
         };
         PaginatedProjectCardList: {
             /** @example 123 */
@@ -1496,6 +1919,23 @@ export interface components {
             /** Закритий профіль */
             is_private?: boolean;
         };
+        PatchedPackItemUpdateRequest: {
+            /** @description Optional files are offered, not forced, by launchers. */
+            is_required?: boolean;
+        };
+        PatchedPackWriteRequest: {
+            title?: string;
+            summary?: string;
+            style_tags?: components["schemas"]["PackStyleEnum"][];
+            game_version?: components["schemas"]["GameVersionEnum"];
+            loader?: components["schemas"]["PackLoaderEnum"];
+            /** @description Empty: the latest stable build at export time. */
+            loader_version?: string;
+            ram_min_gb?: number;
+            gpu_note?: string;
+            install_md?: string;
+            changelog_md?: string;
+        };
         PatchedServerWriteRequest: {
             name?: string;
             /** @description play.example.com, an IP or host:port */
@@ -1514,7 +1954,7 @@ export interface components {
         };
         PatchedSkinUpdateRequest: {
             title?: string;
-            style_tags?: components["schemas"]["StyleTagsEnum"][];
+            style_tags?: components["schemas"]["SkinStyleEnum"][];
             model?: components["schemas"]["ModelEnum"];
         };
         PatchedUserSettingsRequest: {
@@ -1667,10 +2107,11 @@ export interface components {
          *     * `mod` - mod
          *     * `skin` - skin
          *     * `server` - server
+         *     * `pack` - pack
          *     * `comment` - comment
          * @enum {string}
          */
-        ReportKindEnum: "collection" | "mod" | "skin" | "server" | "comment";
+        ReportKindEnum: "collection" | "mod" | "skin" | "server" | "pack" | "comment";
         Review: {
             readonly id: number;
             readonly user: components["schemas"]["UserBrief"];
@@ -1725,6 +2166,8 @@ export interface components {
             saved_at: string;
             mod: components["schemas"]["ProjectCard"] | null;
             skin: components["schemas"]["SkinCard"] | null;
+            server: components["schemas"]["ServerCard"] | null;
+            pack: components["schemas"]["PackCard"] | null;
             collection: components["schemas"]["Collection"] | null;
         };
         SearchGroup: {
@@ -1873,7 +2316,7 @@ export interface components {
             readonly dominant_color: string;
             /** Колір */
             readonly color_bucket: components["schemas"]["ColorBucketEnum"];
-            readonly style_tags: components["schemas"]["StyleTagsEnum"][];
+            readonly style_tags: components["schemas"]["SkinStyleEnum"][];
             readonly likes_count: number;
             readonly favorites_count: number;
             readonly downloads_count: number;
@@ -1894,7 +2337,7 @@ export interface components {
             readonly dominant_color: string;
             /** Колір */
             readonly color_bucket: components["schemas"]["ColorBucketEnum"];
-            readonly style_tags: components["schemas"]["StyleTagsEnum"][];
+            readonly style_tags: components["schemas"]["SkinStyleEnum"][];
             readonly likes_count: number;
             readonly favorites_count: number;
             readonly downloads_count: number;
@@ -1919,6 +2362,21 @@ export interface components {
              */
             readonly published_at: string | null;
         };
+        /**
+         * @description * `casual` - Повсякденний
+         *     * `fantasy` - Фентезі
+         *     * `medieval` - Середньовіччя
+         *     * `scifi` - Наукова фантастика
+         *     * `anime` - Аніме
+         *     * `horror` - Жахи
+         *     * `cute` - Милий
+         *     * `mob` - Моби
+         *     * `military` - Військовий
+         *     * `sport` - Спорт
+         *     * `ukrainian` - Український
+         * @enum {string}
+         */
+        SkinStyleEnum: "casual" | "fantasy" | "medieval" | "scifi" | "anime" | "horror" | "cute" | "mob" | "military" | "sport" | "ukrainian";
         SkinUploadRequest: {
             /**
              * Format: binary
@@ -1926,7 +2384,7 @@ export interface components {
              */
             file: string;
             title: string;
-            style_tags?: components["schemas"]["StyleTagsEnum"][];
+            style_tags?: components["schemas"]["SkinStyleEnum"][];
             /**
              * @description Empty: detected from the texture.
              *
@@ -1971,21 +2429,6 @@ export interface components {
             players: number;
             is_online: boolean;
         };
-        /**
-         * @description * `casual` - Повсякденний
-         *     * `fantasy` - Фентезі
-         *     * `medieval` - Середньовіччя
-         *     * `scifi` - Наукова фантастика
-         *     * `anime` - Аніме
-         *     * `horror` - Жахи
-         *     * `cute` - Милий
-         *     * `mob` - Моби
-         *     * `military` - Військовий
-         *     * `sport` - Спорт
-         *     * `ukrainian` - Український
-         * @enum {string}
-         */
-        StyleTagsEnum: "casual" | "fantasy" | "medieval" | "scifi" | "anime" | "horror" | "cute" | "mob" | "military" | "sport" | "ukrainian";
         SuggestRequest: {
             /** @description Link to the project on Modrinth or its slug. */
             url: string;
@@ -2021,6 +2464,7 @@ export interface components {
             kind: string;
             period: string;
             mods: components["schemas"]["ProjectCard"][];
+            packs: components["schemas"]["PackCard"][];
             skins: components["schemas"]["SkinCard"][];
             servers: components["schemas"]["ServerCard"][];
         };
@@ -2519,8 +2963,9 @@ export interface operations {
                  *     * `mod` - mod
                  *     * `skin` - skin
                  *     * `server` - server
+                 *     * `pack` - pack
                  */
-                kind: "collection" | "mod" | "skin" | "server";
+                kind: "collection" | "mod" | "skin" | "server" | "pack";
             };
             header?: never;
             path?: never;
@@ -2851,8 +3296,9 @@ export interface operations {
                  *     * `mod` - mod
                  *     * `skin` - skin
                  *     * `server` - server
+                 *     * `pack` - pack
                  */
-                kind: "collection" | "mod" | "skin" | "server";
+                kind: "collection" | "mod" | "skin" | "server" | "pack";
             };
             header?: never;
             path?: never;
@@ -2998,8 +3444,9 @@ export interface operations {
                  *     * `mod` - mod
                  *     * `skin` - skin
                  *     * `server` - server
+                 *     * `pack` - pack
                  */
-                kind: "collection" | "mod" | "skin" | "server";
+                kind: "collection" | "mod" | "skin" | "server" | "pack";
             };
             header?: never;
             path?: never;
@@ -3485,6 +3932,30 @@ export interface operations {
             };
         };
     };
+    me_packs_list: {
+        parameters: {
+            query?: {
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedMyPackList"];
+                };
+            };
+        };
+    };
     me_saved: {
         parameters: {
             query?: {
@@ -3494,8 +3965,9 @@ export interface operations {
                  *     * `mod` - mod
                  *     * `skin` - skin
                  *     * `server` - server
+                 *     * `pack` - pack
                  */
-                kind?: "collection" | "mod" | "skin" | "server";
+                kind?: "collection" | "mod" | "skin" | "server" | "pack";
             };
             header?: never;
             path?: never;
@@ -3969,6 +4441,688 @@ export interface operations {
             };
         };
     };
+    packs_list: {
+        parameters: {
+            query?: {
+                /** @description Author nickname. */
+                author?: string;
+                /**
+                 * @description * `26.3` - 26.3
+                 *     * `26.2` - 26.2
+                 *     * `26.1.2` - 26.1.2
+                 *     * `26.1.1` - 26.1.1
+                 *     * `26.1` - 26.1
+                 *     * `1.21.11` - 1.21.11
+                 *     * `1.21.10` - 1.21.10
+                 *     * `1.21.9` - 1.21.9
+                 *     * `1.21.8` - 1.21.8
+                 *     * `1.21.7` - 1.21.7
+                 *     * `1.21.6` - 1.21.6
+                 *     * `1.21.5` - 1.21.5
+                 *     * `1.21.4` - 1.21.4
+                 *     * `1.21.3` - 1.21.3
+                 *     * `1.21.2` - 1.21.2
+                 *     * `1.21.1` - 1.21.1
+                 *     * `1.21` - 1.21
+                 *     * `1.20.6` - 1.20.6
+                 *     * `1.20.5` - 1.20.5
+                 *     * `1.20.4` - 1.20.4
+                 *     * `1.20.3` - 1.20.3
+                 *     * `1.20.2` - 1.20.2
+                 *     * `1.20.1` - 1.20.1
+                 *     * `1.20` - 1.20
+                 *     * `1.19.4` - 1.19.4
+                 *     * `1.19.3` - 1.19.3
+                 *     * `1.19.2` - 1.19.2
+                 *     * `1.19.1` - 1.19.1
+                 *     * `1.19` - 1.19
+                 *     * `1.18.2` - 1.18.2
+                 *     * `1.18.1` - 1.18.1
+                 *     * `1.18` - 1.18
+                 *     * `1.17.1` - 1.17.1
+                 *     * `1.17` - 1.17
+                 *     * `1.16.5` - 1.16.5
+                 *     * `1.16.4` - 1.16.4
+                 *     * `1.16.3` - 1.16.3
+                 *     * `1.16.2` - 1.16.2
+                 *     * `1.16.1` - 1.16.1
+                 *     * `1.16` - 1.16
+                 *     * `1.12.2` - 1.12.2
+                 *     * `1.8.9` - 1.8.9
+                 */
+                game_version?: "1.12.2" | "1.16" | "1.16.1" | "1.16.2" | "1.16.3" | "1.16.4" | "1.16.5" | "1.17" | "1.17.1" | "1.18" | "1.18.1" | "1.18.2" | "1.19" | "1.19.1" | "1.19.2" | "1.19.3" | "1.19.4" | "1.20" | "1.20.1" | "1.20.2" | "1.20.3" | "1.20.4" | "1.20.5" | "1.20.6" | "1.21" | "1.21.1" | "1.21.10" | "1.21.11" | "1.21.2" | "1.21.3" | "1.21.4" | "1.21.5" | "1.21.6" | "1.21.7" | "1.21.8" | "1.21.9" | "1.8.9" | "26.1" | "26.1.1" | "26.1.2" | "26.2" | "26.3";
+                /**
+                 * @description * `fabric` - Fabric
+                 *     * `forge` - Forge
+                 *     * `neoforge` - NeoForge
+                 *     * `quilt` - Quilt
+                 */
+                loader?: "fabric" | "forge" | "neoforge" | "quilt";
+                official?: boolean;
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+                q?: string;
+                /**
+                 * @description * `popular` - popular
+                 *     * `new` - new
+                 *     * `top` - top
+                 *     * `trend` - trend
+                 *     * `downloads` - downloads
+                 */
+                sort?: "downloads" | "new" | "popular" | "top" | "trend";
+                /** @description Style slugs, comma-separated; any may match. */
+                style?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedPackCardList"];
+                };
+            };
+        };
+    };
+    packs_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PackWriteRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PackWriteRequest"];
+                "multipart/form-data": components["schemas"]["PackWriteRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PackDetail"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    packs_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PackDetail"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    packs_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    packs_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedPackWriteRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedPackWriteRequest"];
+                "multipart/form-data": components["schemas"]["PatchedPackWriteRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PackDetail"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    packs_cover_upload: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["CoverUploadRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PackDetail"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    packs_cover_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PackDetail"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    packs_export: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/x-modrinth-modpack+zip": string;
+                };
+            };
+            /** @description Official packs: the original file on Modrinth. */
+            302: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    packs_fork: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PackDetail"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    packs_items_add: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PackItemAddRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PackItemAddRequest"];
+                "multipart/form-data": components["schemas"]["PackItemAddRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PackDetail"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    packs_item_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Catalog project slug. */
+                project_slug: string;
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PackDetail"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    packs_item_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Catalog project slug. */
+                project_slug: string;
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedPackItemUpdateRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedPackItemUpdateRequest"];
+                "multipart/form-data": components["schemas"]["PatchedPackItemUpdateRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PackDetail"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    packs_publish: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PackDetail"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
     reports_create: {
         parameters: {
             query?: never;
@@ -4035,8 +5189,9 @@ export interface operations {
                  *     * `mod` - mod
                  *     * `skin` - skin
                  *     * `server` - server
+                 *     * `pack` - pack
                  */
-                kind: "collection" | "mod" | "skin" | "server";
+                kind: "collection" | "mod" | "skin" | "server" | "pack";
                 page?: number;
                 /**
                  * @description * `helpful` - helpful
@@ -4241,11 +5396,12 @@ export interface operations {
             query: {
                 /**
                  * @description * `mod` - mod
+                 *     * `pack` - pack
                  *     * `skin` - skin
                  *     * `server` - server
                  *     * `collection` - collection
                  */
-                kind?: "mod" | "skin" | "server" | "collection";
+                kind?: "mod" | "pack" | "skin" | "server" | "collection";
                 page?: number;
                 q: string;
             };
@@ -5109,10 +6265,11 @@ export interface operations {
             query?: {
                 /**
                  * @description * `mod` - mod
+                 *     * `pack` - pack
                  *     * `skin` - skin
                  *     * `server` - server
                  */
-                kind?: "mod" | "skin" | "server";
+                kind?: "mod" | "pack" | "skin" | "server";
                 /**
                  * @description * `week` - week
                  *     * `month` - month

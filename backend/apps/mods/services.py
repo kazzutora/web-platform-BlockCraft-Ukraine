@@ -114,6 +114,7 @@ def replace_versions(project: Project, versions: Iterable[schemas.ModrinthVersio
                 "file_name": file.filename[:256],
                 "file_size": file.size,
                 "sha1": file.hashes.get("sha1", ""),
+                "sha512": file.hashes.get("sha512", ""),
                 "dependencies": [
                     dependency.model_dump(exclude_none=True) for dependency in item.dependencies
                 ],
@@ -171,6 +172,28 @@ def sync_popular(
             progress(f"{project_type}: {synced}/{len(ids)} synced")
         result.projects[project_type] = synced
     return result
+
+
+def import_missing(
+    *, client: ModrinthClient, modrinth_ids: Iterable[str], game_versions: list[str]
+) -> int:
+    """Brings in projects other content depends on (pack dependencies, modpack contents).
+
+    They are published right away like the popular ones: Modrinth already lists them.
+    """
+    ids = set(modrinth_ids)
+    missing = sorted(
+        ids - set(Project.objects.filter(modrinth_id__in=ids).values_list("modrinth_id", flat=True))
+    )
+    imported = 0
+    for start in range(0, len(missing), BATCH):
+        for data in client.get_projects(missing[start : start + BATCH]):
+            if data.project_type not in SUPPORTED_TYPES:
+                continue
+            project = upsert_project(data)
+            sync_project_versions(client=client, project=project, game_versions=game_versions)
+            imported += 1
+    return imported
 
 
 def import_suggested(

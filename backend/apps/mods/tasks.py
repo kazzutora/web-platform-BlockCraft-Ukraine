@@ -3,6 +3,7 @@ from datetime import timedelta
 
 from celery import shared_task
 from django.conf import settings
+from django.db.models import Q
 from django.utils import timezone
 
 from apps.accounts.models import User
@@ -36,11 +37,20 @@ def sync_popular() -> dict:
 
 @shared_task(name="mods.sync_versions_for_tracked", **LONG_TASK)
 def sync_versions_for_tracked(days: int = 90) -> int:
-    """Refreshes versions of recently downloaded projects (stage 16 adds favorites, packs)."""
+    """Refreshes versions of recently downloaded projects and of those in packs.
+
+    Projects outside the popular sync (pack dependencies, modpack contents) stay fresh this
+    way; stage 16 adds favorites.
+    """
+    from apps.packs.models import PackItem
+
     since = timezone.now() - timedelta(days=days)
     project_ids = (
         Project.objects.published()
-        .filter(user_downloads__created_at__gte=since)
+        .filter(
+            Q(user_downloads__created_at__gte=since)
+            | Q(pk__in=PackItem.objects.values("project_id"))
+        )
         .values_list("pk", flat=True)
         .distinct()
     )

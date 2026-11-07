@@ -6,7 +6,7 @@ export type SkinCard = Schemas["SkinCard"];
 export type SkinDetail = Schemas["SkinDetail"];
 export type SkinModel = Schemas["ModelEnum"];
 export type ColorBucket = Schemas["ColorBucketEnum"];
-export type Style = Schemas["StyleTagsEnum"];
+export type Style = Schemas["SkinStyleEnum"];
 export type LookupResult = Schemas["LookupResult"];
 export type CatalogQuery = NonNullable<operations["skins_list"]["parameters"]["query"]>;
 

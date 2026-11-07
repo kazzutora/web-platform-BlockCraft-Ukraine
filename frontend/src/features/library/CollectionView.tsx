@@ -21,6 +21,8 @@ import { useMe } from "@/features/auth/useMe";
 import { useRequireAuth } from "@/features/auth/useRequireAuth";
 import { ModCard } from "@/features/mods/ModCard";
 import { ReportButton } from "@/features/moderation/ReportButton";
+import { PackCard } from "@/features/packs/PackCard";
+import { ServerTile } from "@/features/servers/ServerTile";
 import { SkinCard } from "@/features/skins/SkinCard";
 import { Comments } from "@/features/social/Comments";
 import { api } from "@/lib/api/client";
@@ -327,8 +329,12 @@ function Items({ collection }: { collection: CollectionDetail }) {
         <div key={item.id} className="flex flex-col gap-2">
           {item.mod ? (
             <ModCard project={item.mod} />
+          ) : item.pack ? (
+            <PackCard pack={item.pack} />
           ) : item.skin ? (
             <SkinCard skin={item.skin} />
+          ) : item.server ? (
+            <ServerTile server={item.server} />
           ) : (
             <p className="border border-line p-4 text-sm text-muted">{copy.unknownItem}</p>
           )}

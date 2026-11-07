@@ -8,4 +8,4 @@ export type SearchKind = NonNullable<
   NonNullable<operations["search"]["parameters"]["query"]>["kind"]
 >;
 
-export const searchKinds: SearchKind[] = ["mod", "skin", "server", "collection"];
+export const searchKinds: SearchKind[] = ["mod", "pack", "skin", "server", "collection"];

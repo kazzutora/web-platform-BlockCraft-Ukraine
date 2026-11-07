@@ -9,6 +9,7 @@ from apps.accounts.tests.factories import UserFactory
 from apps.core.kinds import get_kind
 from apps.library.models import Favorite
 from apps.mods.tests.factories import ProjectFactory
+from apps.packs.tests.factories import PackFactory
 from apps.servers import status
 from apps.servers.tests.factories import ServerFactory, SnapshotFactory, online
 from apps.skins.tests.factories import SkinFactory
@@ -38,6 +39,8 @@ def content():
     SkinFactory(
         title="Торішній хіт", trend_score=50, published_at=timezone.now() - timedelta(days=300)
     )
+    PackFactory(title="Техно", trend_score=4)
+    PackFactory(title="Тиша")
 
 
 def test_guests_get_popular_mods_and_the_common_blocks(api_client, content):
@@ -49,6 +52,7 @@ def test_guests_get_popular_mods_and_the_common_blocks(api_client, content):
     assert [s["name"] for s in body["servers_online"]] == ["Людно", "Тихо"]
     assert body["servers_online"][0]["live"]["players_online"] == 90
     assert len(body["new_skins"]) == 3
+    assert [p["title"] for p in body["packs"]] == ["Техно", "Тиша"]
 
 
 def test_players_get_mods_for_their_version_and_loader(content):
@@ -118,6 +122,9 @@ def test_top_skins_and_servers(api_client):
         api_client.get("/api/v1/top", {"kind": "skin", "period": "month"}).json()["skins"][0]["id"]
         == skin.pk
     )
+    pack = PackFactory(score=4.5)
+    packs = api_client.get("/api/v1/top", {"kind": "pack", "period": "all"}).json()["packs"]
+    assert [p["slug"] for p in packs] == [pack.slug]
     servers = api_client.get("/api/v1/top", {"kind": "server"}).json()["servers"]
     assert servers[0]["live"]["players_online"] == 12
     assert api_client.get("/api/v1/top", {"period": "year"}).status_code == 400

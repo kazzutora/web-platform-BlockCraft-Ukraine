@@ -5,7 +5,8 @@ from apps.accounts.models import User
 from apps.home import demo
 from apps.library.models import Collection
 from apps.mods.models import Project
-from apps.mods.tests.factories import ProjectFactory
+from apps.mods.tests.factories import ProjectFactory, VersionFactory
+from apps.packs.models import Pack
 from apps.servers.models import Server
 from apps.skins.models import Skin
 from apps.social.models import Comment, Review
@@ -49,3 +50,18 @@ def test_demo_mods_stand_in_when_nothing_is_synced():
     assert Project.objects.published().filter(modrinth_id__startswith="DEMO").count() == 6
     demo.remove()
     assert not Project.objects.exists()
+
+
+def test_demo_packs_are_built_from_catalog_files():
+    for _ in range(6):
+        VersionFactory(project=ProjectFactory(), game_versions=["1.21.1"], loaders=["fabric"])
+
+    summary = demo.create()
+
+    assert summary.packs == 4
+    pack = Pack.objects.published().first()
+    assert (pack.game_version, pack.loader) == ("1.21.1", "fabric")
+    assert pack.items.count() >= 4
+    assert pack.rating_count == 2
+    demo.remove()
+    assert not Pack.objects.exists()

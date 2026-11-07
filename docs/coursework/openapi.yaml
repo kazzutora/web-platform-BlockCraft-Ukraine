@@ -439,6 +439,7 @@ paths:
           - mod
           - skin
           - server
+          - pack
           type: string
           minLength: 1
         description: |-
@@ -446,6 +447,7 @@ paths:
           * `mod` - mod
           * `skin` - skin
           * `server` - server
+          * `pack` - pack
         required: true
       tags:
       - comments
@@ -734,6 +736,7 @@ paths:
           - mod
           - skin
           - server
+          - pack
           type: string
           minLength: 1
         description: |-
@@ -741,6 +744,7 @@ paths:
           * `mod` - mod
           * `skin` - skin
           * `server` - server
+          * `pack` - pack
         required: true
       tags:
       - favorites
@@ -871,6 +875,7 @@ paths:
           - mod
           - skin
           - server
+          - pack
           type: string
           minLength: 1
         description: |-
@@ -878,6 +883,7 @@ paths:
           * `mod` - mod
           * `skin` - skin
           * `server` - server
+          * `pack` - pack
         required: true
       tags:
       - likes
@@ -1291,6 +1297,34 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiError'
           description: ''
+  /api/v1/me/packs:
+    get:
+      operationId: me_packs_list
+      description: All my packs, drafts included.
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - me
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedMyPackList'
+          description: ''
   /api/v1/me/saved:
     get:
       operationId: me_saved
@@ -1310,6 +1344,7 @@ paths:
           - mod
           - skin
           - server
+          - pack
           type: string
           default: mod
           minLength: 1
@@ -1318,6 +1353,7 @@ paths:
           * `mod` - mod
           * `skin` - skin
           * `server` - server
+          * `pack` - pack
       tags:
       - me
       security:
@@ -1846,6 +1882,712 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiError'
           description: ''
+  /api/v1/packs:
+    get:
+      operationId: packs_list
+      description: 'No PUT on the pack itself: edits are PATCH, PUT is the cover upload.'
+      summary: Catalog of published packs
+      parameters:
+      - in: query
+        name: author
+        schema:
+          type: string
+        description: Author nickname.
+      - in: query
+        name: game_version
+        schema:
+          type: string
+          title: Версія гри
+          enum:
+          - 1.12.2
+          - '1.16'
+          - 1.16.1
+          - 1.16.2
+          - 1.16.3
+          - 1.16.4
+          - 1.16.5
+          - '1.17'
+          - 1.17.1
+          - '1.18'
+          - 1.18.1
+          - 1.18.2
+          - '1.19'
+          - 1.19.1
+          - 1.19.2
+          - 1.19.3
+          - 1.19.4
+          - '1.20'
+          - 1.20.1
+          - 1.20.2
+          - 1.20.3
+          - 1.20.4
+          - 1.20.5
+          - 1.20.6
+          - '1.21'
+          - 1.21.1
+          - 1.21.10
+          - 1.21.11
+          - 1.21.2
+          - 1.21.3
+          - 1.21.4
+          - 1.21.5
+          - 1.21.6
+          - 1.21.7
+          - 1.21.8
+          - 1.21.9
+          - 1.8.9
+          - '26.1'
+          - 26.1.1
+          - 26.1.2
+          - '26.2'
+          - '26.3'
+        description: |-
+          * `26.3` - 26.3
+          * `26.2` - 26.2
+          * `26.1.2` - 26.1.2
+          * `26.1.1` - 26.1.1
+          * `26.1` - 26.1
+          * `1.21.11` - 1.21.11
+          * `1.21.10` - 1.21.10
+          * `1.21.9` - 1.21.9
+          * `1.21.8` - 1.21.8
+          * `1.21.7` - 1.21.7
+          * `1.21.6` - 1.21.6
+          * `1.21.5` - 1.21.5
+          * `1.21.4` - 1.21.4
+          * `1.21.3` - 1.21.3
+          * `1.21.2` - 1.21.2
+          * `1.21.1` - 1.21.1
+          * `1.21` - 1.21
+          * `1.20.6` - 1.20.6
+          * `1.20.5` - 1.20.5
+          * `1.20.4` - 1.20.4
+          * `1.20.3` - 1.20.3
+          * `1.20.2` - 1.20.2
+          * `1.20.1` - 1.20.1
+          * `1.20` - 1.20
+          * `1.19.4` - 1.19.4
+          * `1.19.3` - 1.19.3
+          * `1.19.2` - 1.19.2
+          * `1.19.1` - 1.19.1
+          * `1.19` - 1.19
+          * `1.18.2` - 1.18.2
+          * `1.18.1` - 1.18.1
+          * `1.18` - 1.18
+          * `1.17.1` - 1.17.1
+          * `1.17` - 1.17
+          * `1.16.5` - 1.16.5
+          * `1.16.4` - 1.16.4
+          * `1.16.3` - 1.16.3
+          * `1.16.2` - 1.16.2
+          * `1.16.1` - 1.16.1
+          * `1.16` - 1.16
+          * `1.12.2` - 1.12.2
+          * `1.8.9` - 1.8.9
+      - in: query
+        name: loader
+        schema:
+          type: string
+          title: Лоадер
+          enum:
+          - fabric
+          - forge
+          - neoforge
+          - quilt
+        description: |-
+          * `fabric` - Fabric
+          * `forge` - Forge
+          * `neoforge` - NeoForge
+          * `quilt` - Quilt
+      - in: query
+        name: official
+        schema:
+          type: boolean
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: q
+        schema:
+          type: string
+      - in: query
+        name: sort
+        schema:
+          type: string
+          enum:
+          - downloads
+          - new
+          - popular
+          - top
+          - trend
+        description: |-
+          * `popular` - popular
+          * `new` - new
+          * `top` - top
+          * `trend` - trend
+          * `downloads` - downloads
+      - in: query
+        name: style
+        schema:
+          type: string
+        description: Style slugs, comma-separated; any may match.
+      tags:
+      - packs
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPackCardList'
+          description: ''
+    post:
+      operationId: packs_create
+      description: 'A draft: add mods with `items`, then `publish`.'
+      tags:
+      - packs
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PackWriteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PackWriteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PackWriteRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PackDetail'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+  /api/v1/packs/{slug}:
+    get:
+      operationId: packs_retrieve
+      description: Published packs for everyone; the author also sees drafts.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - packs
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PackDetail'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+    patch:
+      operationId: packs_update
+      description: Changing the game version or loader picks every file again.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - packs
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedPackWriteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedPackWriteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedPackWriteRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PackDetail'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+    delete:
+      operationId: packs_delete
+      description: 'No PUT on the pack itself: edits are PATCH, PUT is the cover upload.'
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - packs
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+  /api/v1/packs/{slug}/cover:
+    put:
+      operationId: packs_cover_upload
+      description: 'No PUT on the pack itself: edits are PATCH, PUT is the cover upload.'
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - packs
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CoverUploadRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PackDetail'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+    delete:
+      operationId: packs_cover_delete
+      description: 'No PUT on the pack itself: edits are PATCH, PUT is the cover upload.'
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - packs
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PackDetail'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+  /api/v1/packs/{slug}/export.mrpack:
+    get:
+      operationId: packs_export
+      description: modrinth.index.json in a zip; the files themselves stay on Modrinth.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - packs
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/x-modrinth-modpack+zip:
+              schema:
+                type: string
+                format: binary
+          description: ''
+        '302':
+          description: 'Official packs: the original file on Modrinth.'
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+  /api/v1/packs/{slug}/fork:
+    post:
+      operationId: packs_fork
+      description: A draft copy owned by the caller.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - packs
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PackDetail'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+  /api/v1/packs/{slug}/items:
+    post:
+      operationId: packs_items_add
+      description: Adds the file for the pack's version and loader and its required
+        dependencies (`added_as_dependency`). Dependencies missing from the catalog
+        are brought in from Modrinth in the background.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - packs
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PackItemAddRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PackItemAddRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PackItemAddRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PackDetail'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+  /api/v1/packs/{slug}/items/{project_slug}:
+    patch:
+      operationId: packs_item_update
+      description: 'No PUT on the pack itself: edits are PATCH, PUT is the cover upload.'
+      parameters:
+      - in: path
+        name: project_slug
+        schema:
+          type: string
+        description: Catalog project slug.
+        required: true
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - packs
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedPackItemUpdateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedPackItemUpdateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedPackItemUpdateRequest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PackDetail'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+    delete:
+      operationId: packs_item_remove
+      description: Dependencies nothing else needs leave with it.
+      parameters:
+      - in: path
+        name: project_slug
+        schema:
+          type: string
+        description: Catalog project slug.
+        required: true
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - packs
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PackDetail'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+  /api/v1/packs/{slug}/publish:
+    post:
+      operationId: packs_publish
+      description: A new author's first three works wait for moderation (`pending`).
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - packs
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PackDetail'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
   /api/v1/reports:
     post:
       operationId: reports_create
@@ -1919,6 +2661,7 @@ paths:
           - mod
           - skin
           - server
+          - pack
           type: string
           minLength: 1
         description: |-
@@ -1926,6 +2669,7 @@ paths:
           * `mod` - mod
           * `skin` - skin
           * `server` - server
+          * `pack` - pack
         required: true
       - in: query
         name: page
@@ -2120,6 +2864,7 @@ paths:
         schema:
           enum:
           - mod
+          - pack
           - skin
           - server
           - collection
@@ -2127,6 +2872,7 @@ paths:
           minLength: 1
         description: |-
           * `mod` - mod
+          * `pack` - pack
           * `skin` - skin
           * `server` - server
           * `collection` - collection
@@ -3078,6 +3824,7 @@ paths:
         schema:
           enum:
           - mod
+          - pack
           - skin
           - server
           type: string
@@ -3085,6 +3832,7 @@ paths:
           minLength: 1
         description: |-
           * `mod` - mod
+          * `pack` - pack
           * `skin` - skin
           * `server` - server
       - in: query
@@ -3437,12 +4185,24 @@ components:
           - $ref: '#/components/schemas/SkinCard'
           nullable: true
           readOnly: true
+        server:
+          allOf:
+          - $ref: '#/components/schemas/ServerCard'
+          nullable: true
+          readOnly: true
+        pack:
+          allOf:
+          - $ref: '#/components/schemas/PackCard'
+          nullable: true
+          readOnly: true
       required:
       - id
       - kind
       - mod
       - note
+      - pack
       - position
+      - server
       - skin
       - slot
       - target_id
@@ -3632,6 +4392,15 @@ components:
       - next_cursor
       - pinned
       - results
+    CoverUploadRequest:
+      type: object
+      properties:
+        cover:
+          type: string
+          format: binary
+          description: PNG, JPEG or WebP up to 2 MB; cropped to 1200×630.
+      required:
+      - cover
     CurrentSkinRequest:
       type: object
       properties:
@@ -3898,6 +4667,10 @@ components:
       properties:
         for_you:
           $ref: '#/components/schemas/ForYou'
+        packs:
+          type: array
+          items:
+            $ref: '#/components/schemas/PackCard'
         skin_of_week:
           allOf:
           - $ref: '#/components/schemas/SkinCard'
@@ -3918,6 +4691,7 @@ components:
       - for_you
       - new_servers
       - new_skins
+      - packs
       - servers_online
       - skin_of_week
     InterestsEnum:
@@ -3947,18 +4721,51 @@ components:
           type: integer
       required:
       - ip_copies_count
+    Issue:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/IssueTypeEnum'
+        project:
+          $ref: '#/components/schemas/PackIcon'
+        other:
+          allOf:
+          - $ref: '#/components/schemas/PackIcon'
+          nullable: true
+        other_modrinth_id:
+          type: string
+        message:
+          type: string
+      required:
+      - message
+      - other
+      - other_modrinth_id
+      - project
+      - type
+    IssueTypeEnum:
+      enum:
+      - no_version
+      - missing_dependency
+      - conflict
+      type: string
+      description: |-
+        * `no_version` - no_version
+        * `missing_dependency` - missing_dependency
+        * `conflict` - conflict
     KindEnum:
       enum:
       - collection
       - mod
       - skin
       - server
+      - pack
       type: string
       description: |-
         * `collection` - collection
         * `mod` - mod
         * `skin` - skin
         * `server` - server
+        * `pack` - pack
     LanguageEnum:
       enum:
       - uk
@@ -4235,6 +5042,115 @@ components:
       - title
       - updated_at
       - visibility
+    MyPack:
+      type: object
+      description: '«Мої роботи»: drafts and the moderation outcome too.'
+      properties:
+        slug:
+          type: string
+          readOnly: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        title:
+          type: string
+          readOnly: true
+          title: Назва
+        summary:
+          type: string
+          readOnly: true
+          title: Коротко
+        author:
+          allOf:
+          - $ref: '#/components/schemas/UserBrief'
+          readOnly: true
+        cover_url:
+          type: string
+          nullable: true
+          readOnly: true
+        icons:
+          type: array
+          items:
+            $ref: '#/components/schemas/PackIcon'
+          readOnly: true
+        style_tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/PackStyleEnum'
+          readOnly: true
+        game_version:
+          allOf:
+          - $ref: '#/components/schemas/GameVersionEnum'
+          readOnly: true
+          title: Версія гри
+        loader:
+          allOf:
+          - $ref: '#/components/schemas/PackLoaderEnum'
+          readOnly: true
+          title: Лоадер
+        is_official:
+          type: boolean
+          readOnly: true
+          title: Офіційна
+        mods_count:
+          type: integer
+          readOnly: true
+        rating_avg:
+          type: number
+          format: double
+          readOnly: true
+        rating_count:
+          type: integer
+          readOnly: true
+        favorites_count:
+          type: integer
+          readOnly: true
+        downloads_count:
+          type: integer
+          readOnly: true
+        modrinth_downloads:
+          type: integer
+          readOnly: true
+        is_favorited:
+          type: boolean
+          readOnly: true
+        my_review_stars:
+          type: integer
+          nullable: true
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/PublishStatusEnum'
+          readOnly: true
+          title: Статус
+        rejection_reason:
+          type: string
+          readOnly: true
+          title: Причина відхилення
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - author
+      - cover_url
+      - downloads_count
+      - favorites_count
+      - game_version
+      - icons
+      - is_favorited
+      - is_official
+      - loader
+      - modrinth_downloads
+      - mods_count
+      - my_review_stars
+      - rating_avg
+      - rating_count
+      - rejection_reason
+      - slug
+      - status
+      - style_tags
+      - summary
+      - title
+      - updated_at
     NoVersionError:
       type: object
       properties:
@@ -4353,6 +5269,500 @@ components:
           items:
             $ref: '#/components/schemas/InterestsEnum'
           maxItems: 8
+    PackBrief:
+      type: object
+      properties:
+        slug:
+          type: string
+          readOnly: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        title:
+          type: string
+          readOnly: true
+          title: Назва
+      required:
+      - slug
+      - title
+    PackCard:
+      type: object
+      description: 'Catalog card: cover (or the first mod icons), target and counters.'
+      properties:
+        slug:
+          type: string
+          readOnly: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        title:
+          type: string
+          readOnly: true
+          title: Назва
+        summary:
+          type: string
+          readOnly: true
+          title: Коротко
+        author:
+          allOf:
+          - $ref: '#/components/schemas/UserBrief'
+          readOnly: true
+        cover_url:
+          type: string
+          nullable: true
+          readOnly: true
+        icons:
+          type: array
+          items:
+            $ref: '#/components/schemas/PackIcon'
+          readOnly: true
+        style_tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/PackStyleEnum'
+          readOnly: true
+        game_version:
+          allOf:
+          - $ref: '#/components/schemas/GameVersionEnum'
+          readOnly: true
+          title: Версія гри
+        loader:
+          allOf:
+          - $ref: '#/components/schemas/PackLoaderEnum'
+          readOnly: true
+          title: Лоадер
+        is_official:
+          type: boolean
+          readOnly: true
+          title: Офіційна
+        mods_count:
+          type: integer
+          readOnly: true
+        rating_avg:
+          type: number
+          format: double
+          readOnly: true
+        rating_count:
+          type: integer
+          readOnly: true
+        favorites_count:
+          type: integer
+          readOnly: true
+        downloads_count:
+          type: integer
+          readOnly: true
+        modrinth_downloads:
+          type: integer
+          readOnly: true
+        is_favorited:
+          type: boolean
+          readOnly: true
+        my_review_stars:
+          type: integer
+          nullable: true
+          readOnly: true
+      required:
+      - author
+      - cover_url
+      - downloads_count
+      - favorites_count
+      - game_version
+      - icons
+      - is_favorited
+      - is_official
+      - loader
+      - modrinth_downloads
+      - mods_count
+      - my_review_stars
+      - rating_avg
+      - rating_count
+      - slug
+      - style_tags
+      - summary
+      - title
+    PackDetail:
+      type: object
+      description: 'Catalog card: cover (or the first mod icons), target and counters.'
+      properties:
+        slug:
+          type: string
+          readOnly: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        title:
+          type: string
+          readOnly: true
+          title: Назва
+        summary:
+          type: string
+          readOnly: true
+          title: Коротко
+        author:
+          allOf:
+          - $ref: '#/components/schemas/UserBrief'
+          readOnly: true
+        cover_url:
+          type: string
+          nullable: true
+          readOnly: true
+        icons:
+          type: array
+          items:
+            $ref: '#/components/schemas/PackIcon'
+          readOnly: true
+        style_tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/PackStyleEnum'
+          readOnly: true
+        game_version:
+          allOf:
+          - $ref: '#/components/schemas/GameVersionEnum'
+          readOnly: true
+          title: Версія гри
+        loader:
+          allOf:
+          - $ref: '#/components/schemas/PackLoaderEnum'
+          readOnly: true
+          title: Лоадер
+        is_official:
+          type: boolean
+          readOnly: true
+          title: Офіційна
+        mods_count:
+          type: integer
+          readOnly: true
+        rating_avg:
+          type: number
+          format: double
+          readOnly: true
+        rating_count:
+          type: integer
+          readOnly: true
+        favorites_count:
+          type: integer
+          readOnly: true
+        downloads_count:
+          type: integer
+          readOnly: true
+        modrinth_downloads:
+          type: integer
+          readOnly: true
+        is_favorited:
+          type: boolean
+          readOnly: true
+        my_review_stars:
+          type: integer
+          nullable: true
+          readOnly: true
+        loader_version:
+          type: string
+          readOnly: true
+          title: Версія лоадера
+        effective_loader_version:
+          type: string
+          description: 'What the .mrpack will ask for: pinned by the author or the
+            latest stable build.'
+          readOnly: true
+        ram_min_gb:
+          type: integer
+          readOnly: true
+          title: Мінімум RAM, ГБ
+        gpu_note:
+          type: string
+          readOnly: true
+          title: Відеокарта
+        install_md:
+          type: string
+          readOnly: true
+          title: Як встановити
+        install_html:
+          type: string
+          readOnly: true
+        changelog_md:
+          type: string
+          readOnly: true
+          title: Що нового
+        changelog_html:
+          type: string
+          readOnly: true
+        forked_from:
+          allOf:
+          - $ref: '#/components/schemas/PackBrief'
+          readOnly: true
+          nullable: true
+        forks_count:
+          type: integer
+          readOnly: true
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PackItem'
+          readOnly: true
+        issues:
+          type: array
+          items:
+            $ref: '#/components/schemas/Issue'
+          readOnly: true
+        total_size:
+          type: integer
+          readOnly: true
+        comments_count:
+          type: integer
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/PublishStatusEnum'
+          readOnly: true
+          title: Статус
+        rejection_reason:
+          type: string
+          readOnly: true
+          title: Причина відхилення
+        is_mine:
+          type: boolean
+          readOnly: true
+        modrinth_url:
+          type: string
+          format: uri
+          nullable: true
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - author
+      - changelog_html
+      - changelog_md
+      - comments_count
+      - cover_url
+      - created_at
+      - downloads_count
+      - effective_loader_version
+      - favorites_count
+      - forked_from
+      - forks_count
+      - game_version
+      - gpu_note
+      - icons
+      - install_html
+      - install_md
+      - is_favorited
+      - is_mine
+      - is_official
+      - issues
+      - items
+      - loader
+      - loader_version
+      - modrinth_downloads
+      - modrinth_url
+      - mods_count
+      - my_review_stars
+      - ram_min_gb
+      - rating_avg
+      - rating_count
+      - rejection_reason
+      - slug
+      - status
+      - style_tags
+      - summary
+      - title
+      - total_size
+      - updated_at
+    PackFile:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        version_number:
+          type: string
+          readOnly: true
+        file_name:
+          type: string
+          readOnly: true
+        file_size:
+          type: integer
+          readOnly: true
+        game_versions:
+          type: array
+          items:
+            type: string
+            maxLength: 32
+          readOnly: true
+        loaders:
+          type: array
+          items:
+            type: string
+            maxLength: 32
+          readOnly: true
+      required:
+      - file_name
+      - file_size
+      - game_versions
+      - id
+      - loaders
+      - version_number
+    PackIcon:
+      type: object
+      properties:
+        slug:
+          type: string
+          readOnly: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        title:
+          type: string
+          readOnly: true
+          title: Назва
+        icon_url:
+          type: string
+          format: uri
+          readOnly: true
+      required:
+      - icon_url
+      - slug
+      - title
+    PackItem:
+      type: object
+      properties:
+        project:
+          allOf:
+          - $ref: '#/components/schemas/PackProject'
+          readOnly: true
+        version:
+          allOf:
+          - $ref: '#/components/schemas/PackFile'
+          readOnly: true
+          nullable: true
+        is_required:
+          type: boolean
+          readOnly: true
+          title: Обов'язковий
+        added_as_dependency:
+          type: boolean
+          readOnly: true
+          title: Додано як залежність
+      required:
+      - added_as_dependency
+      - is_required
+      - project
+      - version
+    PackItemAddRequest:
+      type: object
+      properties:
+        project:
+          type: string
+          minLength: 1
+          description: Slug of a catalog project.
+          maxLength: 96
+          pattern: ^[-a-zA-Z0-9_]+$
+      required:
+      - project
+    PackLoaderEnum:
+      enum:
+      - fabric
+      - forge
+      - neoforge
+      - quilt
+      type: string
+      description: |-
+        * `fabric` - Fabric
+        * `forge` - Forge
+        * `neoforge` - NeoForge
+        * `quilt` - Quilt
+    PackProject:
+      type: object
+      properties:
+        slug:
+          type: string
+          readOnly: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        title:
+          type: string
+          readOnly: true
+          title: Назва
+        icon_url:
+          type: string
+          format: uri
+          readOnly: true
+        project_type:
+          allOf:
+          - $ref: '#/components/schemas/ProjectTypeEnum'
+          readOnly: true
+        summary:
+          type: string
+          readOnly: true
+          title: Короткий опис (Modrinth)
+      required:
+      - icon_url
+      - project_type
+      - slug
+      - summary
+      - title
+    PackStyleEnum:
+      enum:
+      - performance
+      - vanilla-plus
+      - tech
+      - magic
+      - adventure
+      - building
+      - survival
+      - quests
+      - multiplayer
+      - lightweight
+      type: string
+      description: |-
+        * `performance` - Оптимізація
+        * `vanilla-plus` - Ванілла+
+        * `tech` - Техніка
+        * `magic` - Магія
+        * `adventure` - Пригоди
+        * `building` - Будівництво
+        * `survival` - Виживання
+        * `quests` - Квести
+        * `multiplayer` - Для друзів
+        * `lightweight` - Для слабких ПК
+    PackWriteRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 80
+        summary:
+          type: string
+          maxLength: 280
+        style_tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/PackStyleEnum'
+          maxItems: 3
+        game_version:
+          $ref: '#/components/schemas/GameVersionEnum'
+        loader:
+          $ref: '#/components/schemas/PackLoaderEnum'
+        loader_version:
+          type: string
+          description: 'Empty: the latest stable build at export time.'
+          maxLength: 64
+        ram_min_gb:
+          type: integer
+          maximum: 64
+          minimum: 1
+        gpu_note:
+          type: string
+          maxLength: 140
+        install_md:
+          type: string
+          maxLength: 5000
+        changelog_md:
+          type: string
+          maxLength: 5000
+      required:
+      - game_version
+      - loader
+      - title
     PaginatedCollectionList:
       type: object
       properties:
@@ -4375,6 +5785,52 @@ components:
       - next
       - previous
       - results
+    PaginatedMyPackList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/MyPack'
+    PaginatedPackCardList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/PackCard'
     PaginatedProjectCardList:
       type: object
       required:
@@ -4570,6 +6026,48 @@ components:
         is_private:
           type: boolean
           title: Закритий профіль
+    PatchedPackItemUpdateRequest:
+      type: object
+      properties:
+        is_required:
+          type: boolean
+          description: Optional files are offered, not forced, by launchers.
+    PatchedPackWriteRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 80
+        summary:
+          type: string
+          maxLength: 280
+        style_tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/PackStyleEnum'
+          maxItems: 3
+        game_version:
+          $ref: '#/components/schemas/GameVersionEnum'
+        loader:
+          $ref: '#/components/schemas/PackLoaderEnum'
+        loader_version:
+          type: string
+          description: 'Empty: the latest stable build at export time.'
+          maxLength: 64
+        ram_min_gb:
+          type: integer
+          maximum: 64
+          minimum: 1
+        gpu_note:
+          type: string
+          maxLength: 140
+        install_md:
+          type: string
+          maxLength: 5000
+        changelog_md:
+          type: string
+          maxLength: 5000
     PatchedServerWriteRequest:
       type: object
       properties:
@@ -4627,7 +6125,7 @@ components:
         style_tags:
           type: array
           items:
-            $ref: '#/components/schemas/StyleTagsEnum'
+            $ref: '#/components/schemas/SkinStyleEnum'
         model:
           $ref: '#/components/schemas/ModelEnum'
     PatchedUserSettingsRequest:
@@ -5047,6 +6545,7 @@ components:
       - mod
       - skin
       - server
+      - pack
       - comment
       type: string
       description: |-
@@ -5054,6 +6553,7 @@ components:
         * `mod` - mod
         * `skin` - skin
         * `server` - server
+        * `pack` - pack
         * `comment` - comment
     Review:
       type: object
@@ -5199,6 +6699,14 @@ components:
           allOf:
           - $ref: '#/components/schemas/SkinCard'
           nullable: true
+        server:
+          allOf:
+          - $ref: '#/components/schemas/ServerCard'
+          nullable: true
+        pack:
+          allOf:
+          - $ref: '#/components/schemas/PackCard'
+          nullable: true
         collection:
           allOf:
           - $ref: '#/components/schemas/Collection'
@@ -5208,7 +6716,9 @@ components:
       - id
       - kind
       - mod
+      - pack
       - saved_at
+      - server
       - skin
     SearchGroup:
       type: object
@@ -5649,7 +7159,7 @@ components:
         style_tags:
           type: array
           items:
-            $ref: '#/components/schemas/StyleTagsEnum'
+            $ref: '#/components/schemas/SkinStyleEnum'
           readOnly: true
         likes_count:
           type: integer
@@ -5721,7 +7231,7 @@ components:
         style_tags:
           type: array
           items:
-            $ref: '#/components/schemas/StyleTagsEnum'
+            $ref: '#/components/schemas/SkinStyleEnum'
           readOnly: true
         likes_count:
           type: integer
@@ -5790,6 +7300,32 @@ components:
       - style_tags
       - texture_url
       - title
+    SkinStyleEnum:
+      enum:
+      - casual
+      - fantasy
+      - medieval
+      - scifi
+      - anime
+      - horror
+      - cute
+      - mob
+      - military
+      - sport
+      - ukrainian
+      type: string
+      description: |-
+        * `casual` - Повсякденний
+        * `fantasy` - Фентезі
+        * `medieval` - Середньовіччя
+        * `scifi` - Наукова фантастика
+        * `anime` - Аніме
+        * `horror` - Жахи
+        * `cute` - Милий
+        * `mob` - Моби
+        * `military` - Військовий
+        * `sport` - Спорт
+        * `ukrainian` - Український
     SkinUploadRequest:
       type: object
       properties:
@@ -5804,7 +7340,7 @@ components:
         style_tags:
           type: array
           items:
-            $ref: '#/components/schemas/StyleTagsEnum'
+            $ref: '#/components/schemas/SkinStyleEnum'
         model:
           default: ''
           description: |-
@@ -5887,32 +7423,6 @@ components:
       - is_online
       - players
       - ts
-    StyleTagsEnum:
-      enum:
-      - casual
-      - fantasy
-      - medieval
-      - scifi
-      - anime
-      - horror
-      - cute
-      - mob
-      - military
-      - sport
-      - ukrainian
-      type: string
-      description: |-
-        * `casual` - Повсякденний
-        * `fantasy` - Фентезі
-        * `medieval` - Середньовіччя
-        * `scifi` - Наукова фантастика
-        * `anime` - Аніме
-        * `horror` - Жахи
-        * `cute` - Милий
-        * `mob` - Моби
-        * `military` - Військовий
-        * `sport` - Спорт
-        * `ukrainian` - Український
     SuggestRequest:
       type: object
       properties:
@@ -5988,6 +7498,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ProjectCard'
+        packs:
+          type: array
+          items:
+            $ref: '#/components/schemas/PackCard'
         skins:
           type: array
           items:
@@ -5999,6 +7513,7 @@ components:
       required:
       - kind
       - mods
+      - packs
       - period
       - servers
       - skins

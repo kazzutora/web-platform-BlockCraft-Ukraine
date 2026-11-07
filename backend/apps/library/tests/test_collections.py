@@ -4,6 +4,9 @@ from rest_framework.test import APIClient
 from apps.accounts.tests.factories import UserFactory
 from apps.library.models import Collection, CollectionItem
 from apps.mods.tests.factories import ProjectFactory
+from apps.packs.tests.factories import PackFactory, mod
+from apps.packs.tests.factories import add as add_to_pack
+from apps.servers.tests.factories import ServerFactory
 
 from .factories import CollectionFactory
 
@@ -241,3 +244,28 @@ def test_public_list_has_no_n_plus_one_for_players(auth_client, django_assert_ma
 
     assert len(response.json()["results"]) == 8
     assert not any(item["can_edit"] for item in response.json()["results"])
+
+
+def test_servers_and_packs_in_a_collection_show_cards_and_previews(django_assert_max_num_queries):
+    owner = UserFactory()
+    collection = CollectionFactory(owner=owner, visibility=Visibility.PUBLIC)
+    client = client_for(owner)
+    server = ServerFactory(name="Січ")
+    pack = PackFactory(title="Техно", icon_url="https://cdn.modrinth.com/data/P/icon.webp")
+    add_to_pack(pack, mod(slug="create"))
+    for kind, identifier in (("server", server.slug), ("pack", pack.slug)):
+        response = client.post(
+            f"/api/v1/collections/{collection.pk}/items",
+            {"kind": kind, "id": identifier},
+            format="json",
+        )
+        assert response.status_code in (200, 201), response.json()
+
+    with django_assert_max_num_queries(12):
+        body = client.get(f"/api/v1/collections/{collection.pk}").json()
+
+    server_item, pack_item = body["items"]
+    assert (server_item["kind"], server_item["server"]["name"]) == ("server", "Січ")
+    assert (pack_item["kind"], pack_item["pack"]["mods_count"]) == ("pack", 1)
+    assert pack_item["pack"]["icons"][0]["slug"] == "create"
+    assert body["preview"] == ["https://cdn.modrinth.com/data/P/icon.webp"]

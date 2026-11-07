@@ -11,6 +11,7 @@ from django.utils import timezone
 from apps.core.kinds import Viewer, get_kind
 from apps.library.models import Download, Favorite
 from apps.mods import selectors as mods
+from apps.packs import selectors as packs
 from apps.servers import selectors as servers
 from apps.skins import selectors as skins
 from apps.social.models import Like, Review
@@ -73,6 +74,13 @@ def servers_online(*, viewer: Viewer) -> list:
     return _in_order(servers.catalog(viewer), _cached_ids("home:servers-online", HOME_TTL, build))
 
 
+def popular_packs(*, viewer: Viewer, limit: int = 4) -> list:
+    def build() -> QuerySet:
+        return packs.catalog().order_by("-trend_score", "-score", "-modrinth_downloads")[:limit]
+
+    return _in_order(packs.catalog(viewer), _cached_ids("home:packs", HOME_TTL, build))
+
+
 def new_skins(*, viewer: Viewer, limit: int = 4) -> list:
     def build() -> QuerySet:
         return skins.catalog().order_by("-published_at")[:limit]
@@ -89,9 +97,15 @@ def new_servers(*, viewer: Viewer, limit: int = 3) -> list:
 
 # Tops
 
-CATALOGS = {"mod": mods.catalog, "skin": skins.catalog, "server": servers.catalog}
+CATALOGS = {
+    "mod": mods.catalog,
+    "pack": packs.catalog,
+    "skin": skins.catalog,
+    "server": servers.catalog,
+}
 ALL_TIME = {
     "mod": ["-score", "-modrinth_downloads"],
+    "pack": ["-score", "-downloads_count", "-modrinth_downloads"],
     "skin": ["-likes_count", "-downloads_count"],
     "server": ["-score", "-favorites_count"],
 }

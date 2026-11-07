@@ -12,6 +12,8 @@ const PROTECTED = [
   /^\/skins\/new$/,
   /^\/servers\/new$/,
   /^\/servers\/[^/]+\/edit$/,
+  /^\/packs\/new$/,
+  /^\/packs\/[^/]+\/edit$/,
 ];
 /** Pages that make no sense once signed in. */
 const GUEST_ONLY = [/^\/login$/, /^\/register$/];

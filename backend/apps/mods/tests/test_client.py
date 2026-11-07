@@ -1,4 +1,7 @@
+import io
 import json
+import os
+import zipfile
 
 import httpx
 import pytest
@@ -120,3 +123,58 @@ def test_waits_when_rate_limit_is_almost_spent(client, sleeps):
     client.get_categories()
 
     assert sleeps == [12.0]
+
+
+PACK_URL = "https://cdn.modrinth.com/data/FABULOUS/versions/PACKV001/pack.mrpack"
+
+
+def big_zip() -> bytes:
+    """A modpack with a small index and heavy configs that must not be downloaded."""
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, "w") as archive:
+        archive.writestr("overrides/big.bin", os.urandom(2 * 1024 * 1024))
+        archive.writestr("modrinth.index.json", '{"formatVersion": 1}')
+    return buffer.getvalue()
+
+
+def serve_ranges(content: bytes, served: list[int]):
+    def respond(request: httpx.Request) -> httpx.Response:
+        start, end = map(int, request.headers["Range"].removeprefix("bytes=").split("-"))
+        served.append(end - start + 1)
+        return httpx.Response(206, content=content[start : end + 1])
+
+    return respond
+
+
+@respx.mock
+def test_read_zip_member_reads_only_what_it_needs(client):
+    content, served = big_zip(), []
+    respx.get(PACK_URL).mock(side_effect=serve_ranges(content, served))
+
+    data = client.read_zip_member(
+        PACK_URL, size=len(content), name="modrinth.index.json", max_bytes=1000
+    )
+
+    assert data == b'{"formatVersion": 1}'
+    assert sum(served) < len(content) / 4
+
+
+@respx.mock
+def test_read_zip_member_refuses_what_it_cannot_read_cheaply(client):
+    content = big_zip()
+    respx.get(PACK_URL).mock(side_effect=serve_ranges(content, []))
+    respx.get(f"{PACK_URL}.full").respond(200, content=content)
+    respx.get(f"{PACK_URL}.gone").respond(404)
+    respx.get(f"{PACK_URL}.down").mock(side_effect=httpx.ConnectError("down"))
+
+    with pytest.raises(ModrinthError, match="larger"):
+        client.read_zip_member(PACK_URL, size=len(content), name="overrides/big.bin", max_bytes=10)
+    with pytest.raises(KeyError):
+        client.read_zip_member(PACK_URL, size=len(content), name="missing.json", max_bytes=10)
+    for suffix, error in ((".full", "range"), (".down", "down")):
+        with pytest.raises(ModrinthError, match=error):
+            client.read_zip_member(f"{PACK_URL}{suffix}", size=len(content), name="x", max_bytes=1)
+    with pytest.raises(ModrinthNotFoundError):
+        client.read_zip_member(f"{PACK_URL}.gone", size=len(content), name="x", max_bytes=1)
+    with pytest.raises(ModrinthError, match="not a Modrinth CDN"):
+        client.read_zip_member("https://example.com/p.mrpack", size=10, name="x", max_bytes=1)

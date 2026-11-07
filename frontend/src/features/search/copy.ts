@@ -4,7 +4,7 @@ export const searchCopy = {
   title: "Пошук",
   close: "Закрити",
   open: "Пошук (Ctrl+K)",
-  placeholder: "Моди, скіни, сервери, колекції…",
+  placeholder: "Моди, зборки, скіни, сервери…",
   label: "Що шукаємо?",
   submit: "Шукати",
   hint: "Підійде й з помилкою: «sodim» знайде Sodium.",
@@ -19,6 +19,7 @@ export const searchCopy = {
   tabsLabel: "Розділи результатів",
   kinds: {
     mod: "Моди",
+    pack: "Зборки",
     skin: "Скіни",
     server: "Сервери",
     collection: "Колекції",
@@ -27,9 +28,11 @@ export const searchCopy = {
     mod: "Мод",
     resourcepack: "Ресурспак",
     shader: "Шейдер",
+    pack: "Зборка",
     skin: "Скін",
     server: "Сервер",
     collection: "Колекція",
   },
   items: { one: "елемент", few: "елементи", many: "елементів" },
+  mods: { one: "мод", few: "моди", many: "модів" },
 };

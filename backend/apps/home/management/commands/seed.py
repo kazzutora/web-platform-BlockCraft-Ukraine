@@ -6,7 +6,7 @@ from apps.mods.models import Project
 
 
 class Command(BaseCommand):
-    help = "Demo content: 20 players, skins, servers, collections, reviews and comments."
+    help = "Demo content: 20 players, skins, servers, packs, collections, reviews, comments."
 
     def add_arguments(self, parser) -> None:
         parser.add_argument(
@@ -30,6 +30,7 @@ class Command(BaseCommand):
             self.style.SUCCESS(
                 f"Demo: {summary.users} players, {summary.skins} skins, {summary.servers} servers, "
                 f"{summary.collections} collections, {summary.reviews} reviews, "
-                f"{summary.comments} comments (password for all: {demo.PASSWORD})"
+                f"{summary.packs} packs, {summary.comments} comments "
+                f"(password for all: {demo.PASSWORD})"
             )
         )

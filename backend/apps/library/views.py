@@ -12,6 +12,11 @@ from apps.core.pagination import CatalogPagination
 from apps.core.schema import error_responses, paginated
 from apps.mods.models import Project
 from apps.mods.selectors import catalog
+from apps.packs.models import Pack
+from apps.packs.selectors import catalog as packs_catalog
+from apps.servers import status as live_status
+from apps.servers.models import Server
+from apps.servers.selectors import catalog as servers_catalog
 from apps.skins.models import Skin
 from apps.skins.selectors import catalog as skins_catalog
 from apps.social.models import Like
@@ -124,6 +129,10 @@ class SavedView(APIView):
                 objects = objects.filter(game_versions__contains=[game_version])
         elif kind.name == "skin":
             objects = skins_catalog(user)
+        elif kind.name == "server":
+            objects = servers_catalog(user)
+        elif kind.name == "pack":
+            objects = packs_catalog(user)
         else:
             objects = _with_collection_state(selectors.listed_collections(user), user)
 
@@ -143,11 +152,16 @@ class SavedView(APIView):
                     "saved_at": favorite.created_at,
                     "mod": target if isinstance(target, Project) else None,
                     "skin": target if isinstance(target, Skin) else None,
+                    "server": target if isinstance(target, Server) else None,
+                    "pack": target if isinstance(target, Pack) else None,
                     "collection": target if isinstance(target, Collection) else None,
                 }
             )
+        context = {"request": request}
+        if kind.name == "server":
+            context["live"] = live_status.get_many(by_pk)
         return paginator.get_paginated_response(
-            SavedItemSerializer(items, many=True, context={"request": request}).data
+            SavedItemSerializer(items, many=True, context=context).data
         )
 
 

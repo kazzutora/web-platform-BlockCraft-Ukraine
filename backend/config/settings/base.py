@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     "apps.mods",
     "apps.skins",
     "apps.servers",
+    "apps.packs",
     "apps.search",
     "apps.home",
     "apps.notifications",
@@ -213,6 +214,8 @@ REST_FRAMEWORK = {
         "reports": "20/day",
         "lookup": "30/min",
         "copy_ip": "60/hour",
+        # The pack constructor saves every added or removed mod
+        "pack_edits": "600/hour",
     },
     # Nginx (and Next.js for SSR) set X-Forwarded-For; throttles count the real client
     "NUM_PROXIES": 1,
@@ -232,10 +235,14 @@ SPECTACULAR_SETTINGS = {
         "ServerEditionEnum": "apps.servers.choices.Edition",
         "LanguageEnum": "apps.accounts.models.UserSettings.Language",
         "ServerLanguageEnum": "apps.servers.choices.Language",
+        "LoaderEnum": "apps.core.game.Loader",
+        "PackLoaderEnum": "apps.packs.choices.PackLoader",
+        "SkinStyleEnum": "apps.skins.styles.Style",
+        "PackStyleEnum": "apps.packs.choices.Style",
         "PublishStatusEnum": "apps.core.models.Publishable.Status",
         # Reports also accept comments, which are not a kind
-        "KindEnum": ["collection", "mod", "skin", "server"],
-        "ReportKindEnum": ["collection", "mod", "skin", "server", "comment"],
+        "KindEnum": ["collection", "mod", "skin", "server", "pack"],
+        "ReportKindEnum": ["collection", "mod", "skin", "server", "pack", "comment"],
         "NotificationTypeEnum": "apps.notifications.models.Notification.Type",
     },
 }
@@ -262,6 +269,14 @@ CELERY_BEAT_SCHEDULE: dict[str, dict] = {
         "task": "moderation.lift_expired_bans",
         "schedule": crontab(minute=5),
     },
+    "packs-refresh-loader-versions": {
+        "task": "packs.refresh_loader_versions",
+        "schedule": crontab(hour=2, minute=30),
+    },
+    "packs-import-official": {
+        "task": "packs.import_official",
+        "schedule": crontab(hour=4, minute=15),
+    },
 }
 
 # Search (Meilisearch)
@@ -283,3 +298,5 @@ MODRINTH_SYNC_LIMITS = {
     "resourcepack": env.int("MODRINTH_SYNC_LIMIT_RESOURCEPACKS", default=100),
     "shader": env.int("MODRINTH_SYNC_LIMIT_SHADERS", default=100),
 }
+# Most downloaded Modrinth modpacks imported as official packs (stage 10)
+MODRINTH_OFFICIAL_PACKS = env.int("MODRINTH_OFFICIAL_PACKS", default=10)

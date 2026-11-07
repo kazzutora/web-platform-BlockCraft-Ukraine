@@ -6,6 +6,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { Icon } from "@/components/ui/Icon";
 import { loaderName } from "@/features/mods/format";
 import { ModCard } from "@/features/mods/ModCard";
+import { PackCard } from "@/features/packs/PackCard";
 import { ServerRow } from "@/features/servers/ServerRow";
 import { SkinCard } from "@/features/skins/SkinCard";
 import { SkinViewer } from "@/features/skins/SkinViewer";
@@ -42,7 +43,7 @@ function Section({
   );
 }
 
-/** Everything under the hero: for your version, skin of the week, servers online, new. */
+/** Everything under the hero: for your version, skin of the week, servers online, packs, new. */
 export async function HomeSections() {
   const home = await getHome();
   const forYou = home.for_you;
@@ -112,6 +113,16 @@ export async function HomeSections() {
           <p className="text-muted">{copy.noServers}</p>
         )}
       </Section>
+
+      {home.packs.length > 0 && (
+        <Section title={copy.packs} link={{ href: "/packs", label: copy.allPacks }}>
+          <CardGrid>
+            {home.packs.map((pack) => (
+              <PackCard key={pack.slug} pack={pack} />
+            ))}
+          </CardGrid>
+        </Section>
+      )}
 
       {(home.new_skins.length > 0 || home.new_servers.length > 0) && (
         <Section title={copy.fresh} link={{ href: "/top", label: copy.top }}>

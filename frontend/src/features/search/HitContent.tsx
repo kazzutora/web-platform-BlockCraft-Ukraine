@@ -6,7 +6,13 @@ import { cn } from "@/lib/cn";
 import { hitMeta } from "./hits";
 import type { SearchHit } from "./types";
 
-const art = { mod: "mods", skin: "skins", server: "servers", collection: "packs" } as const;
+const art = {
+  mod: "mods",
+  pack: "packs",
+  skin: "skins",
+  server: "servers",
+  collection: "packs",
+} as const;
 
 /** Thumbnail, title and one line of metadata (no link: the overlay rows are listbox options). */
 export function HitContent({ hit }: { hit: SearchHit }) {

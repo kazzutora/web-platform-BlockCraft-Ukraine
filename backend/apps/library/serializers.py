@@ -5,6 +5,10 @@ from apps.accounts.serializers import UserBriefSerializer
 from apps.core import kinds
 from apps.mods.models import Project
 from apps.mods.serializers import ProjectCardSerializer
+from apps.packs.models import Pack
+from apps.packs.serializers import PackCardSerializer
+from apps.servers.models import Server
+from apps.servers.serializers import ServerCardSerializer
 from apps.skins.models import Skin
 from apps.skins.serializers import SkinCardSerializer
 
@@ -17,6 +21,10 @@ def thumbnail_of(target) -> str | None:
     if isinstance(target, Skin):
         image = target.preview or target.file
         return image.url if image else None
+    if isinstance(target, Server):
+        return target.banner.url if target.banner else None
+    if isinstance(target, Pack) and target.cover:
+        return target.cover.url
     return getattr(target, "icon_url", None) or None
 
 
@@ -97,10 +105,23 @@ class CollectionItemSerializer(serializers.ModelSerializer):
     target_id = serializers.SerializerMethodField()
     mod = serializers.SerializerMethodField()
     skin = serializers.SerializerMethodField()
+    server = serializers.SerializerMethodField()
+    pack = serializers.SerializerMethodField()
 
     class Meta:
         model = CollectionItem
-        fields = ["id", "kind", "target_id", "position", "slot", "note", "mod", "skin"]
+        fields = [
+            "id",
+            "kind",
+            "target_id",
+            "position",
+            "slot",
+            "note",
+            "mod",
+            "skin",
+            "server",
+            "pack",
+        ]
         read_only_fields = fields
 
     def _kind(self, item: CollectionItem) -> kinds.Kind:
@@ -124,6 +145,20 @@ class CollectionItemSerializer(serializers.ModelSerializer):
         target = item.target
         if isinstance(target, Skin) and target.status == Skin.Status.PUBLISHED:
             return SkinCardSerializer(target, context=self.context).data
+        return None
+
+    @extend_schema_field(ServerCardSerializer(allow_null=True))
+    def get_server(self, item: CollectionItem) -> dict | None:
+        target = item.target
+        if isinstance(target, Server) and target.status == Server.Status.PUBLISHED:
+            return ServerCardSerializer(target, context=self.context).data
+        return None
+
+    @extend_schema_field(PackCardSerializer(allow_null=True))
+    def get_pack(self, item: CollectionItem) -> dict | None:
+        target = item.target
+        if isinstance(target, Pack) and target.status == Pack.Status.PUBLISHED:
+            return PackCardSerializer(target, context=self.context).data
         return None
 
 
@@ -202,4 +237,6 @@ class SavedItemSerializer(serializers.Serializer):
     saved_at = serializers.DateTimeField()
     mod = ProjectCardSerializer(allow_null=True)
     skin = SkinCardSerializer(allow_null=True)
+    server = ServerCardSerializer(allow_null=True)
+    pack = PackCardSerializer(allow_null=True)
     collection = CollectionSerializer(allow_null=True)

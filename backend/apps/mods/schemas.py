@@ -78,6 +78,7 @@ class ModrinthVersion(BaseModel):
     game_versions: list[str] = Field(default_factory=list)
     loaders: list[str] = Field(default_factory=list)
     date_published: datetime
+    changelog: str | None = None
     files: list[VersionFile] = Field(default_factory=list)
     dependencies: list[Dependency] = Field(default_factory=list)
 

@@ -1,9 +1,12 @@
 from django.contrib.contenttypes.prefetch import GenericPrefetch
-from django.db.models import Exists, OuterRef, Prefetch, Q, QuerySet, Subquery
+from django.db.models import Count, Exists, OuterRef, Prefetch, Q, QuerySet, Subquery
 from django.http import Http404
 
 from apps.core.kinds import Kind, Viewer
 from apps.mods.models import Project
+from apps.packs.models import Pack
+from apps.packs.selectors import with_preview as packs_with_preview
+from apps.servers.models import Server
 from apps.skins.models import Skin
 
 from .models import Collection, CollectionItem, Favorite
@@ -65,6 +68,10 @@ def items_of(collection: Collection) -> QuerySet[CollectionItem]:
         [
             Project.objects.prefetch_related("categories"),
             Skin.objects.select_related("author"),
+            Server.objects.select_related("author"),
+            packs_with_preview(
+                Pack.objects.select_related("author").annotate(mods_count=Count("items"))
+            ),
             Collection.objects.all(),
         ],
     )

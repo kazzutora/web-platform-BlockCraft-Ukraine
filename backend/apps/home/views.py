@@ -39,6 +39,7 @@ class HomeView(APIView):
                 if personal
                 else selectors.for_you(viewer=viewer),
             },
+            "packs": selectors.popular_packs(viewer=viewer),
             "skin_of_week": selectors.skin_of_week(viewer=viewer),
             "servers_online": online,
             "new_skins": selectors.new_skins(viewer=viewer),
@@ -69,6 +70,7 @@ class TopView(APIView):
             "kind": kind,
             "period": period,
             "mods": items if kind == "mod" else [],
+            "packs": items if kind == "pack" else [],
             "skins": items if kind == "skin" else [],
             "servers": items if kind == "server" else [],
         }

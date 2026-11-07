@@ -12,7 +12,7 @@ GROUP_LIMIT = 5
 PAGE_SIZE = 24
 BATCH = 1000
 #: Order of groups in the results: what players look for most comes first
-KIND_ORDER = ["mod", "skin", "server", "collection"]
+KIND_ORDER = ["mod", "pack", "skin", "server", "collection"]
 
 ClientFactory = Callable[[], MeiliClient]
 

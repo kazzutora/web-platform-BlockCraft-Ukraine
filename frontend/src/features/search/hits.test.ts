@@ -25,6 +25,7 @@ describe("search hits", () => {
     expect(hitHref({ kind: "skin", id: "7" })).toBe("/skins/7");
     expect(hitHref({ kind: "server", id: "sich" })).toBe("/servers/sich");
     expect(hitHref({ kind: "collection", id: "3" })).toBe("/c/3");
+    expect(hitHref({ kind: "pack", id: "sich" })).toBe("/packs/sich");
   });
 
   it("describe themselves in one line", () => {
@@ -34,5 +35,14 @@ describe("search hits", () => {
       hitMeta({ ...base, kind: "server", address: "play.sich.ua", modes: ["survival", "rp"] }),
     ).toBe("play.sich.ua · Виживання, Рольова гра");
     expect(hitMeta({ ...base, kind: "collection", items_count: 3 })).toBe("Колекція · 3 елементи");
+    expect(
+      hitMeta({
+        ...base,
+        kind: "pack",
+        loaders: ["neoforge"],
+        latest_game_version: "1.21.1",
+        items_count: 51,
+      }),
+    ).toBe("Зборка · 1.21.1 · NeoForge · 51 мод");
   });
 });

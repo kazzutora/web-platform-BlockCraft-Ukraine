@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 
 import { Container } from "@/components/layout/Container";
 import { Tabs } from "@/components/ui/Tabs";
+import { packsCopy } from "@/features/packs/copy";
+import { MyPacks } from "@/features/packs/MyPacks";
 import { serversCopy } from "@/features/servers/copy";
 import { MyServers } from "@/features/servers/MyServers";
 import { skinsCopy } from "@/features/skins/copy";
@@ -20,6 +22,7 @@ export default function MyWorksPage() {
         items={[
           { value: "skins", label: skinsCopy.title, content: <MySkins /> },
           { value: "servers", label: serversCopy.title, content: <MyServers /> },
+          { value: "packs", label: packsCopy.title, content: <MyPacks /> },
         ]}
       />
     </Container>

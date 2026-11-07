@@ -3,6 +3,9 @@ import pytest
 from apps.library.models import Collection, Favorite
 from apps.mods.models import Project
 from apps.mods.tests.factories import ProjectFactory
+from apps.packs.tests.factories import PackFactory, add, mod
+from apps.servers import status
+from apps.servers.tests.factories import ServerFactory, online
 
 from .factories import CollectionFactory
 
@@ -81,3 +84,20 @@ def test_saved_skips_projects_that_were_hidden(auth_client):
     Project.objects.filter(pk=project.pk).update(status=Project.Status.HIDDEN)
 
     assert auth_client.get("/api/v1/me/saved").json()["count"] == 0
+
+
+def test_saved_servers_and_packs_have_their_cards(auth_client):
+    server = ServerFactory(name="Січ")
+    pack = PackFactory(title="Техно")
+    add(pack, mod(slug="create"))
+    favorite(auth_client, kind="server", identifier=server.slug)
+    favorite(auth_client, kind="pack", identifier=pack.slug)
+    status.store({server.pk: online(players=7)})
+
+    servers = auth_client.get("/api/v1/me/saved", {"kind": "server"}).json()["results"]
+    packs = auth_client.get("/api/v1/me/saved", {"kind": "pack"}).json()["results"]
+
+    assert servers[0]["server"]["name"] == "Січ"
+    assert servers[0]["server"]["live"]["players_online"] == 7
+    assert (packs[0]["pack"]["title"], packs[0]["pack"]["mods_count"]) == ("Техно", 1)
+    assert packs[0]["server"] is None

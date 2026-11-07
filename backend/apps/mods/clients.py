@@ -1,10 +1,13 @@
 """Modrinth API v2 client. Call it only from Celery tasks and management commands."""
 
+import io
 import json
 import logging
 import time
+import zipfile
 from collections.abc import Callable, Iterable
 from typing import Any, Self
+from urllib.parse import urlsplit
 
 import httpx
 from django.conf import settings
@@ -15,6 +18,9 @@ from .schemas import ModrinthCategory, ModrinthProject, ModrinthVersion, SearchR
 logger = logging.getLogger(__name__)
 
 BASE_URL = "https://api.modrinth.com/v2"
+CDN_HOST = "cdn.modrinth.com"
+# zipfile reads in small steps; one range request per 256 KB keeps it to a few calls
+RANGE_CHUNK = 256 * 1024
 MAX_RETRY_DELAY = 60.0
 
 _projects = TypeAdapter(list[ModrinthProject])
@@ -142,3 +148,63 @@ class ModrinthClient:
 
     def get_categories(self) -> list[ModrinthCategory]:
         return _categories.validate_python(self._get("/tag/category"))
+
+    def _range(self, url: str, start: int, end: int) -> bytes:
+        try:
+            response = self._client.get(url, headers={"Range": f"bytes={start}-{end}"})
+        except httpx.TransportError as error:
+            raise ModrinthError(f"GET {url}: {error}") from error
+        if response.status_code == 404:
+            raise ModrinthNotFoundError(f"GET {url}: not found")
+        if response.status_code != 206:
+            # A 200 would be the whole file: modpacks with configs weigh hundreds of MB
+            raise ModrinthError(f"GET {url}: HTTP {response.status_code} to a range request")
+        return response.content
+
+    def read_zip_member(self, url: str, *, size: int, name: str, max_bytes: int) -> bytes:
+        """One file of a zip on Modrinth's CDN, read with HTTP ranges, never the whole archive.
+
+        Raises zipfile.BadZipFile or KeyError when the archive is broken or lacks `name`.
+        """
+        if urlsplit(url).hostname != CDN_HOST:
+            raise ModrinthError(f"{url}: not a Modrinth CDN file")
+        remote = io.BufferedReader(
+            _RangeReader(lambda start, end: self._range(url, start, end), size),
+            buffer_size=RANGE_CHUNK,
+        )
+        with zipfile.ZipFile(remote) as archive:
+            if archive.getinfo(name).file_size > max_bytes:
+                raise ModrinthError(f"{url}: {name} is larger than {max_bytes} bytes")
+            return archive.read(name)
+
+
+class _RangeReader(io.RawIOBase):
+    """A seekable read-only remote file; zipfile only reads the directory and one member."""
+
+    def __init__(self, fetch: Callable[[int, int], bytes], size: int) -> None:
+        self._fetch = fetch
+        self._size = size
+        self._position = 0
+
+    def readable(self) -> bool:
+        return True
+
+    def seekable(self) -> bool:
+        return True
+
+    def tell(self) -> int:
+        return self._position
+
+    def seek(self, offset: int, whence: int = io.SEEK_SET) -> int:
+        base = {io.SEEK_SET: 0, io.SEEK_CUR: self._position, io.SEEK_END: self._size}[whence]
+        self._position = max(0, base + offset)
+        return self._position
+
+    def readinto(self, buffer) -> int:
+        end = min(self._position + len(buffer), self._size)
+        if end <= self._position:
+            return 0
+        data = self._fetch(self._position, end - 1)
+        buffer[: len(data)] = data
+        self._position += len(data)
+        return len(data)

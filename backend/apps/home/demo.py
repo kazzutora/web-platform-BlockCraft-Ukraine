@@ -21,6 +21,8 @@ from apps.accounts.models import User
 from apps.core import publishing
 from apps.library import services as library
 from apps.mods.models import Project
+from apps.packs import services as packs
+from apps.packs.models import Pack
 from apps.servers.models import Server, ServerSnapshot
 from apps.servers.services import create_server
 from apps.skins import services as skins
@@ -101,6 +103,7 @@ class Summary:
     collections: int = 0
     reviews: int = 0
     comments: int = 0
+    packs: int = 0
 
 
 def _email(nickname: str) -> str:
@@ -296,6 +299,71 @@ def _library_and_social(
     return summary
 
 
+PACKS = [
+    ("Для слабкого ПК", "Більше кадрів на старому ноутбуці.", ["performance", "lightweight"]),
+    ("Ванілла з друзями", "Та сама гра, тільки зручніша.", ["vanilla-plus", "multiplayer"]),
+    ("Техно-виживання", "Механізми, конвеєри й автоматизація.", ["tech", "survival"]),
+    ("Пригоди й підземелля", "Нові структури, боси й лут.", ["adventure"]),
+]
+PACK_TARGETS = [
+    ("1.21.1", "fabric"),
+    ("26.3", "fabric"),
+    ("1.21.1", "neoforge"),
+    ("1.20.1", "forge"),
+]
+INSTALL = (
+    "1. Завантаж `.mrpack`.\n"
+    "2. Відкрий Modrinth App або Prism Launcher → «Додати» → «Імпорт».\n"
+    "3. Грай!"
+)
+
+
+def _packs(rng: random.Random, players: list[User]) -> list[Pack]:
+    """Packs of real catalog files; none when Modrinth was never synced (no files to pick)."""
+    made = []
+    for (title, summary, styles), author in zip(
+        PACKS, rng.sample(players, len(PACKS)), strict=False
+    ):
+        for game_version, loader in PACK_TARGETS:
+            fitting = list(
+                Project.objects.published()
+                .filter(
+                    project_type="mod",
+                    versions__game_versions__contains=[game_version],
+                    versions__loaders__contains=[loader],
+                )
+                .distinct()
+                .order_by("-modrinth_downloads")[:30]
+            )
+            if len(fitting) >= 4:
+                break
+        else:
+            return made
+        pack = packs.create_pack(
+            author=author,
+            data={
+                "title": title,
+                "summary": summary,
+                "style_tags": styles,
+                "game_version": game_version,
+                "loader": loader,
+                "install_md": INSTALL,
+                "ram_min_gb": rng.choice([4, 6, 8]),
+            },
+        )
+        for project in rng.sample(fitting, min(len(fitting), rng.randint(4, 8))):
+            if not pack.items.filter(project=project).exists():
+                packs.add_item(pack=pack, user=author, project_slug=project.slug)
+        publishing.set_status(pack, Pack.Status.PUBLISHED)
+        for reviewer in rng.sample([p for p in players if p != author], 2):
+            stars, text = rng.choice(REVIEWS)
+            social.upsert_review(
+                user=reviewer, kind="pack", identifier=pack.slug, stars=stars, text=text
+            )
+        made.append(pack)
+    return made
+
+
 DEMO_MODS = [
     ("demo-fast-render", "Швидкий рендер", "mod", "Більше FPS без зміни вигляду гри."),
     ("demo-mini-map", "Мінікарта", "mod", "Карта в кутку екрана й мітки шляху."),
@@ -333,6 +401,7 @@ def create(*, seed: int = 42) -> Summary:
     made_skins = _skins(rng, players)
     servers = _servers(rng, players)
     summary = _library_and_social(rng, players, made_skins, servers)
+    summary.packs = len(_packs(rng, players))
     social.recalc_scores()
     social.recalc_trends()
     summary.users, summary.skins, summary.servers = len(players), len(made_skins), len(servers)

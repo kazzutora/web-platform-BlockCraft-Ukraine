@@ -3,18 +3,24 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { FilterChip } from "@/components/ui/FilterChip";
 import { FilterRow } from "@/components/ui/FilterRow";
 import { ModCard } from "@/features/mods/ModCard";
+import { PackCard } from "@/features/packs/PackCard";
 import { ServerRow } from "@/features/servers/ServerRow";
 import { SkinCard } from "@/features/skins/SkinCard";
 import { getServerClient } from "@/lib/api/server-client";
 
-export type TopKind = "mod" | "skin" | "server";
+export type TopKind = "mod" | "pack" | "skin" | "server";
 export type TopPeriod = "week" | "month" | "all";
 
 export const topCopy = {
   title: "Топи",
   kindLabel: "Розділ",
   periodLabel: "Період",
-  kinds: { mod: "Моди", skin: "Скіни", server: "Сервери" } satisfies Record<TopKind, string>,
+  kinds: {
+    mod: "Моди",
+    pack: "Зборки",
+    skin: "Скіни",
+    server: "Сервери",
+  } satisfies Record<TopKind, string>,
   periods: { week: "Тиждень", month: "Місяць", all: "Увесь час" } satisfies Record<
     TopPeriod,
     string
@@ -34,7 +40,8 @@ function href(kind: TopKind, period: TopPeriod): string {
 export async function TopList({ kind, period }: { kind: TopKind; period: TopPeriod }) {
   const client = await getServerClient();
   const { data } = await client.GET("/api/v1/top", { params: { query: { kind, period } } });
-  const empty = !data || !(data.mods.length || data.skins.length || data.servers.length);
+  const empty =
+    !data || !(data.mods.length || data.packs.length || data.skins.length || data.servers.length);
 
   return (
     <div className="flex flex-col gap-10">
@@ -69,9 +76,13 @@ export async function TopList({ kind, period }: { kind: TopKind; period: TopPeri
             ? data.mods.map((project, index) => (
                 <ModCard key={project.slug} project={project} eager={index < 4} />
               ))
-            : data.skins.map((skin, index) => (
-                <SkinCard key={skin.id} skin={skin} eager={index < 4} />
-              ))}
+            : kind === "pack"
+              ? data.packs.map((pack, index) => (
+                  <PackCard key={pack.slug} pack={pack} eager={index < 4} />
+                ))
+              : data.skins.map((skin, index) => (
+                  <SkinCard key={skin.id} skin={skin} eager={index < 4} />
+                ))}
         </CardGrid>
       )}
     </div>

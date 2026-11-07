@@ -4,6 +4,7 @@ import respx
 
 from apps.library.tests.factories import CollectionFactory
 from apps.mods.tests.factories import CategoryFactory, ProjectFactory
+from apps.packs.tests.factories import PackFactory, add, mod
 from apps.search import documents, services, signals
 from apps.search.client import MeiliClient, SearchUnavailableError
 from apps.servers.tests.factories import ServerFactory
@@ -117,6 +118,23 @@ def test_server_and_skin_documents():
     )
 
 
+def test_pack_document_is_found_by_the_mods_inside():
+    pack = PackFactory(title="Техно Січ", style_tags=["tech"], loader="neoforge")
+    add(pack, mod(title="Create"))
+    draft = PackFactory(status="draft")
+
+    doc = documents.document_for("pack", pack.pk)
+
+    assert doc["tags"] == ["tech", "Create"]
+    assert (doc["loaders"], doc["latest_game_version"], doc["items_count"]) == (
+        ["neoforge"],
+        "26.3",
+        1,
+    )
+    assert doc["author"] == pack.author.nickname
+    assert documents.document_for("pack", draft.pk) is None
+
+
 # Indexing
 
 
@@ -204,6 +222,7 @@ def test_search_groups_results_by_kind():
     queries = fake.calls[-1][1]
     assert [q["filter"] for q in queries] == [
         'kind = "mod"',
+        'kind = "pack"',
         'kind = "skin"',
         'kind = "server"',
         'kind = "collection"',
@@ -243,7 +262,7 @@ def test_search_endpoint(api_client, monkeypatch):
     assert body["q"] == "sodim"
     assert body["groups"][0]["results"][0]["title"] == "Sodium"
     assert api_client.get("/api/v1/search").status_code == 400
-    assert api_client.get("/api/v1/search", {"q": "x", "kind": "pack"}).status_code == 400
+    assert api_client.get("/api/v1/search", {"q": "x", "kind": "world"}).status_code == 400
 
 
 @respx.mock

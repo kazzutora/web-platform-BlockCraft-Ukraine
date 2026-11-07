@@ -15,6 +15,8 @@ export function hitHref(hit: Pick<SearchHit, "kind" | "id">): string {
       return `/skins/${id}`;
     case "server":
       return `/servers/${id}`;
+    case "pack":
+      return `/packs/${id}`;
     default:
       return `/c/${id}`;
   }
@@ -33,6 +35,15 @@ export function hitMeta(hit: SearchHit): string {
     }
     case "skin":
       return [kinds.skin, hit.author].filter(Boolean).join(" · ");
+    case "pack":
+      return [
+        kinds.pack,
+        hit.latest_game_version,
+        hit.loaders.map(loaderName).join(", "),
+        hit.items_count ? plural(hit.items_count, searchCopy.mods) : "",
+      ]
+        .filter(Boolean)
+        .join(" · ");
     case "server":
       return [
         hit.address,

@@ -39,6 +39,15 @@ export const queryKeys = {
     verification: (slug: string) => [...queryKeys.servers.all, "verification", slug] as const,
     mine: () => [...queryKeys.servers.all, "mine"] as const,
   },
+  packs: {
+    all: ["packs"] as const,
+    catalog: (query: object) => [...queryKeys.packs.all, "catalog", query] as const,
+    detail: (slug: string) => [...queryKeys.packs.all, "detail", slug] as const,
+    mine: () => [...queryKeys.packs.all, "mine"] as const,
+    search: (query: object) => [...queryKeys.packs.all, "search", query] as const,
+    /** Mutation key of «add a mod», to show the rows still being saved. */
+    adding: (slug: string) => [...queryKeys.packs.all, "adding", slug] as const,
+  },
   social: {
     reviews: (kind: string, id: string, sort: string) =>
       ["social", "reviews", kind, id, sort] as const,

@@ -22,6 +22,7 @@ def export(user: User) -> dict:
     from apps.library.models import Collection, Download, Favorite
     from apps.moderation.models import Report
     from apps.notifications.models import Notification
+    from apps.packs.models import Pack
     from apps.servers.models import Server
     from apps.skins.models import Skin
     from apps.social.models import Comment, Like, Review
@@ -86,6 +87,17 @@ def export(user: User) -> dict:
             {"slug": s.slug, "name": s.name, "address": s.address, "status": s.status}
             for s in Server.objects.filter(author=user)
         ],
+        "packs": [
+            {
+                "slug": p.slug,
+                "title": p.title,
+                "status": p.status,
+                "game_version": p.game_version,
+                "loader": p.loader,
+                "mods": [item.project.slug for item in p.items.all()],
+            }
+            for p in Pack.objects.filter(author=user).prefetch_related("items__project")
+        ],
         "downloads": [
             {
                 "mod": d.project.slug,
@@ -140,6 +152,8 @@ def anonymize(user: User) -> None:
 def delete(user: User) -> None:
     """Everything goes; counters of other people's objects are fixed afterwards."""
     from apps.library.models import Favorite
+    from apps.packs.models import Pack
+    from apps.packs.services import recount_forks
     from apps.social.models import Comment, Like, Review
     from apps.social.services import recount_targets
 
@@ -150,8 +164,14 @@ def delete(user: User) -> None:
         # Replies of others to this player's comments go with them
         *Comment.objects.filter(user=user).values_list("content_type_id", "object_id"),
     ]
+    forked = set(
+        Pack.objects.filter(author=user, forked_from__isnull=False).values_list(
+            "forked_from_id", flat=True
+        )
+    )
     _sign_out_everywhere(user)
     if user.avatar:
         user.avatar.delete(save=False)
     user.delete()
     recount_targets(set(rows))
+    recount_forks(forked)

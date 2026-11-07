@@ -8,6 +8,7 @@ from django.db.models import Model, QuerySet
 from apps.core.versions import latest_release
 from apps.library.models import Collection
 from apps.mods.models import Project
+from apps.packs.models import Pack
 from apps.servers.models import Server
 from apps.skins.models import Skin
 
@@ -112,6 +113,29 @@ def server_document(server: Server) -> dict:
     )
 
 
+def pack_document(pack: Pack) -> dict:
+    items = list(pack.items.all())
+    image = pack.cover.url if pack.cover else pack.icon_url or None
+    return _base(
+        "pack",
+        pack.slug,
+        pack,
+        title=pack.title,
+        summary=pack.summary,
+        # «зборка з Create» finds packs by the mods inside
+        tags=[*pack.style_tags, *(item.project.title for item in items[:60])],
+        game_versions=[pack.game_version],
+        loaders=[pack.loader],
+        popularity=pack.downloads_count
+        + 10 * (pack.favorites_count + pack.rating_count)
+        + pack.modrinth_downloads // 1000,
+        author=pack.author.nickname,
+        image=image,
+        latest_game_version=pack.game_version,
+        items_count=len(items),
+    )
+
+
 def collection_document(collection: Collection) -> dict:
     return _base(
         "collection",
@@ -135,6 +159,12 @@ class Source:
 SOURCES: dict[str, Source] = {
     "mod": Source(lambda: Project.objects.published().prefetch_related("categories"), mod_document),
     "skin": Source(lambda: Skin.objects.published().select_related("author"), skin_document),
+    "pack": Source(
+        lambda: (
+            Pack.objects.published().select_related("author").prefetch_related("items__project")
+        ),
+        pack_document,
+    ),
     "server": Source(lambda: Server.objects.published().select_related("author"), server_document),
     "collection": Source(
         lambda: Collection.objects.filter(

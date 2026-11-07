@@ -148,7 +148,7 @@ blockcraft/
 
 ### 6.4 packs — v1 WIP етапу 10: доробити
 
-- `Pack` (TimeStamped, Engagement): `origin` (`modrinth` / `community`), `title`, `slug`, `summary`, `description_html`, `description_uk_html`, `icon_url` (для `modrinth`) або `cover` (згенерована мозаїка з іконок перших 4 елементів — Pillow у Celery; завантаження обкладинки гравцем прибрати), `game_version`, `loader`, `loader_version`, `items_count`, `compat_status` (ok / warnings / errors / unknown), `compat_checked_at`, `compat_report` (JSON — останній `Resolution`).
+- `Pack` (TimeStamped, Engagement; v1 WIP `install_md` + `gpu_note` зливаються в `notes_md`, `style_tags` і `changelog_md` видаляються): `origin` (`modrinth` / `community`), `title`, `slug`, `summary`, `description_html`, `description_uk_html`, `icon_url` (для `modrinth`) або `cover` (згенерована мозаїка з іконок перших 4 елементів — Pillow у Celery; завантаження обкладинки гравцем прибрати), `game_version`, `loader`, `loader_version`, `items_count`, `compat_status` (ok / warnings / errors / unknown), `compat_checked_at`, `compat_report` (JSON — останній `Resolution`).
   - Для `origin=modrinth`: поля `Sourced` (`external_id` — id проєкту модпака), `modrinth_version_id`, `source_file_url`, `modrinth_downloads`.
   - Для `origin=community`: `author`, `status` (draft / published / hidden), `visibility` (private / link / public), `share_token` (16 символів), `forked_from`, `forks_count`, `ram_min_gb`, `notes_md` (поради автора).
 - `PackItem`: `pack`, `project`, `version` (nullable — коли джерело прибрало файл), `reason` (requested / dependency / implicit), `required_by` (Array slug-ів), `env_client`, `env_server` (required / optional / unsupported — для `.mrpack`), `position`. Unique `(pack, project)`.
@@ -186,7 +186,7 @@ blockcraft/
 
 - **moderation** — v1 `Report`, `Sanction`, `BannedWord`. Скарга на імпортований контент → модератор ставить `is_hidden`. Премодерація — лише для перекладів; решта (збірки, добірки, відгуки) — фільтр лексики + постмодерація. v1 `core.publishing` («перші 3 роботи на модерації») і роль `trusted` — видалити, якщо після R0.4 вони більше ніде не потрібні.
 - **notifications** — типи v2: `translation_published`, `translation_rejected`, `review_on_your_pack`, `review_on_your_server`, `review_reply`, `server_verified`, `pack_attention` (у збірці щось стало недоступним або з'явилися оновлення), `hidden`, `restored`, `warning`.
-- **accounts** — v1. `GameProfile` = «Моя гра» (`game_version` → `GameVersion`, `loader`, `edition`). `xp`, `level`, `published_count` — видалити.
+- **accounts** — v1. `GameProfile` = «Моя гра» (`game_version` → `GameVersion`, `loader`, `edition`). `xp`, `level`, `published_count`, `interests`, роль `trusted` — видалити (R0.4).
 
 ---
 
@@ -396,7 +396,7 @@ Resolution {
 | `/sources` | SSR | «Звідки дані» |
 | `/welcome`, `/login`, `/register`, `/password-reset`, `/rules`, `/privacy`, `/dev/ui` | як у v1 | |
 
-v1: `/skins/new`, `/create`, `/me/works` — видалити (`/me/works` → `/me` + `/me/packs`).
+v1: `/skins/new`, `/create` — видалити; `/me/works` → `/me/packs` у R0.4 (збірки + сервери), `/me` з трьома блоками — R7.4.
 
 ### 10.2 «Моя гра»
 - `GameChip` у шапці: «1.21.1 · Fabric ▾» → поповер: версія (з `/meta`) + лоадер; «Не знаю свою версію» → коротка підказка.

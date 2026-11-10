@@ -2,6 +2,7 @@ import logging
 
 from celery import shared_task
 from django.conf import settings
+from django.db.models import Q
 
 from apps.accounts.models import User
 from apps.core import jobs
@@ -12,7 +13,7 @@ from apps.sources.runs import sync_run
 from apps.sources.services import supported_game_versions
 
 from . import importers, services
-from .models import ProjectType
+from .models import Project, ProjectType
 
 logger = logging.getLogger(__name__)
 
@@ -94,3 +95,23 @@ def import_project(*, job_id: str, slug: str, user_id: int | None = None) -> str
         },
     )
     return project.slug
+
+
+@shared_task(
+    name="mods.import_missing", autoretry_for=(ModrinthError,), max_retries=2, retry_backoff=10
+)
+def import_missing(ids: list[str]) -> int:
+    """Dependencies the compatibility engine did not find (ids, or slugs of shader engines).
+
+    What Modrinth does not return either is marked unavailable, so pages stop waiting.
+    """
+    from apps.compat.services import mark_unavailable
+
+    with ModrinthClient() as client:
+        imported = services.import_missing(
+            client=client, modrinth_ids=ids, game_versions=supported_game_versions()
+        )
+    found = Project.objects.filter(Q(external_id__in=ids) | Q(slug__in=ids))
+    known = {value for row in found.values_list("external_id", "slug") for value in row}
+    mark_unavailable(set(ids) - known)
+    return imported

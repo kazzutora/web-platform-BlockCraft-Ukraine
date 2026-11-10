@@ -17,6 +17,7 @@
   --primary-bg: #1c1b18; /* primary button */
   --primary-fg: #f4f1ea;
   --danger: #b3402f;
+  --warning: #8a5a00; /* amber for CompatStatus: 5.2:1 on --bg, 5.6:1 on --surface */
 
   /* section marks, only in chips */
   --tag-mods: #4f7a34;
@@ -52,4 +53,5 @@
   --primary-bg: #edeae3;
   --primary-fg: #121211;
   --danger: #e06a55;
+  --warning: #e0a84a; /* 8.8:1 on --bg */
 }

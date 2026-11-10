@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     "apps.library",
     "apps.social",
     "apps.mods",
+    "apps.compat",
     "apps.skins",
     "apps.servers",
     "apps.packs",
@@ -216,6 +217,7 @@ REST_FRAMEWORK = {
         "lookup": "30/min",
         "copy_ip": "60/hour",
         "game": "120/hour",
+        "compat": "30/min",
         # The pack constructor saves every added or removed mod
         "pack_edits": "600/hour",
     },
@@ -246,6 +248,11 @@ SPECTACULAR_SETTINGS = {
         "NotificationTypeEnum": "apps.notifications.models.Notification.Type",
         "ProjectSideEnum": "apps.mods.models.Side",
         "JobStatusEnum": ["queued", "running", "done", "failed"],
+        "CompatWarningCodeEnum": "apps.compat.serializers.WARNING_CODES",
+        "CompatReasonEnum": ["requested", "dependency", "implicit"],
+        "ReasonEnum": "apps.moderation.models.Report.Reason",
+        "CompatItemStatusEnum": ["ok", "no_version", "pinned_incompatible", "mod_needs_loader"],
+        "CompatStatusEnum": ["ok", "warnings", "errors", "incomplete"],
     },
 }
 

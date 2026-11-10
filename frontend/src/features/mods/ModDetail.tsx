@@ -14,8 +14,13 @@ import { versionDescending } from "@/lib/versions";
 
 import { getProject, getSimilar, getVersions } from "./api";
 import { modsCopy } from "./copy";
-import { DependenciesList } from "./DependenciesList";
-import { DownloadAction } from "./DownloadAction";
+import { ButtonLink } from "@/components/ui/ButtonLink";
+import { TakeButton } from "@/components/ui/TakeButton";
+import { getInstall } from "@/features/compat/api";
+import { compatCopy } from "@/features/compat/copy";
+import { ResolutionView, targetLabel } from "@/features/compat/ResolutionView";
+
+import { downloadUrl } from "./api";
 import { formatCount, formatDate, mainLoadersOf } from "./format";
 import { ModCard } from "./ModCard";
 import { ModGallery } from "./ModGallery";
@@ -41,12 +46,17 @@ export async function ModDetail({ slug, searchParams }: ModDetailProps) {
   if (!project) notFound();
 
   const target = downloadTarget(project, searchParams, profile);
-  const [versions, allVersions, similar] = await Promise.all([
+  const [versions, allVersions, similar, resolution] = await Promise.all([
     getVersions(slug, target.gameVersion, target.loader),
     getVersions(slug, "", ""),
     getSimilar(slug),
+    getInstall(slug, target),
   ]);
-  const pickerVersions = project.game_versions
+  const own = resolution?.items.find((item) => item.project.slug === slug);
+  const label = resolution ? targetLabel(resolution.target) : target.label;
+  const nearest = own?.nearest_game_versions[0];
+  // The project's versions plus «Моя гра», so the picker shows what the page is about
+  const pickerVersions = [...new Set([...project.game_versions, target.gameVersion])]
     .filter((version) => supportedVersions.includes(version))
     .sort(versionDescending);
   const meta = [
@@ -77,7 +87,34 @@ export async function ModDetail({ slug, searchParams }: ModDetailProps) {
                 loader={target.loader}
               />
             )}
-            <DownloadAction slug={slug} target={target} versions={versions} />
+            {own?.version ? (
+              <TakeButton
+                external
+                href={downloadUrl(slug, {
+                  game_version: resolution?.target.game_version,
+                  loader: resolution?.target.loader,
+                  version: own.version.id,
+                })}
+              >
+                {compatCopy.downloadFor(label)}
+              </TakeButton>
+            ) : nearest ? (
+              <TakeButton
+                fallback
+                icon="chevron-right"
+                href={`?${new URLSearchParams({ game_version: nearest, loader: resolution?.target.loader ?? "" })}`}
+              >
+                {compatCopy.nearestButton(nearest)}
+              </TakeButton>
+            ) : (
+              <p role="status" className="border border-line p-4 text-sm">
+                {!resolution
+                  ? compatCopy.error
+                  : own?.status === "mod_needs_loader"
+                    ? `${compatCopy.item.mod_needs_loader}. ${compatCopy.changeGame}`
+                    : compatCopy.noFiles}
+              </p>
+            )}
           </div>
         }
         secondaryActions={
@@ -90,6 +127,15 @@ export async function ModDetail({ slug, searchParams }: ModDetailProps) {
               className="h-12"
             />
             <AddToCollection kind="mod" id={project.slug} />
+            {project.project_type !== "datapack" && (
+              <ButtonLink
+                href={`/packs/new?items=${encodeURIComponent(project.slug)}`}
+                variant="ghost"
+                size="lg"
+              >
+                {compatCopy.makePack}
+              </ButtonLink>
+            )}
             <SourceBadge
               {...project.source}
               label={copy.source(project.title, project.source.name)}
@@ -98,6 +144,7 @@ export async function ModDetail({ slug, searchParams }: ModDetailProps) {
             <ReportButton kind="mod" id={project.slug} />
           </>
         }
+        aside={resolution ? <ResolutionView resolution={resolution} /> : null}
         tabsLabel={copy.tabsLabel}
         tabs={[
           {
@@ -128,11 +175,6 @@ export async function ModDetail({ slug, searchParams }: ModDetailProps) {
                 all={allVersions?.versions ?? []}
               />
             ),
-          },
-          {
-            value: "dependencies",
-            label: copy.tabs.dependencies,
-            content: <DependenciesList dependencies={versions?.dependencies ?? []} />,
           },
           {
             value: "reviews",

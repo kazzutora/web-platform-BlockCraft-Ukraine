@@ -299,8 +299,8 @@ blockcraft/
 - `Target(game_version, loader)`, `loader` ∈ fabric / forge / neoforge / quilt / vanilla.
 - `requests: [(project, pinned_version_id | None)]`.
 - `rules.py` (усе, що є «знанням про Minecraft», — тут, з тестами):
-  - **Які лоадери версії приймає ціль:** fabric → {fabric}; quilt → {quilt, fabric}; forge → {forge}; neoforge → {neoforge} (+ forge лише для 1.20.1); vanilla → моди заборонені (`mod_needs_loader`).
-  - **Типи без лоадера-моду:** resourcepack → версії з `loaders ∋ minecraft`; datapack → `loaders ∋ datapack`; shader → `loaders ∩ {iris, optifine, canvas, vanilla}`.
+  - **Які лоадери версії приймає ціль:** fabric → {fabric}; quilt → {quilt, fabric}; forge → {forge}; neoforge → {neoforge} (+ forge лише для 1.20.1); vanilla → лише файли `datapack` (мод, що постачається й датапаком, як Terralith), інакше `mod_needs_loader` (R3.1, див. журнал).
+  - **Типи без лоадера-моду:** resourcepack → версії з `loaders ∩ {minecraft, vanilla}` (частина ресурспаків на Modrinth має `vanilla`); datapack → `loaders ∋ datapack`; shader → `loaders ∩ {iris, optifine, canvas, vanilla}`.
   - **Рушій шейдерів (неявна залежність):** iris на fabric / quilt / neoforge → мод `iris`; iris на forge → мод `oculus`; canvas на fabric → мод `canvas`; optifine → попередження `optifine_manual` (OptiFine немає на Modrinth); vanilla → нічого.
   - Перевірити правила на реальних даних у R3.1 і записати відхилення в журнал.
 

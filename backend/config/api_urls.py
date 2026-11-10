@@ -5,6 +5,7 @@ urlpatterns = [
     path("", include("apps.accounts.urls")),
     path("", include("apps.sources.urls")),
     path("", include("apps.mods.urls")),
+    path("", include("apps.compat.urls")),
     path("", include("apps.skins.urls")),
     path("", include("apps.servers.urls")),
     path("", include("apps.packs.urls")),

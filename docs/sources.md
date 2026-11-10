@@ -161,7 +161,7 @@
 
 ## Що це змінює в tech.md
 
-1. **Датапаки (R2.1).** Тип `datapack` визначаємо самі. Проєкт, знайдений через facet `project_type:datapack`, у якого `"datapack" ∈ all_project_types` (або `loaders`), записуємо з `project_type = datapack`. Проєкт, що одночасно мод і датапак (Terralith), лишається модом. Точне правило записати в R2.1 з тестом на `search_datapack.json`.
+1. **Датапаки (R2.1, правило записано).** Спайк 2026-11-09 (`project_datapack.json`, `project_terralith.json` і їхні версії): серед 30 найпопулярніших датапаків для 1.21.1 лише 5 «чистих», решта — моди з окремими файлами `.zip` з лоадером `datapack` (Terralith: файли для `neoforge`, `fabric` і `datapack`). `/project` теж дає `project_type: "mod"`, а `all_project_types` у ньому немає — тип визначаємо за `loaders`: усі лоадери ⊆ {`datapack`, `minecraft`} → `datapack`, інакше `mod`. Мод з лоадером `datapack` показується й у вкладці «Датапаки», а гравцеві без модів (`vanilla`) дістається його `.zip`.
 2. **Сервери (R5.2).**
    - Facet-и — у таблиці вище, країну фільтруємо в нас.
    - Мапінг `content`:

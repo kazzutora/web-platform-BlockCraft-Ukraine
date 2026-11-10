@@ -39,6 +39,15 @@ CATEGORY_NAMES_UK: dict[str, str] = {
     "items": "Предмети",
     "locale": "Переклади",
     "models": "Моделі",
+    # resource pack resolutions
+    "8x-": "8× і менше",
+    "16x": "16×",
+    "32x": "32×",
+    "48x": "48×",
+    "64x": "64×",
+    "128x": "128×",
+    "256x": "256×",
+    "512x+": "512× і більше",
     # shaders
     "cartoon": "Мультяшні",
     "fantasy": "Фентезі",

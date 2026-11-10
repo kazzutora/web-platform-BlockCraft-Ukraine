@@ -1,0 +1,261 @@
+{
+  "client_side": "optional",
+  "server_side": "required",
+  "game_versions": [
+    "1.19",
+    "1.19.1",
+    "1.19.2",
+    "1.19.3",
+    "1.20.1",
+    "1.21.1"
+  ],
+  "environment": [
+    "unknown"
+  ],
+  "id": "TiFXQSAQ",
+  "slug": "mysticmons",
+  "project_type": "mod",
+  "team": "loi77wPm",
+  "organization": null,
+  "title": "MysticMons",
+  "description": "This pack includes models and animations for Pokemon currently not available in the base mod. Also enables Legendaries to spawn in the wild",
+  "body": "<h1>This is an Add-On for Cobblemon.</h1>\n\nModels in this pack are made by either the Cobblemon Team, Myself or part of the [CobbleLand Server](https://modrinth.com/modpack/cobbleland-cobblemon-modpack)!\n\nFor any support required regarding the pack, please send a message [Here](https://discord.com/channels/934267676354834442/1113880159846678599)\n\n<h2>Pokemon I made </h2>\n\nModels: Axew, Fraxure, Haxorus, Dialga, Palkia, Zorua, Zoroark and Giratina\n\nTextures: Shiny Chikorita Line\n\n<h2>What Pokemon are currently in this pack:</h2>\n\nYveltal - Spawns in Dark Forests at night\n\nBuzzwole - Spawns in Swamps\n\nVictini - Savannas\n\nMarshadow - Deep Dark\n\nMeloetta - Meadow and Sunflower Plains\n\nJirachi - The End, Mountain and Hills Biomes\n\nMew - Floral and Jungle Biomes during Noon\n\nBronzor & Bronzong - Caves, Dark Forest (Any time) and Mountains (Night)\n\nMoltres - Badlands Biomes (morning to noon)\n\nArticuno - Ice Spikes\n\nZapdos - Plateau Biomes\n\nMewtwo - Anywhere in the world during the Afternoon\n\nRayquaza - Sunflower Plains during the day and clear skies\n\nXerneas - Flower Forests (Morning)\n\nPoipole, Naganadel - Mangrove Swamps\n\nWalking Wake - Beach and Coast Biomes during the morning\n\nIron Leaves - Floral Biomes and The End\n\nGiratina - The End\n\nPawniard and Bisharp - Plateau, and Mountain biomes\n\nDialga - Peak Biomes\n\nPalkia - Beaches/Lukewarm Oceans during clear skies\n\nAxew, Fraxure, Haxorus - Mountains/Highlands\n\nUxie/Mesprit/Azelf - River Biome\n\nRegirock - Desert Biome\n\nRegisteel - Jagged Peaks Biome\n\nRegigigas - Stony Peaks Biome\n\nRellor/Rabsca - Jungle Biomes\n\nTapu Koko, Lele, Fini, Bulu - Spawns in the Jungle and Forests\n\nCosmog - Spawns in Floral Biomes\n\nCosmoem - Spawns in Floral Biomes\n\nSolgaleo - Spawns in Badlands and Savannas in the mornings\n\nLunala - Spawns in the End and Dark Forests at night\n\nNecrozma - Spawns in the End and Dark Forests at night\n\nUltra Necrozma - Evolves from Necromza at lvl 80\n\nYungoos/Gumshoos - Spawns in Plains Biomes\n\nMagearna - Spawns in Forest Biomes\n\nCelebi - Spawns in Forest Biomes\n\nLatias/Latios - Spawns in Meadow, Peak and Beach Biomes\n\nTornadus - Plains and Desert Biomes\n\nThundurus - Spawns in Windswept Hills and Savanna Biomes\n\nLandorus - Spawns in Badlands, Plains, Windswept Savanna and Desert Biomes\n\nPheromosa - Spawns in Plains, Flower Forest, Sparse Jungle, Meadow Biomes and The End\n\nGuzzlord - Spawns in Swamp, Badlands, Deep Dark Biomes and The End\n\nStakataka - Spawns in Plains, Desert, Savanna, Badlands, Deep Dark Biomes and The End\n\n\n<h2>How to Install:</h2>\n\nWhen you download the datapack you will get a zip folder. This zip folder is **both** the resource pack and datapack. You dont have to unzip it or anything (unless u want to make changes) just keep it as is. This zip folder will go to two places, your datapack folder and your resourcepacks folder. \n\n# **How to install the Datapack**\n\n**Server Method:** If you want to install this on a server, the datapack folder is located in your `world` folder. (or whatever u use for ur main world) In this `world` folder you will see another folder called `datapacks` this is where u will place the MysticMons.zip folder. Then restart the server for it to take effect.\n\n**Single Player Method:**  Installing it in single player is a little different, you will need to go in ur `.minecraft` folder for this (if you dont know how, then simply google it `how to find my .minecraft folder`)  in here scroll until you see the `saves` folder. open that up, and it will list all ur worlds. Click the world u play on, and you will see a `datapacks` folder, place the MysticMons.zip folder in there.\n\nIf you use another launcher besides the regular minecraft, such as technic, instead of going to ur `.minecraft` folder, you would go into the `.technic` folder.\n\n# **How to install the Resourcepack:**\n\n**Server Method:** If you want to have this resource pack download automatically for all ur players, then you will have to create a server resource pack, im not gonna go in depth with this, u can simply watch this video: <https://www.youtube.com/watch?v=nDHJjx0N8PM> \n\n**Single Player Method:** Like i said before, the zip folder also acts as the resource pack. So when your in game, press `esc` on ur keyboard, bringing up the settings menu, in here go to `options` then click on resource packs, then click `open pack folder` then just place the MysticMons.zip folder in there, then go back to minecraft and **MOVE THE PACK TO THE RIGHT SO ITS UNDER `SELECTED`** so many miss this step, and thats why u only see the green  substitute dolls. \n\n**Legendary Spawn Rates and Conditions**\n\nEach legendary spawns in a specific biome at a specific time of day. I've listed it all out on the Modrinth page so please refer to that. They are set in the `ultra-rare` bucket with low weighting, meaning they are super rare to come across. If you would like to change this, or see what they are, just unzip the pack, do to the `data` folder then the `spawn-pool` folder, and click whatever pokemon u want to see. I dont know what the percentage is, so please dont ask me, i just know they are low. if you would like to make the legends less rare, either increase the weight, or place them in another bucket. \n\n**Legendary Spawn Message**\nBy default there is no message that spawns when a legendary spawns, it will act like any other pokemon. If you would like there to be a message for when a legend spawns then i recommend u contacting Pebbles for a paid mod that announces when a legend spawns, or try out tim's free mod: https://discord.com/channels/934267676354834442/1131728786082246747\n\n\nPlease send me a message via Discord @iMystxc#6923 if you run into any issues or have any suggestions!",
+  "body_url": null,
+  "published": "2023-06-01T05:11:34.021607Z",
+  "updated": "2025-02-16T02:04:25.916888Z",
+  "approved": "2023-06-02T03:29:19.889611Z",
+  "queued": "2023-06-01T05:30:19.091488Z",
+  "status": "approved",
+  "requested_status": "approved",
+  "moderator_message": null,
+  "license": {
+    "id": "MIT",
+    "name": "MIT License",
+    "url": null
+  },
+  "downloads": 5944308,
+  "followers": 323,
+  "categories": [
+    "mobs"
+  ],
+  "additional_categories": [
+    "game-mechanics",
+    "utility"
+  ],
+  "loaders": [
+    "datapack"
+  ],
+  "versions": [
+    "DStaRiO6",
+    "OE9BsgY2",
+    "k1rsAAtH",
+    "naU1HcaY",
+    "UjZgk2DK",
+    "cZr4jttF",
+    "68hfPMOA",
+    "jXqQAJ5F",
+    "pjG8LWUG",
+    "bmkfkgIg",
+    "Q3Af5iFw",
+    "Q8vHbhqz",
+    "DVlIFoO7",
+    "VVnLSrQR",
+    "OgaAllBB",
+    "u27jD2fW",
+    "zddv5Q9Z",
+    "fxMXG7Rj",
+    "n1gBFmIp"
+  ],
+  "icon_url": "https://cdn.modrinth.com/data/TiFXQSAQ/84cde575bb15f9a7b98668dacbba49bee773e4f6_96.webp",
+  "raw_icon_url": "https://cdn.modrinth.com/data/TiFXQSAQ/b496ee09dfa4cac7b3a93eebd003d50a1cbcdd89.png",
+  "issues_url": null,
+  "source_url": null,
+  "wiki_url": null,
+  "discord_url": "https://discord.com/channels/934267676354834442/1113880159846678599",
+  "donation_urls": [],
+  "gallery": [
+    {
+      "url": "https://cdn.modrinth.com/data/TiFXQSAQ/images/4178974aa2cb4ac93084b3aa5ce37abdabb17cc3_350.webp",
+      "raw_url": "https://cdn.modrinth.com/data/TiFXQSAQ/images/7950e43ea2c0172a492ec040ab73ba51b793e011.png",
+      "featured": false,
+      "title": "Yveltal making his appearance!",
+      "description": null,
+      "created": "2023-06-01T05:26:12.181599Z",
+      "ordering": 0
+    },
+    {
+      "url": "https://cdn.modrinth.com/data/TiFXQSAQ/images/da5cb77458eed9c2c67ea66f1f16625360659171_350.webp",
+      "raw_url": "https://cdn.modrinth.com/data/TiFXQSAQ/images/da5cb77458eed9c2c67ea66f1f16625360659171.png",
+      "featured": false,
+      "title": "Buzzwole making his presence known!",
+      "description": null,
+      "created": "2023-06-01T05:26:20.322155Z",
+      "ordering": 0
+    },
+    {
+      "url": "https://cdn.modrinth.com/data/TiFXQSAQ/images/ccc35a667b34fd35fa75d34b0f16604afe88e135_350.webp",
+      "raw_url": "https://cdn.modrinth.com/data/TiFXQSAQ/images/f0a1b5b00455d744c308c0e5bd21c0c6e004bcb8.png",
+      "featured": false,
+      "title": "The Trio lurking in the shadows",
+      "description": null,
+      "created": "2023-06-01T05:26:31.768036Z",
+      "ordering": 0
+    },
+    {
+      "url": "https://cdn.modrinth.com/data/TiFXQSAQ/images/39945d92a810d1ed884b87cc9eb60ac3247a076f_350.webp",
+      "raw_url": "https://cdn.modrinth.com/data/TiFXQSAQ/images/7723763f1bdcca613d2f1cee921cf72b03da8a89.png",
+      "featured": true,
+      "title": "Chikorita, Bayleef, and Meganium",
+      "description": null,
+      "created": "2023-06-02T06:52:19.307420Z",
+      "ordering": 0
+    },
+    {
+      "url": "https://cdn.modrinth.com/data/TiFXQSAQ/images/dba16680b32a878da11ea06b3a91bca6f36d006e_350.webp",
+      "raw_url": "https://cdn.modrinth.com/data/TiFXQSAQ/images/fc010744b8eec5dd9bbb6e561146f477d3b26680.png",
+      "featured": false,
+      "title": "Bronzor and Bronzong making their appearance ",
+      "description": null,
+      "created": "2023-06-10T22:50:03.412030Z",
+      "ordering": 0
+    },
+    {
+      "url": "https://cdn.modrinth.com/data/TiFXQSAQ/images/7d11a1bf603d2b9bbcd30bd58b2da97c37016330_350.webp",
+      "raw_url": "https://cdn.modrinth.com/data/TiFXQSAQ/images/b9671469c6c7eea5b8f3caeda7ee3e19c5b96a69.png",
+      "featured": false,
+      "title": "Poipole and Naganadel chilling",
+      "description": null,
+      "created": "2023-06-13T03:26:37.876786Z",
+      "ordering": 0
+    },
+    {
+      "url": "https://cdn.modrinth.com/data/TiFXQSAQ/images/785d619224a254d2030f5e66bff2b171ed865a97_350.webp",
+      "raw_url": "https://cdn.modrinth.com/data/TiFXQSAQ/images/8e8a3e5a2ee8c677f5f68068a6ea6d15b93347d7.png",
+      "featured": false,
+      "title": "Mewtwo in his natural habitat",
+      "description": null,
+      "created": "2023-06-13T03:27:01.872592Z",
+      "ordering": 0
+    },
+    {
+      "url": "https://cdn.modrinth.com/data/TiFXQSAQ/images/96b1313180f08c02e5bf16c0312d52dda41645e8_350.webp",
+      "raw_url": "https://cdn.modrinth.com/data/TiFXQSAQ/images/3138a413c38af383952917ec2625df0dfb2bfed3.png",
+      "featured": false,
+      "title": "Rayquaza enjoyin the breeze",
+      "description": null,
+      "created": "2023-06-13T03:27:17.397346Z",
+      "ordering": 0
+    },
+    {
+      "url": "https://cdn.modrinth.com/data/TiFXQSAQ/images/73f4b1cd164416eef51dbbe8b6ed013adbf5c178_350.webp",
+      "raw_url": "https://cdn.modrinth.com/data/TiFXQSAQ/images/e2a1c671ca0ecf86867daec7a39daa70a7b6f8d4.png",
+      "featured": false,
+      "title": "Iron Leaves enjoying the... leaves",
+      "description": null,
+      "created": "2023-06-13T03:27:43.586855Z",
+      "ordering": 0
+    },
+    {
+      "url": "https://cdn.modrinth.com/data/TiFXQSAQ/images/38696708d64f4751034c2833f7ea60cd887273f0_350.webp",
+      "raw_url": "https://cdn.modrinth.com/data/TiFXQSAQ/images/9ba2b6d667279110826b34e103437231d21ad62e.png",
+      "featured": false,
+      "title": "Walking Wake walking to dem waves",
+      "description": null,
+      "created": "2023-06-13T03:28:04.055906Z",
+      "ordering": 0
+    },
+    {
+      "url": "https://cdn.modrinth.com/data/TiFXQSAQ/images/1f4757016bdb3d7d9c0a1bd5151ef4c80be48c4d_350.webp",
+      "raw_url": "https://cdn.modrinth.com/data/TiFXQSAQ/images/bea16a06722ebe57ab394faa161ac32c64656629.png",
+      "featured": false,
+      "title": "Zapdos and the hills",
+      "description": null,
+      "created": "2023-06-13T03:28:21.890865Z",
+      "ordering": 0
+    },
+    {
+      "url": "https://cdn.modrinth.com/data/TiFXQSAQ/images/fd835430cca4dc46b7bd95d3b3c3b7a5fa83754f_350.webp",
+      "raw_url": "https://cdn.modrinth.com/data/TiFXQSAQ/images/fd835430cca4dc46b7bd95d3b3c3b7a5fa83754f.png",
+      "featured": false,
+      "title": "Articuno and some friends",
+      "description": null,
+      "created": "2023-06-13T03:28:44.687037Z",
+      "ordering": 0
+    },
+    {
+      "url": "https://cdn.modrinth.com/data/TiFXQSAQ/images/d0e5d52797deaf26c4fb47029699e15a81e4d7e9_350.webp",
+      "raw_url": "https://cdn.modrinth.com/data/TiFXQSAQ/images/f1eba8e7ffb67e38c9e2f84adfa0ea0354a022d5.png",
+      "featured": false,
+      "title": "Moltres basking in the sunlight",
+      "description": null,
+      "created": "2023-06-13T03:29:01.483171Z",
+      "ordering": 0
+    },
+    {
+      "url": "https://cdn.modrinth.com/data/TiFXQSAQ/images/9582973547971e5f1d327bd2bb90ff45b4024a0f_350.webp",
+      "raw_url": "https://cdn.modrinth.com/data/TiFXQSAQ/images/45c1a8eb7b4ec9f9c26437285fbaa4b99fca3a41.png",
+      "featured": false,
+      "title": "Xerneas enjoying the flowers",
+      "description": null,
+      "created": "2023-06-13T03:29:17.754701Z",
+      "ordering": 0
+    },
+    {
+      "url": "https://cdn.modrinth.com/data/TiFXQSAQ/images/68f21239ed2ce069884ea270c2d287fe66bfc8a6_350.webp",
+      "raw_url": "https://cdn.modrinth.com/data/TiFXQSAQ/images/8f8d300174a4e7a892dfe97d3e966cb666e5487e.png",
+      "featured": false,
+      "title": "Zorua and Zoroark making their appearance",
+      "description": null,
+      "created": "2023-06-13T03:29:39.638654Z",
+      "ordering": 0
+    },
+    {
+      "url": "https://cdn.modrinth.com/data/TiFXQSAQ/images/00cd837f145d167cf0936835d152b2e0b3b65935_350.webp",
+      "raw_url": "https://cdn.modrinth.com/data/TiFXQSAQ/images/81540e1d2519c2b65992f836c0a995d4ab3fb0ae.png",
+      "featured": false,
+      "title": "Giratina rising from the depths",
+      "description": null,
+      "created": "2023-06-19T22:00:24.174816Z",
+      "ordering": 0
+    },
+    {
+      "url": "https://cdn.modrinth.com/data/TiFXQSAQ/images/a2027c9130ee05514a19dcc9086068c03ea3c947_350.webp",
+      "raw_url": "https://cdn.modrinth.com/data/TiFXQSAQ/images/4c59b2eed5e07fbfce57f0419e7279d7f45f03e3.png",
+      "featured": false,
+      "title": "Regi Line",
+      "description": null,
+      "created": "2024-03-12T01:23:44.837727Z",
+      "ordering": 0
+    },
+    {
+      "url": "https://cdn.modrinth.com/data/TiFXQSAQ/images/13390e1412a094337d7fc1b55380bbb2f72ea9fb_350.webp",
+      "raw_url": "https://cdn.modrinth.com/data/TiFXQSAQ/images/5d5a601f5573207dd3242f3ebc0788385c402b37.png",
+      "featured": false,
+      "title": "Anorith and Armaldo",
+      "description": null,
+      "created": "2024-03-12T01:24:02.694518Z",
+      "ordering": 0
+    },
+    {
+      "url": "https://cdn.modrinth.com/data/TiFXQSAQ/images/b9280ed085cedd6a60a073be22d1677341872e3d_350.webp",
+      "raw_url": "https://cdn.modrinth.com/data/TiFXQSAQ/images/ab457704b29373d9b5ff8d9ec88872ccdd6f5004.png",
+      "featured": false,
+      "title": "Rellor and Rabsca",
+      "description": null,
+      "created": "2024-03-12T01:27:18.321956Z",
+      "ordering": 0
+    },
+    {
+      "url": "https://cdn.modrinth.com/data/TiFXQSAQ/images/7edb66d146ccce03eb936200c0925471bbb74909_350.webp",
+      "raw_url": "https://cdn.modrinth.com/data/TiFXQSAQ/images/2422816a6d8561ffbf5d2467c1b4a5b2762cf79f.png",
+      "featured": false,
+      "title": "Cranidos and Rampardos",
+      "description": null,
+      "created": "2024-03-12T01:27:35.243382Z",
+      "ordering": 0
+    }
+  ],
+  "color": 986128,
+  "thread_id": "TiFXQSAQ",
+  "monetization_status": "monetized"
+}

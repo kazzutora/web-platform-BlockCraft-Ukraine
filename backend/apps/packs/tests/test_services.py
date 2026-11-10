@@ -7,7 +7,7 @@ import pytest
 from apps.accounts.models import User
 from apps.accounts.tests.factories import UserFactory
 from apps.core.exceptions import DomainError
-from apps.mods.models import Project, ProjectType
+from apps.mods.models import ProjectType
 from apps.mods.tests.factories import ProjectFactory, VersionFactory
 from apps.packs import selectors, services, tasks
 from apps.packs.models import LoaderRelease, Pack, PackItem
@@ -90,7 +90,7 @@ def test_add_item_twice_is_refused_but_a_dependency_becomes_the_authors(draft, u
 
 
 def test_add_item_of_a_project_outside_the_catalog_is_404(draft, user):
-    ProjectFactory(slug="hidden", status=Project.Status.PENDING)
+    ProjectFactory(slug="hidden", is_hidden=True)
 
     with pytest.raises(DomainError) as error:
         services.add_item(pack=draft, user=user, project_slug="hidden")
@@ -221,7 +221,7 @@ def test_changing_the_game_version_picks_files_again(draft, user):
     VersionFactory(
         project=sodium,
         game_versions=["26.3"],
-        dependencies=[{"project_id": api.modrinth_id, "dependency_type": "required"}],
+        dependencies=[{"project_id": api.external_id, "dependency_type": "required"}],
     )
     legacy = VersionFactory(project=sodium, game_versions=["1.21.1"])
     only_new = mod(slug="only-new")

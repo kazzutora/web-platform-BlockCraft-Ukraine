@@ -29,6 +29,9 @@ export const queryKeys = {
     unread: () => [...queryKeys.notifications.all, "unread"] as const,
     list: () => [...queryKeys.notifications.all, "list"] as const,
   },
+  mods: {
+    importJob: (id: string) => ["mods", "import-job", id] as const,
+  },
   search: {
     suggest: (q: string) => ["search", "suggest", q] as const,
   },

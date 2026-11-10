@@ -2,7 +2,6 @@ import pytest
 from rest_framework.test import APIClient
 
 from apps.accounts.tests.factories import UserFactory
-from apps.mods.models import Project
 from apps.mods.tests.factories import ProjectFactory
 from apps.social import services
 from apps.social.models import Review
@@ -123,6 +122,6 @@ def test_bayesian_score_pulls_small_samples_to_the_mean():
 
 
 def test_reviews_of_hidden_projects_are_404(api_client):
-    ProjectFactory(slug="hidden", status=Project.Status.HIDDEN)
+    ProjectFactory(slug="hidden", is_hidden=True)
 
     assert api_client.get("/api/v1/reviews", {"kind": "mod", "id": "hidden"}).status_code == 404

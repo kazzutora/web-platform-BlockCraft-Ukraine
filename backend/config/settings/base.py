@@ -244,6 +244,8 @@ SPECTACULAR_SETTINGS = {
         "PublishStatusEnum": "apps.core.models.Publishable.Status",
         "KindEnum": ["collection", "mod", "skin", "server", "pack"],
         "NotificationTypeEnum": "apps.notifications.models.Notification.Type",
+        "ProjectSideEnum": "apps.mods.models.Side",
+        "JobStatusEnum": ["queued", "running", "done", "failed"],
     },
 }
 
@@ -260,10 +262,16 @@ CELERY_BEAT_SCHEDULE: dict[str, dict] = {
         "task": "sources.sync_game_versions",
         "schedule": crontab(hour=2, minute=30),
     },
-    "mods-sync-popular": {"task": "mods.sync_popular", "schedule": crontab(hour=3, minute=0)},
-    "mods-sync-versions-for-tracked": {
-        "task": "mods.sync_versions_for_tracked",
+    "mods-sync-catalog": {"task": "mods.sync_catalog", "schedule": crontab(hour=3, minute=0)},
+    "mods-sync-versions": {
+        "task": "mods.sync_versions",
         "schedule": crontab(hour=3, minute=30),
+    },
+    # New supported game versions and files Modrinth reshuffled without bumping `updated`
+    "mods-sync-versions-full": {
+        "task": "mods.sync_versions",
+        "schedule": crontab(hour=4, minute=45, day_of_week=0),
+        "kwargs": {"full": True},
     },
     "social-recalc-scores": {"task": "social.recalc_scores", "schedule": crontab(minute=15)},
     "servers-ping-all": {"task": "servers.ping_all", "schedule": crontab(minute="*/5")},

@@ -57,14 +57,14 @@ SOURCES: tuple[SourceInfo, ...] = (
             ),
             Job(
                 key="catalog",
-                title="Каталог: популярні проєкти за типами з їхніми версіями",
-                task="apps.mods.tasks.sync_popular",
+                title="Каталог: популярні моди, ресурспаки, шейдери й датапаки",
+                task="apps.mods.tasks.sync_catalog",
                 accepts_limit=True,
             ),
             Job(
                 key="versions",
-                title="Версії проєктів, які гравці завантажують і додають у збірки",
-                task="apps.mods.tasks.sync_versions_for_tracked",
+                title="Версії файлів проєктів, що змінилися на Modrinth",
+                task="apps.mods.tasks.sync_versions",
             ),
             Job(
                 key="modpacks",

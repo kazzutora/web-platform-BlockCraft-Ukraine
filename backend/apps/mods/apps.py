@@ -16,6 +16,5 @@ class ModsConfig(AppConfig):
                 lookup_field="slug",
                 rating="review",
                 actions=frozenset({"favorite", "review", "collect", "report"}),
-                owner_field="claimed_by",
             )
         )

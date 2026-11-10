@@ -20,14 +20,24 @@ function meta(project: ProjectCard): string {
   return parts.filter(Boolean).join(" · ");
 }
 
-/** `eager` for the first row: it is the largest paint of the catalog. */
-export function ModCard({ project, eager = false }: { project: ProjectCard; eager?: boolean }) {
+type ModCardProps = {
+  project: ProjectCard;
+  /** For the first row: it is the largest paint of the catalog. */
+  eager?: boolean;
+  /** «1.21.1 · Fabric»: named in the «не для …» mark when the project has no files for it. */
+  gameLabel?: string;
+};
+
+export function ModCard({ project, eager = false, gameLabel = "" }: ModCardProps) {
   return (
     <Card
       href={`/mods/${project.slug}`}
       title={project.title}
       meta={
         <>
+          {project.fits_my_game === false && (
+            <span className="text-danger">{modsCopy.notForGame(gameLabel)} · </span>
+          )}
           {meta(project)} ·{" "}
           <SourceBadge
             {...project.source}

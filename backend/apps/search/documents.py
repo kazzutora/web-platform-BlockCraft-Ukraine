@@ -157,7 +157,7 @@ class Source:
 
 # Only what anyone may open is searchable
 SOURCES: dict[str, Source] = {
-    "mod": Source(lambda: Project.objects.published().prefetch_related("categories"), mod_document),
+    "mod": Source(lambda: Project.objects.visible().prefetch_related("categories"), mod_document),
     "skin": Source(lambda: Skin.objects.published().select_related("author"), skin_document),
     "pack": Source(
         lambda: (

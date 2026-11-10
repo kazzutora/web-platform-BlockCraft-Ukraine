@@ -8,7 +8,7 @@ from django.utils import timezone
 from apps.accounts.models import User
 from apps.core import kinds
 from apps.core.exceptions import DomainError
-from apps.core.models import Publishable
+from apps.core.models import Publishable, Sourced
 from apps.library.models import Collection
 from apps.notifications.models import Notification
 from apps.notifications.services import notify
@@ -30,7 +30,7 @@ def resolve_target(*, kind: str, identifier: str, viewer: User) -> Model:
 def author_of(target: Model) -> User | None:
     if isinstance(target, Collection):
         return target.owner
-    return getattr(target, "author", None) or getattr(target, "claimed_by", None)
+    return getattr(target, "author", None)
 
 
 def _set_visible(target: Model, visible: bool) -> None:
@@ -40,6 +40,11 @@ def _set_visible(target: Model, visible: bool) -> None:
             Collection.Visibility.PUBLIC if visible else Collection.Visibility.PRIVATE
         )
         target.save(update_fields=["visibility", "updated_at"])
+        return
+    if isinstance(target, Sourced):
+        # Mirrored from a source: hidden here, and syncs never bring it back (tech.md 6.1)
+        target.is_hidden = not visible
+        target.save(update_fields=["is_hidden"])
         return
     target.status = Publishable.Status.PUBLISHED if visible else Publishable.Status.HIDDEN
     target.save(update_fields=["status"])

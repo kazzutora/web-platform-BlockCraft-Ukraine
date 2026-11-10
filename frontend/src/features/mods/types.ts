@@ -11,4 +11,5 @@ export type Category = Schemas["Category"];
 export type CatalogPage = Schemas["PaginatedProjectCardList"];
 export type CatalogQuery = NonNullable<operations["mods_list"]["parameters"]["query"]>;
 
-export const projectTypes: ProjectType[] = ["mod", "resourcepack", "shader"];
+export const projectTypes: ProjectType[] = ["mod", "resourcepack", "shader", "datapack"];
+export type ImportJob = Schemas["Job"];

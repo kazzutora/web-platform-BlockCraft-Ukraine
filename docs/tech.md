@@ -143,7 +143,7 @@ blockcraft/
 ### 6.3 mods — v1: лишити, розширити
 
 - `Category`: `slug`, `name_uk`, `project_type`, `header` (група з Modrinth). Українські назви — фікстура для всіх типів.
-- `Project` (TimeStamped, Sourced[`modrinth`], Engagement): `project_type` (mod / resourcepack / shader / datapack), `slug`, `title`, `summary`, `summary_uk` + `summary_uk_by` (денормалізовано зі схваленого перекладу), `body_html`, `body_uk_html`, `icon_url`, `gallery`, `categories` M2M, `loaders`, `game_versions` (Array, GIN), `client_side`, `server_side`, `license`, `source_url`, `modrinth_downloads`, `modrinth_follows`, `modrinth_updated_at`, `gpu_load` (+ `gpu_load_manual`), `imported_by` (FK User, nullable — хто додав за посиланням). v1: `Publishable`, `status`, `claimed_by`, `suggested_by` → прибрати (імпортований з Modrinth контент уже пройшов модерацію Modrinth; приховування — `is_hidden`).
+- `Project` (TimeStamped, Sourced[`modrinth`], Engagement): `project_type` (mod / resourcepack / shader / datapack), `slug`, `title`, `summary`, `summary_uk` + `summary_uk_by` (денормалізовано зі схваленого перекладу; `summary_uk_by` і `body_uk_html` додаються в R7.2), `body_html`, `icon_url`, `gallery`, `categories` M2M, `loaders`, `game_versions` (Array, GIN), `client_side`, `server_side`, `license`, `source_url`, `modrinth_downloads`, `modrinth_follows`, `published_at` (дата на Modrinth), `modrinth_updated_at`, `versions_synced_at` (коли читали версії; старше за `modrinth_updated_at` — версії застаріли), `gpu_load` (+ `gpu_load_manual`), `imported_by` (FK User, nullable — хто додав за посиланням). Тип `datapack` — лише проєкт, у якого всі лоадери `datapack`/`minecraft`; мод, що також є датапаком (Terralith), лишається `mod`, а у вкладці «Датапаки» каталогу показується за лоадером `datapack`. Категорій датапаків Modrinth не має — `Category` з `project_type=datapack` є копіями категорій модів. v1: `Publishable`, `status`, `claimed_by`, `suggested_by` → прибрати (імпортований з Modrinth контент уже пройшов модерацію Modrinth; приховування — `is_hidden`).
 - `ProjectVersion`: `project`, `modrinth_version_id` (unique), `name`, `version_number`, `version_type`, `game_versions` (GIN), `loaders` (GIN), `date_published`, `file_url`, `file_name`, `file_size`, `sha1` (індекс), `sha512` (індекс), `dependencies` (JSON: `[{project_id, version_id, dependency_type}]` — **обов'язково з `version_id`**, якщо джерело його дає). Зберігаються версії лише для підтримуваних `GameVersion`.
 
 ### 6.4 packs — v1 WIP етапу 10: доробити
@@ -197,7 +197,7 @@ blockcraft/
 Нове в усіх відповідях з контентом:
 - `source: {name, url}` — для атрибуції;
 - стан глядача: `is_favorited`, `my_review_stars` (v1 `is_liked` — прибрати);
-- для типів, що залежать від гри: `fits_my_game` (bool | null) — чи є версія під «Мою гру» глядача.
+- для типів, що залежать від гри: `fits_my_game` (bool | null) — чи є версія під «Мою гру» глядача. Для модів рахується за `game_versions` і `loaders` проєкту — тим самим правилом, що й фільтр каталогу (лоадер `vanilla` → мод із лоадером `datapack`); точний вибір файлу — двигун R3.
 
 | Метод і шлях | Опис | Етап |
 | --- | --- | --- |
@@ -213,8 +213,8 @@ blockcraft/
 | `GET /mods/{slug}/similar` | схожі | R2 |
 | `GET /mods/{slug}/download?game_version=&loader=&version=` | 302 на CDN + Download | R2 (v1) |
 | `GET /mods/{slug}/install?game_version=&loader=` | `Resolution` для одного проєкту: файл, дерево залежностей, попередження | R3 |
-| `POST /mods/import` `{url}` → 202 `{job_id}` | додати проєкт Modrinth за посиланням або slug (не модпак) | R2 |
-| `GET /jobs/{id}` | стан задачі: queued / running / done / failed + `result` (напр. slug) | R2 |
+| `POST /mods/import` `{url}` → 202 `{job_id}` | додати проєкт Modrinth за посиланням або slug (не модпак — `400 is_modpack`); уже є в каталозі — 200 `{slug}` | R2 |
+| `GET /jobs/{id}` | стан задачі: queued / running / done / failed + `result` (напр. slug) або `error` (код); стан живе в Redis добу, id — випадковий UUID | R2 |
 | `GET /categories?type=` | категорії | R2 |
 | `POST /compat/resolve` `{game_version, loader, items:[{slug, version_id?}]}` | `Resolution` довільного набору (≤ 300) | R3 |
 | `POST /compat/identify` `{algorithm:"sha1", files:[{hash, name}]}` | що це за файли + вгадана «гра» | R4 |
@@ -429,8 +429,8 @@ v1: `/skins/new`, `/create` — видалити; `/me/works` → `/me/packs` у
 | Задача | Розклад | Етап |
 | --- | --- | --- |
 | `sources.sync_game_versions` | щодня 02:30 | R1 |
-| `mods.sync_catalog` (по типах: топ-N + оновлені за добу) | щодня 03:00 | R2 |
-| `mods.sync_versions` (каталог + проєкти в збірках, обраному, «взяв») | щодня 03:30 | R2 |
+| `mods.sync_catalog` (по типах: топ-N за завантаженнями; «без змін», якщо `updated` на Modrinth той самий) | щодня 03:00 | R2 |
+| `mods.sync_versions` (метадані проєктів поза топом, не оновлених > 20 год, → версії лише тих, чия сторінка змінилася; `full=True` — усі) | щодня 03:30 | R2 |
 | `mods.import_project` | на подію | R2 |
 | `packs.sync_loader_releases` | щодня 03:45 | R4 (WIP) |
 | `packs.sync_official` (топ модпаків: індекс → items через хеші) | щодня 04:00 | R4 |

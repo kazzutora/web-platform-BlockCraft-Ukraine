@@ -12,10 +12,12 @@ type LoadMoreModsProps = {
   query: CatalogQuery;
   /** First page that is not rendered yet. */
   startPage: number;
+  /** «1.21.1 · Fabric» for the «не для …» mark. */
+  gameLabel?: string;
 };
 
 /** «Показати ще»: appends the next pages under the server-rendered first one. */
-export function LoadMoreMods({ query, startPage }: LoadMoreModsProps) {
+export function LoadMoreMods({ query, startPage, gameLabel = "" }: LoadMoreModsProps) {
   const pages = useInfiniteQuery({
     queryKey: ["mods", "catalog", query],
     initialPageParam: startPage,
@@ -38,7 +40,9 @@ export function LoadMoreMods({ query, startPage }: LoadMoreModsProps) {
       {loaded.length > 0 && (
         <div className="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-4">
           {loaded.flatMap((page) =>
-            page.results.map((project) => <ModCard key={project.slug} project={project} />),
+            page.results.map((project) => (
+              <ModCard key={project.slug} project={project} gameLabel={gameLabel} />
+            )),
           )}
         </div>
       )}

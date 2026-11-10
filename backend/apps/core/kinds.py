@@ -32,7 +32,7 @@ class Kind:
     actions: frozenset[str]
     #: Attribute with the owner (cannot review own objects); None — nobody
     owner_field: str | None = None
-    #: Objects a viewer may see; defaults to `published()` or all objects
+    #: Objects a viewer may see; defaults to `published()`, `visible()` or all
     visible: Callable[[Viewer], QuerySet] | None = field(default=None, compare=False)
 
     @property
@@ -47,7 +47,9 @@ class Kind:
         if self.visible is not None:
             return self.visible(viewer)
         manager = self.model.objects
-        return manager.published() if hasattr(manager, "published") else manager.all()
+        if hasattr(manager, "published"):
+            return manager.published()
+        return manager.visible() if hasattr(manager, "visible") else manager.all()
 
     def identifier(self, obj: Model) -> str:
         return str(getattr(obj, self.lookup_field))

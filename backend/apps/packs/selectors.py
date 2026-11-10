@@ -95,7 +95,7 @@ def inspect(pack: Pack, items: list[PackItem] | None = None) -> list[Issue]:
     """What stops the pack from starting: files missing, dependencies missing, conflicts."""
     if items is None:
         items = list(pack.items.select_related("project", "version"))
-    present = {item.project.modrinth_id: item.project for item in items}
+    present = {item.project.external_id: item.project for item in items}
     issues: list[Issue] = []
     missing: list[tuple[PackItem, str]] = []
     conflicts: set[frozenset[str]] = set()
@@ -109,12 +109,12 @@ def inspect(pack: Pack, items: list[PackItem] | None = None) -> list[Issue]:
         for dependency in item.version.dependencies:
             project_id = dependency.get("project_id")
             kind = dependency.get("dependency_type")
-            if not project_id or project_id == item.project.modrinth_id:
+            if not project_id or project_id == item.project.external_id:
                 continue
             if kind == "required" and project_id not in present:
                 missing.append((item, project_id))
             elif kind == "incompatible" and project_id in present:
-                pair = frozenset({item.project.modrinth_id, project_id})
+                pair = frozenset({item.project.external_id, project_id})
                 if pair in conflicts:
                     continue
                 conflicts.add(pair)
@@ -128,9 +128,9 @@ def inspect(pack: Pack, items: list[PackItem] | None = None) -> list[Issue]:
                     )
                 )
     known = {
-        project.modrinth_id: project
-        for project in Project.objects.published().filter(
-            modrinth_id__in={project_id for _, project_id in missing}
+        project.external_id: project
+        for project in Project.objects.visible().filter(
+            external_id__in={project_id for _, project_id in missing}
         )
     }
     for item, project_id in missing:

@@ -1,0 +1,90 @@
+[
+  {
+    "game_versions": [
+      "1.21.1"
+    ],
+    "loaders": [
+      "datapack"
+    ],
+    "environment": "unknown",
+    "id": "n1gBFmIp",
+    "project_id": "TiFXQSAQ",
+    "author_id": "NkIMCeiV",
+    "featured": false,
+    "name": "MysticMons v3.2.1",
+    "version_number": "v3.2.1",
+    "changelog": "Removed Trumbeak/Toucannon Files",
+    "changelog_url": null,
+    "date_published": "2025-02-16T02:04:25.916888Z",
+    "downloads": 4910200,
+    "version_type": "release",
+    "status": "listed",
+    "requested_status": null,
+    "files": [
+      {
+        "id": "P7JcemTV",
+        "hashes": {
+          "sha1": "07144e890edf13520d4317a5439315344cd53d52",
+          "sha512": "f9ed4e19f9d2672be75143afd95e9160bd038d5701d310c1b42c14c6a8031851725addbc35d84e4a5b0c9eea1db95e0d9ae36602f4e6f2b3a48ed9e4912e8dff"
+        },
+        "url": "https://cdn.modrinth.com/data/TiFXQSAQ/versions/n1gBFmIp/MysticMons_v3.2.1.zip",
+        "filename": "MysticMons_v3.2.1.zip",
+        "primary": true,
+        "size": 1268389,
+        "file_type": null
+      }
+    ],
+    "dependencies": [
+      {
+        "version_id": null,
+        "project_id": "MdwFAVRL",
+        "file_name": null,
+        "dependency_type": "required"
+      }
+    ]
+  },
+  {
+    "game_versions": [
+      "1.21.1"
+    ],
+    "loaders": [
+      "datapack"
+    ],
+    "environment": "unknown",
+    "id": "fxMXG7Rj",
+    "project_id": "TiFXQSAQ",
+    "author_id": "NkIMCeiV",
+    "featured": false,
+    "name": "MysticMons v3.2",
+    "version_number": "v3.2",
+    "changelog": "Fixed Pikpek Crash",
+    "changelog_url": null,
+    "date_published": "2025-02-15T23:36:04.774709Z",
+    "downloads": 1500,
+    "version_type": "release",
+    "status": "listed",
+    "requested_status": null,
+    "files": [
+      {
+        "id": "QZ6NURJE",
+        "hashes": {
+          "sha512": "68d05d1ee84491009a14f5b978c3a832594b0520fb3ceb42d5f1ca4930e965b69682db0f73501f47f8e60f0e8a355ac5ed01783e2ee7c46c677dd1fc0492bea9",
+          "sha1": "ca02646a404093eba128af7214fafe0b220640cd"
+        },
+        "url": "https://cdn.modrinth.com/data/TiFXQSAQ/versions/fxMXG7Rj/MysticMons_v3.2.zip",
+        "filename": "MysticMons_v3.2.zip",
+        "primary": true,
+        "size": 1272349,
+        "file_type": null
+      }
+    ],
+    "dependencies": [
+      {
+        "version_id": null,
+        "project_id": "MdwFAVRL",
+        "file_name": null,
+        "dependency_type": "required"
+      }
+    ]
+  }
+]

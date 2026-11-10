@@ -22,7 +22,7 @@ function VersionRow({ slug, version }: { slug: string; version: ProjectVersion }
             version.game_versions.slice(-3).join(", "),
             version.loaders.map(loaderName).join(", "),
             formatFileSize(version.file_size),
-            formatDate(version.released_at),
+            formatDate(version.date_published),
           ]
             .filter(Boolean)
             .join(" · ")}

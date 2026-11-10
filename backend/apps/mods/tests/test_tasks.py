@@ -3,15 +3,12 @@ from unittest import mock
 
 import pytest
 
-from apps.library.models import Download
-from apps.mods import tasks
+from apps.core import jobs
+from apps.mods import importers, tasks
 from apps.mods.models import Project
-from apps.sources.clients.modrinth import ModrinthError
 from apps.sources.models import SyncRun
 
-from .factories import ProjectFactory, VersionFactory
-from .payloads import project_payload, version_payload
-from .test_sync import FakeModrinth
+from .fakes import FakeModrinth, recorded
 
 pytestmark = [pytest.mark.django_db, pytest.mark.usefixtures("game_versions")]
 
@@ -24,95 +21,95 @@ def modrinth(fake: FakeModrinth):
         yield
 
 
-def test_sync_popular_task_writes_a_sync_run_per_type(settings):
-    settings.SYNC_LIMITS = {"mod": 5, "resourcepack": 5, "shader": 5}
-    fake = FakeModrinth([project_payload()], {"AANobbMI": [version_payload()]})
+def test_sync_catalog_writes_a_sync_run_per_type(settings):
+    settings.SYNC_LIMITS = {"mod": 5, "resourcepack": 5, "shader": 5, "datapack": 5}
 
-    with modrinth(fake):
-        result = tasks.sync_popular.delay().get()
-        again = tasks.sync_popular.delay().get()
+    with modrinth(recorded()):
+        result = tasks.sync_catalog.delay().get()
+        again = tasks.sync_catalog.delay().get()
 
-    assert result["mod"] == {"created": 1, "updated": 0, "unchanged": 0, "skipped": 0, "failed": 0}
+    assert result["mod"] == {"created": 3, "updated": 0, "unchanged": 0, "skipped": 0, "failed": 0}
+    assert again["mod"]["unchanged"] == 3
     assert result["shader"]["created"] == 0
-    assert again["mod"]["updated"] == 1
     runs = SyncRun.objects.filter(job="modrinth.catalog:mod")
     assert runs.count() == 2
     assert {run.status for run in runs} == {SyncRun.Status.OK}
     assert runs.first().params == {"limit": 5}
+    assert SyncRun.objects.filter(job="modrinth.catalog:datapack").exists()
 
 
-def test_sync_popular_task_limit_overrides_settings(settings):
-    settings.SYNC_LIMITS = {"mod": 300, "resourcepack": 300, "shader": 300}
-    fake = FakeModrinth([project_payload()], {"AANobbMI": [version_payload()]})
+def test_sync_catalog_limit_overrides_settings():
+    with modrinth(recorded()):
+        tasks.sync_catalog.delay(limit=20).get()
 
-    with modrinth(fake):
-        tasks.sync_popular.delay(limit=20).get()
-
-    assert SyncRun.objects.count() == 3  # mods, resource packs, shaders
+    assert SyncRun.objects.count() == 4  # mods, resource packs, shaders, datapacks
     assert all(run.params == {"limit": 20} for run in SyncRun.objects.all())
 
 
-def test_a_failing_project_is_counted_and_the_rest_synced(settings):
-    settings.SYNC_LIMITS = {"mod": 5, "resourcepack": 5, "shader": 5}
-    fake = FakeModrinth(
-        [project_payload(), project_payload("IRIS0001", "iris")],
-        {"IRIS0001": [version_payload("i1", project_id="IRIS0001")]},
-    )
-    real = fake.get_versions
+def test_a_failing_project_is_counted_and_the_rest_synced():
+    real = importers.import_project
 
-    def broken(project_id, **kwargs):
-        if project_id == "AANobbMI":
-            raise ModrinthError("boom")
-        return real(project_id, **kwargs)
+    def flaky(data, **kwargs):
+        if data.slug == "sodium":
+            raise ValueError("boom")
+        return real(data, **kwargs)
 
-    fake.get_versions = broken
-    with modrinth(fake):
-        result = tasks.sync_popular.delay().get()
+    with modrinth(recorded()), mock.patch("apps.mods.importers.import_project", flaky):
+        result = tasks.sync_catalog.delay(limit=5).get()
 
-    assert result["mod"]["created"] == 1
+    assert result["mod"]["created"] == 2
     assert result["mod"]["failed"] == 1
     run = SyncRun.objects.get(job="modrinth.catalog:mod")
     assert run.status == SyncRun.Status.PARTIAL
-    assert run.errors[0]["type"] == "ModrinthError"
+    assert run.errors[0]["type"] == "ValueError"
     assert run.errors[0]["context"] == {"project": "sodium"}
 
 
-def test_import_project_task_creates_a_pending_project(user):
-    fake = FakeModrinth([project_payload("IRIS0001", "iris")], {})
-
+def test_sync_versions_task_journals_its_run():
+    fake = recorded()
     with modrinth(fake):
-        slug = tasks.import_project.delay(slug="iris", suggested_by_id=user.pk).get()
+        tasks.sync_catalog.delay(limit=5).get()
+        result = tasks.sync_versions.delay().get()
 
-    assert slug == "iris"
-    assert Project.objects.get(slug="iris").status == Project.Status.PENDING
+    assert result["created"] == 3
+    run = SyncRun.objects.get(job="modrinth.versions")
+    assert (run.status, run.params) == (SyncRun.Status.OK, {"full": False})
+
+
+def test_import_project_job_ends_done_with_the_slug(user):
+    job = jobs.create("mods.import")
+
+    with modrinth(recorded()):
+        tasks.import_project.delay(job_id=job["id"], slug="sodium", user_id=user.pk).get()
+
+    state = jobs.get(job["id"])
+    assert state["status"] == "done"
+    assert state["result"] == {"slug": "sodium", "title": "Sodium", "project_type": "mod"}
+    assert Project.objects.get().imported_by == user
 
 
 @pytest.mark.parametrize(
-    "payload",
-    [None, project_payload("PLUGIN01", "essentials", "plugin")],
-    ids=["unknown slug", "unsupported type"],
+    ("slug", "error"),
+    [("nope", "not_found"), ("fabulously-optimized", "is_modpack")],
 )
-def test_import_project_task_drops_bad_suggestions(payload):
-    fake = FakeModrinth([payload] if payload else [], {})
+def test_import_project_job_fails_with_a_code(slug, error):
+    job = jobs.create("mods.import")
 
-    with modrinth(fake):
-        result = tasks.import_project.delay(slug="essentials").get()
+    with modrinth(recorded()):
+        tasks.import_project.delay(job_id=job["id"], slug=slug).get()
 
-    assert result is None
-    assert not Project.objects.exists()
+    assert jobs.get(job["id"])["status"] == "failed"
+    assert jobs.get(job["id"])["error"] == error
 
 
-def test_versions_are_refreshed_only_for_recently_downloaded_projects(user):
-    downloaded = ProjectFactory(modrinth_id="AANobbMI")
-    VersionFactory(project=downloaded, modrinth_version_id="OLDONE01")
-    ProjectFactory(modrinth_id="IGNORED1")
-    Download.objects.create(user=user, project=downloaded)
-    fake = FakeModrinth([], {"AANobbMI": [version_payload("NEWONE01")]})
+def test_import_project_job_fails_on_any_unexpected_error():
+    job = jobs.create("mods.import")
 
-    with modrinth(fake):
-        synced = tasks.sync_versions_for_tracked.delay().get()
+    with (
+        modrinth(recorded()),
+        mock.patch("apps.mods.services.import_from_modrinth", side_effect=RuntimeError("clash")),
+        pytest.raises(RuntimeError),
+    ):
+        tasks.import_project.apply(kwargs={"job_id": job["id"], "slug": "sodium"}, throw=True)
 
-    assert synced["updated"] == 1
-    assert SyncRun.objects.get(job="modrinth.versions").status == SyncRun.Status.OK
-    assert [call[0] for call in fake.version_calls] == ["AANobbMI"]
-    assert list(downloaded.versions.values_list("modrinth_version_id", flat=True)) == ["NEWONE01"]
+    assert (jobs.get(job["id"])["status"], jobs.get(job["id"])["error"]) == ("failed", "failed")

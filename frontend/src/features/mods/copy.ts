@@ -15,6 +15,11 @@ export const modsCopy = {
       label: "Шейдер",
       plural: { one: "шейдер", few: "шейдери", many: "шейдерів" },
     },
+    datapack: {
+      title: "Датапаки",
+      label: "Датапак",
+      plural: { one: "датапак", few: "датапаки", many: "датапаків" },
+    },
   } satisfies Record<ProjectType, { title: string; label: string; plural: PluralForms }>,
   filters: {
     label: "Фільтри",
@@ -37,6 +42,29 @@ export const modsCopy = {
     search: "Пошук за назвою",
   },
   empty: "Нічого не знайшли. Спробуй прибрати частину фільтрів.",
+  /** On a card that has no files for «Моя гра» (tech.md 10.2). */
+  notForGame: (game: string) => (game ? `не для ${game}` : "не для «Моєї гри»"),
+  datapackHint: "Тут і моди, які також працюють як датапак: їх можна поставити без лоадера.",
+  import: {
+    title: "Не знайшли? Додайте з Modrinth",
+    text: "Встав посилання на мод, ресурспак, шейдер чи датапак — він з’явиться в каталозі за пів хвилини.",
+    label: "Посилання або назва на Modrinth",
+    placeholder: "https://modrinth.com/mod/…",
+    submit: "Додати",
+    pending: "Додаємо з Modrinth…",
+    done: (title: string) => `Готово: «${title}» у каталозі.`,
+    open: "Відкрити",
+    errors: {
+      not_found: "На Modrinth такого проєкту немає. Перевір посилання.",
+      unsupported_type: "Такий тип проєктів ми поки не показуємо (плагіни, сервери).",
+      is_modpack: "Це збірка, а не мод. Збірки з’являться в розділі «Збірки».",
+      hidden_project: "Модератор прибрав цей проєкт із каталогу.",
+      source_unavailable: "Modrinth зараз не відповідає. Спробуй за хвилину.",
+      timeout:
+        "Додавання затягнулося. Онови сторінку за хвилину — проєкт може вже бути в каталозі.",
+      failed: "Не вдалося додати проєкт. Спробуй ще раз.",
+    } as Record<string, string>,
+  },
   error: "Не вдалося завантажити каталог.",
   retry: "Спробувати ще",
   downloads: (count: string) => `⬇ ${count}`,

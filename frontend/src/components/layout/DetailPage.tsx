@@ -18,6 +18,8 @@ type DetailPageProps = {
   primaryAction?: ReactNode;
   /** «Зберегти», «В колекцію». */
   secondaryActions?: ReactNode;
+  /** A block between the first screen and the tabs (e.g. «Що встановити»). */
+  aside?: ReactNode;
   tabs?: TabItem[];
   tabsLabel?: string;
 };
@@ -31,6 +33,7 @@ export function DetailPage({
   meta,
   primaryAction,
   secondaryActions,
+  aside,
   tabs,
   tabsLabel = "Розділи сторінки",
 }: DetailPageProps) {
@@ -53,6 +56,7 @@ export function DetailPage({
           )}
         </div>
       </div>
+      {aside}
       {tabs && tabs.length > 0 && <Tabs items={tabs} label={tabsLabel} />}
     </Container>
   );

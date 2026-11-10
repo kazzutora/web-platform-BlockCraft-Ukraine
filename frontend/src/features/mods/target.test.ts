@@ -19,12 +19,12 @@ describe("downloadTarget", () => {
     });
   });
 
-  it("then the game profile when the project supports it", () => {
+  it("then «Моя гра», even when the project has nothing for it", () => {
     const target = downloadTarget(sodium, {}, { game_version: "1.21.1", loader: "neoforge" });
     expect(target.label).toBe("1.21.1 · NeoForge");
 
     const unsupported = downloadTarget(sodium, {}, { game_version: "1.8.9", loader: "forge" });
-    expect(unsupported.label).toBe("26.3 · Fabric");
+    expect(unsupported.label).toBe("1.8.9 · Forge");
   });
 
   it("ignores the loader for shaders", () => {

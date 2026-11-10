@@ -382,5 +382,22 @@
     },
     "captured_at": "2026-11-09T22:32:59+00:00",
     "note": "trimmed to the first 3 versions"
+  },
+  "projects_by_slugs": {
+    "method": "GET",
+    "url": "https://api.modrinth.com/v2/projects",
+    "params": {
+      "ids": "[\"iris\", \"oculus\"]"
+    },
+    "body": null,
+    "status": 200,
+    "headers": {
+      "content-type": "application/json",
+      "x-ratelimit-limit": "300",
+      "x-ratelimit-remaining": "300",
+      "x-ratelimit-reset": "0"
+    },
+    "captured_at": "2026-11-10T01:31:14+00:00",
+    "note": "slugs in ids; body trimmed to 200 characters"
   }
 }

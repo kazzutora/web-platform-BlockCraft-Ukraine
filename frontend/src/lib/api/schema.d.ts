@@ -124,6 +124,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/compat/resolve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Up to 300 projects. `incomplete` — some dependencies are being imported from Modrinth, ask again in a few seconds. */
+        post: operations["compat_resolve"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/csrf": {
         parameters: {
             query?: never;
@@ -510,6 +527,23 @@ export interface paths {
         };
         /** @description Redirects to the file on Modrinth and counts the download. */
         get: operations["mods_download"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/mods/{slug}/install": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description What to install for one project: its file, dependencies with reasons, shader engine, warnings. Without parameters — «Моя гра», then what the project supports. `incomplete` — dependencies are being imported, ask again in a few seconds. */
+        get: operations["mods_install"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1168,6 +1202,48 @@ export interface components {
          * @enum {string}
          */
         ColorBucketEnum: "red" | "orange" | "yellow" | "green" | "cyan" | "blue" | "purple" | "pink" | "brown" | "black" | "white" | "gray";
+        /**
+         * @description * `ok` - ok
+         *     * `no_version` - no_version
+         *     * `pinned_incompatible` - pinned_incompatible
+         *     * `mod_needs_loader` - mod_needs_loader
+         * @enum {string}
+         */
+        CompatItemStatusEnum: "ok" | "no_version" | "pinned_incompatible" | "mod_needs_loader";
+        /**
+         * @description * `requested` - requested
+         *     * `dependency` - dependency
+         *     * `implicit` - implicit
+         * @enum {string}
+         */
+        CompatReasonEnum: "requested" | "dependency" | "implicit";
+        /**
+         * @description * `ok` - ok
+         *     * `warnings` - warnings
+         *     * `errors` - errors
+         *     * `incomplete` - incomplete
+         * @enum {string}
+         */
+        CompatStatusEnum: "ok" | "warnings" | "errors" | "incomplete";
+        CompatWarning: {
+            code: components["schemas"]["CompatWarningCodeEnum"];
+            params: {
+                [key: string]: string;
+            };
+        };
+        /**
+         * @description * `version_mismatch` - version_mismatch
+         *     * `optifine_manual` - optifine_manual
+         *     * `beta_only` - beta_only
+         *     * `unknown_dependency` - unknown_dependency
+         * @enum {string}
+         */
+        CompatWarningCodeEnum: "version_mismatch" | "optifine_manual" | "beta_only" | "unknown_dependency";
+        Conflict: {
+            a: string;
+            b: string;
+            declared_by: string;
+        };
         CoverUploadRequest: {
             /**
              * Format: binary
@@ -1941,6 +2017,14 @@ export interface components {
             /** Format: date-time */
             readonly updated_at: string;
         };
+        ProjectRef: {
+            slug: string;
+            title: string;
+            icon_url: string;
+            project_type: components["schemas"]["ProjectTypeEnum"];
+            /** @description A moderator took it out of the catalog: no page and no download here. */
+            hidden: boolean;
+        };
         /**
          * @description * `required` - Потрібен
          *     * `optional` - Необов’язковий
@@ -2017,6 +2101,36 @@ export interface components {
         ReportCreated: {
             id: number;
             status: string;
+        };
+        Resolution: {
+            status: components["schemas"]["CompatStatusEnum"];
+            target: components["schemas"]["Target"];
+            items: components["schemas"]["ResolutionItem"][];
+            conflicts: components["schemas"]["Conflict"][];
+            suggestions: components["schemas"]["Suggestion"][];
+            /** @description Being imported; ask again in a few seconds (status `incomplete`). */
+            missing: string[];
+            /** @description Required, but Modrinth does not have them either (status `errors`). */
+            unavailable: string[];
+            warnings: components["schemas"]["CompatWarning"][];
+        };
+        ResolutionItem: {
+            project: components["schemas"]["ProjectRef"];
+            version: components["schemas"]["VersionRef"] | null;
+            reason: components["schemas"]["CompatReasonEnum"];
+            /** @description Slugs. */
+            required_by: string[];
+            status: components["schemas"]["CompatItemStatusEnum"];
+            nearest_game_versions: string[];
+        };
+        ResolveItemRequest: {
+            slug: string;
+            version_id?: string;
+        };
+        ResolveRequestRequest: {
+            game_version: string;
+            loader: components["schemas"]["LoaderEnum"];
+            items: components["schemas"]["ResolveItemRequest"][];
         };
         Review: {
             readonly id: number;
@@ -2343,6 +2457,16 @@ export interface components {
             players: number;
             is_online: boolean;
         };
+        Suggestion: {
+            /** @description Modrinth id; may be outside our catalog. */
+            project_id: string;
+            project: components["schemas"]["ProjectRef"] | null;
+            suggested_by: string;
+        };
+        Target: {
+            game_version: string;
+            loader: components["schemas"]["LoaderEnum"];
+        };
         /** @description `{kind, id}`: id is a slug or a number depending on the kind. */
         TargetRequest: {
             kind: components["schemas"]["KindEnum"];
@@ -2385,6 +2509,20 @@ export interface components {
         Verification: {
             state: components["schemas"]["StateEnum"];
         };
+        VersionRef: {
+            id: string;
+            version_number: string;
+            version_type: components["schemas"]["VersionRefVersionTypeEnum"];
+            file_name: string;
+            file_size: number;
+        };
+        /**
+         * @description * `release` - release
+         *     * `beta` - beta
+         *     * `alpha` - alpha
+         * @enum {string}
+         */
+        VersionRefVersionTypeEnum: "release" | "beta" | "alpha";
         /** @description What to install for the requested game version and loader. */
         Versions: {
             game_version: string;
@@ -2824,6 +2962,39 @@ export interface operations {
                 };
             };
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    compat_resolve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ResolveRequestRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ResolveRequestRequest"];
+                "multipart/form-data": components["schemas"]["ResolveRequestRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Resolution"];
+                };
+            };
+            400: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3898,6 +4069,45 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["NoVersionError"];
+                };
+            };
+        };
+    };
+    mods_install: {
+        parameters: {
+            query?: {
+                game_version?: string;
+                /**
+                 * @description * `fabric` - Fabric
+                 *     * `forge` - Forge
+                 *     * `neoforge` - NeoForge
+                 *     * `quilt` - Quilt
+                 *     * `vanilla` - Vanilla
+                 */
+                loader?: "fabric" | "forge" | "neoforge" | "quilt" | "vanilla" | "";
+            };
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Resolution"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
                 };
             };
         };

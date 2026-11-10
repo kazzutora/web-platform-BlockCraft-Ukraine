@@ -7,6 +7,8 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 
+from apps.compat import services as compat
+from apps.compat.serializers import InstallQuerySerializer, ResolutionSerializer
 from apps.core.cache import GuestCachedListMixin
 from apps.core.exceptions import DomainError
 from apps.core.game import game_context
@@ -106,6 +108,29 @@ class ModViewSet(
             "versions": versions,
         }
         return Response(VersionsSerializer(payload).data)
+
+    @extend_schema(
+        operation_id="mods_install",
+        parameters=[InstallQuerySerializer],
+        responses={200: ResolutionSerializer, **error_responses(404)},
+        description=(
+            "What to install for one project: its file, dependencies with reasons, shader "
+            "engine, warnings. Without parameters — «Моя гра», then what the project supports. "
+            "`incomplete` — dependencies are being imported, ask again in a few seconds."
+        ),
+    )
+    @action(detail=True, methods=["get"])
+    def install(self, request: Request, slug: str) -> Response:
+        project = self.get_object()
+        query = InstallQuerySerializer(data=request.query_params)
+        query.is_valid(raise_exception=True)
+        target = compat.target_for(
+            project,
+            game_context(request),
+            game_version=query.validated_data.get("game_version", ""),
+            loader=query.validated_data.get("loader", ""),
+        )
+        return Response(compat.install(project=project, target=target))
 
     @extend_schema(
         operation_id="mods_download",

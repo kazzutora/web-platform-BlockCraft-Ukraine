@@ -29,6 +29,10 @@ export const queryKeys = {
     unread: () => [...queryKeys.notifications.all, "unread"] as const,
     list: () => [...queryKeys.notifications.all, "list"] as const,
   },
+  compat: {
+    install: (slug: string, gameVersion: string, loader: string) =>
+      ["compat", "install", slug, gameVersion, loader] as const,
+  },
   mods: {
     importJob: (id: string) => ["mods", "import-job", id] as const,
   },

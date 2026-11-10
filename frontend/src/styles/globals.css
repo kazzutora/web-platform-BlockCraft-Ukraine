@@ -28,6 +28,7 @@
   --color-primary-bg: var(--primary-bg);
   --color-primary-fg: var(--primary-fg);
   --color-danger: var(--danger);
+  --color-warning: var(--warning);
   --color-tag-mods: var(--tag-mods);
   --color-tag-packs: var(--tag-packs);
   --color-tag-skins: var(--tag-skins);

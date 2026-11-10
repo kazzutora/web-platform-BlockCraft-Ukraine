@@ -7,27 +7,36 @@ import { getPack } from "@/features/packs/api";
 import { packsCopy } from "@/features/packs/copy";
 import { PackDetail } from "@/features/packs/PackDetail";
 
-export async function generateMetadata({ params }: PageProps<"/packs/[slug]">): Promise<Metadata> {
-  const pack = await getPack((await params).slug);
+const tokenOf = (value: string | string[] | undefined) =>
+  (Array.isArray(value) ? value[0] : value) ?? "";
+
+export async function generateMetadata({
+  params,
+  searchParams,
+}: PageProps<"/packs/[slug]">): Promise<Metadata> {
+  const [{ slug }, query] = await Promise.all([params, searchParams]);
+  const pack = await getPack(slug, tokenOf(query.share_token));
   if (!pack) return {};
+  const listed = pack.status === "published" && pack.visibility === "public";
   return {
     title: `${pack.title} — ${packsCopy.label.toLowerCase()} Minecraft`,
     description:
       pack.summary || `${pack.game_version} · ${packsCopy.loaders[pack.loader]} · .mrpack`,
-    ...(pack.status === "published" ? {} : { robots: { index: false } }),
+    ...(listed ? {} : { robots: { index: false } }),
   };
 }
 
-export default function PackPage({ params }: PageProps<"/packs/[slug]">) {
+export default function PackPage({ params, searchParams }: PageProps<"/packs/[slug]">) {
   return (
     <Suspense fallback={<DetailSkeleton />}>
-      <Detail params={params} />
+      <Detail params={params} searchParams={searchParams} />
     </Suspense>
   );
 }
 
-async function Detail({ params }: Pick<PageProps<"/packs/[slug]">, "params">) {
-  return <PackDetail slug={(await params).slug} />;
+async function Detail({ params, searchParams }: PageProps<"/packs/[slug]">) {
+  const [{ slug }, query] = await Promise.all([params, searchParams]);
+  return <PackDetail slug={slug} shareToken={tokenOf(query.share_token)} />;
 }
 
 function DetailSkeleton() {

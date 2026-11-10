@@ -14,6 +14,7 @@ from apps.sources.clients.modrinth import (
     ModrinthError,
     ModrinthNotFoundError,
 )
+from apps.sources.tests.recorded import load
 
 
 @pytest.fixture
@@ -182,3 +183,59 @@ def test_read_zip_member_refuses_what_it_cannot_read_cheaply(client):
         client.read_zip_member(f"{PACK_URL}.gone", size=len(content), name="x", max_bytes=1)
     with pytest.raises(ModrinthError, match="not a Modrinth CDN"):
         client.read_zip_member("https://example.com/p.mrpack", size=10, name="x", max_bytes=1)
+
+
+@respx.mock
+def test_versions_by_hashes_on_the_recorded_answer(client):
+    route = respx.post(f"{BASE_URL}/version_files").respond(
+        json=load("modrinth", "version_files_sha1")
+    )
+    sha1 = "2172d0e9a5fbdd6791c27769867334382ba6be02"
+
+    found = client.versions_by_hashes([sha1, "0" * 40])
+
+    assert list(found) == [sha1]
+    assert found[sha1].project_id == "AANobbMI"
+    assert json.loads(route.calls.last.request.content) == {
+        "hashes": [sha1, "0" * 40],
+        "algorithm": "sha1",
+    }
+    assert client.versions_by_hashes([]) == {}
+
+
+@respx.mock
+def test_latest_by_hashes_sends_the_target(client):
+    route = respx.post(f"{BASE_URL}/version_files/update").respond(
+        json=load("modrinth", "version_files_update")
+    )
+
+    found = client.latest_by_hashes(
+        ["2172d0e9a5fbdd6791c27769867334382ba6be02"], loaders=["fabric"], game_versions=["1.21.4"]
+    )
+
+    assert found["2172d0e9a5fbdd6791c27769867334382ba6be02"].version_number == (
+        "mc1.21.4-0.6.13-fabric"
+    )
+    body = json.loads(route.calls.last.request.content)
+    assert (body["loaders"], body["game_versions"]) == (["fabric"], ["1.21.4"])
+
+
+@respx.mock
+def test_image_is_read_only_from_the_cdn(client):
+    respx.get("https://cdn.modrinth.com/data/x/icon.png").respond(content=b"png")
+
+    assert client.image("https://cdn.modrinth.com/data/x/icon.png") == b"png"
+    with pytest.raises(ModrinthError):
+        client.image("https://evil.example/icon.png")
+
+
+@respx.mock
+def test_versions_by_ids_on_the_recorded_answer(client):
+    recorded = load("modrinth", "versions_by_ids")
+    route = respx.get(f"{BASE_URL}/versions").respond(json=recorded)
+
+    found = client.get_versions_by_ids([item["id"] for item in recorded])
+
+    assert [item.id for item in found] == [item["id"] for item in recorded]
+    assert json.loads(route.calls.last.request.url.params["ids"]) == [i["id"] for i in recorded]
+    assert client.get_versions_by_ids([]) == []

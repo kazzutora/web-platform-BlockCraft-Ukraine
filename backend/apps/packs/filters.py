@@ -2,8 +2,10 @@ import django_filters
 from django.db.models import Q, QuerySet
 from django.db.models.functions import Lower
 
-from .choices import PackLoader, Style
-from .models import Pack
+from apps.core.game import GameContext, game_context
+
+from .choices import PackLoader
+from .models import Origin, Pack
 
 SORTS = {
     "popular": ["-score", "-favorites_count", "-modrinth_downloads"],
@@ -15,12 +17,16 @@ SORTS = {
 
 
 class PackFilter(django_filters.FilterSet):
-    game_version = django_filters.CharFilter()
-    loader = django_filters.ChoiceFilter(choices=PackLoader.choices)
-    style = django_filters.CharFilter(
-        method="filter_style", help_text="Style slugs, comma-separated; any may match."
+    """Without `game_version` / `loader` the viewer's «Моя гра» applies; `all=1` — none."""
+
+    origin = django_filters.ChoiceFilter(choices=Origin.choices)
+    game_version = django_filters.CharFilter(
+        method="filter_noop", help_text="Defaults to «Моя гра» of the viewer."
     )
-    official = django_filters.BooleanFilter(field_name="is_official")
+    loader = django_filters.ChoiceFilter(
+        method="filter_noop", choices=PackLoader.choices, help_text="Defaults to «Моя гра»."
+    )
+    all = django_filters.BooleanFilter(method="filter_noop", help_text="1 — ignore «Моя гра».")
     author = django_filters.CharFilter(method="filter_author", help_text="Author nickname.")
     q = django_filters.CharFilter(method="filter_q")
     sort = django_filters.ChoiceFilter(
@@ -29,18 +35,34 @@ class PackFilter(django_filters.FilterSet):
 
     class Meta:
         model = Pack
-        fields = ["game_version", "loader", "style", "official", "author", "q", "sort"]
+        fields = ["origin", "game_version", "loader", "all", "author", "q", "sort"]
+
+    def game(self) -> GameContext:
+        data = self.form.cleaned_data
+        shows_all = str(self.data.get("all", "")).lower() in {"1", "true"}
+        mine = GameContext() if shows_all or self.request is None else game_context(self.request)
+
+        def pick(name: str, default: str) -> str:
+            return (data.get(name) or "") if name in self.data else default
+
+        # A vanilla game has no pack loader: packs for any loader of that version
+        loader = pick("loader", mine.loader if mine.loader in PackLoader.values else "")
+        return GameContext(pick("game_version", mine.game_version), loader, "query")
 
     @property
     def qs(self) -> QuerySet[Pack]:
         queryset = super().qs
+        game = self.game()
+        if game.game_version:
+            queryset = queryset.filter(game_version=game.game_version)
+        if game.loader:
+            queryset = queryset.filter(loader=game.loader)
         if not self.form.cleaned_data.get("sort"):
             queryset = queryset.order_by(*SORTS["popular"])
         return queryset
 
-    def filter_style(self, queryset, name, value: str):
-        styles = [part for part in (p.strip() for p in value.split(",")) if part in Style.values]
-        return queryset.filter(style_tags__overlap=styles) if styles else queryset
+    def filter_noop(self, queryset, name, value):
+        return queryset
 
     def filter_author(self, queryset, name, value: str):
         return queryset.alias(owner_nickname=Lower("author__nickname")).filter(

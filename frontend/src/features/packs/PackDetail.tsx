@@ -2,10 +2,12 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { Container } from "@/components/layout/Container";
-import { Badge } from "@/components/ui/Badge";
 import { Chip } from "@/components/ui/Chip";
+import { CompatStatus } from "@/components/ui/CompatStatus";
 import { SourceBadge } from "@/components/ui/SourceBadge";
 import { Tabs } from "@/components/ui/Tabs";
+import { TakeButton } from "@/components/ui/TakeButton";
+import { ResolutionView } from "@/features/compat/ResolutionView";
 import { AddToCollection } from "@/features/library/AddToCollection";
 import { SaveToggle } from "@/features/library/SaveToggle";
 import { ReportButton } from "@/features/moderation/ReportButton";
@@ -13,31 +15,44 @@ import { formatFileSize } from "@/features/mods/format";
 import { Reviews } from "@/features/social/Reviews";
 import { plural } from "@/lib/plural";
 
-import { getPack } from "./api";
+import { exportUrl, getFiles, getPack } from "./api";
 import { packsCopy } from "./copy";
-import { PackActions } from "./PackActions";
+import { ForkDialog } from "./ForkDialog";
 import { PackCover } from "./PackCover";
+import { PackInstall } from "./PackInstall";
 import { PackModsGrid } from "./PackModsGrid";
 import { PackOwnerActions } from "./PackOwnerActions";
+import { ShareLink } from "./ShareLink";
 import type { PackDetail as Pack } from "./types";
 
 const copy = packsCopy.detail;
+const TONES = { ok: "ok", warnings: "warning", errors: "error", unknown: "warning" } as const;
 
-/** /packs/[slug]: cover and the .mrpack first, then mods, requirements, install, reviews. */
-export async function PackDetail({ slug }: { slug: string }) {
-  const pack = await getPack(slug);
+type PackDetailProps = { slug: string; shareToken?: string };
+
+/** /packs/[slug]: the .mrpack first, then what is inside, the check and how to install. */
+export async function PackDetail({ slug, shareToken = "" }: PackDetailProps) {
+  const [pack, files] = await Promise.all([getPack(slug, shareToken), getFiles(slug, shareToken)]);
   if (!pack) notFound();
-  const published = pack.status === "published";
+  const listed = pack.status === "published" && pack.visibility === "public";
+  const target = `${pack.game_version} · ${packsCopy.loaders[pack.loader]}`;
+  const token = pack.visibility === "link" ? shareToken || pack.share_token || "" : "";
+  const notice =
+    pack.status === "draft"
+      ? copy.draft
+      : pack.status === "rejected"
+        ? copy.rejected(pack.rejection_reason)
+        : pack.visibility === "private"
+          ? copy.private
+          : pack.visibility === "link"
+            ? copy.byLink
+            : "";
 
   return (
     <div className="flex flex-col">
-      {!published && (
+      {notice && (
         <p role="status" className="border-b border-line bg-surface px-4 py-3 text-center text-sm">
-          {pack.status === "draft"
-            ? copy.draft
-            : pack.status === "rejected"
-              ? copy.rejected(pack.rejection_reason)
-              : copy.pending}
+          {notice}
         </p>
       )}
       <Container className="flex flex-col gap-12 py-12 md:py-16">
@@ -47,25 +62,39 @@ export async function PackDetail({ slug }: { slug: string }) {
           </div>
           <div className="flex flex-col gap-6">
             <div className="flex flex-wrap items-center gap-3">
-              <Chip tone="packs">{packsCopy.label}</Chip>
-              {pack.is_official && <Badge icon="check">{packsCopy.official}</Badge>}
-              {pack.style_tags.map((style) => (
-                <Badge key={style}>{packsCopy.styles[style]}</Badge>
-              ))}
+              <Chip tone="packs">{packsCopy.origins[pack.origin]}</Chip>
+              <CompatStatus tone={TONES[pack.compat_status]}>
+                {packsCopy.compat[pack.compat_status]}
+              </CompatStatus>
             </div>
             <h1 className="text-h1">{pack.title}</h1>
             {pack.summary && <p className="max-w-prose text-muted">{pack.summary}</p>}
             <p className="text-meta text-muted">
               {[
-                pack.game_version,
-                packsCopy.loaders[pack.loader],
-                plural(pack.mods_count, packsCopy.mods),
+                target,
+                plural(pack.items_count, packsCopy.items),
                 formatFileSize(pack.total_size),
               ].join(" · ")}
             </p>
             <div className="flex flex-wrap items-center gap-3">
-              <PackActions slug={pack.slug} official={pack.is_official} canFork={published} />
-              {published && (
+              {pack.origin === "modrinth" || pack.effective_loader_version ? (
+                <TakeButton external href={exportUrl(pack.slug, token)}>
+                  {pack.origin === "modrinth" ? copy.downloadModrinth : copy.download}
+                </TakeButton>
+              ) : (
+                <p role="status" className="max-w-prose border border-line p-4 text-sm">
+                  {pack.is_mine ? copy.noLoaderVersionMine : copy.noLoaderVersion}
+                </p>
+              )}
+              {pack.status === "published" && (
+                <ForkDialog
+                  slug={pack.slug}
+                  gameVersion={pack.game_version}
+                  loader={pack.loader}
+                  shareToken={token}
+                />
+              )}
+              {listed && (
                 <>
                   <SaveToggle
                     kind="pack"
@@ -77,10 +106,13 @@ export async function PackDetail({ slug }: { slug: string }) {
                   <AddToCollection kind="pack" id={pack.slug} />
                 </>
               )}
-              {pack.is_mine && <PackOwnerActions slug={pack.slug} />}
-              {published && !pack.is_mine && <ReportButton kind="pack" id={pack.slug} />}
+              {pack.is_mine && pack.origin === "community" && <PackOwnerActions slug={pack.slug} />}
+              {listed && !pack.is_mine && <ReportButton kind="pack" id={pack.slug} />}
             </div>
             <Credits pack={pack} />
+            {pack.is_mine && pack.share_token && pack.visibility === "link" && (
+              <ShareLink slug={pack.slug} token={pack.share_token} />
+            )}
           </div>
         </header>
 
@@ -88,10 +120,26 @@ export async function PackDetail({ slug }: { slug: string }) {
           label={copy.tabsLabel}
           items={[
             {
-              value: "mods",
-              label: `${copy.tabs.mods} · ${pack.mods_count}`,
+              value: "items",
+              label: `${copy.tabs.items} · ${pack.items_count}`,
               content: <PackModsGrid items={pack.items} />,
             },
+            ...(pack.compat
+              ? [
+                  {
+                    value: "check",
+                    label: copy.tabs.check,
+                    content: (
+                      <ResolutionView
+                        resolution={pack.compat}
+                        title={copy.tabs.check}
+                        live={false}
+                        downloads={false}
+                      />
+                    ),
+                  },
+                ]
+              : []),
             {
               value: "requirements",
               label: copy.tabs.requirements,
@@ -100,33 +148,14 @@ export async function PackDetail({ slug }: { slug: string }) {
             {
               value: "install",
               label: copy.tabs.install,
-              content: pack.install_html ? (
-                // install_html is rendered from markdown and sanitized on the server (nh3)
-                <div
-                  className="rich-text"
-                  dangerouslySetInnerHTML={{ __html: pack.install_html }}
-                />
-              ) : (
-                <ol className="flex max-w-prose list-decimal flex-col gap-3 pl-6">
-                  {copy.defaultInstall.map((step) => (
-                    <li key={step}>{step}</li>
-                  ))}
-                </ol>
-              ),
+              content: <PackInstall files={files} external={pack.external_files} />,
             },
             {
-              value: "changelog",
-              label: copy.tabs.changelog,
-              content: pack.changelog_html ? (
-                <div
-                  className="rich-text"
-                  dangerouslySetInnerHTML={{ __html: pack.changelog_html }}
-                />
-              ) : (
-                <p className="text-muted">{copy.noChangelog}</p>
-              ),
+              value: "about",
+              label: copy.tabs.about,
+              content: <About pack={pack} />,
             },
-            ...(published
+            ...(listed
               ? [
                   {
                     value: "reviews",
@@ -154,12 +183,14 @@ export async function PackDetail({ slug }: { slug: string }) {
 function Credits({ pack }: { pack: Pack }) {
   return (
     <p className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
-      <span>
-        <span className="text-muted">{copy.by}: </span>
-        <Link href={`/u/${pack.author.nickname}`} className="underline underline-offset-4">
-          {pack.author.nickname}
-        </Link>
-      </span>
+      {pack.origin === "community" && (
+        <span>
+          <span className="text-muted">{copy.by}: </span>
+          <Link href={`/u/${pack.author.nickname}`} className="underline underline-offset-4">
+            {pack.author.nickname}
+          </Link>
+        </span>
+      )}
       {pack.forked_from && (
         <span>
           <span className="text-muted">{copy.forkedFrom}: </span>
@@ -179,6 +210,18 @@ function Credits({ pack }: { pack: Pack }) {
   );
 }
 
+function About({ pack }: { pack: Pack }) {
+  const html = pack.origin === "modrinth" ? pack.description_html : pack.notes_html;
+  if (!html) return <p className="text-muted">{copy.noAbout}</p>;
+  return (
+    <div className="flex flex-col gap-4">
+      {pack.origin === "community" && <h2 className="font-serif text-h2">{copy.notes}</h2>}
+      {/* Rendered from markdown and sanitized on the server (nh3) */}
+      <div className="rich-text" dangerouslySetInnerHTML={{ __html: html }} />
+    </div>
+  );
+}
+
 function Requirements({ pack }: { pack: Pack }) {
   const facts = copy.requirements;
   const loader = `${packsCopy.loaders[pack.loader]} ${
@@ -188,10 +231,9 @@ function Requirements({ pack }: { pack: Pack }) {
     { label: facts.game, value: pack.game_version },
     { label: facts.loader, value: loader },
     { label: facts.ram, value: facts.ramValue(pack.ram_min_gb) },
-    { label: facts.gpu, value: pack.gpu_note },
-    { label: facts.count, value: String(pack.mods_count) },
+    { label: facts.count, value: String(pack.items_count) },
     { label: facts.size, value: formatFileSize(pack.total_size) },
-  ].filter((row) => row.value);
+  ];
   return (
     <dl className="grid max-w-2xl gap-x-10 gap-y-6 sm:grid-cols-2">
       {rows.map((row) => (

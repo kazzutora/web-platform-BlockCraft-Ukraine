@@ -16,9 +16,9 @@ import { queryKeys } from "@/lib/query-keys";
 import { packsCopy } from "./copy";
 import { PackCover } from "./PackCover";
 
-const copy = { empty: "Зборок поки немає — збери першу з улюблених модів." };
+const copy = packsCopy.mine;
 
-/** /me/packs → «Зборки»: drafts lead to the constructor, the rest to their page. */
+/** /me/packs → «Збірки»: drafts lead to the constructor, the rest to their page. */
 export function MyPacks() {
   const packs = useQuery({
     queryKey: queryKeys.packs.mine(),
@@ -64,7 +64,7 @@ export function MyPacks() {
                 <Badge tone={pack.status === "published" ? "neutral" : "accent"}>
                   {packsCopy.builder.status[pack.status]}
                 </Badge>
-                {plural(pack.mods_count, packsCopy.mods)}
+                {plural(pack.items_count, packsCopy.items)}
               </span>
             }
             cover={<PackCover coverUrl={pack.cover_url} icons={pack.icons} />}

@@ -33,6 +33,12 @@ export const queryKeys = {
     install: (slug: string, gameVersion: string, loader: string) =>
       ["compat", "install", slug, gameVersion, loader] as const,
   },
+  imports: {
+    check: (target: object | null, versions: string[]) =>
+      ["imports", "check", target, versions] as const,
+    updates: (target: object | null, hashes: string[]) =>
+      ["imports", "updates", target, hashes] as const,
+  },
   mods: {
     importJob: (id: string) => ["mods", "import-job", id] as const,
   },
@@ -55,6 +61,8 @@ export const queryKeys = {
     search: (query: object) => [...queryKeys.packs.all, "search", query] as const,
     /** Mutation key of «add a mod», to show the rows still being saved. */
     adding: (slug: string) => [...queryKeys.packs.all, "adding", slug] as const,
+    retarget: (slug: string, gameVersion: string, loader: string) =>
+      [...queryKeys.packs.all, "retarget", slug, gameVersion, loader] as const,
   },
   social: {
     reviews: (kind: string, id: string, sort: string) =>

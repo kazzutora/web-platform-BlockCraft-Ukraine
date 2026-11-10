@@ -100,9 +100,19 @@ def _split_unavailable(resolution: Resolution) -> None:
     resolution.missing = [pid for pid in resolution.missing if pid not in resolution.unavailable]
 
 
-def resolve(*, items: list[tuple[Project, str | None]], target: Target) -> Resolved:
-    """`items` are catalog projects with an optional pinned version id."""
-    if len(items) > resolver.MAX_PROJECTS:
+#: A finished modpack may hold many more files than a player may ask about at once
+TRUSTED_LIMIT = 2000
+
+
+def resolve(
+    *, items: list[tuple[Project, str | None]], target: Target, trust_pins: bool = False
+) -> Resolved:
+    """`items` are catalog projects with an optional pinned version id.
+
+    `trust_pins` — a modpack as shipped (see `resolver.resolve`); no 300-project limit.
+    """
+    limit = TRUSTED_LIMIT if trust_pins else resolver.MAX_PROJECTS
+    if len(items) > limit:
         raise DomainError(
             code="pack_too_large",
             message=f"За раз можна перевірити до {resolver.MAX_PROJECTS} проєктів.",
@@ -112,7 +122,7 @@ def resolve(*, items: list[tuple[Project, str | None]], target: Target) -> Resol
     requests = [
         Request(engine, pinned) for engine, (_, pinned) in zip(engine_projects, items, strict=True)
     ]
-    resolution = resolver.resolve(requests, target, index)
+    resolution = resolver.resolve(requests, target, index, trust_pins=trust_pins, limit=limit)
     _split_unavailable(resolution)
     if resolution.missing:
         queue_missing(resolution.missing)

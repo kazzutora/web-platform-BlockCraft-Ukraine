@@ -191,7 +191,7 @@ export default function DevUiPage() {
       <ShowcaseSection id="chips" title="Чипи й фільтри">
         <div className="flex flex-wrap gap-2">
           <Chip tone="mods">Моди</Chip>
-          <Chip tone="packs">Зборки</Chip>
+          <Chip tone="packs">Збірки</Chip>
           <Chip tone="skins">Скіни</Chip>
           <Chip tone="servers">Сервери</Chip>
           <Chip>Без розділу</Chip>

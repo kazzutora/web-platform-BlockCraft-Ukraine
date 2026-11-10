@@ -128,3 +128,11 @@ def _version(values: dict) -> compat.Version:
         file_name=values["file_name"],
         file_size=values["file_size"],
     )
+
+
+def version_of(row: ProjectVersion) -> compat.Version:
+    """One stored version as the engine sees it."""
+    return _version(
+        {name: getattr(row, name) for name in VERSION_FIELDS if name != "project_id"}
+        | {"project_id": row.project_id}
+    )

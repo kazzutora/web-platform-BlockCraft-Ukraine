@@ -66,7 +66,7 @@ Celery worker + beat ──> apps/sources/clients/
 
 Як у v1 (повний список — `CLAUDE.md`). Зміни:
 - Бекенд: нових обов'язкових залежностей немає (`httpx`, `pydantic`, `mcstatus`, `Pillow` уже є). Розбір `modrinth.index.json` — стандартний `json`.
-- Фронтенд: хеші файлів — Web Crypto (`crypto.subtle.digest("SHA-1")`), без бібліотек. Дістати `modrinth.index.json` із `.mrpack` у браузері — `fflate` (≈ 8 КБ, `unzip` з фільтром за назвою файлу); обґрунтувати в журналі рішень.
+- Фронтенд: хеші файлів — Web Crypto (`crypto.subtle.digest("SHA-1")`), без бібліотек. Дістати `modrinth.index.json` із `.mrpack` у браузері — власний розбір центрального каталогу zip і вбудований `DecompressionStream("deflate-raw")` (R4.6), без `fflate`.
 - `motion` — лише якщо справді знадобиться (у v1 так і не встановлений).
 - `django-storages`, S3, Channels — не потрібні (немає файлів від гравців і real-time).
 
@@ -89,7 +89,7 @@ blockcraft/
 │   ├── accounts/      # User, GameProfile («Моя гра»), UserSettings            v1: лишити
 │   ├── sources/       # НОВЕ: clients/, registry.py, SyncRun, GameVersion, задачі метаданих
 │   ├── mods/          # Project, ProjectVersion, Category, importers.py          v1: лишити, розширити
-│   ├── compat/        # НОВЕ: resolver.py, rules.py, identify.py, types.py (без моделей)
+│   ├── compat/        # НОВЕ: resolver.py, rules.py, operations.py, types.py (без моделей, без HTTP); identify — у mods/identify.py
 │   ├── packs/         # Pack, PackItem, PackExternalFile, LoaderRelease           v1 WIP етапу 10: доробити
 │   ├── servers/       # Server, ServerSnapshot, importers.py, пінг, верифікація   v1: модель переробити
 │   ├── skins/         # Skin, importers.py, обробка текстур                        v1: прибрати завантаження
@@ -149,7 +149,7 @@ blockcraft/
 ### 6.4 packs — v1 WIP етапу 10: доробити
 
 - `Pack` (TimeStamped, Engagement; v1 WIP `install_md` + `gpu_note` зливаються в `notes_md`, `style_tags` і `changelog_md` видаляються): `origin` (`modrinth` / `community`), `title`, `slug`, `summary`, `description_html`, `description_uk_html`, `icon_url` (для `modrinth`) або `cover` (згенерована мозаїка з іконок перших 4 елементів — Pillow у Celery; завантаження обкладинки гравцем прибрати), `game_version`, `loader`, `loader_version`, `items_count`, `compat_status` (ok / warnings / errors / unknown), `compat_checked_at`, `compat_report` (JSON — останній `Resolution`).
-  - Для `origin=modrinth`: поля `Sourced` (`external_id` — id проєкту модпака), `modrinth_version_id`, `source_file_url`, `modrinth_downloads`.
+  - Для `origin=modrinth`: `external_id` (id проєкту модпака), `external_url`, `synced_at`, `modrinth_version_id`, `source_file_url`, `modrinth_downloads`, `description_html` (R4: без міксину `Sourced` — у збірок спільноти джерела немає, а `source` у ньому обов'язковий). Склад модпака — як у файлі автора (`reason=requested`, `env` з індексу), перевірка — `trust_pins` (див. 9.3).
   - Для `origin=community`: `author`, `status` (draft / published / hidden), `visibility` (private / link / public), `share_token` (16 символів), `forked_from`, `forks_count`, `ram_min_gb`, `notes_md` (поради автора).
 - `PackItem`: `pack`, `project`, `version` (nullable — коли джерело прибрало файл), `reason` (requested / dependency / implicit), `required_by` (Array slug-ів), `env_client`, `env_server` (required / optional / unsupported — для `.mrpack`), `position`. Unique `(pack, project)`.
 - `PackExternalFile` (для модпаків Modrinth): `pack`, `path`, `url`, `sha1`, `sha512`, `size` — файли з `modrinth.index.json`, яких немає серед проєктів Modrinth (ми їх не підбираємо й не перевіряємо, лише показуємо).
@@ -228,7 +228,7 @@ blockcraft/
 | `POST /packs/{slug}/publish` `{visibility}` | з помилками сумісності — `400 pack_has_errors` | R4 |
 | `GET /packs/{slug}/export.mrpack` | файл `.mrpack` + Download | R4 |
 | `GET /packs/{slug}/files` | прямі посилання для ручного встановлення | R4 |
-| `POST /packs/import` `{index}` або `{files:[{hash, name}]}` | чернетка збірки з `modrinth.index.json` або з хешів папки `mods` | R4 |
+| `POST /packs/import` `{index}` або `{files:[{hash, name}], game_version?, loader?, title?}` | приватна чернетка з `modrinth.index.json` або з хешів папки `mods`; ціль — з індексу, передана або вгадана | R4 |
 | `GET /servers?language=&country=&kind=&version=&category=&online=&q=&sort=` | каталог | R5 |
 | `GET /servers/{slug}`, `GET /servers/{slug}/stats?range=24h\|7d` | сторінка, графік | R5 (v1) |
 | `GET /servers/{slug}/join` | що потрібно для входу: версія або збірка + її статус під «Мою гру» | R5 |
@@ -331,7 +331,10 @@ queue ← запитані (reason=requested); chosen ← {}; rules_incompatible
 ```
 - Один проєкт — одна версія. Якщо залежність просить іншу конкретну версію, ніж уже обрана, лишаємо обрану (якщо вона серед кандидатів) і пишемо `version_mismatch`.
 - Цикли не зависають (перевірка `chosen`).
-- Ліміт набору — 300 проєктів (`400 pack_too_large`).
+- Ліміт набору — 300 проєктів (`400 pack_too_large`); готовий модпак Modrinth перевіряється без нього (до 2000).
+- **`trust_pins`** (модпаки Modrinth): закріплений файл лишається, навіть якщо Modrinth позначив його для іншої гри (`pinned_other_game`), залежності не добудовуються, конфлікти — так. Автор пака вже зібрав і перевірив набір; інакше 12 із 20 топових модпаків показували б «помилки».
+- **Залежності мультилоадерного файлу:** якщо файл зібрано під кілька лоадерів, а залежність не має жодного файлу для лоадера цілі (Kotlin for Forge у Fabric+NeoForge-файлі), її пропускаємо — Modrinth пише залежності на файл, а не на лоадер.
+- **`incompatible` з `version_id`** забороняє лише цю версію (аддон Cobblemon проти Cobblemon 1.5), а не весь проєкт.
 - Продуктивність: версії підвантажуються пачкою на кожен рівень BFS (одна вибірка `ProjectVersion` для всіх нових проєктів рівня).
 
 ### 9.4 Вихід

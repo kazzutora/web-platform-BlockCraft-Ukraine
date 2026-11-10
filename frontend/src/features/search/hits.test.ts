@@ -43,6 +43,6 @@ describe("search hits", () => {
         latest_game_version: "1.21.1",
         items_count: 51,
       }),
-    ).toBe("Зборка · 1.21.1 · NeoForge · 51 мод");
+    ).toBe("Збірка · 1.21.1 · NeoForge · 51 мод");
   });
 });

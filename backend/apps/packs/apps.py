@@ -4,10 +4,12 @@ from django.apps import AppConfig
 class PacksConfig(AppConfig):
     name = "apps.packs"
     label = "packs"
-    verbose_name = "Зборки"
+    verbose_name = "Збірки"
 
     def ready(self) -> None:
         from apps.core import kinds
+
+        from .selectors import listed
 
         kinds.register(
             kinds.Kind(
@@ -17,5 +19,7 @@ class PacksConfig(AppConfig):
                 rating="review",
                 actions=frozenset({"favorite", "review", "collect", "report"}),
                 owner_field="author",
+                # Saved, reviewed and reported only when anyone may open it
+                visible=lambda viewer: listed(),
             )
         )

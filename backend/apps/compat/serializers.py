@@ -8,7 +8,13 @@ from apps.mods.models import Project, ProjectType
 from .services import Resolved
 from .types import Item, ItemStatus, Reason, Status
 
-WARNING_CODES = ["version_mismatch", "optifine_manual", "beta_only", "unknown_dependency"]
+WARNING_CODES = [
+    "version_mismatch",
+    "optifine_manual",
+    "beta_only",
+    "unknown_dependency",
+    "pinned_other_game",
+]
 
 
 class TargetSerializer(serializers.Serializer):
@@ -156,3 +162,69 @@ class ResolveRequestSerializer(serializers.Serializer):
     loader = serializers.ChoiceField(choices=Loader.choices)
     # The engine refuses more than 300 with `pack_too_large`; this only bounds the body
     items = ResolveItemSerializer(many=True, allow_empty=False, max_length=1000)
+
+
+class HashedFileSerializer(serializers.Serializer):
+    hash = serializers.RegexField(r"^[0-9a-fA-F]{40}$", help_text="SHA-1 counted in the browser.")
+    name = serializers.CharField(max_length=300, allow_blank=True, required=False, default="")
+
+
+class IdentifyRequestSerializer(serializers.Serializer):
+    algorithm = serializers.ChoiceField(choices=["sha1"], default="sha1")
+    files = HashedFileSerializer(many=True, allow_empty=False, max_length=2000)
+
+
+class KnownFileSerializer(serializers.Serializer):
+    hash = serializers.CharField()
+    name = serializers.CharField(allow_blank=True)
+    project = ProjectRefSerializer()
+    version = VersionRefSerializer()
+    game_versions = serializers.ListField(child=serializers.CharField())
+    loaders = serializers.ListField(child=serializers.CharField())
+
+
+class UnknownFileSerializer(serializers.Serializer):
+    hash = serializers.CharField()
+    name = serializers.CharField(allow_blank=True)
+
+
+class IdentifyResponseSerializer(serializers.Serializer):
+    known = KnownFileSerializer(many=True)
+    unknown = UnknownFileSerializer(many=True)
+    guess = TargetSerializer(allow_null=True, help_text="«Схоже, це 1.21.1 · Fabric».")
+    fitting = serializers.IntegerField(help_text="Identified mods that fit the guess.")
+    identified = serializers.IntegerField(help_text="Identified mods (resource packs excluded).")
+    source_unavailable = serializers.BooleanField()
+
+
+class UpdatesRequestSerializer(IdentifyRequestSerializer):
+    game_version = serializers.CharField(max_length=32)
+    loader = serializers.ChoiceField(choices=Loader.choices)
+
+
+class UpdateSerializer(serializers.Serializer):
+    hash = serializers.CharField()
+    project = ProjectRefSerializer()
+    current = VersionRefSerializer()
+    latest = VersionRefSerializer(allow_null=True, help_text="null — not ported to the target.")
+    status = serializers.ChoiceField(choices=["up_to_date", "update", "not_ported"])
+
+
+class UpdatesResponseSerializer(serializers.Serializer):
+    target = TargetSerializer()
+    files = UpdateSerializer(many=True)
+    source_unavailable = serializers.BooleanField()
+
+
+def version_ref(row) -> dict:
+    return {
+        "id": row.modrinth_version_id,
+        "version_number": row.version_number,
+        "version_type": row.version_type,
+        "file_name": row.file_name,
+        "file_size": row.file_size,
+    }
+
+
+def project_ref(row) -> dict:
+    return _project(row, None)

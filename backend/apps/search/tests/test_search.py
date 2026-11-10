@@ -119,13 +119,14 @@ def test_server_and_skin_documents():
 
 
 def test_pack_document_is_found_by_the_mods_inside():
-    pack = PackFactory(title="Техно Січ", style_tags=["tech"], loader="neoforge")
+    pack = PackFactory(title="Техно Січ", loader="neoforge")
     add(pack, mod(title="Create"))
     draft = PackFactory(status="draft")
+    by_link = PackFactory(visibility="link")
 
     doc = documents.document_for("pack", pack.pk)
 
-    assert doc["tags"] == ["tech", "Create"]
+    assert doc["tags"] == ["Create"]
     assert (doc["loaders"], doc["latest_game_version"], doc["items_count"]) == (
         ["neoforge"],
         "26.3",
@@ -133,6 +134,7 @@ def test_pack_document_is_found_by_the_mods_inside():
     )
     assert doc["author"] == pack.author.nickname
     assert documents.document_for("pack", draft.pk) is None
+    assert documents.document_for("pack", by_link.pk) is None
 
 
 # Indexing

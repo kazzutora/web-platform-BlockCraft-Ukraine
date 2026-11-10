@@ -6,7 +6,7 @@ export type TabBarItem = NavItem & { icon: IconName };
 /** Sections in the header. */
 export const sections: NavItem[] = [
   { href: "/mods", label: "Моди" },
-  { href: "/packs", label: "Зборки" },
+  { href: "/packs", label: "Збірки" },
   { href: "/skins", label: "Скіни" },
   { href: "/servers", label: "Сервери" },
 ];

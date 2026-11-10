@@ -99,5 +99,5 @@ def test_saved_servers_and_packs_have_their_cards(auth_client):
 
     assert servers[0]["server"]["name"] == "Січ"
     assert servers[0]["server"]["live"]["players_online"] == 7
-    assert (packs[0]["pack"]["title"], packs[0]["pack"]["mods_count"]) == ("Техно", 1)
+    assert (packs[0]["pack"]["title"], packs[0]["pack"]["items_count"]) == ("Техно", 1)
     assert packs[0]["server"] is None

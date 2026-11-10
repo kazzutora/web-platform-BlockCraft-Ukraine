@@ -36,6 +36,8 @@ export const compatCopy = {
     optifine_manual: (p: Params) =>
       `${p.project} працює через OptiFine. Його немає на Modrinth — встанови вручну з optifine.net.`,
     beta_only: (p: Params) => `${p.project}: для цієї гри є лише бета-версія.`,
+    pinned_other_game: (p: Params) =>
+      `${p.project}: автор збірки поклав файл, позначений для іншої версії гри. Зазвичай працює, але гарантій немає.`,
     unknown_dependency: (p: Params) =>
       `${p.required_by} посилається на файл, якого немає ні в нас, ні на Modrinth. Може не запуститися.`,
   } satisfies Record<Schemas["CompatWarningCodeEnum"], (p: Params) => string>,

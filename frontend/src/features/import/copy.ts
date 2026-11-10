@@ -1,0 +1,41 @@
+import type { PluralForms } from "@/lib/plural";
+
+export const importCopy = {
+  title: "Перевір свої моди",
+  intro:
+    "Перетягни папку mods або файл .mrpack. Ми рахуємо відбитки файлів у твоєму браузері — самі файли нікуди не відправляються.",
+  drop: "Перетягни сюди папку mods, .jar-файли або .mrpack",
+  chooseFolder: "Вибрати папку mods",
+  chooseFiles: "Вибрати файли",
+  hashing: (done: number, total: number) => `Рахуємо відбитки: ${done} з ${total}`,
+  asking: "Шукаємо файли на Modrinth…",
+  noFiles: "Тут немає .jar, .zip чи .mrpack — обери папку mods.",
+  notModpack: "Цей .mrpack пошкоджений: у ньому немає modrinth.index.json.",
+  error: "Не вдалося перевірити. Спробуй ще раз.",
+  unavailable: "Modrinth зараз не відповідає — частину файлів могли не впізнати.",
+  again: "Перевірити інші файли",
+  files: { one: "файл", few: "файли", many: "файлів" } satisfies PluralForms,
+  report: {
+    known: "Впізнали",
+    unknown: "Не впізнали",
+    unknownHint: "Цих файлів немає на Modrinth (CurseForge, власні збірки). Їх не перевіряємо.",
+    guess: (target: string) => `Схоже, це ${target}`,
+    guessHint: (fitting: number, total: number) =>
+      `${fitting} із ${total} модів зроблені під цю гру.`,
+    noGuess: "Не вдалося вгадати версію гри — обери її нижче.",
+    check: "Перевірка сумісності",
+    target: "Перевірити під",
+    version: "Версія гри",
+    loader: "Лоадер",
+    updates: "Що буде на іншій версії",
+    showUpdates: "Показати",
+    update: (version: string) => `оновиться до ${version}`,
+    upToDate: "уже найновіший",
+    notPorted: "ще не портовано",
+    save: "Зберегти як збірку",
+    saveHint: "Збірку побачиш лише ти, поки не опублікуєш. Невпізнані файли в неї не потраплять.",
+    saveError: "Не вдалося зберегти збірку.",
+    saveNoGuess: "Версію гри для збірки обери нижче, у блоці «Що буде на іншій версії».",
+    tooMany: (count: number) => `Перевіряємо перші ${count} файлів.`,
+  },
+};

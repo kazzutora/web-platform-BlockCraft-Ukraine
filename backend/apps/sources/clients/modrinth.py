@@ -27,6 +27,7 @@ _projects = TypeAdapter(list[ModrinthProject])
 _versions = TypeAdapter(list[ModrinthVersion])
 _categories = TypeAdapter(list[ModrinthCategory])
 _game_versions = TypeAdapter(list[ModrinthGameVersion])
+_versions_by_hash = TypeAdapter(dict[str, ModrinthVersion])
 
 
 class ModrinthError(SourceError):
@@ -81,12 +82,59 @@ class ModrinthClient(BaseClient):
             params["loaders"] = json.dumps(list(loaders))
         return self.parse(_versions, self.get_json(f"/project/{project_id}/version", params))
 
+    def get_versions_by_ids(self, ids: list[str]) -> list[ModrinthVersion]:
+        """`GET /versions?ids=[…]`: exact files, e.g. the ones a modpack pins."""
+        if not ids:
+            return []
+        return self.parse(_versions, self.get_json("/versions", {"ids": json.dumps(ids)}))
+
     def get_categories(self) -> list[ModrinthCategory]:
         return self.parse(_categories, self.get_json("/tag/category"))
 
     def get_game_versions(self) -> list[ModrinthGameVersion]:
         """Every Minecraft version Modrinth knows, newest first (`/tag/game_version`)."""
         return self.parse(_game_versions, self.get_json("/tag/game_version"))
+
+    def versions_by_hashes(
+        self, hashes: list[str], *, algorithm: str = "sha1"
+    ) -> dict[str, ModrinthVersion]:
+        """`POST /version_files`: hash → version; unknown hashes are simply absent."""
+        if not hashes:
+            return {}
+        data = self.post_json("/version_files", {"hashes": hashes, "algorithm": algorithm})
+        return self.parse(_versions_by_hash, data)
+
+    def latest_by_hashes(
+        self,
+        hashes: list[str],
+        *,
+        loaders: list[str],
+        game_versions: list[str],
+        algorithm: str = "sha1",
+    ) -> dict[str, ModrinthVersion]:
+        """`POST /version_files/update`: hash → the newest version for the loaders and game."""
+        if not hashes:
+            return {}
+        body = {
+            "hashes": hashes,
+            "algorithm": algorithm,
+            "loaders": loaders,
+            "game_versions": game_versions,
+        }
+        return self.parse(_versions_by_hash, self.post_json("/version_files/update", body))
+
+    def image(self, url: str, *, max_bytes: int = 2 * 1024 * 1024) -> bytes:
+        """A project icon for a pack cover; only Modrinth's CDN, never anything else."""
+        parts = urlsplit(url)
+        if parts.scheme != "https" or parts.hostname != CDN_HOST:
+            raise ModrinthError(f"{url}: not a Modrinth CDN file")
+        response = self.request("GET", url)
+        declared = response.headers.get("content-length")
+        if declared and declared.isdigit() and int(declared) > max_bytes:
+            raise ModrinthError(f"{url}: larger than {max_bytes} bytes")
+        if len(response.content) > max_bytes:
+            raise ModrinthError(f"{url}: larger than {max_bytes} bytes")
+        return response.content
 
     def _range(self, url: str, start: int, end: int) -> bytes:
         try:

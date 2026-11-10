@@ -4,26 +4,20 @@ import Link from "next/link";
 import { Illustration } from "@/components/ui/Illustration";
 
 import { packsCopy } from "./copy";
+import { reasonOf, sortItems } from "./items";
 import type { PackItem } from "./types";
 
 const copy = packsCopy.detail;
 
-/** Mods as an inventory grid: icon, name and a mark for dependencies and optional ones. */
+/** The set as an inventory grid: icon, name and why each project is there. */
 export function PackModsGrid({ items }: { items: PackItem[] }) {
-  // The author's picks first, the libraries they pulled in after
-  const sorted = [...items].sort(
-    (a, b) => Number(a.added_as_dependency) - Number(b.added_as_dependency),
-  );
+  const titles = new Map(items.map((item) => [item.project.slug, item.project.title]));
   return (
     <ul className="grid grid-cols-3 gap-x-4 gap-y-6 sm:grid-cols-4 md:grid-cols-6">
-      {sorted.map((item) => {
+      {sortItems(items).map((item) => {
         const mark = !item.version
           ? copy.noFile
-          : item.added_as_dependency
-            ? copy.dependency
-            : !item.is_required
-              ? copy.optional
-              : "";
+          : reasonOf(item, titles) || (item.env_client === "optional" ? copy.optional : "");
         return (
           <li key={item.project.slug} className="min-w-0">
             <Link href={`/mods/${item.project.slug}`} className="group flex flex-col gap-2">
@@ -45,7 +39,13 @@ export function PackModsGrid({ items }: { items: PackItem[] }) {
               <span className="truncate text-sm font-medium group-hover:underline">
                 {item.project.title}
               </span>
-              {mark && <span className="-mt-1 text-meta text-muted">{mark}</span>}
+              {mark && (
+                <span
+                  className={`-mt-1 line-clamp-2 text-meta ${item.version ? "text-muted" : "text-danger"}`}
+                >
+                  {mark}
+                </span>
+              )}
             </Link>
           </li>
         );

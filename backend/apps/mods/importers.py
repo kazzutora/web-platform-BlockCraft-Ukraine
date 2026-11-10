@@ -184,7 +184,7 @@ def _dependencies(item: schemas.ModrinthVersion) -> list[dict]:
     ]
 
 
-def _version_values(item: schemas.ModrinthVersion, file: schemas.VersionFile) -> dict:
+def version_values(item: schemas.ModrinthVersion, file: schemas.VersionFile) -> dict:
     return {
         "name": item.name[:256],
         "version_number": item.version_number[:128],
@@ -226,7 +226,7 @@ def import_versions(
         if file is None or item.id in seen:
             continue
         seen.add(item.id)
-        values = _version_values(item, file)
+        values = version_values(item, file)
         row = known.get(item.id)
         if row is None:
             new.append(ProjectVersion(project=project, modrinth_version_id=item.id, **values))

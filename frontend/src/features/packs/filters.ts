@@ -1,20 +1,18 @@
-import {
-  type CatalogQuery,
-  type PackLoader,
-  type PackStyle,
-  packLoaders,
-  packStyles,
-} from "./types";
+import { type CatalogQuery, type PackLoader, packLoaders } from "./types";
+
+export type PackOrigin = "modrinth" | "community";
+const origins: PackOrigin[] = ["modrinth", "community"];
 
 /** Catalog state, kept in the URL query string. */
 export type PackFilters = {
   gameVersion: string;
   loader: PackLoader | "";
-  styles: PackStyle[];
-  official: boolean;
+  origin: PackOrigin | "";
   sort: string;
   q: string;
   page: number;
+  /** «Усі версії»: ignore the defaults from «Моя гра». */
+  all: boolean;
 };
 
 type SearchParams = Record<string, string | string[] | undefined>;
@@ -29,26 +27,48 @@ const first = (value: string | string[] | undefined) =>
 export function parseFilters(params: SearchParams): PackFilters {
   const gameVersion = first(params.version);
   const loader = first(params.loader) as PackLoader;
+  const origin = first(params.origin) as PackOrigin;
   const sort = first(params.sort);
   return {
     gameVersion: RELEASE.test(gameVersion) ? gameVersion : "",
     loader: packLoaders.includes(loader) ? loader : "",
-    styles: first(params.style)
-      .split(",")
-      .filter((style): style is PackStyle => packStyles.includes(style as PackStyle)),
-    official: first(params.official) === "1",
+    origin: origins.includes(origin) ? origin : "",
     sort: sorts.includes(sort) ? sort : "",
     q: first(params.q),
     page: Math.max(1, Number.parseInt(first(params.page), 10) || 1),
+    all: first(params.all) === "1",
   };
 }
 
+type Game = { game_version?: string | null; loader?: string } | null;
+
+/** Version and loader from «Моя гра» unless the URL says otherwise (vanilla has no packs). */
+export function withGameDefaults(
+  filters: PackFilters,
+  game: Game,
+): { filters: PackFilters; fromGame: boolean } {
+  if (filters.all || !game) return { filters, fromGame: false };
+  const next = { ...filters };
+  let fromGame = false;
+  if (!next.gameVersion && game.game_version) {
+    next.gameVersion = game.game_version;
+    fromGame = true;
+  }
+  if (!next.loader && packLoaders.includes(game.loader as PackLoader)) {
+    next.loader = game.loader as PackLoader;
+    fromGame = true;
+  }
+  return { filters: next, fromGame };
+}
+
 export function toApiQuery(filters: PackFilters, page = filters.page): CatalogQuery {
-  const query: CatalogQuery = { page };
-  if (filters.gameVersion) query.game_version = filters.gameVersion as CatalogQuery["game_version"];
-  if (filters.loader) query.loader = filters.loader;
-  if (filters.styles.length) query.style = filters.styles.join(",");
-  if (filters.official) query.official = true;
+  // Game parameters always go explicitly: the page shows exactly what it filters by
+  const query: CatalogQuery = {
+    page,
+    game_version: filters.gameVersion,
+    loader: filters.loader as CatalogQuery["loader"],
+  };
+  if (filters.origin) query.origin = filters.origin;
   if (filters.sort) query.sort = filters.sort as CatalogQuery["sort"];
   if (filters.q) query.q = filters.q;
   return query;
@@ -60,14 +80,10 @@ export function catalogHref(filters: PackFilters, change: Partial<PackFilters> =
   const params = new URLSearchParams();
   if (next.gameVersion) params.set("version", next.gameVersion);
   if (next.loader) params.set("loader", next.loader);
-  if (next.styles.length) params.set("style", next.styles.join(","));
-  if (next.official) params.set("official", "1");
+  if (next.origin) params.set("origin", next.origin);
   if (next.sort) params.set("sort", next.sort);
   if (next.q) params.set("q", next.q);
+  if (next.all) params.set("all", "1");
   const query = params.toString();
   return query ? `/packs?${query}` : "/packs";
-}
-
-export function toggleStyle(list: PackStyle[], style: PackStyle): PackStyle[] {
-  return list.includes(style) ? list.filter((item) => item !== style) : [...list, style];
 }

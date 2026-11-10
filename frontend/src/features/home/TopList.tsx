@@ -17,7 +17,7 @@ export const topCopy = {
   periodLabel: "Період",
   kinds: {
     mod: "Моди",
-    pack: "Зборки",
+    pack: "Збірки",
     skin: "Скіни",
     server: "Сервери",
   } satisfies Record<TopKind, string>,

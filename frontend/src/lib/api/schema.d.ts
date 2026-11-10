@@ -124,6 +124,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/compat/identify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Only SHA-1 hashes: files never leave the player's computer. */
+        post: operations["compat_identify"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/compat/resolve": {
         parameters: {
             query?: never;
@@ -135,6 +152,23 @@ export interface paths {
         put?: never;
         /** @description Up to 300 projects. `incomplete` — some dependencies are being imported from Modrinth, ask again in a few seconds. */
         post: operations["compat_resolve"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/compat/updates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description /import: what of these files can move to another game, and to which version. */
+        post: operations["compat_updates"];
         delete?: never;
         options?: never;
         head?: never;
@@ -611,12 +645,12 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Catalog of published packs
-         * @description No PUT on the pack itself: edits are PATCH, PUT is the cover upload.
+         * Catalog of listed packs
+         * @description `list()` through `for_guests`; put it before ListModelMixin in the bases.
          */
         get: operations["packs_list"];
         put?: never;
-        /** @description A draft: add mods with `items`, then `publish`. */
+        /** @description A draft: add projects with `items`, then `publish`. */
         post: operations["packs_create"];
         delete?: never;
         options?: never;
@@ -631,31 +665,30 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Published packs for everyone; the author also sees drafts. */
+        /** @description Listed packs for everyone, «за посиланням» with its token; the author also sees drafts and private ones. */
         get: operations["packs_retrieve"];
         put?: never;
         post?: never;
-        /** @description No PUT on the pack itself: edits are PATCH, PUT is the cover upload. */
+        /** @description `list()` through `for_guests`; put it before ListModelMixin in the bases. */
         delete: operations["packs_delete"];
         options?: never;
         head?: never;
-        /** @description Changing the game version or loader picks every file again. */
+        /** @description Changing the game version or loader resolves the whole set again. */
         patch: operations["packs_update"];
         trace?: never;
     };
-    "/api/v1/packs/{slug}/cover": {
+    "/api/v1/packs/{slug}/check": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        get?: never;
-        /** @description No PUT on the pack itself: edits are PATCH, PUT is the cover upload. */
-        put: operations["packs_cover_upload"];
+        /** @description The compatibility report of the pack (kept until the set changes). */
+        get: operations["packs_check"];
+        put?: never;
         post?: never;
-        /** @description No PUT on the pack itself: edits are PATCH, PUT is the cover upload. */
-        delete: operations["packs_cover_delete"];
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -678,6 +711,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/packs/{slug}/files": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Direct links for installing by hand; datapacks go into a world. */
+        get: operations["packs_files"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/packs/{slug}/fork": {
         parameters: {
             query?: never;
@@ -687,7 +737,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description A draft copy owned by the caller. */
+        /** @description A draft copy owned by the caller, for the same game or another one. */
         post: operations["packs_fork"];
         delete?: never;
         options?: never;
@@ -704,7 +754,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Adds the file for the pack's version and loader and its required dependencies (`added_as_dependency`). Dependencies missing from the catalog are brought in from Modrinth in the background. */
+        /** @description Adds a project; the whole set is resolved again, so its dependencies and shader engine come with it (`reason`, `required_by`). Dependencies missing from the catalog are imported in the background (`compat.status = incomplete`). */
         post: operations["packs_items_add"];
         delete?: never;
         options?: never;
@@ -722,11 +772,11 @@ export interface paths {
         get?: never;
         put?: never;
         post?: never;
-        /** @description Dependencies nothing else needs leave with it. */
+        /** @description Only projects the author picked; dependencies leave with what needs them. */
         delete: operations["packs_item_remove"];
         options?: never;
         head?: never;
-        /** @description No PUT on the pack itself: edits are PATCH, PUT is the cover upload. */
+        /** @description `list()` through `for_guests`; put it before ListModelMixin in the bases. */
         patch: operations["packs_item_update"];
         trace?: never;
     };
@@ -739,8 +789,42 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description A new author's first three works wait for moderation (`pending`). */
+        /** @description «Усім» or «за посиланням»; a pack with compatibility errors is refused with `pack_has_errors`. */
         post: operations["packs_publish"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/packs/{slug}/retarget": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description What a copy for another game would keep, change, lose and gain. */
+        get: operations["packs_retarget"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/packs/import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description «Зберегти як збірку» on /import: a private draft from hashes or an index. */
+        post: operations["packs_import"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1089,6 +1173,11 @@ export interface components {
             id: string;
             note?: string;
         };
+        /**
+         * @description * `sha1` - sha1
+         * @enum {string}
+         */
+        AlgorithmEnum: "sha1";
         /** @description Shape of every error response (see core.exceptions.handler). */
         ApiError: {
             detail: string;
@@ -1122,6 +1211,12 @@ export interface components {
             project_type: components["schemas"]["ProjectTypeEnum"];
             /** Група */
             header?: string;
+        };
+        Changed: {
+            /** @description Slug. */
+            project: string;
+            old_version: string | null;
+            new_version: string;
         };
         /**
          * @description * `ok` - ok
@@ -1236,20 +1331,14 @@ export interface components {
          *     * `optifine_manual` - optifine_manual
          *     * `beta_only` - beta_only
          *     * `unknown_dependency` - unknown_dependency
+         *     * `pinned_other_game` - pinned_other_game
          * @enum {string}
          */
-        CompatWarningCodeEnum: "version_mismatch" | "optifine_manual" | "beta_only" | "unknown_dependency";
+        CompatWarningCodeEnum: "version_mismatch" | "optifine_manual" | "beta_only" | "unknown_dependency" | "pinned_other_game";
         Conflict: {
             a: string;
             b: string;
             declared_by: string;
-        };
-        CoverUploadRequest: {
-            /**
-             * Format: binary
-             * @description PNG, JPEG or WebP up to 2 MB; cropped to 1200×630.
-             */
-            cover: string;
         };
         CurrentSkinRequest: {
             skin_id: number;
@@ -1281,12 +1370,26 @@ export interface components {
          * @enum {string}
          */
         EditionEnum: "java" | "bedrock";
+        ExternalFile: {
+            readonly path: string;
+            /** Format: uri */
+            readonly url: string;
+            readonly size: number;
+        };
         FavoriteState: {
             kind: string;
             id: string;
             favorited: boolean;
             favorites_count: number;
         };
+        /**
+         * @description * `mods` - mods
+         *     * `resourcepacks` - resourcepacks
+         *     * `shaderpacks` - shaderpacks
+         *     * `datapacks` - datapacks
+         * @enum {string}
+         */
+        FolderEnum: "mods" | "resourcepacks" | "shaderpacks" | "datapacks";
         ForYou: {
             /**
              * @description `profile`: for the player's version and loader; `popular`: this week's best.
@@ -1298,6 +1401,10 @@ export interface components {
             game_version: string;
             loader: string;
             mods: components["schemas"]["ProjectCard"][];
+        };
+        ForkRequest: {
+            game_version?: string;
+            loader?: components["schemas"]["PackLoaderEnum"];
         };
         GalleryImage: {
             /** Format: uri */
@@ -1346,6 +1453,12 @@ export interface components {
          * @enum {string}
          */
         GpuLoadEnum: "light" | "medium" | "heavy";
+        HashedFileRequest: {
+            /** @description SHA-1 counted in the browser. */
+            hash: string;
+            /** @default  */
+            name: string;
+        };
         Health: {
             status: components["schemas"]["CheckStatusEnum"];
             checks: components["schemas"]["HealthChecks"];
@@ -1361,6 +1474,22 @@ export interface components {
             servers_online: components["schemas"]["ServerCard"][];
             new_skins: components["schemas"]["SkinCard"][];
             new_servers: components["schemas"]["ServerCard"][];
+        };
+        IdentifyRequestRequest: {
+            /** @default sha1 */
+            algorithm: components["schemas"]["AlgorithmEnum"];
+            files: components["schemas"]["HashedFileRequest"][];
+        };
+        IdentifyResponse: {
+            known: components["schemas"]["KnownFile"][];
+            unknown: components["schemas"]["UnknownFile"][];
+            /** @description «Схоже, це 1.21.1 · Fabric». */
+            guess: components["schemas"]["Target"] | null;
+            /** @description Identified mods that fit the guess. */
+            fitting: number;
+            /** @description Identified mods (resource packs excluded). */
+            identified: number;
+            source_unavailable: boolean;
         };
         ImportRequest: {
             /** @description Link to the project on Modrinth or its slug. */
@@ -1379,20 +1508,6 @@ export interface components {
         IpCopies: {
             ip_copies_count: number;
         };
-        Issue: {
-            type: components["schemas"]["IssueTypeEnum"];
-            project: components["schemas"]["PackIcon"];
-            other: components["schemas"]["PackIcon"] | null;
-            other_modrinth_id: string;
-            message: string;
-        };
-        /**
-         * @description * `no_version` - no_version
-         *     * `missing_dependency` - missing_dependency
-         *     * `conflict` - conflict
-         * @enum {string}
-         */
-        IssueTypeEnum: "no_version" | "missing_dependency" | "conflict";
         Job: {
             /** Format: uuid */
             id: string;
@@ -1423,6 +1538,14 @@ export interface components {
          * @enum {string}
          */
         KindEnum: "collection" | "mod" | "skin" | "server" | "pack";
+        KnownFile: {
+            hash: string;
+            name: string;
+            project: components["schemas"]["ProjectRef"];
+            version: components["schemas"]["VersionRef"];
+            game_versions: string[];
+            loaders: string[];
+        };
         /**
          * @description * `uk` - Українська
          *     * `en` - English
@@ -1528,24 +1651,26 @@ export interface components {
             /** @description Item of the requested object in this collection, to remove it again. */
             readonly item_id: number | null;
         };
-        /** @description «Мої роботи»: drafts and the moderation outcome too. */
+        /** @description «Мої збірки»: drafts and private ones too. */
         MyPack: {
             readonly slug: string;
             /** Назва */
             readonly title: string;
             /** Коротко */
             readonly summary: string;
+            /** Звідки */
+            readonly origin: components["schemas"]["OriginEnum"];
             readonly author: components["schemas"]["UserBrief"];
             readonly cover_url: string | null;
             readonly icons: components["schemas"]["PackIcon"][];
-            readonly style_tags: components["schemas"]["PackStyleEnum"][];
             /** Версія гри */
             readonly game_version: string;
             /** Лоадер */
             readonly loader: components["schemas"]["PackLoaderEnum"];
-            /** Офіційна */
-            readonly is_official: boolean;
-            readonly mods_count: number;
+            /** Елементів */
+            readonly items_count: number;
+            /** Сумісність */
+            readonly compat_status: components["schemas"]["PackCompatStatusEnum"];
             /** Format: double */
             readonly rating_avg: number;
             readonly rating_count: number;
@@ -1555,10 +1680,12 @@ export interface components {
             readonly is_favorited: boolean;
             readonly my_review_stars: number | null;
             readonly source: components["schemas"]["SourceRef"] | null;
+            /** @description Built for the viewer's «Моя гра»; null when nothing is chosen. */
+            readonly fits_my_game: boolean | null;
             /** Статус */
             readonly status: components["schemas"]["PublishStatusEnum"];
-            /** Причина відхилення */
-            readonly rejection_reason: string;
+            /** Видимість */
+            readonly visibility: components["schemas"]["PackVisibilityEnum"];
             /** Format: date-time */
             readonly updated_at: string;
         };
@@ -1591,9 +1718,10 @@ export interface components {
          *     * `restored` - Роботу повернуто
          *     * `review` - Новий відгук
          *     * `warning` - Попередження
+         *     * `pack_attention` - Збірка потребує уваги
          * @enum {string}
          */
-        NotificationTypeEnum: "hidden" | "restored" | "review" | "warning";
+        NotificationTypeEnum: "hidden" | "restored" | "review" | "warning" | "pack_attention";
         NotificationsPage: {
             unread_count: number;
             results: components["schemas"]["Notification"][];
@@ -1608,29 +1736,37 @@ export interface components {
             loader?: components["schemas"]["LoaderEnum"] | components["schemas"]["BlankEnum"];
             edition?: components["schemas"]["EditionEnum"];
         };
+        /**
+         * @description * `modrinth` - Modrinth
+         *     * `community` - Спільнота
+         * @enum {string}
+         */
+        OriginEnum: "modrinth" | "community";
         PackBrief: {
             readonly slug: string;
             /** Назва */
             readonly title: string;
         };
-        /** @description Catalog card: cover (or the first mod icons), target and counters. */
+        /** @description Catalog card: cover (or the first icons), target, compatibility and counters. */
         PackCard: {
             readonly slug: string;
             /** Назва */
             readonly title: string;
             /** Коротко */
             readonly summary: string;
+            /** Звідки */
+            readonly origin: components["schemas"]["OriginEnum"];
             readonly author: components["schemas"]["UserBrief"];
             readonly cover_url: string | null;
             readonly icons: components["schemas"]["PackIcon"][];
-            readonly style_tags: components["schemas"]["PackStyleEnum"][];
             /** Версія гри */
             readonly game_version: string;
             /** Лоадер */
             readonly loader: components["schemas"]["PackLoaderEnum"];
-            /** Офіційна */
-            readonly is_official: boolean;
-            readonly mods_count: number;
+            /** Елементів */
+            readonly items_count: number;
+            /** Сумісність */
+            readonly compat_status: components["schemas"]["PackCompatStatusEnum"];
             /** Format: double */
             readonly rating_avg: number;
             readonly rating_count: number;
@@ -1640,25 +1776,37 @@ export interface components {
             readonly is_favorited: boolean;
             readonly my_review_stars: number | null;
             readonly source: components["schemas"]["SourceRef"] | null;
+            /** @description Built for the viewer's «Моя гра»; null when nothing is chosen. */
+            readonly fits_my_game: boolean | null;
         };
-        /** @description Catalog card: cover (or the first mod icons), target and counters. */
+        /**
+         * @description * `ok` - Сумісно
+         *     * `warnings` - Є попередження
+         *     * `errors` - Є проблеми
+         *     * `unknown` - Не перевірено
+         * @enum {string}
+         */
+        PackCompatStatusEnum: "ok" | "warnings" | "errors" | "unknown";
+        /** @description Catalog card: cover (or the first icons), target, compatibility and counters. */
         PackDetail: {
             readonly slug: string;
             /** Назва */
             readonly title: string;
             /** Коротко */
             readonly summary: string;
+            /** Звідки */
+            readonly origin: components["schemas"]["OriginEnum"];
             readonly author: components["schemas"]["UserBrief"];
             readonly cover_url: string | null;
             readonly icons: components["schemas"]["PackIcon"][];
-            readonly style_tags: components["schemas"]["PackStyleEnum"][];
             /** Версія гри */
             readonly game_version: string;
             /** Лоадер */
             readonly loader: components["schemas"]["PackLoaderEnum"];
-            /** Офіційна */
-            readonly is_official: boolean;
-            readonly mods_count: number;
+            /** Елементів */
+            readonly items_count: number;
+            /** Сумісність */
+            readonly compat_status: components["schemas"]["PackCompatStatusEnum"];
             /** Format: double */
             readonly rating_avg: number;
             readonly rating_count: number;
@@ -1668,42 +1816,79 @@ export interface components {
             readonly is_favorited: boolean;
             readonly my_review_stars: number | null;
             readonly source: components["schemas"]["SourceRef"] | null;
+            /** @description Built for the viewer's «Моя гра»; null when nothing is chosen. */
+            readonly fits_my_game: boolean | null;
+            /** Опис (з Modrinth) */
+            readonly description_html: string;
+            /** Поради автора */
+            readonly notes_md: string;
+            readonly notes_html: string;
             /** Версія лоадера */
             readonly loader_version: string;
             /** @description What the .mrpack will ask for: pinned by the author or the latest stable build. */
             readonly effective_loader_version: string;
             /** Мінімум RAM, ГБ */
             readonly ram_min_gb: number;
-            /** Відеокарта */
-            readonly gpu_note: string;
-            /** Як встановити */
-            readonly install_md: string;
-            readonly install_html: string;
-            /** Що нового */
-            readonly changelog_md: string;
-            readonly changelog_html: string;
             readonly forked_from: components["schemas"]["PackBrief"] | null;
             readonly forks_count: number;
             readonly items: components["schemas"]["PackItem"][];
-            readonly issues: components["schemas"]["Issue"][];
+            readonly external_files: components["schemas"]["ExternalFile"][];
+            /** @description The last check of the set (`Resolution`); null before the first one. */
+            readonly compat: components["schemas"]["Resolution"] | null;
+            /**
+             * Перевірено
+             * Format: date-time
+             */
+            readonly compat_checked_at: string | null;
             readonly total_size: number;
             /** Статус */
             readonly status: components["schemas"]["PublishStatusEnum"];
+            /** Видимість */
+            readonly visibility: components["schemas"]["PackVisibilityEnum"];
+            /** @description Only for the author: `?share_token=` opens a «за посиланням» pack. */
+            readonly share_token: string | null;
             /** Причина відхилення */
             readonly rejection_reason: string;
             readonly is_mine: boolean;
+            /** Format: uri */
+            readonly source_file_url: string;
             /** Format: date-time */
             readonly created_at: string;
             /** Format: date-time */
             readonly updated_at: string;
         };
+        /**
+         * @description * `required` - Потрібен
+         *     * `optional` - За бажанням
+         *     * `unsupported` - Не потрібен
+         * @enum {string}
+         */
+        PackEnvEnum: "required" | "optional" | "unsupported";
         PackFile: {
-            readonly id: number;
+            id: string;
             readonly version_number: string;
             readonly file_name: string;
             readonly file_size: number;
             readonly game_versions: string[];
             readonly loaders: string[];
+        };
+        /** @description «Встановити вручну»: one direct link per file, with the folder it goes to. */
+        PackFileLink: {
+            project: components["schemas"]["PackIcon"];
+            file_name: string;
+            /** Format: uri */
+            url: string;
+            size: number;
+            /**
+             * @description datapacks: into a world's folder, not the game's.
+             *
+             *     * `mods` - mods
+             *     * `resourcepacks` - resourcepacks
+             *     * `shaderpacks` - shaderpacks
+             *     * `datapacks` - datapacks
+             */
+            folder: components["schemas"]["FolderEnum"];
+            optional: boolean;
         };
         PackIcon: {
             readonly slug: string;
@@ -1712,18 +1897,38 @@ export interface components {
             /** Format: uri */
             readonly icon_url: string;
         };
+        /**
+         * @description `files` from a `mods` folder, or `index` — modrinth.index.json the browser took out
+         *     of a .mrpack. Nothing else of the player's files reaches us.
+         */
+        PackImportRequest: {
+            title?: string;
+            /** @description Default: the guess. */
+            game_version?: string;
+            loader?: components["schemas"]["PackLoaderEnum"] | components["schemas"]["BlankEnum"];
+            files?: components["schemas"]["HashedFileRequest"][];
+            index?: unknown;
+        };
         PackItem: {
             readonly project: components["schemas"]["PackProject"];
             readonly version: components["schemas"]["PackFile"] | null;
-            /** Обов'язковий */
-            readonly is_required: boolean;
-            /** Додано як залежність */
-            readonly added_as_dependency: boolean;
+            /** Чому тут */
+            readonly reason: components["schemas"]["PackItemReasonEnum"];
+            readonly required_by: string[];
+            readonly env_client: components["schemas"]["PackEnvEnum"];
+            readonly env_server: components["schemas"]["PackEnvEnum"];
         };
         PackItemAddRequest: {
             /** @description Slug of a catalog project. */
             project: string;
         };
+        /**
+         * @description * `requested` - Обрав автор
+         *     * `dependency` - Залежність
+         *     * `implicit` - Потрібен неявно
+         * @enum {string}
+         */
+        PackItemReasonEnum: "requested" | "dependency" | "implicit";
         /**
          * @description * `fabric` - Fabric
          *     * `forge` - Forge
@@ -1743,31 +1948,22 @@ export interface components {
             readonly summary: string;
         };
         /**
-         * @description * `performance` - Оптимізація
-         *     * `vanilla-plus` - Ванілла+
-         *     * `tech` - Техніка
-         *     * `magic` - Магія
-         *     * `adventure` - Пригоди
-         *     * `building` - Будівництво
-         *     * `survival` - Виживання
-         *     * `quests` - Квести
-         *     * `multiplayer` - Для друзів
-         *     * `lightweight` - Для слабких ПК
+         * @description * `private` - Лише я
+         *     * `link` - За посиланням
+         *     * `public` - Усім
          * @enum {string}
          */
-        PackStyleEnum: "performance" | "vanilla-plus" | "tech" | "magic" | "adventure" | "building" | "survival" | "quests" | "multiplayer" | "lightweight";
+        PackVisibilityEnum: "private" | "link" | "public";
         PackWriteRequest: {
             title: string;
             summary?: string;
-            style_tags?: components["schemas"]["PackStyleEnum"][];
             game_version: string;
             loader: components["schemas"]["PackLoaderEnum"];
             /** @description Empty: the latest stable build at export time. */
             loader_version?: string;
             ram_min_gb?: number;
-            gpu_note?: string;
-            install_md?: string;
-            changelog_md?: string;
+            notes_md?: string;
+            visibility?: components["schemas"]["PackVisibilityEnum"];
         };
         PaginatedCollectionList: {
             count: number;
@@ -1895,21 +2091,19 @@ export interface components {
             is_private?: boolean;
         };
         PatchedPackItemUpdateRequest: {
-            /** @description Optional files are offered, not forced, by launchers. */
-            is_required?: boolean;
+            /** @description Launchers offer an optional file instead of installing it. */
+            optional?: boolean;
         };
         PatchedPackWriteRequest: {
             title?: string;
             summary?: string;
-            style_tags?: components["schemas"]["PackStyleEnum"][];
             game_version?: string;
             loader?: components["schemas"]["PackLoaderEnum"];
             /** @description Empty: the latest stable build at export time. */
             loader_version?: string;
             ram_min_gb?: number;
-            gpu_note?: string;
-            install_md?: string;
-            changelog_md?: string;
+            notes_md?: string;
+            visibility?: components["schemas"]["PackVisibilityEnum"];
         };
         PatchedServerWriteRequest: {
             name?: string;
@@ -2071,6 +2265,10 @@ export interface components {
             date_joined: string | null;
             skin: components["schemas"]["ProfileSkin"] | null;
         };
+        PublishRequest: {
+            /** @default public */
+            visibility: components["schemas"]["PublishVisibilityEnum"];
+        };
         /**
          * @description * `draft` - Чернетка
          *     * `pending` - На модерації
@@ -2080,6 +2278,12 @@ export interface components {
          * @enum {string}
          */
         PublishStatusEnum: "draft" | "pending" | "published" | "rejected" | "hidden";
+        /**
+         * @description * `public` - public
+         *     * `link` - link
+         * @enum {string}
+         */
+        PublishVisibilityEnum: "public" | "link";
         /**
          * @description * `inappropriate` - Неприйнятний вміст
          *     * `spam` - Спам або реклама
@@ -2131,6 +2335,19 @@ export interface components {
             game_version: string;
             loader: components["schemas"]["LoaderEnum"];
             items: components["schemas"]["ResolveItemRequest"][];
+        };
+        Retarget: {
+            target: {
+                [key: string]: string;
+            };
+            kept: string[];
+            changed: components["schemas"]["Changed"][];
+            dropped: string[];
+            added: string[];
+            /** @description Slug → title. */
+            titles: {
+                [key: string]: string;
+            };
         };
         Review: {
             readonly id: number;
@@ -2488,8 +2705,39 @@ export interface components {
             skins: components["schemas"]["SkinCard"][];
             servers: components["schemas"]["ServerCard"][];
         };
+        UnknownFile: {
+            hash: string;
+            name: string;
+        };
         Unread: {
             unread_count: number;
+        };
+        Update: {
+            hash: string;
+            project: components["schemas"]["ProjectRef"];
+            current: components["schemas"]["VersionRef"];
+            /** @description null — not ported to the target. */
+            latest: components["schemas"]["VersionRef"] | null;
+            status: components["schemas"]["UpdateStatusEnum"];
+        };
+        /**
+         * @description * `up_to_date` - up_to_date
+         *     * `update` - update
+         *     * `not_ported` - not_ported
+         * @enum {string}
+         */
+        UpdateStatusEnum: "up_to_date" | "update" | "not_ported";
+        UpdatesRequestRequest: {
+            /** @default sha1 */
+            algorithm: components["schemas"]["AlgorithmEnum"];
+            files: components["schemas"]["HashedFileRequest"][];
+            game_version: string;
+            loader: components["schemas"]["LoaderEnum"];
+        };
+        UpdatesResponse: {
+            target: components["schemas"]["Target"];
+            files: components["schemas"]["Update"][];
+            source_unavailable: boolean;
         };
         /** @description Author shown next to reviews, packs and collections. */
         UserBrief: {
@@ -2971,6 +3219,39 @@ export interface operations {
             };
         };
     };
+    compat_identify: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["IdentifyRequestRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["IdentifyRequestRequest"];
+                "multipart/form-data": components["schemas"]["IdentifyRequestRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IdentifyResponse"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
     compat_resolve: {
         parameters: {
             query?: never;
@@ -2992,6 +3273,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Resolution"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    compat_updates: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdatesRequestRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["UpdatesRequestRequest"];
+                "multipart/form-data": components["schemas"]["UpdatesRequestRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UpdatesResponse"];
                 };
             };
             400: {
@@ -4258,17 +4572,26 @@ export interface operations {
     packs_list: {
         parameters: {
             query?: {
+                /** @description 1 — ignore «Моя гра». */
+                all?: boolean;
                 /** @description Author nickname. */
                 author?: string;
+                /** @description Defaults to «Моя гра» of the viewer. */
                 game_version?: string;
                 /**
-                 * @description * `fabric` - Fabric
+                 * @description Defaults to «Моя гра».
+                 *
+                 *     * `fabric` - Fabric
                  *     * `forge` - Forge
                  *     * `neoforge` - NeoForge
                  *     * `quilt` - Quilt
                  */
                 loader?: "fabric" | "forge" | "neoforge" | "quilt";
-                official?: boolean;
+                /**
+                 * @description * `modrinth` - Modrinth
+                 *     * `community` - Спільнота
+                 */
+                origin?: "community" | "modrinth";
                 /** @description A page number within the paginated result set. */
                 page?: number;
                 /** @description Number of results to return per page. */
@@ -4282,8 +4605,6 @@ export interface operations {
                  *     * `downloads` - downloads
                  */
                 sort?: "downloads" | "new" | "popular" | "top" | "trend";
-                /** @description Style slugs, comma-separated; any may match. */
-                style?: string;
             };
             header?: never;
             path?: never;
@@ -4352,7 +4673,10 @@ export interface operations {
     };
     packs_retrieve: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description Opens a pack published «за посиланням». */
+                share_token?: string;
+            };
             header?: never;
             path: {
                 slug: string;
@@ -4482,66 +4806,12 @@ export interface operations {
             };
         };
     };
-    packs_cover_upload: {
+    packs_check: {
         parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                slug: string;
+            query?: {
+                /** @description Opens a pack published «за посиланням». */
+                share_token?: string;
             };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "multipart/form-data": components["schemas"]["CoverUploadRequest"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PackDetail"];
-                };
-            };
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-        };
-    };
-    packs_cover_delete: {
-        parameters: {
-            query?: never;
             header?: never;
             path: {
                 slug: string;
@@ -4555,23 +4825,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["PackDetail"];
-                };
-            };
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
+                    "application/json": components["schemas"]["Resolution"];
                 };
             };
             404: {
@@ -4586,7 +4840,10 @@ export interface operations {
     };
     packs_export: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description Opens a pack published «за посиланням». */
+                share_token?: string;
+            };
             header?: never;
             path: {
                 slug: string;
@@ -4603,7 +4860,7 @@ export interface operations {
                     "application/x-modrinth-modpack+zip": string;
                 };
             };
-            /** @description Official packs: the original file on Modrinth. */
+            /** @description Modrinth modpacks: the original file there. */
             302: {
                 headers: {
                     [name: string]: unknown;
@@ -4628,9 +4885,41 @@ export interface operations {
             };
         };
     };
-    packs_fork: {
+    packs_files: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description 1 — ignore «Моя гра». */
+                all?: boolean;
+                /** @description Author nickname. */
+                author?: string;
+                /** @description Defaults to «Моя гра» of the viewer. */
+                game_version?: string;
+                /**
+                 * @description Defaults to «Моя гра».
+                 *
+                 *     * `fabric` - Fabric
+                 *     * `forge` - Forge
+                 *     * `neoforge` - NeoForge
+                 *     * `quilt` - Quilt
+                 */
+                loader?: "fabric" | "forge" | "neoforge" | "quilt";
+                /**
+                 * @description * `modrinth` - Modrinth
+                 *     * `community` - Спільнота
+                 */
+                origin?: "community" | "modrinth";
+                q?: string;
+                /** @description Opens a pack published «за посиланням». */
+                share_token?: string;
+                /**
+                 * @description * `popular` - popular
+                 *     * `new` - new
+                 *     * `top` - top
+                 *     * `trend` - trend
+                 *     * `downloads` - downloads
+                 */
+                sort?: "downloads" | "new" | "popular" | "top" | "trend";
+            };
             header?: never;
             path: {
                 slug: string;
@@ -4639,12 +4928,58 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PackFileLink"][];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    packs_fork: {
+        parameters: {
+            query?: {
+                /** @description Opens a pack published «за посиланням». */
+                share_token?: string;
+            };
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["ForkRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ForkRequest"];
+                "multipart/form-data": components["schemas"]["ForkRequest"];
+            };
+        };
+        responses: {
             201: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
                     "application/json": components["schemas"]["PackDetail"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
                 };
             };
             401: {
@@ -4753,6 +5088,14 @@ export interface operations {
                     "application/json": components["schemas"]["PackDetail"];
                 };
             };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
             401: {
                 headers: {
                     [name: string]: unknown;
@@ -4849,7 +5192,13 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PublishRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PublishRequest"];
+                "multipart/form-data": components["schemas"]["PublishRequest"];
+            };
+        };
         responses: {
             200: {
                 headers: {
@@ -4884,6 +5233,103 @@ export interface operations {
                 };
             };
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    packs_retarget: {
+        parameters: {
+            query: {
+                game_version: string;
+                /**
+                 * @description * `fabric` - Fabric
+                 *     * `forge` - Forge
+                 *     * `neoforge` - NeoForge
+                 *     * `quilt` - Quilt
+                 */
+                loader: "fabric" | "forge" | "neoforge" | "quilt";
+                /** @description Opens a pack published «за посиланням». */
+                share_token?: string;
+            };
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Retarget"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    packs_import: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PackImportRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PackImportRequest"];
+                "multipart/form-data": components["schemas"]["PackImportRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PackDetail"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            401: {
                 headers: {
                     [name: string]: unknown;
                 };

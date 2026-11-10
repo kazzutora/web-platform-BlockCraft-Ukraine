@@ -148,7 +148,7 @@ INSTALL = (
 def _packs(rng: random.Random, players: list[User]) -> list[Pack]:
     """Packs of real catalog files; none when Modrinth was never synced (no files to pick)."""
     made = []
-    for (title, summary, styles), author in zip(
+    for (title, summary, _styles), author in zip(
         PACKS, rng.sample(players, len(PACKS)), strict=False
     ):
         for game_version, loader in PACK_TARGETS:
@@ -171,10 +171,9 @@ def _packs(rng: random.Random, players: list[User]) -> list[Pack]:
             data={
                 "title": title,
                 "summary": summary,
-                "style_tags": styles,
                 "game_version": game_version,
                 "loader": loader,
-                "install_md": INSTALL,
+                "notes_md": INSTALL,
                 "ram_min_gb": rng.choice([4, 6, 8]),
             },
         )

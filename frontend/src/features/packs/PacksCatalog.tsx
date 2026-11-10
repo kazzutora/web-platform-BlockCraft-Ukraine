@@ -5,19 +5,26 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { Icon } from "@/components/ui/Icon";
 import { plural } from "@/lib/plural";
 
+import { getGameContext } from "@/features/game/context";
 import { getGameVersions } from "@/features/game/meta";
+import { loaderName } from "@/features/mods/format";
 
 import { getCatalog } from "./api";
 import { packsCopy } from "./copy";
-import { type PackFilters as Filters, toApiQuery } from "./filters";
+import { type PackFilters as Filters, toApiQuery, withGameDefaults } from "./filters";
 import { LoadMorePacks } from "./LoadMorePacks";
 import { PackCard } from "./PackCard";
 import { PackFilters } from "./PackFilters";
 
-/** /packs: server-rendered first page of published packs. */
-export async function PacksCatalog({ filters }: { filters: Filters }) {
+/** /packs: server-rendered first page; version and loader default to «Моя гра». */
+export async function PacksCatalog({ filters: requested }: { filters: Filters }) {
+  const game = await getGameContext();
+  const { filters, fromGame } = withGameDefaults(requested, game);
   const query = toApiQuery(filters);
   const [page, gameVersions] = await Promise.all([getCatalog(query), getGameVersions()]);
+  const gameLabel = [game.game_version, game.loader && loaderName(game.loader)]
+    .filter(Boolean)
+    .join(" · ");
 
   return (
     <CatalogPage
@@ -30,7 +37,12 @@ export async function PacksCatalog({ filters }: { filters: Filters }) {
             <Icon name="plus" />
             {packsCopy.create}
           </ButtonLink>
-          <PackFilters filters={filters} gameVersions={gameVersions} />
+          <PackFilters
+            filters={filters}
+            gameVersions={gameVersions}
+            fromGame={fromGame}
+            inviteToChoose={game.source === "none" && !filters.all}
+          />
         </div>
       }
       footer={
@@ -42,7 +54,7 @@ export async function PacksCatalog({ filters }: { filters: Filters }) {
       {page.results.length ? (
         <CardGrid>
           {page.results.map((pack, index) => (
-            <PackCard key={pack.slug} pack={pack} eager={index < 4} />
+            <PackCard key={pack.slug} pack={pack} eager={index < 4} gameLabel={gameLabel} />
           ))}
         </CardGrid>
       ) : (

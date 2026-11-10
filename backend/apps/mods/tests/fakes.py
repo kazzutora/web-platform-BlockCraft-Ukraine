@@ -71,3 +71,33 @@ def recorded() -> FakeModrinth:
         "8oi3bsk5": load("modrinth", "project_versions_terralith"),
     }
     return FakeModrinth(projects, versions)
+
+
+def _all_versions(fake: FakeModrinth) -> list[dict]:
+    return [item for versions in fake.versions.values() for item in versions]
+
+
+def _versions_by_hashes(self, hashes, *, algorithm="sha1"):
+    found = {}
+    for item in _all_versions(self):
+        for file in item["files"]:
+            digest = file.get("hashes", {}).get(algorithm)
+            if digest in hashes:
+                found[digest] = ModrinthVersion.model_validate(item)
+    return found
+
+
+def _get_versions_by_ids(self, ids):
+    return [
+        ModrinthVersion.model_validate(item) for item in _all_versions(self) if item["id"] in ids
+    ]
+
+
+def _image(self, url, *, max_bytes=2 * 1024 * 1024):
+    return self.images[url]
+
+
+FakeModrinth.versions_by_hashes = _versions_by_hashes
+FakeModrinth.get_versions_by_ids = _get_versions_by_ids
+FakeModrinth.image = _image
+FakeModrinth.images = {}

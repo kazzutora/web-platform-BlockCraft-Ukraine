@@ -69,7 +69,7 @@ export const libraryCopy = {
     tabsLabel: "Типи обраного",
     tabs: {
       mod: "Моди",
-      pack: "Зборки",
+      pack: "Збірки",
       skin: "Скіни",
       server: "Сервери",
       collection: "Колекції",
@@ -77,14 +77,14 @@ export const libraryCopy = {
     allVersions: "Усі версії",
     empty: {
       mod: "Тут поки порожньо. Збережи перший мод.",
-      pack: "Збережених зборок поки немає.",
+      pack: "Збережених збірок поки немає.",
       skin: "Збережених скінів поки немає.",
       server: "Збережених серверів поки немає.",
       collection: "Збережених колекцій поки немає.",
     },
     browse: {
       mod: "До модів",
-      pack: "До зборок",
+      pack: "До збірок",
       skin: "До скінів",
       server: "До серверів",
       collection: "До модів",

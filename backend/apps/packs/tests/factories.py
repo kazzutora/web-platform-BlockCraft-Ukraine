@@ -13,7 +13,7 @@ class PackFactory(factory.django.DjangoModelFactory):
         model = Pack
 
     author = factory.SubFactory(UserFactory)
-    title = factory.Sequence(lambda n: f"Зборка {n}")
+    title = factory.Sequence(lambda n: f"Збірка {n}")
     slug = factory.Sequence(lambda n: f"pack-{n}")
     summary = "Затишне виживання"
     game_version = "26.3"
@@ -53,10 +53,14 @@ def mod(
 
 
 def add(pack: Pack, project: Project, **fields) -> PackItem:
-    return PackItem.objects.create(
+    """An item as it is stored, without resolving the set (services.add_item does that)."""
+    item = PackItem.objects.create(
         pack=pack,
         project=project,
         version=project.versions.order_by("-date_published").first(),
         position=pack.items.count() + 1,
         **fields,
     )
+    Pack.objects.filter(pk=pack.pk).update(items_count=pack.items.count())
+    pack.items_count = pack.items.count()
+    return item

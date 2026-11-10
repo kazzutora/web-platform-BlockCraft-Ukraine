@@ -2,58 +2,67 @@
 
 import { useMutation, useMutationState, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
+import { useRef } from "react";
 
 import { Container } from "@/components/layout/Container";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Chip } from "@/components/ui/Chip";
+import { CompatStatus } from "@/components/ui/CompatStatus";
 import { Tabs } from "@/components/ui/Tabs";
 import { useToast } from "@/components/ui/useToast";
+import { ResolutionView } from "@/features/compat/ResolutionView";
 import type { ProjectCard } from "@/features/mods/types";
 import { api } from "@/lib/api/client";
 import { generalError } from "@/lib/api/errors";
 import { queryKeys } from "@/lib/query-keys";
 
 import { packsCopy } from "./copy";
-import { CoverField } from "./CoverField";
 import { Inventory } from "./Inventory";
 import { ModSearch } from "./ModSearch";
 import { PackForm, valuesOf } from "./PackForm";
-import { PackIssues } from "./PackIssues";
-import type { PackDetail } from "./types";
+import { ShareLink } from "./ShareLink";
+import type { PackDetail, PackVisibility } from "./types";
 import { usePackItems } from "./usePackItems";
 
 const copy = packsCopy.builder;
-/** Background imports of missing dependencies take seconds: look again this many times. */
-const DEPENDENCY_CHECKS = 8;
+/** Background imports of missing dependencies take seconds: stop asking after a minute. */
+const WAIT_MS = 60_000;
+const TONES = { ok: "ok", warnings: "warning", errors: "error", unknown: "warning" } as const;
 
-function waitingForDependencies(pack: PackDetail | undefined): boolean {
-  return Boolean(pack?.issues.some((issue) => issue.other_modrinth_id));
-}
-
-/** /packs/[slug]/edit: search on the left, the inventory on the right, settings in a tab. */
+/** /packs/[slug]/edit: search on the left, the set on the right, the check on top. */
 export function PackBuilder({ initial }: { initial: PackDetail }) {
   const router = useRouter();
   const toast = useToast();
   const queryClient = useQueryClient();
   const key = queryKeys.packs.detail(initial.slug);
+  const waitingSince = useRef<number | null>(null);
   const { data: pack = initial } = useQuery({
     queryKey: key,
     initialData: initial,
     queryFn: async () => {
+      // The check first: while dependencies are imported it resolves the set again
+      await api.GET("/api/v1/packs/{slug}/check", { params: { path: { slug: initial.slug } } });
       const { data } = await api.GET("/api/v1/packs/{slug}", {
         params: { path: { slug: initial.slug } },
       });
       if (!data) throw new Error("GET pack failed");
       return data;
     },
-    refetchInterval: (query) =>
-      waitingForDependencies(query.state.data) && query.state.dataUpdateCount < DEPENDENCY_CHECKS
-        ? 4000
-        : false,
+    refetchInterval: (query) => {
+      // Asks again while dependencies are imported, for a minute from when it started
+      const waiting =
+        query.state.data?.compat_status === "unknown" && query.state.data.items_count > 0;
+      if (!waiting) {
+        waitingSince.current = null;
+        return false;
+      }
+      waitingSince.current ??= Date.now();
+      return Date.now() - waitingSince.current < WAIT_MS ? 4000 : false;
+    },
   });
-  const { add, remove, setRequired } = usePackItems(pack.slug);
+  const { add, remove, setOptional } = usePackItems(pack.slug);
   const pending = new Set(
     useMutationState({
       filters: { mutationKey: queryKeys.packs.adding(pack.slug), status: "pending" },
@@ -62,9 +71,10 @@ export function PackBuilder({ initial }: { initial: PackDetail }) {
   );
 
   const publish = useMutation({
-    mutationFn: async () => {
+    mutationFn: async (visibility: Exclude<PackVisibility, "private">) => {
       const { data, error } = await api.POST("/api/v1/packs/{slug}/publish", {
         params: { path: { slug: pack.slug } },
+        body: { visibility },
       });
       if (!data) throw error;
       return data;
@@ -73,11 +83,12 @@ export function PackBuilder({ initial }: { initial: PackDetail }) {
     onSuccess: (data) => {
       queryClient.setQueryData(key, data);
       void queryClient.invalidateQueries({ queryKey: queryKeys.packs.all });
-      toast({ title: data.status === "published" ? copy.published : copy.pending });
+      toast({ title: data.visibility === "link" ? copy.publishedLink : copy.published });
       router.refresh();
     },
   });
-  const canPublish = pack.status === "draft" || pack.status === "rejected";
+  const draft = pack.status === "draft" || pack.status === "rejected";
+  const blocked = pack.compat_status === "errors" || pack.compat_status === "unknown";
 
   return (
     <Container className="flex flex-col gap-10 py-12 md:py-16">
@@ -90,31 +101,63 @@ export function PackBuilder({ initial }: { initial: PackDetail }) {
           <span className="text-meta text-muted">
             {copy.target(pack.game_version, packsCopy.loaders[pack.loader])}
           </span>
+          {pack.items_count > 0 && (
+            <CompatStatus tone={TONES[pack.compat_status]}>
+              {packsCopy.compat[pack.compat_status]}
+            </CompatStatus>
+          )}
         </div>
         <h1 className="text-h1">{pack.title}</h1>
         {pack.status === "rejected" && pack.rejection_reason && (
           <p className="text-danger">{packsCopy.detail.rejected(pack.rejection_reason)}</p>
         )}
         <div className="flex flex-wrap gap-3">
-          {canPublish && (
-            <Button size="lg" loading={publish.isPending} onClick={() => publish.mutate()}>
-              {copy.publish}
-            </Button>
+          {draft && (
+            <>
+              <Button
+                size="lg"
+                loading={publish.isPending && publish.variables === "public"}
+                disabled={blocked}
+                onClick={() => publish.mutate("public")}
+              >
+                {copy.publish}
+              </Button>
+              <Button
+                variant="secondary"
+                size="lg"
+                loading={publish.isPending && publish.variables === "link"}
+                disabled={blocked}
+                onClick={() => publish.mutate("link")}
+              >
+                {copy.publishLink}
+              </Button>
+            </>
           )}
-          <ButtonLink href={`/packs/${pack.slug}`} variant="secondary" size="lg">
+          <ButtonLink href={`/packs/${pack.slug}`} variant="ghost" size="lg">
             {copy.view}
           </ButtonLink>
         </div>
+        {pack.visibility === "link" && pack.share_token && pack.status === "published" && (
+          <ShareLink slug={pack.slug} token={pack.share_token} />
+        )}
       </header>
 
-      <PackIssues issues={pack.issues} />
+      {pack.compat && pack.items_count > 0 && pack.compat.status !== "ok" && (
+        <ResolutionView
+          resolution={pack.compat}
+          title={packsCopy.detail.tabs.check}
+          mode="problems"
+          live={false}
+          downloads={false}
+        />
+      )}
 
       <Tabs
         label={copy.tabsLabel}
         items={[
           {
-            value: "mods",
-            label: copy.tabs.mods,
+            value: "items",
+            label: copy.tabs.items,
             content: (
               <div className="grid gap-12 md:grid-cols-2 md:gap-10">
                 <ModSearch pack={pack} onAdd={(project) => add.mutate(project)} />
@@ -122,8 +165,8 @@ export function PackBuilder({ initial }: { initial: PackDetail }) {
                   items={pack.items}
                   pending={pending}
                   onRemove={(project) => remove.mutate(project)}
-                  onRequiredChange={(project, required) =>
-                    setRequired.mutate({ project, required })
+                  onOptionalChange={(project, optional) =>
+                    setOptional.mutate({ project, optional })
                   }
                 />
               </div>
@@ -134,7 +177,6 @@ export function PackBuilder({ initial }: { initial: PackDetail }) {
             label: copy.tabs.settings,
             content: (
               <div className="flex max-w-xl flex-col gap-12">
-                <CoverField pack={pack} onChange={(data) => queryClient.setQueryData(key, data)} />
                 <PackForm
                   initial={valuesOf(pack)}
                   submitLabel={packsCopy.form.save}

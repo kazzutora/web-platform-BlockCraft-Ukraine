@@ -3,355 +3,298 @@ import zipfile
 from io import BytesIO
 
 import pytest
-from django.core.files.uploadedfile import SimpleUploadedFile
-from PIL import Image
-from rest_framework.test import APIClient
 
-from apps.accounts.models import User
 from apps.accounts.tests.factories import UserFactory
-from apps.moderation.models import BannedWord
+from apps.mods.models import ProjectType
+from apps.mods.tests.factories import ProjectFactory, VersionFactory
 from apps.packs import tasks
-from apps.packs.models import Pack, PackItem
-from apps.social.models import Review
+from apps.packs.models import Origin, Pack
 
 from .factories import PackFactory, add, mod
 
 pytestmark = [pytest.mark.django_db, pytest.mark.usefixtures("game_versions")]
 
-FORM = {
-    "title": "Затишна Січ",
-    "summary": "Виживання з оптимізацією",
-    "game_version": "26.3",
-    "loader": "fabric",
-    "style_tags": ["performance", "survival"],
-    "ram_min_gb": 6,
-    "install_md": "1. Імпортуй у **Prism Launcher**",
-}
 
-
-def client_for(user) -> APIClient:
-    client = APIClient()
-    client.force_login(user)
-    return client
+@pytest.fixture(autouse=True)
+def no_covers(monkeypatch):
+    monkeypatch.setattr(tasks.render_cover, "delay", lambda pack_id: None)
 
 
 @pytest.fixture(autouse=True)
-def _no_background(monkeypatch):
-    monkeypatch.setattr(tasks.fill_dependencies, "delay", lambda pack_id: None)
+def offline_modrinth(monkeypatch):
+    """Unknown hashes would be asked from Modrinth: tests never go online."""
+    from unittest import mock
+
+    from apps.mods.tests.fakes import FakeModrinth
+
+    factory = mock.MagicMock()
+    factory.return_value.__enter__.return_value = FakeModrinth()
+    monkeypatch.setattr("apps.mods.identify.ModrinthClient", factory)
+    return factory
 
 
-@pytest.fixture
-def draft(user):
-    return PackFactory(author=user, status=Pack.Status.DRAFT, published_at=None)
+def slugs(response) -> list[str]:
+    return [item["slug"] for item in response.json()["results"]]
 
 
-# Catalog
+def test_catalog_lists_only_published_packs_for_everyone(api_client):
+    PackFactory(slug="public")
+    PackFactory(slug="by-link", visibility="link")
+    PackFactory(slug="private", visibility="private")
+    PackFactory(slug="draft", status=Pack.Status.DRAFT)
+
+    assert slugs(api_client.get("/api/v1/packs", {"all": "1"})) == ["public"]
 
 
-def test_catalog_lists_published_packs_with_icons(api_client):
-    pack = PackFactory(title="Оптимізація")
-    sodium = mod(slug="sodium", icon_url="https://cdn.modrinth.com/sodium.webp")
-    add(pack, mod(slug="fabric-api"), added_as_dependency=True)
-    add(pack, sodium)
-    PackFactory(status=Pack.Status.DRAFT)
-    PackFactory(status=Pack.Status.PENDING)
+def test_catalog_follows_my_game_and_says_whether_a_pack_fits(api_client):
+    PackFactory(slug="fabric-26", game_version="26.3", loader="fabric")
+    PackFactory(slug="forge-121", game_version="1.21.1", loader="forge")
+    api_client.cookies["bc_game"] = "26.3:fabric"
 
-    body = api_client.get("/api/v1/packs").json()
-
-    assert [row["slug"] for row in body["results"]] == [pack.slug]
-    row = body["results"][0]
-    assert row["mods_count"] == 2
-    # Mods the author picked come before dependencies
-    assert [icon["slug"] for icon in row["icons"]] == ["sodium", "fabric-api"]
-    assert row["icons"][0]["icon_url"] == "https://cdn.modrinth.com/sodium.webp"
-    assert row["is_favorited"] is False
+    assert slugs(api_client.get("/api/v1/packs")) == ["fabric-26"]
+    cards = api_client.get("/api/v1/packs", {"all": "1"}).json()["results"]
+    assert {card["slug"]: card["fits_my_game"] for card in cards} == {
+        "fabric-26": True,
+        "forge-121": False,
+    }
 
 
-def test_catalog_filters(api_client):
-    fabric = PackFactory(slug="fabric", style_tags=["tech"], title="Техно")
-    PackFactory(slug="forge", loader="forge", game_version="1.20.1", style_tags=["magic"])
-    PackFactory(slug="official", is_official=True, modrinth_id="FABULOUS", title="Офіційна")
+def test_a_link_pack_opens_with_its_token_only(api_client, auth_client, user):
+    pack = PackFactory(slug="secret", visibility="link", author=user)
 
-    def slugs(**params) -> set[str]:
-        return {row["slug"] for row in api_client.get("/api/v1/packs", params).json()["results"]}
-
-    assert slugs(loader="forge") == {"forge"}
-    assert slugs(game_version="1.20.1") == {"forge"}
-    assert slugs(style="tech,quests") == {"fabric"}
-    assert slugs(official="true") == {"official"}
-    assert slugs(q="техно") == {"fabric"}
-    assert slugs(author=fabric.author.nickname.upper()) == {"fabric"}
-    assert slugs(sort="new") == {"fabric", "forge", "official"}
+    assert api_client.get("/api/v1/packs/secret").status_code == 404
+    assert api_client.get("/api/v1/packs/secret", {"share_token": "nope"}).status_code == 404
+    opened = api_client.get("/api/v1/packs/secret", {"share_token": pack.share_token})
+    assert opened.status_code == 200
+    assert opened.json()["share_token"] is None  # only the author sees it
+    assert auth_client.get("/api/v1/packs/secret").json()["share_token"] == pack.share_token
 
 
-def test_catalog_has_no_n_plus_one(auth_client, django_assert_max_num_queries):
-    for _ in range(6):
-        pack = PackFactory()
-        for _ in range(3):
-            add(pack, mod())
+def test_private_and_draft_packs_are_the_authors_only(api_client, auth_client, user):
+    PackFactory(slug="mine", visibility="private", author=user)
+    PackFactory(slug="theirs", status=Pack.Status.DRAFT)
 
-    with django_assert_max_num_queries(5):
-        response = auth_client.get("/api/v1/packs")
-
-    assert len(response.json()["results"]) == 6
+    assert auth_client.get("/api/v1/packs/mine").status_code == 200
+    assert api_client.get("/api/v1/packs/mine").status_code == 404
+    assert auth_client.get("/api/v1/packs/theirs").status_code == 404
 
 
-def test_my_packs_include_drafts(auth_client, draft):
-    PackFactory()
-
-    body = auth_client.get("/api/v1/me/packs").json()
-
-    assert [(row["slug"], row["status"]) for row in body["results"]] == [(draft.slug, "draft")]
-
-
-# Page
-
-
-def test_pack_page_shows_files_issues_and_requirements(api_client):
-    pack = PackFactory(ram_min_gb=6, loader_version="")
-    sodium = add(pack, mod(slug="sodium", unknown=["FLYWHEEL"]))
-    add(pack, mod(slug="faithful", project_type="resourcepack"), is_required=False)
-
-    response = api_client.get(f"/api/v1/packs/{pack.slug}")
-
-    assert response.status_code == 200
-    body = response.json()
-    assert [item["project"]["slug"] for item in body["items"]] == ["sodium", "faithful"]
-    assert body["items"][0]["version"]["file_name"] == sodium.version.file_name
-    assert body["items"][1]["is_required"] is False
-    assert body["total_size"] == 2048
-    assert body["effective_loader_version"] == ""
-    assert body["issues"] == [
-        {
-            "type": "missing_dependency",
-            "project": {"slug": "sodium", "title": sodium.project.title, "icon_url": ""},
-            "other": None,
-            "other_modrinth_id": "FLYWHEEL",
-            "message": "Потрібна залежність, якої поки немає в нашому каталозі.",
-        }
-    ]
-    assert body["is_mine"] is False
-    assert body["source"] is None
-
-
-def test_drafts_are_seen_only_by_their_author(api_client, draft, user):
-    assert api_client.get(f"/api/v1/packs/{draft.slug}").status_code == 404
-    assert client_for(UserFactory()).get(f"/api/v1/packs/{draft.slug}").status_code == 404
-
-    body = client_for(user).get(f"/api/v1/packs/{draft.slug}").json()
-
-    assert body["is_mine"] is True
-    assert body["status"] == "draft"
-
-
-# Constructor
-
-
-def test_guests_cannot_create(api_client):
-    assert api_client.post("/api/v1/packs", FORM, format="json").status_code in (401, 403)
-
-
-def test_constructor_flow(auth_client, user):
+def test_the_constructor_flow(auth_client):
     api = mod(slug="fabric-api")
     mod(slug="sodium", requires=[api])
     mod(slug="lithium")
 
-    response = auth_client.post("/api/v1/packs", FORM, format="json")
-    assert response.status_code == 201, response.json()
-    created = response.json()
-    assert (created["slug"], created["status"]) == ("zatyshna-sich", "draft")
-    assert "<strong>Prism Launcher</strong>" in created["install_html"]
-    url = f"/api/v1/packs/{created['slug']}"
-
-    body = auth_client.post(f"{url}/items", {"project": "sodium"}, format="json").json()
-    assert {(i["project"]["slug"], i["added_as_dependency"]) for i in body["items"]} == {
-        ("sodium", False),
-        ("fabric-api", True),
-    }
-    body = auth_client.patch(f"{url}/items/fabric-api", {"is_required": False}, format="json")
-    assert body.json()["items"][1]["is_required"] is False
-
-    response = auth_client.post(f"{url}/publish")
-    assert response.status_code == 400
-    assert response.json()["code"] == "too_few"
-
-    auth_client.post(f"{url}/items", {"project": "lithium"}, format="json")
-    body = auth_client.delete(f"{url}/items/sodium").json()
-    assert [i["project"]["slug"] for i in body["items"]] == ["lithium"]
-    auth_client.post(f"{url}/items", {"project": "sodium"}, format="json")
-
-    body = auth_client.post(f"{url}/publish").json()
-    assert body["status"] == "published"
-
-
-def test_add_item_errors(auth_client, draft):
-    old = mod(slug="old", title="Old", game_versions=["1.20.1"])
-    url = f"/api/v1/packs/{draft.slug}/items"
-
-    response = auth_client.post(url, {"project": "old"}, format="json")
-    assert response.status_code == 400
-    assert response.json()["fields"] == {
-        "project": [f"У «{old.title}» немає файлу для 26.3 · Fabric."]
-    }
-
-    assert auth_client.post(url, {"project": "missing"}, format="json").status_code == 404
-    assert auth_client.delete(f"{url}/missing").status_code == 404
-
-
-def test_strangers_cannot_change_a_pack(draft):
-    mod(slug="sodium")
-    stranger = client_for(UserFactory())
-    pack = PackFactory()
-
-    assert (
-        stranger.post(f"/api/v1/packs/{pack.slug}/items", {"project": "sodium"}).status_code == 403
+    created = auth_client.post(
+        "/api/v1/packs",
+        {"title": "З другом", "game_version": "26.3", "loader": "fabric"},
+        format="json",
     )
-    assert stranger.patch(f"/api/v1/packs/{pack.slug}", {"title": "Моя"}).status_code == 403
-    assert stranger.delete(f"/api/v1/packs/{pack.slug}").status_code == 403
-    # Someone else's draft does not even exist for them
-    assert stranger.post(f"/api/v1/packs/{draft.slug}/publish").status_code == 404
+    assert created.status_code == 201
+    slug = created.json()["slug"]
+    for project in ("sodium", "lithium"):
+        response = auth_client.post(
+            f"/api/v1/packs/{slug}/items", {"project": project}, format="json"
+        )
+        assert response.status_code == 201
+
+    detail = response.json()
+    assert [(item["project"]["slug"], item["reason"]) for item in detail["items"]] == [
+        ("sodium", "requested"),
+        ("lithium", "requested"),
+        ("fabric-api", "dependency"),
+    ]
+    assert detail["compat"]["status"] == "ok"
+    assert detail["compat_status"] == "ok"
+    check = auth_client.get(f"/api/v1/packs/{slug}/check").json()
+    assert check["status"] == "ok"
+
+    published = auth_client.post(
+        f"/api/v1/packs/{slug}/publish", {"visibility": "link"}, format="json"
+    )
+    assert published.status_code == 200
+    assert (published.json()["status"], published.json()["visibility"]) == ("published", "link")
 
 
-def test_edit_retargets_and_validates(auth_client, draft):
-    url = f"/api/v1/packs/{draft.slug}"
+def test_a_pack_with_errors_is_not_published(auth_client, user):
+    pack = PackFactory(author=user, status=Pack.Status.DRAFT)
+    lights = mod(slug="lights")
+    for project in (mod(slug="lamb", breaks=[lights]), lights):
+        auth_client.post(f"/api/v1/packs/{pack.slug}/items", {"project": project.slug})
 
-    body = auth_client.patch(url, {"loader": "neoforge", "loader_version": "21.1.200"}).json()
-    assert (body["loader"], body["effective_loader_version"]) == ("neoforge", "21.1.200")
+    response = auth_client.post(f"/api/v1/packs/{pack.slug}/publish", {}, format="json")
 
-    response = auth_client.patch(url, {"loader": "vanilla"}, format="json")
-    assert response.status_code == 400
-    response = auth_client.patch(url, {"loader_version": "1.0; rm"}, format="json")
-    assert response.json()["fields"] == {"loader_version": ["Лише цифри, літери, крапки й дефіси."]}
-
-
-def test_banned_words_are_refused(auth_client):
-    BannedWord.objects.create(word="кринж")
-
-    response = auth_client.post("/api/v1/packs", {**FORM, "summary": "Повний кринж"}, format="json")
-
-    assert response.status_code == 400
-    assert response.json()["code"] == "banned_word"
-    assert "summary" in response.json()["fields"]
+    assert (response.status_code, response.json()["code"]) == (400, "pack_has_errors")
 
 
-def test_delete_pack(auth_client, draft):
-    assert auth_client.delete(f"/api/v1/packs/{draft.slug}").status_code == 204
-    assert not Pack.objects.exists()
+def test_editing_needs_the_author(api_client, user):
+    pack = PackFactory(author=user, status=Pack.Status.DRAFT)
+    stranger = UserFactory()
+    from rest_framework.test import APIClient
+
+    other = APIClient()
+    other.force_login(stranger)
+    project = mod(slug="x")
+
+    assert api_client.post(f"/api/v1/packs/{pack.slug}/items", {"project": "x"}).status_code == 401
+    # A stranger does not even see the draft
+    assert (
+        other.post(f"/api/v1/packs/{pack.slug}/items", {"project": project.slug}).status_code == 404
+    )
 
 
-def test_cover_upload_and_removal(auth_client, draft):
-    image = BytesIO()
-    Image.new("RGB", (1600, 900), "teal").save(image, format="PNG")
-    upload = SimpleUploadedFile("cover.png", image.getvalue(), content_type="image/png")
-    url = f"/api/v1/packs/{draft.slug}/cover"
+def test_optional_items_and_removal(auth_client, user):
+    pack = PackFactory(author=user, status=Pack.Status.DRAFT)
+    auth_client.post(f"/api/v1/packs/{pack.slug}/items", {"project": mod(slug="zoom").slug})
 
-    body = auth_client.put(url, {"cover": upload}, format="multipart").json()
-    assert body["cover_url"].endswith(".webp")
-    draft.refresh_from_db()
-    assert Image.open(draft.cover).size == (1200, 630)
+    patched = auth_client.patch(
+        f"/api/v1/packs/{pack.slug}/items/zoom", {"optional": True}, format="json"
+    )
+    removed = auth_client.delete(f"/api/v1/packs/{pack.slug}/items/zoom")
 
-    body = auth_client.put(
-        url, {"cover": SimpleUploadedFile("x.png", b"nope")}, format="multipart"
+    assert patched.json()["items"][0]["env_client"] == "optional"
+    assert removed.json()["items"] == []
+
+
+def test_files_tell_where_each_goes(api_client):
+    pack = PackFactory()
+    add(pack, mod(slug="sodium"))
+    dp = ProjectFactory(slug="terra", project_type=ProjectType.DATAPACK, loaders=["datapack"])
+    VersionFactory(project=dp, game_versions=["26.3"], loaders=["datapack"])
+    add(pack, dp)
+
+    files = api_client.get(f"/api/v1/packs/{pack.slug}/files").json()
+
+    assert [(f["project"]["slug"], f["folder"]) for f in files] == [
+        ("sodium", "mods"),
+        ("terra", "datapacks"),
+    ]
+    assert files[0]["url"].startswith("https://cdn.modrinth.com/")
+
+
+def test_export_of_a_community_pack_and_of_a_modrinth_one(api_client):
+    pack = PackFactory()
+    add(pack, mod(slug="sodium"))
+    modrinth = PackFactory(
+        origin=Origin.MODRINTH,
+        source_file_url="https://cdn.modrinth.com/data/F/versions/V/f.mrpack",
+    )
+
+    response = api_client.get(f"/api/v1/packs/{pack.slug}/export.mrpack")
+    redirect = api_client.get(f"/api/v1/packs/{modrinth.slug}/export.mrpack")
+
+    assert response["Content-Type"] == "application/x-modrinth-modpack+zip"
+    with zipfile.ZipFile(BytesIO(response.content)) as archive:
+        assert len(json.loads(archive.read("modrinth.index.json"))["files"]) == 1
+    assert (redirect.status_code, redirect["Location"]) == (302, modrinth.source_file_url)
+
+
+def test_retarget_preview_over_http(api_client):
+    pack = PackFactory()
+    add(pack, mod(slug="both", game_versions=["26.3", "1.21.1"]))
+    add(pack, mod(slug="new-only"))
+
+    data = api_client.get(
+        f"/api/v1/packs/{pack.slug}/retarget", {"game_version": "1.21.1", "loader": "fabric"}
     ).json()
-    assert body["fields"] == {"cover": ["Завантаж PNG, JPEG або WebP."]}
 
-    assert auth_client.delete(url).json()["cover_url"] is None
-
-
-# Fork, export, community
+    assert (data["kept"], data["dropped"]) == (["both"], ["new-only"])
+    assert set(data["titles"]) == {"both", "new-only"}
 
 
-def test_fork_makes_a_draft_copy(api_client, user):
-    original = PackFactory()
-    add(original, mod(slug="sodium"))
+def test_fork_to_another_game(auth_client):
+    pack = PackFactory()
+    add(pack, mod(slug="both", game_versions=["26.3", "1.21.1"]))
 
-    assert api_client.post(f"/api/v1/packs/{original.slug}/fork").status_code in (401, 403)
-    response = client_for(user).post(f"/api/v1/packs/{original.slug}/fork")
+    response = auth_client.post(
+        f"/api/v1/packs/{pack.slug}/fork", {"game_version": "1.21.1"}, format="json"
+    )
 
     assert response.status_code == 201
-    body = response.json()
-    assert body["forked_from"] == {"slug": original.slug, "title": original.title}
-    assert body["status"] == "draft"
-    assert body["is_mine"] is True
-    assert [item["project"]["slug"] for item in body["items"]] == ["sodium"]
+    assert (response.json()["game_version"], response.json()["status"]) == ("1.21.1", "draft")
+    assert response.json()["forked_from"]["slug"] == pack.slug
 
 
-def test_export_downloads_an_mrpack(api_client):
-    pack = PackFactory(slug="sich")
-    add(pack, mod(slug="sodium"))
+def test_catalog_has_no_n_plus_one(api_client, django_assert_max_num_queries):
+    for _ in range(6):
+        pack = PackFactory()
+        add(pack, mod())
 
-    response = api_client.get("/api/v1/packs/sich/export.mrpack")
+    with django_assert_max_num_queries(5):
+        response = api_client.get("/api/v1/packs", {"all": "1"})
 
-    assert response.status_code == 200
-    assert response["Content-Type"] == "application/x-modrinth-modpack+zip"
-    assert response["Content-Disposition"] == 'attachment; filename="sich.mrpack"'
-    with zipfile.ZipFile(BytesIO(response.content)) as archive:
-        index = json.loads(archive.read("modrinth.index.json"))
-    assert len(index["files"]) == 1
-    pack.refresh_from_db()
-    assert pack.downloads_count == 1
+    assert len(response.json()["results"]) == 6
 
 
-def test_export_of_an_official_pack_goes_to_modrinth(api_client):
-    url = "https://cdn.modrinth.com/data/FABULOUS/versions/PACKV001/fo.mrpack"
-    pack = PackFactory(is_official=True, modrinth_id="FABULOUS", source_file_url=url)
+def test_save_a_mods_folder_as_a_private_draft(auth_client, user):
+    sodium = ProjectFactory(slug="sodium")
+    VersionFactory(project=sodium, sha1="a" * 40, game_versions=["26.3"], loaders=["fabric"])
+    lithium = ProjectFactory(slug="lithium")
+    VersionFactory(project=lithium, sha1="b" * 40, game_versions=["26.3"], loaders=["fabric"])
 
-    response = api_client.get(f"/api/v1/packs/{pack.slug}/export.mrpack")
-
-    assert response.status_code == 302
-    assert response["Location"] == url
-    pack.refresh_from_db()
-    assert pack.downloads_count == 1
-
-
-def test_export_without_a_loader_version_is_409(api_client):
-    pack = PackFactory(loader_version="")
-
-    response = api_client.get(f"/api/v1/packs/{pack.slug}/export.mrpack")
-
-    assert response.status_code == 409
-    assert response.json()["code"] == "no_loader_version"
-
-
-def test_packs_can_be_reviewed_saved_and_reported(user):
-    pack = PackFactory()
-    client = client_for(user)
-
-    review = client.put(
-        "/api/v1/reviews",
-        {"kind": "pack", "id": pack.slug, "stars": 5, "text": "Топ"},
-        format="json",
-    )
-    favorite = client.post("/api/v1/favorites", {"kind": "pack", "id": pack.slug}, format="json")
-    report = client.post(
-        "/api/v1/reports",
-        {"kind": "pack", "id": pack.slug, "reason": "spam"},
+    response = auth_client.post(
+        "/api/v1/packs/import",
+        {"files": [{"hash": "a" * 40}, {"hash": "b" * 40}, {"hash": "c" * 40}]},
         format="json",
     )
 
-    assert review.status_code in (200, 201), review.json()
-    assert favorite.status_code in (200, 201), favorite.json()
-    assert report.status_code == 201, report.json()
-    assert Review.objects.count() == 1
-    body = client.get(f"/api/v1/packs/{pack.slug}").json()
-    assert (body["is_favorited"], body["my_review_stars"]) == (True, 5)
+    assert response.status_code == 201
+    data = response.json()
+    assert (data["game_version"], data["loader"], data["visibility"]) == (
+        "26.3",
+        "fabric",
+        "private",
+    )
+    assert {item["project"]["slug"] for item in data["items"]} == {"sodium", "lithium"}
+    assert data["status"] == "draft"
 
 
-def test_owners_cannot_review_their_pack(user):
-    pack = PackFactory(author=user)
+def test_save_a_mrpack_index_takes_its_game(auth_client, monkeypatch):
+    sodium = ProjectFactory(slug="sodium")
+    VersionFactory(project=sodium, sha1="a" * 40, game_versions=["1.21.1"], loaders=["fabric"])
+    index = {
+        "formatVersion": 1,
+        "game": "minecraft",
+        "name": "Друзі",
+        "files": [{"path": "mods/s.jar", "hashes": {"sha1": "a" * 40}, "downloads": []}],
+        "dependencies": {"minecraft": "1.21.1", "fabric-loader": "0.16.0"},
+    }
 
-    response = client_for(user).put(
-        "/api/v1/reviews",
-        {"kind": "pack", "id": pack.slug, "stars": 5, "text": "Я молодець"},
-        format="json",
+    data = auth_client.post("/api/v1/packs/import", {"index": index}, format="json").json()
+
+    assert (data["title"], data["game_version"], data["loader"]) == ("Друзі", "1.21.1", "fabric")
+
+
+def test_import_needs_something_and_a_player(api_client, auth_client):
+    assert api_client.post("/api/v1/packs/import", {"files": []}, format="json").status_code == 401
+    empty = auth_client.post("/api/v1/packs/import", {}, format="json")
+    unknown = auth_client.post(
+        "/api/v1/packs/import", {"files": [{"hash": "f" * 40}]}, format="json"
     )
 
-    assert response.status_code in (400, 403)
+    assert empty.status_code == 400
+    assert (unknown.status_code, unknown.json()["code"]) == (400, "unknown_target")
 
 
-def test_moderator_sees_pending_packs(user):
-    pack = PackFactory(status=Pack.Status.PENDING)
-    moderator = client_for(UserFactory(role=User.Role.MODERATOR))
+def test_a_broken_index_is_a_field_error(auth_client):
+    response = auth_client.post("/api/v1/packs/import", {"index": {"files": 3}}, format="json")
 
-    assert moderator.get(f"/api/v1/packs/{pack.slug}").status_code == 200
-    assert PackItem.objects.count() == 0
+    assert (response.status_code, response.json()["code"]) == (400, "invalid_mrpack")
+
+
+def test_hidden_projects_are_not_picked_on_import(auth_client):
+    shown = ProjectFactory(slug="shown")
+    VersionFactory(project=shown, sha1="a" * 40, game_versions=["26.3"], loaders=["fabric"])
+    hidden = ProjectFactory(slug="hidden", is_hidden=True)
+    VersionFactory(project=hidden, sha1="b" * 40, game_versions=["26.3"], loaders=["fabric"])
+
+    data = auth_client.post(
+        "/api/v1/packs/import",
+        {
+            "files": [{"hash": "a" * 40}, {"hash": "b" * 40}],
+            "game_version": "26.3",
+            "loader": "fabric",
+        },
+        format="json",
+    ).json()
+
+    assert [item["project"]["slug"] for item in data["items"]] == ["shown"]

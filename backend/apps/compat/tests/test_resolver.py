@@ -398,3 +398,74 @@ def test_unavailable_dependencies_are_errors_not_waiting():
     result.unavailable = ["GONE"]
 
     assert result.status == Status.ERRORS
+
+
+def test_a_dependency_of_another_loader_on_a_multi_loader_file_is_skipped():
+    index = MemoryIndex(
+        project("TERRA", version("t1", loaders=("fabric", "neoforge"), requires=("KFF", "API"))),
+        project("KFF", version("k1", loaders=("neoforge",))),  # Kotlin for Forge
+        project("API", version("a1", loaders=("fabric",))),
+    )
+
+    result = run(index, "TERRA")
+
+    assert [item.project.slug for item in result.items] == ["terra", "api"]
+    assert result.status == Status.OK
+    neo = run(index, "TERRA", target=Target("1.21.1", "neoforge"))
+    # And the other way round: Fabric API is not needed on NeoForge
+    assert [item.project.slug for item in neo.items] == ["terra", "kff"]
+
+
+def test_a_single_loader_file_keeps_a_dependency_without_files():
+    index = MemoryIndex(
+        project("A", version("a1", requires=("LIB",))),
+        project("LIB", version("l1", loaders=("forge",))),
+    )
+
+    assert run(index, "A").item("lib").status == ItemStatus.NO_VERSION
+
+
+def test_a_shipped_modpack_keeps_its_pinned_files_and_adds_nothing():
+    index = MemoryIndex(
+        project(
+            "A",
+            version("a-old", game=("1.21",), requires=("API",)),
+            version("a-new", game=("1.21.1",)),
+        ),
+        project("API", version("api1")),
+        project("B", version("b1", forbids=("A",))),
+    )
+    requests = [Request(index.by_id["A"], "a-old"), Request(index.by_id["B"], "b1")]
+
+    result = resolve(requests, FABRIC, index, trust_pins=True)
+
+    assert result.item("a").version.id == "a-old"
+    assert [w.code for w in result.warnings] == ["pinned_other_game"]
+    assert result.item("api") is None
+    assert [(c.a, c.b) for c in result.conflicts] == [("b", "a")]
+
+
+def test_a_shipped_modpack_may_be_bigger_than_a_request():
+    index = MemoryIndex(*(project(f"P{n}", version(f"v{n}")) for n in range(MAX_PROJECTS + 5)))
+    requests = [Request(item) for item in index.by_id.values()]
+
+    with pytest.raises(TooManyProjects):
+        resolve(requests, FABRIC, index)
+    assert len(resolve(requests, FABRIC, index, limit=1000).items) == MAX_PROJECTS + 5
+
+
+def test_a_ban_of_one_version_does_not_hit_another():
+    index = MemoryIndex(project("ADDON", version("x1")), project("BASE", version("base2", day=5)))
+    addon = index.by_id["ADDON"]
+    banning = type(addon.versions[0])(
+        **{
+            **addon.versions[0].__dict__,
+            "dependencies": (Dependency("BASE", "base1", "incompatible"),),
+        }
+    )
+    index.by_id["ADDON"] = type(addon)(**{**addon.__dict__, "versions": (banning,)})
+
+    assert run(index, "ADDON", "BASE").conflicts == []
+    assert len(run(index, "ADDON", ("BASE", "base2")).conflicts) == 0
+    index.by_id["BASE"] = project("BASE", version("base1"))
+    assert [(c.a, c.b) for c in run(index, "ADDON", "BASE").conflicts] == [("addon", "base")]

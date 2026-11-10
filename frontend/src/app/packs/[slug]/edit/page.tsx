@@ -21,7 +21,7 @@ export default function EditPackPage({ params }: PageProps<"/packs/[slug]/edit">
 async function Builder({ params }: Pick<PageProps<"/packs/[slug]/edit">, "params">) {
   const pack = await getPack((await params).slug);
   // Only the author builds; others get the same «not found» as for a missing pack
-  if (!pack?.is_mine || pack.is_official) notFound();
+  if (!pack?.is_mine || pack.origin === "modrinth") notFound();
   return <PackBuilder initial={pack} />;
 }
 

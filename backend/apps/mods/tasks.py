@@ -115,3 +115,18 @@ def import_missing(ids: list[str]) -> int:
     known = {value for row in found.values_list("external_id", "slug") for value in row}
     mark_unavailable(set(ids) - known)
     return imported
+
+
+@shared_task(
+    name="mods.read_versions", autoretry_for=(ModrinthError,), max_retries=2, retry_backoff=10
+)
+def read_versions(external_ids: list[str]) -> int:
+    """All supported versions of projects that came in with one file (/import)."""
+    projects = Project.objects.filter(external_id__in=external_ids, versions_synced_at__isnull=True)
+    with ModrinthClient() as client:
+        game_versions = supported_game_versions()
+        for project in projects:
+            services.sync_project_versions(
+                client=client, project=project, game_versions=game_versions
+            )
+    return len(projects)

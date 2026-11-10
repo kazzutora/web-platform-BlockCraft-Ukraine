@@ -9,6 +9,7 @@ from apps.core.versions import latest_release
 from apps.library.models import Collection
 from apps.mods.models import Project
 from apps.packs.models import Pack
+from apps.packs.selectors import listed as listed_packs
 from apps.servers.models import Server
 from apps.skins.models import Skin
 
@@ -122,8 +123,8 @@ def pack_document(pack: Pack) -> dict:
         pack,
         title=pack.title,
         summary=pack.summary,
-        # «зборка з Create» finds packs by the mods inside
-        tags=[*pack.style_tags, *(item.project.title for item in items[:60])],
+        # «збірка з Create» finds packs by the mods inside
+        tags=[item.project.title for item in items[:60]],
         game_versions=[pack.game_version],
         loaders=[pack.loader],
         popularity=pack.downloads_count
@@ -160,9 +161,7 @@ SOURCES: dict[str, Source] = {
     "mod": Source(lambda: Project.objects.visible().prefetch_related("categories"), mod_document),
     "skin": Source(lambda: Skin.objects.published().select_related("author"), skin_document),
     "pack": Source(
-        lambda: (
-            Pack.objects.published().select_related("author").prefetch_related("items__project")
-        ),
+        lambda: listed_packs().select_related("author").prefetch_related("items__project"),
         pack_document,
     ),
     "server": Source(lambda: Server.objects.published().select_related("author"), server_document),

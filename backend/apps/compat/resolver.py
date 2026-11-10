@@ -106,19 +106,31 @@ def _entry(
     return project, reason, required_by, pinned
 
 
-def resolve(requests: Iterable[Request], target: Target, index: Index) -> Resolution:
+def resolve(
+    requests: Iterable[Request],
+    target: Target,
+    index: Index,
+    *,
+    trust_pins: bool = False,
+    limit: int = MAX_PROJECTS,
+) -> Resolution:
     """What to install for a set of projects: BFS over required dependencies.
 
     One project gets one version. Dependencies the index does not know go to `missing`;
     optional ones become suggestions; `incompatible` ones become conflicts when both ends
     are in the result. Projects of each BFS level are loaded from the index in one call.
+
+    `trust_pins` checks a finished modpack as its author shipped it: a pinned file is kept
+    even when Modrinth tags it for another game (`pinned_other_game`), and dependencies are
+    not added — the pack already carries what it needs. Conflicts are still reported.
     """
     requests = list(requests)
-    if len(requests) > MAX_PROJECTS:
-        raise TooManyProjects(f"At most {MAX_PROJECTS} projects at once")
+    if len(requests) > limit:
+        raise TooManyProjects(f"At most {limit} projects at once")
     result = Resolution(target=target)
     chosen: dict[str, Item] = {}  # by project id
-    forbids: list[tuple[str, str]] = []  # (project id, forbidden project id)
+    # (project id, forbidden project id, only this version of it or None for any)
+    forbids: list[tuple[str, str, str | None]] = []
     suggested: dict[str, str] = {}  # optional project id → slug of who suggests it
     requested_ids = {request.project.id for request in requests}
     level = [
@@ -127,7 +139,8 @@ def resolve(requests: Iterable[Request], target: Target, index: Index) -> Resolu
     ]
 
     while level:
-        wanted: dict[str, list[tuple[str, str | None]]] = {}  # dep id → [(required_by, pin)]
+        # dep id → [(required_by, pin, declared by a file built for several loaders)]
+        wanted: dict[str, list[tuple[str, str | None, bool]]] = {}
         by_version: dict[str, list[str]] = {}  # version id of a dependency → [required_by]
         engines: dict[str, list[str]] = {}  # implicit mod slug → [required_by]
         for project, reason, required_by, pinned in level:
@@ -144,6 +157,11 @@ def resolve(requests: Iterable[Request], target: Target, index: Index) -> Resolu
                     )
                 continue
             pick = pick_version(project, target, pinned)
+            if trust_pins and pinned and pick.status == ItemStatus.PINNED_INCOMPATIBLE:
+                shipped = next((v for v in project.versions if v.id == pinned), None)
+                if shipped is not None:
+                    pick = Pick(shipped, ItemStatus.OK)
+                    result.warnings.append(Warning("pinned_other_game", {"project": project.slug}))
             if pinned and reason == Reason.DEPENDENCY and pick.status != ItemStatus.OK:
                 # The author pinned a file that does not fit: take the best one we have
                 pick = pick_version(project, target)
@@ -171,6 +189,8 @@ def resolve(requests: Iterable[Request], target: Target, index: Index) -> Resolu
             for dependency in pick.version.dependencies:
                 if dependency.dependency_type == "embedded":
                     continue
+                if trust_pins and dependency.dependency_type != "incompatible":
+                    continue
                 if not dependency.project_id:
                     # Only the file is named: find its project, pinned to that file
                     if dependency.version_id and dependency.dependency_type == "required":
@@ -179,12 +199,12 @@ def resolve(requests: Iterable[Request], target: Target, index: Index) -> Resolu
                 if dependency.dependency_type == "optional":
                     suggested.setdefault(dependency.project_id, project.slug)
                 elif dependency.dependency_type == "incompatible":
-                    forbids.append((project.id, dependency.project_id))
+                    forbids.append((project.id, dependency.project_id, dependency.version_id))
                 elif dependency.dependency_type == "required":
                     wanted.setdefault(dependency.project_id, []).append(
-                        (project.slug, dependency.version_id)
+                        (project.slug, dependency.version_id, rules.multi_loader(pick.version))
                     )
-            if project.project_type == "shader":
+            if project.project_type == "shader" and not trust_pins:
                 engine = rules.shader_engine(pick.version, target)
                 if engine.mod:
                     engines.setdefault(engine.mod, []).append(project.slug)
@@ -199,7 +219,10 @@ def resolve(requests: Iterable[Request], target: Target, index: Index) -> Resolu
                 if project_id not in result.missing:
                     result.missing.append(project_id)
                 continue
-            for required_by, pin in needers:
+            for required_by, pin, multi in needers:
+                if multi and not rules.serves(dependency, target):
+                    # «Needs Kotlin for Forge» on a Fabric + NeoForge file: not for this loader
+                    continue
                 level.append(_entry(dependency, Reason.DEPENDENCY, required_by, pin))
         owners = index.by_version(by_version) if by_version else {}
         for version_id, needers in by_version.items():
@@ -224,10 +247,12 @@ def resolve(requests: Iterable[Request], target: Target, index: Index) -> Resolu
 
     slugs = {project_id: item.project.slug for project_id, item in chosen.items()}
     pairs: set[frozenset[str]] = set()
-    for project_id, other in forbids:
+    for project_id, other, only_version in forbids:
         # Only files that will be installed can clash; one pair is one conflict
         if other not in chosen or other == project_id or chosen[other].version is None:
             continue
+        if only_version and chosen[other].version.id != only_version:
+            continue  # «incompatible with Cobblemon 1.5.0» says nothing about 1.6
         pair = frozenset({project_id, other})
         if pair in pairs:
             continue

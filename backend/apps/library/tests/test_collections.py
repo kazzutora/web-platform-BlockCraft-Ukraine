@@ -266,6 +266,6 @@ def test_servers_and_packs_in_a_collection_show_cards_and_previews(django_assert
 
     server_item, pack_item = body["items"]
     assert (server_item["kind"], server_item["server"]["name"]) == ("server", "Січ")
-    assert (pack_item["kind"], pack_item["pack"]["mods_count"]) == ("pack", 1)
+    assert (pack_item["kind"], pack_item["pack"]["items_count"]) == ("pack", 1)
     assert pack_item["pack"]["icons"][0]["slug"] == "create"
     assert body["preview"] == ["https://cdn.modrinth.com/data/P/icon.webp"]

@@ -2,14 +2,16 @@ from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
 from apps.accounts.serializers import UserBriefSerializer
+from apps.compat.serializers import HashedFileSerializer, ResolutionSerializer
+from apps.core.game import GameContext
 from apps.core.models import Source
 from apps.mods.models import Project, ProjectVersion
 from apps.sources.attribution import SourceRef, SourceRefSerializer, source_ref
 from apps.sources.serializers import validate_supported_version
 
 from . import selectors
-from .choices import MAX_STYLES, PackLoader, Style
-from .models import Pack, PackItem
+from .choices import PackLoader
+from .models import Pack, PackExternalFile, PackItem, Reason, Visibility
 
 
 class PackProjectSerializer(serializers.ModelSerializer):
@@ -27,6 +29,8 @@ class PackIconSerializer(serializers.ModelSerializer):
 
 
 class PackFileSerializer(serializers.ModelSerializer):
+    id = serializers.CharField(source="modrinth_version_id")
+
     class Meta:
         model = ProjectVersion
         fields = ["id", "version_number", "file_name", "file_size", "game_versions", "loaders"]
@@ -39,16 +43,15 @@ class PackItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PackItem
-        fields = ["project", "version", "is_required", "added_as_dependency"]
+        fields = ["project", "version", "reason", "required_by", "env_client", "env_server"]
         read_only_fields = fields
 
 
-class IssueSerializer(serializers.Serializer):
-    type = serializers.ChoiceField(choices=["no_version", "missing_dependency", "conflict"])
-    project = PackIconSerializer()
-    other = PackIconSerializer(allow_null=True)
-    other_modrinth_id = serializers.CharField(allow_blank=True)
-    message = serializers.CharField()
+class ExternalFileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PackExternalFile
+        fields = ["path", "url", "size"]
+        read_only_fields = fields
 
 
 class PackBriefSerializer(serializers.ModelSerializer):
@@ -59,16 +62,18 @@ class PackBriefSerializer(serializers.ModelSerializer):
 
 
 class PackCardSerializer(serializers.ModelSerializer):
-    """Catalog card: cover (or the first mod icons), target and counters."""
+    """Catalog card: cover (or the first icons), target, compatibility and counters."""
 
     author = UserBriefSerializer(read_only=True)
     cover_url = serializers.SerializerMethodField()
-    mods_count = serializers.IntegerField(read_only=True)
     icons = serializers.SerializerMethodField()
     # Viewer state from social.selectors.with_viewer_state (false/null for guests)
     is_favorited = serializers.SerializerMethodField()
     my_review_stars = serializers.SerializerMethodField()
     source = serializers.SerializerMethodField()
+    fits_my_game = serializers.SerializerMethodField(
+        help_text="Built for the viewer's «Моя гра»; null when nothing is chosen."
+    )
 
     class Meta:
         model = Pack
@@ -76,14 +81,14 @@ class PackCardSerializer(serializers.ModelSerializer):
             "slug",
             "title",
             "summary",
+            "origin",
             "author",
             "cover_url",
             "icons",
-            "style_tags",
             "game_version",
             "loader",
-            "is_official",
-            "mods_count",
+            "items_count",
+            "compat_status",
             "rating_avg",
             "rating_count",
             "favorites_count",
@@ -92,15 +97,16 @@ class PackCardSerializer(serializers.ModelSerializer):
             "is_favorited",
             "my_review_stars",
             "source",
+            "fits_my_game",
         ]
         read_only_fields = fields
 
     @extend_schema_field(SourceRefSerializer(allow_null=True))
     def get_source(self, pack: Pack) -> SourceRef | None:
         """Modpacks from Modrinth link back; community packs are made here."""
-        if not pack.modrinth_id:
+        if not pack.is_modrinth or not pack.external_url:
             return None
-        return source_ref(Source.MODRINTH, f"https://modrinth.com/modpack/{pack.modrinth_id}")
+        return source_ref(Source.MODRINTH, pack.external_url)
 
     @extend_schema_field(serializers.CharField(allow_null=True))
     def get_cover_url(self, pack: Pack) -> str | None:
@@ -114,7 +120,7 @@ class PackCardSerializer(serializers.ModelSerializer):
         if items is None:
             items = sorted(
                 getattr(pack, "all_items", []),
-                key=lambda item: (item.added_as_dependency, item.position, item.pk),
+                key=lambda item: (item.reason != Reason.REQUESTED, item.position, item.pk),
             )[: selectors.PREVIEW_ICONS]
         return PackIconSerializer([item.project for item in items], many=True).data
 
@@ -124,34 +130,51 @@ class PackCardSerializer(serializers.ModelSerializer):
     def get_my_review_stars(self, pack: Pack) -> int | None:
         return getattr(pack, "my_review_stars", None)
 
+    def get_fits_my_game(self, pack: Pack) -> bool | None:
+        game: GameContext | None = self.context.get("game")
+        if game is None or not game.is_set:
+            return None
+        return (not game.game_version or game.game_version == pack.game_version) and (
+            not game.loader or game.loader == pack.loader
+        )
+
 
 class PackDetailSerializer(PackCardSerializer):
     forked_from = PackBriefSerializer(read_only=True, allow_null=True)
     items = serializers.SerializerMethodField()
-    issues = serializers.SerializerMethodField()
+    external_files = ExternalFileSerializer(many=True, read_only=True)
+    compat = serializers.SerializerMethodField(
+        help_text="The last check of the set (`Resolution`); null before the first one."
+    )
     effective_loader_version = serializers.SerializerMethodField()
     total_size = serializers.SerializerMethodField()
     is_mine = serializers.SerializerMethodField()
+    share_token = serializers.SerializerMethodField(
+        help_text="Only for the author: `?share_token=` opens a «за посиланням» pack."
+    )
 
     class Meta(PackCardSerializer.Meta):
         fields = [
             *PackCardSerializer.Meta.fields,
+            "description_html",
+            "notes_md",
+            "notes_html",
             "loader_version",
             "effective_loader_version",
             "ram_min_gb",
-            "gpu_note",
-            "install_md",
-            "install_html",
-            "changelog_md",
-            "changelog_html",
             "forked_from",
             "forks_count",
             "items",
-            "issues",
+            "external_files",
+            "compat",
+            "compat_checked_at",
             "total_size",
             "status",
+            "visibility",
+            "share_token",
             "rejection_reason",
             "is_mine",
+            "source_file_url",
             "created_at",
             "updated_at",
         ]
@@ -164,11 +187,14 @@ class PackDetailSerializer(PackCardSerializer):
 
     @extend_schema_field(PackItemSerializer(many=True))
     def get_items(self, pack: Pack) -> list[dict]:
-        return PackItemSerializer(self._items(pack), many=True).data
+        items = sorted(
+            self._items(pack), key=lambda item: (item.reason != Reason.REQUESTED, item.position)
+        )
+        return PackItemSerializer(items, many=True).data
 
-    @extend_schema_field(IssueSerializer(many=True))
-    def get_issues(self, pack: Pack) -> list[dict]:
-        return IssueSerializer(selectors.inspect(pack, self._items(pack)), many=True).data
+    @extend_schema_field(ResolutionSerializer(allow_null=True))
+    def get_compat(self, pack: Pack) -> dict | None:
+        return pack.compat_report or None
 
     def get_effective_loader_version(self, pack: Pack) -> str:
         """What the .mrpack will ask for: pinned by the author or the latest stable build."""
@@ -181,15 +207,14 @@ class PackDetailSerializer(PackCardSerializer):
         request = self.context.get("request")
         return bool(request and request.user.is_authenticated and pack.author_id == request.user.pk)
 
+    @extend_schema_field(serializers.CharField(allow_null=True))
+    def get_share_token(self, pack: Pack) -> str | None:
+        return pack.share_token if self.get_is_mine(pack) else None
+
 
 class PackWriteSerializer(serializers.Serializer):
     title = serializers.CharField(max_length=80)
     summary = serializers.CharField(max_length=280, required=False, allow_blank=True)
-    style_tags = serializers.ListField(
-        child=serializers.ChoiceField(choices=Style.choices),
-        required=False,
-        max_length=MAX_STYLES,
-    )
     game_version = serializers.CharField(max_length=32, validators=[validate_supported_version])
     loader = serializers.ChoiceField(choices=PackLoader.choices)
     loader_version = serializers.CharField(
@@ -199,9 +224,8 @@ class PackWriteSerializer(serializers.Serializer):
         help_text="Empty: the latest stable build at export time.",
     )
     ram_min_gb = serializers.IntegerField(min_value=1, max_value=64, required=False)
-    gpu_note = serializers.CharField(max_length=140, required=False, allow_blank=True)
-    install_md = serializers.CharField(max_length=5000, required=False, allow_blank=True)
-    changelog_md = serializers.CharField(max_length=5000, required=False, allow_blank=True)
+    notes_md = serializers.CharField(max_length=5000, required=False, allow_blank=True)
+    visibility = serializers.ChoiceField(choices=Visibility.choices, required=False)
 
     def validate_loader_version(self, value: str) -> str:
         if value and not all(char.isalnum() or char in ".-+_" for char in value):
@@ -214,18 +238,82 @@ class PackItemAddSerializer(serializers.Serializer):
 
 
 class PackItemUpdateSerializer(serializers.Serializer):
-    is_required = serializers.BooleanField(
-        help_text="Optional files are offered, not forced, by launchers."
+    optional = serializers.BooleanField(
+        help_text="Launchers offer an optional file instead of installing it."
     )
 
 
-class CoverUploadSerializer(serializers.Serializer):
-    cover = serializers.FileField(help_text="PNG, JPEG or WebP up to 2 MB; cropped to 1200×630.")
+class PublishSerializer(serializers.Serializer):
+    visibility = serializers.ChoiceField(
+        choices=[Visibility.PUBLIC, Visibility.LINK], default=Visibility.PUBLIC
+    )
+
+
+class TargetQuerySerializer(serializers.Serializer):
+    game_version = serializers.CharField(max_length=32, validators=[validate_supported_version])
+    loader = serializers.ChoiceField(choices=PackLoader.choices)
+
+
+class ForkSerializer(serializers.Serializer):
+    game_version = serializers.CharField(
+        max_length=32, required=False, validators=[validate_supported_version]
+    )
+    loader = serializers.ChoiceField(choices=PackLoader.choices, required=False)
+
+
+class ChangedSerializer(serializers.Serializer):
+    project = serializers.CharField(help_text="Slug.")
+    old_version = serializers.CharField(allow_null=True)
+    new_version = serializers.CharField()
+
+
+class RetargetSerializer(serializers.Serializer):
+    target = serializers.DictField(child=serializers.CharField())
+    kept = serializers.ListField(child=serializers.CharField())
+    changed = ChangedSerializer(many=True)
+    dropped = serializers.ListField(child=serializers.CharField())
+    added = serializers.ListField(child=serializers.CharField())
+    titles = serializers.DictField(child=serializers.CharField(), help_text="Slug → title.")
+
+
+class PackFileLinkSerializer(serializers.Serializer):
+    """«Встановити вручну»: one direct link per file, with the folder it goes to."""
+
+    project = PackIconSerializer()
+    file_name = serializers.CharField()
+    url = serializers.URLField()
+    size = serializers.IntegerField()
+    folder = serializers.ChoiceField(
+        choices=["mods", "resourcepacks", "shaderpacks", "datapacks"],
+        help_text="datapacks: into a world's folder, not the game's.",
+    )
+    optional = serializers.BooleanField()
 
 
 class MyPackSerializer(PackCardSerializer):
-    """«Мої роботи»: drafts and the moderation outcome too."""
+    """«Мої збірки»: drafts and private ones too."""
 
     class Meta(PackCardSerializer.Meta):
-        fields = [*PackCardSerializer.Meta.fields, "status", "rejection_reason", "updated_at"]
+        fields = [*PackCardSerializer.Meta.fields, "status", "visibility", "updated_at"]
         read_only_fields = fields
+
+
+class PackImportSerializer(serializers.Serializer):
+    """`files` from a `mods` folder, or `index` — modrinth.index.json the browser took out
+    of a .mrpack. Nothing else of the player's files reaches us."""
+
+    title = serializers.CharField(max_length=80, required=False, allow_blank=True)
+    game_version = serializers.CharField(
+        max_length=32, required=False, allow_blank=True, help_text="Default: the guess."
+    )
+    loader = serializers.ChoiceField(choices=PackLoader.choices, required=False, allow_blank=True)
+    files = HashedFileSerializer(many=True, required=False, max_length=2000)
+    index = serializers.JSONField(required=False)
+
+    def validate(self, attrs: dict) -> dict:
+        if not attrs.get("files") and attrs.get("index") is None:
+            raise serializers.ValidationError("Передай files або index.")
+        index = attrs.get("index")
+        if index is not None and (not isinstance(index, dict) or len(str(index)) > 2_000_000):
+            raise serializers.ValidationError({"index": "Це не modrinth.index.json."})
+        return attrs

@@ -7,7 +7,7 @@ import { type TopKind, TopList, type TopPeriod, topCopy } from "@/features/home/
 
 export const metadata: Metadata = {
   title: topCopy.title,
-  description: "Найпопулярніші моди, зборки, скіни й сервери тижня, місяця й усіх часів.",
+  description: "Найпопулярніші моди, збірки, скіни й сервери тижня, місяця й усіх часів.",
 };
 
 const first = (value: string | string[] | undefined) =>

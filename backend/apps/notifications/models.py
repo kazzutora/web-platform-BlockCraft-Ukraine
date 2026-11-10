@@ -8,6 +8,7 @@ class Notification(models.Model):
         RESTORED = "restored", "Роботу повернуто"
         REVIEW = "review", "Новий відгук"
         WARNING = "warning", "Попередження"
+        PACK_ATTENTION = "pack_attention", "Збірка потребує уваги"
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="notifications"

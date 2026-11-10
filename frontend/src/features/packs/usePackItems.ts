@@ -25,14 +25,17 @@ function placeholder(project: ProjectCard): PackItem {
       summary: project.summary,
     },
     version: null,
-    is_required: true,
-    added_as_dependency: false,
+    reason: "requested",
+    required_by: [],
+    env_client: "required",
+    env_server: "required",
   };
 }
 
 /**
- * Constructor mutations on the cached pack: the inventory changes at once and rolls back
- * with a toast if the server says no (no file for the version, a stale page…).
+ * Constructor mutations on the cached pack: the set changes at once and rolls back with a
+ * toast if the server says no. The server answer replaces the guess: it carries the
+ * resolved dependencies and the new compatibility report.
  */
 export function usePackItems(slug: string) {
   const queryClient = useQueryClient();
@@ -74,16 +77,27 @@ export function usePackItems(slug: string) {
       return data;
     },
     onMutate: (project) =>
-      optimistic((pack) => ({
-        ...pack,
-        items: [...pack.items, placeholder(project)],
-        mods_count: pack.mods_count + 1,
-      }))(),
+      optimistic((pack) => {
+        // Already pulled in as a dependency: it becomes the author's pick, not a new row
+        if (pack.items.some((item) => item.project.slug === project.slug)) {
+          return {
+            ...pack,
+            items: pack.items.map((item) =>
+              item.project.slug === project.slug ? { ...item, reason: "requested" } : item,
+            ),
+          };
+        }
+        return {
+          ...pack,
+          items: [...pack.items, placeholder(project)],
+          items_count: pack.items_count + 1,
+        };
+      })(),
     onError: rollback(copy.addError),
     onSuccess: (data, _project, context) => {
       const before = context?.previous?.items.length ?? data.items.length - 1;
-      const dependencies = data.items.length - before - 1;
-      if (dependencies > 0) toast({ title: copy.added(dependencies) });
+      const pulled = data.items.length - before - 1;
+      if (pulled > 0) toast({ title: copy.added(pulled) });
       settle(data);
     },
   });
@@ -100,31 +114,37 @@ export function usePackItems(slug: string) {
       optimistic((pack) => ({
         ...pack,
         items: pack.items.filter((item) => item.project.slug !== project),
-        mods_count: Math.max(0, pack.mods_count - 1),
+        items_count: Math.max(0, pack.items_count - 1),
       }))(),
     onError: rollback(copy.removeError),
     onSuccess: settle,
   });
 
-  const setRequired = useMutation({
-    mutationFn: async ({ project, required }: { project: string; required: boolean }) => {
+  const setOptional = useMutation({
+    mutationFn: async ({ project, optional }: { project: string; optional: boolean }) => {
       const { data, error } = await api.PATCH("/api/v1/packs/{slug}/items/{project_slug}", {
         params: { path: { slug, project_slug: project } },
-        body: { is_required: required },
+        body: { optional },
       });
       if (!data) throw error;
       return data;
     },
-    onMutate: ({ project, required }) =>
+    onMutate: ({ project, optional }) =>
       optimistic((pack) => ({
         ...pack,
         items: pack.items.map((item) =>
-          item.project.slug === project ? { ...item, is_required: required } : item,
+          item.project.slug === project
+            ? {
+                ...item,
+                env_client: optional ? "optional" : "required",
+                env_server: optional ? "optional" : "required",
+              }
+            : item,
         ),
       }))(),
     onError: rollback(packsCopy.detail.error),
     onSuccess: settle,
   });
 
-  return { add, remove, setRequired };
+  return { add, remove, setOptional };
 }

@@ -9,7 +9,7 @@ import Loading from "../loading";
 
 export const metadata: Metadata = {
   title: packsCopy.title,
-  description: "Зборки модів Minecraft від гравців: один файл .mrpack — і все встановлено.",
+  description: "Збірки модів Minecraft від гравців: один файл .mrpack — і все встановлено.",
 };
 
 export default function PacksPage({ searchParams }: PageProps<"/packs">) {

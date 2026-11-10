@@ -20,6 +20,10 @@ export const notificationsCopy = {
         ? `Новий відгук на «${p.title}» від ${p.actor}: «${p.excerpt}»`
         : `Нова оцінка «${p.title}» від ${p.actor}.`,
     warning: (p: Payload) => `Попередження від модераторів: ${p.reason}`,
+    pack_attention: (p: Payload) =>
+      p.reason === "errors"
+        ? `У збірці «${p.title}» з’явилися проблеми сумісності: Modrinth щось змінив. Перевір її.`
+        : `У збірці «${p.title}» з’явилися попередження сумісності. Глянь, чи все гаразд.`,
   } satisfies Record<NotificationType, (payload: Payload) => string>,
   prefs: {
     title: "Що надсилати",

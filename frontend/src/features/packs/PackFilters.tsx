@@ -1,23 +1,31 @@
 import { FilterChip } from "@/components/ui/FilterChip";
 import { FilterRow } from "@/components/ui/FilterRow";
 import { NavigateSelect } from "@/components/ui/NavigateSelect";
+import { gameCopy } from "@/features/game/copy";
 
 import { packsCopy } from "./copy";
-import { type PackFilters as Filters, catalogHref, toggleStyle } from "./filters";
-import { packLoaders, packStyles } from "./types";
+import { type PackFilters as Filters, type PackOrigin, catalogHref } from "./filters";
+import { packLoaders } from "./types";
 
 const copy = packsCopy.filters;
+const origins: PackOrigin[] = ["modrinth", "community"];
 
-/** Version, sort, loader and style: every chip is a link with the other filters kept. */
-export function PackFilters({
-  filters,
-  gameVersions,
-}: {
+type PackFiltersProps = {
   filters: Filters;
   gameVersions: string[];
-}) {
+  /** Version and loader came from «Моя гра»: offer to show everything. */
+  fromGame: boolean;
+  inviteToChoose: boolean;
+};
+
+/** Version, sort, loader and origin: every chip is a link with the other filters kept. */
+export function PackFilters({ filters, gameVersions, fromGame, inviteToChoose }: PackFiltersProps) {
   const versionOptions = [
-    { value: "", label: copy.allVersions, href: catalogHref(filters, { gameVersion: "" }) },
+    {
+      value: "",
+      label: copy.allVersions,
+      href: catalogHref(filters, { gameVersion: "", all: true }),
+    },
     ...gameVersions.map((version) => ({
       value: version,
       label: version,
@@ -36,7 +44,7 @@ export function PackFilters({
         <NavigateSelect label={copy.sort} value={filters.sort || "popular"} options={sortOptions} />
       </div>
       <FilterRow label={copy.loader}>
-        <FilterChip href={catalogHref(filters, { loader: "" })} active={!filters.loader}>
+        <FilterChip href={catalogHref(filters, { loader: "", all: true })} active={!filters.loader}>
           {copy.anyLoader}
         </FilterChip>
         {packLoaders.map((loader) => (
@@ -48,24 +56,33 @@ export function PackFilters({
             {packsCopy.loaders[loader]}
           </FilterChip>
         ))}
-        <FilterChip
-          href={catalogHref(filters, { official: !filters.official })}
-          active={filters.official}
-        >
-          {copy.official}
-        </FilterChip>
       </FilterRow>
-      <FilterRow label={copy.style}>
-        {packStyles.map((style) => (
+      <FilterRow label={copy.origin}>
+        <FilterChip href={catalogHref(filters, { origin: "" })} active={!filters.origin}>
+          {copy.anyOrigin}
+        </FilterChip>
+        {origins.map((origin) => (
           <FilterChip
-            key={style}
-            href={catalogHref(filters, { styles: toggleStyle(filters.styles, style) })}
-            active={filters.styles.includes(style)}
+            key={origin}
+            href={catalogHref(filters, { origin: filters.origin === origin ? "" : origin })}
+            active={filters.origin === origin}
           >
-            {packsCopy.styles[style]}
+            {packsCopy.origins[origin]}
           </FilterChip>
         ))}
       </FilterRow>
+      {inviteToChoose && <p className="text-meta text-muted">{gameCopy.invite}</p>}
+      {fromGame && (
+        <p className="flex flex-wrap items-center gap-3 text-meta text-muted">
+          {copy.fromProfile}
+          <FilterChip
+            href={catalogHref(filters, { gameVersion: "", loader: "", all: true })}
+            active={false}
+          >
+            {copy.showAll}
+          </FilterChip>
+        </p>
+      )}
     </div>
   );
 }

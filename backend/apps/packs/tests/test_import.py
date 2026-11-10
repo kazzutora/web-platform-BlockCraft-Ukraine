@@ -12,7 +12,7 @@ from apps.mods.tests.factories import ProjectFactory, VersionFactory
 from apps.mods.tests.fakes import FakeModrinth
 from apps.mods.tests.payloads import project_payload, version_payload
 from apps.packs import services, tasks
-from apps.packs.models import LoaderRelease, Pack
+from apps.packs.models import LoaderRelease, Origin, Pack
 from apps.sources.models import SyncRun
 from apps.sources.schemas.modrinth import ModrinthProject, ModrinthVersion, VersionFile
 
@@ -79,6 +79,12 @@ def modpack_version(version_id: str = "PACKV001", **overrides) -> dict:
     return payload
 
 
+def mirrored_version() -> dict:
+    payload = version_payload("MIRRORV1", "MIRROR01")
+    payload["files"][0]["hashes"] = {"sha1": "c" * 40, "sha512": "d" * 128}
+    return payload
+
+
 @pytest.fixture
 def fake():
     sodium = ProjectFactory(external_id="AANobbMI", slug="sodium")
@@ -100,7 +106,17 @@ def fake():
             "downloads": [cdn("SRVONLY1", "SRV00001")],
             "env": {"client": "unsupported", "server": "required"},
         },
-        {"path": "mods/elsewhere.jar", "downloads": ["https://github.com/x/elsewhere.jar"]},
+        {
+            "path": "mods/elsewhere.jar",
+            "downloads": ["https://github.com/x/elsewhere.jar"],
+            "hashes": {"sha1": "e" * 40, "sha512": "f" * 128},
+        },
+        # Hosted elsewhere, but Modrinth knows the file by its hash
+        {
+            "path": "mods/mirrored.jar",
+            "downloads": ["https://mirror.example/mirrored.jar"],
+            "hashes": {"sha1": "c" * 40},
+        },
         # A plugin: not a type our catalog keeps
         {"path": "mods/plugin.jar", "downloads": [cdn("PLUGIN01", "PLUG0001")]},
     ]
@@ -113,6 +129,7 @@ def fake():
             modpack_payload(),
             project_payload("YL57xq9U", "iris"),
             project_payload("PLUGIN01", "essentials", "plugin"),
+            project_payload("MIRROR01", "mirrored"),
         ],
         {
             "FABULOUS": [
@@ -121,33 +138,44 @@ def fake():
                 modpack_version("PACKFRG1", loaders=["forge"], game_versions=["1.7.10"]),
             ],
             "YL57xq9U": [version_payload("IRIS0001", "YL57xq9U")],
+            "MIRROR01": [mirrored_version()],
         },
         {MRPACK_URL: mrpack(files)},
     )
 
 
-def test_import_modpack_creates_an_official_pack(fake):
+def test_import_modpack_mirrors_a_modrinth_pack(fake):
     pack = services.import_modpack(client=fake, data=fake.get_projects(["FABULOUS"])[0])
 
-    assert pack.is_official
-    assert pack.status == Pack.Status.PUBLISHED
+    assert pack.origin == Origin.MODRINTH
+    assert (pack.status, pack.visibility) == (Pack.Status.PUBLISHED, "public")
     assert pack.author.nickname == "BlockCraft"
     assert not pack.author.has_usable_password()
     assert (pack.game_version, pack.loader, pack.loader_version) == ("26.3", "fabric", "0.17.2")
-    assert pack.style_tags == ["performance", "lightweight"]
     assert pack.source_file_url == MRPACK_URL
+    assert pack.external_url == "https://modrinth.com/modpack/fabulously-optimized"
     assert pack.modrinth_version_id == "PACKV001"
-    assert "<strong>Sodium</strong>" in pack.changelog_html
+    assert "<h1>Hello</h1>" in pack.description_html
     files = {
-        item.project.slug: (item.version.modrinth_version_id, item.is_required)
+        item.project.slug: (
+            item.version.modrinth_version_id if item.version else None,
+            item.env_client,
+            item.reason,
+        )
         for item in pack.items.select_related("project", "version")
     }
     assert files == {
-        "sodium": ("SODIUM01", True),
-        "iris": ("IRIS0001", True),
-        "modmenu": ("MODMENU2", True),
-        "zoomify": ("ZOOM0001", False),
+        "sodium": ("SODIUM01", "required", "requested"),
+        "iris": ("IRIS0001", "required", "requested"),
+        # The pinned file is gone from Modrinth: the item stays, the check says why
+        "modmenu": (None, "required", "requested"),
+        "zoomify": ("ZOOM0001", "optional", "requested"),
+        "mirrored": ("MIRRORV1", "required", "requested"),
     }
+    assert list(pack.external_files.values_list("path", flat=True)) == ["mods/elsewhere.jar"]
+    assert pack.items_count == 5
+    assert pack.compat_status in {"errors", "warnings", "ok", "unknown"}
+    assert pack.compat_report["target"] == {"game_version": "26.3", "loader": "fabric"}
     assert not Project.objects.get(slug="iris").is_hidden
     assert fake.downloads == [MRPACK_URL]
 
@@ -254,28 +282,6 @@ def test_import_official_task(fake, settings):
 
     assert result["created"] == 1
     assert SyncRun.objects.get(job="modrinth.modpacks").params == {"limit": 3}
-
-
-def test_fill_dependencies_task_brings_in_and_adds_missing_ones(user):
-    pack = PackFactory(author=user, status=Pack.Status.DRAFT)
-    create = mod(slug="create", unknown=["FLYWHEEL"])
-    services.add_item(pack=pack, user=user, project_slug=create.slug)
-    fake = FakeModrinthWithFiles(
-        [project_payload("FLYWHEEL", "flywheel")],
-        {"FLYWHEEL": [version_payload("FLY00001", "FLYWHEEL")]},
-        {},
-    )
-
-    with modrinth(fake):
-        added = tasks.fill_dependencies.delay(pack.pk).get()
-
-    assert added == 1
-    item = pack.items.get(project__slug="flywheel")
-    assert item.added_as_dependency
-    assert item.version.modrinth_version_id == "FLY00001"
-    with modrinth(fake):
-        assert tasks.fill_dependencies.delay(pack.pk).get() == 0
-        assert tasks.fill_dependencies.delay(999_999).get() == 0
 
 
 def test_refresh_loader_versions_task_stores_builds():

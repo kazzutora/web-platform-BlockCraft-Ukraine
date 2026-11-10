@@ -1,5 +1,5 @@
 from django.contrib.contenttypes.prefetch import GenericPrefetch
-from django.db.models import Count, Exists, OuterRef, Prefetch, Q, QuerySet, Subquery
+from django.db.models import Exists, OuterRef, Prefetch, Q, QuerySet, Subquery
 from django.http import Http404
 
 from apps.core.kinds import Kind, Viewer
@@ -69,9 +69,7 @@ def items_of(collection: Collection) -> QuerySet[CollectionItem]:
             Project.objects.prefetch_related("categories"),
             Skin.objects.select_related("author"),
             Server.objects.select_related("author"),
-            packs_with_preview(
-                Pack.objects.select_related("author").annotate(mods_count=Count("items"))
-            ),
+            packs_with_preview(Pack.objects.select_related("author")),
             Collection.objects.all(),
         ],
     )

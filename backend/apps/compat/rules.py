@@ -5,7 +5,7 @@ Each rule is a small pure function so tests can name the case they cover.
 
 from dataclasses import dataclass
 
-from .types import Target, Version
+from .types import Project, Target, Version
 
 FABRIC, FORGE, NEOFORGE, QUILT, VANILLA = "fabric", "forge", "neoforge", "quilt", "vanilla"
 MOD_LOADERS = frozenset({FABRIC, FORGE, NEOFORGE, QUILT})
@@ -46,6 +46,21 @@ def accepted_loaders(target: Target, project_type: str) -> frozenset[str]:
         return frozenset({NEOFORGE})
     # A game without a loader takes a mod only as its datapack file (Terralith, R2.1)
     return DATAPACK_LOADERS
+
+
+def multi_loader(version: Version) -> bool:
+    """A file built for several mod loaders lists the dependencies of all of them."""
+    return len(MOD_LOADERS.intersection(version.loaders)) > 1
+
+
+def serves(project: Project, target: Target) -> bool:
+    """Whether the project has any file at all for the target's loader (any game version).
+
+    Modrinth records dependencies per file, not per loader: a Fabric + NeoForge file may
+    require a NeoForge-only library. Such a dependency is skipped for a Fabric game.
+    """
+    accepted = accepted_loaders(target, project.project_type)
+    return any(accepted.intersection(version.loaders) for version in project.versions)
 
 
 def needs_loader(target: Target, project_type: str) -> bool:

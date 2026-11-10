@@ -4,7 +4,7 @@ import Link from "next/link";
 import { CompatStatus, type CompatTone } from "@/components/ui/CompatStatus";
 import { Icon } from "@/components/ui/Icon";
 import { Illustration } from "@/components/ui/Illustration";
-import { downloadUrl } from "@/features/mods/api";
+import { downloadUrl } from "@/features/mods/links";
 import { formatFileSize, loaderName } from "@/features/mods/format";
 
 import type { Resolution, ResolutionItem } from "./api";
@@ -45,17 +45,33 @@ function reasonText(item: ResolutionItem, titles: Map<string, string>, loader: s
   return copy.reason.requested;
 }
 
-type ResolutionViewProps = { resolution: Resolution };
+type ResolutionViewProps = {
+  resolution: Resolution;
+  /** Heading of the block; «Що встановити» on a mod page, «Перевірка» for a pack. */
+  title?: string;
+  /** Every file with its reason; a pack constructor shows only what is wrong. */
+  mode?: "full" | "problems";
+  /** Ask `/install` again while dependencies are imported (mod pages only). */
+  live?: boolean;
+  /** Files already downloadable elsewhere on the page: no links here. */
+  downloads?: boolean;
+};
 
 /** «Що встановити»: conflicts and warnings first, then every file with its reason. */
-export function ResolutionView({ resolution }: ResolutionViewProps) {
+export function ResolutionView({
+  resolution,
+  title = copy.title,
+  mode = "full",
+  live = true,
+  downloads = true,
+}: ResolutionViewProps) {
   const target = targetLabel(resolution.target);
   const titles = new Map(resolution.items.map((item) => [item.project.slug, item.project.title]));
   const status = overall(resolution);
   const params = { game_version: resolution.target.game_version, loader: resolution.target.loader };
   return (
     <section aria-labelledby="install-title" className="flex flex-col gap-6">
-      {resolution.status === "incomplete" && (
+      {live && resolution.status === "incomplete" && (
         <ResolutionPoller
           slug={resolution.items[0]?.project.slug ?? ""}
           target={resolution.target}
@@ -63,7 +79,7 @@ export function ResolutionView({ resolution }: ResolutionViewProps) {
       )}
       <header className="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between">
         <h2 id="install-title" className="font-serif text-h2">
-          {copy.title}
+          {title}
         </h2>
         <CompatStatus tone={status.tone}>{status.text}</CompatStatus>
       </header>
@@ -105,7 +121,10 @@ export function ResolutionView({ resolution }: ResolutionViewProps) {
       )}
 
       <ul className="flex flex-col" role="list">
-        {resolution.items.map((item) => {
+        {(mode === "full"
+          ? resolution.items
+          : resolution.items.filter((item) => item.status !== "ok")
+        ).map((item) => {
           const state = itemStatus(item, target);
           return (
             <li
@@ -161,7 +180,7 @@ export function ResolutionView({ resolution }: ResolutionViewProps) {
               </div>
               <div className="flex items-center justify-between gap-4 sm:justify-end">
                 <CompatStatus tone={state.tone}>{state.text}</CompatStatus>
-                {item.version && !item.project.hidden && (
+                {downloads && item.version && !item.project.hidden && (
                   // A plain <a>: the API redirects to Modrinth's CDN and counts the download
                   <a
                     href={downloadUrl(item.project.slug, { ...params, version: item.version.id })}
@@ -178,7 +197,7 @@ export function ResolutionView({ resolution }: ResolutionViewProps) {
         })}
       </ul>
 
-      {resolution.suggestions.some((suggestion) => suggestion.project) && (
+      {mode === "full" && resolution.suggestions.some((suggestion) => suggestion.project) && (
         <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-meta">
           <span className="text-muted">{copy.suggestions}</span>
           {resolution.suggestions.map((suggestion) =>

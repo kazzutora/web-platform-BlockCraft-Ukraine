@@ -14,14 +14,25 @@ function meta(pack: PackCardData): string {
   return [
     pack.game_version,
     packsCopy.loaders[pack.loader],
-    plural(pack.mods_count, packsCopy.mods),
+    plural(pack.items_count, packsCopy.items),
     downloads ? packsCopy.card.downloads(formatCount(downloads)) : "",
   ]
     .filter(Boolean)
     .join(" · ");
 }
 
-export function PackCard({ pack, eager = false }: { pack: PackCardData; eager?: boolean }) {
+type PackCardProps = {
+  pack: PackCardData;
+  eager?: boolean;
+  /** «1.21.1 · Fabric» for the «не для …» mark. */
+  gameLabel?: string;
+};
+
+export function PackCard({ pack, eager = false, gameLabel = "" }: PackCardProps) {
+  const mark =
+    pack.fits_my_game === false ? (
+      <span className="text-danger">{packsCopy.notForGame(gameLabel)} · </span>
+    ) : null;
   return (
     <Card
       href={`/packs/${pack.slug}`}
@@ -29,6 +40,7 @@ export function PackCard({ pack, eager = false }: { pack: PackCardData; eager?: 
       meta={
         pack.source ? (
           <>
+            {mark}
             {meta(pack)} ·{" "}
             <SourceBadge
               {...pack.source}
@@ -36,7 +48,10 @@ export function PackCard({ pack, eager = false }: { pack: PackCardData; eager?: 
             />
           </>
         ) : (
-          meta(pack)
+          <>
+            {mark}
+            {meta(pack)}
+          </>
         )
       }
       action={<SaveToggle kind="pack" id={pack.slug} saved={pack.is_favorited} />}

@@ -242,7 +242,6 @@ SPECTACULAR_SETTINGS = {
         "LoaderEnum": "apps.core.game.Loader",
         "PackLoaderEnum": "apps.packs.choices.PackLoader",
         "SkinStyleEnum": "apps.skins.styles.Style",
-        "PackStyleEnum": "apps.packs.choices.Style",
         "PublishStatusEnum": "apps.core.models.Publishable.Status",
         "KindEnum": ["collection", "mod", "skin", "server", "pack"],
         "NotificationTypeEnum": "apps.notifications.models.Notification.Type",
@@ -250,6 +249,11 @@ SPECTACULAR_SETTINGS = {
         "JobStatusEnum": ["queued", "running", "done", "failed"],
         "CompatWarningCodeEnum": "apps.compat.serializers.WARNING_CODES",
         "CompatReasonEnum": ["requested", "dependency", "implicit"],
+        "VisibilityEnum": "apps.library.models.Collection.Visibility",
+        "PackVisibilityEnum": "apps.packs.models.Visibility",
+        "PublishVisibilityEnum": ["public", "link"],
+        "PackEnvEnum": "apps.packs.models.Env",
+        "PackCompatStatusEnum": "apps.packs.models.CompatStatus",
         "ReasonEnum": "apps.moderation.models.Report.Reason",
         "CompatItemStatusEnum": ["ok", "no_version", "pinned_incompatible", "mod_needs_loader"],
         "CompatStatusEnum": ["ok", "warnings", "errors", "incomplete"],
@@ -283,7 +287,7 @@ CELERY_BEAT_SCHEDULE: dict[str, dict] = {
     "social-recalc-scores": {"task": "social.recalc_scores", "schedule": crontab(minute=15)},
     "servers-ping-all": {"task": "servers.ping_all", "schedule": crontab(minute="*/5")},
     "social-recalc-trends": {"task": "social.recalc_trends", "schedule": crontab(minute=45)},
-    "search-reindex-all": {"task": "search.reindex_all", "schedule": crontab(hour=5, minute=0)},
+    "search-reindex-all": {"task": "search.reindex_all", "schedule": crontab(hour=5, minute=30)},
     "moderation-lift-expired-bans": {
         "task": "moderation.lift_expired_bans",
         "schedule": crontab(minute=5),
@@ -296,6 +300,8 @@ CELERY_BEAT_SCHEDULE: dict[str, dict] = {
         "task": "packs.import_official",
         "schedule": crontab(hour=4, minute=15),
     },
+    # After the catalog, versions and modpacks: did a published pack get worse?
+    "packs-recheck": {"task": "packs.recheck", "schedule": crontab(hour=5, minute=0)},
 }
 
 # Search (Meilisearch)

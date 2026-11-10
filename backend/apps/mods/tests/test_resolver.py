@@ -16,9 +16,11 @@ def at(day: int) -> datetime:
 
 def test_newest_release_wins_over_newer_beta():
     project = ProjectFactory()
-    release = VersionFactory(project=project, released_at=at(1))
-    VersionFactory(project=project, released_at=at(5), version_type=ProjectVersion.VersionType.BETA)
-    VersionFactory(project=project, released_at=at(2), game_versions=["1.21.1"])
+    release = VersionFactory(project=project, date_published=at(1))
+    VersionFactory(
+        project=project, date_published=at(5), version_type=ProjectVersion.VersionType.BETA
+    )
+    VersionFactory(project=project, date_published=at(2), game_versions=["1.21.1"])
 
     assert (
         selectors.resolve_version(project=project, game_version="26.3", loader="fabric") == release
@@ -34,8 +36,8 @@ def test_beta_is_used_when_there_is_no_release():
 
 def test_loader_must_match_for_mods():
     project = ProjectFactory(loaders=["fabric", "neoforge"])
-    VersionFactory(project=project, loaders=["fabric"], released_at=at(9))
-    neoforge = VersionFactory(project=project, loaders=["neoforge"], released_at=at(1))
+    VersionFactory(project=project, loaders=["fabric"], date_published=at(9))
+    neoforge = VersionFactory(project=project, loaders=["neoforge"], date_published=at(1))
 
     assert (
         selectors.resolve_version(project=project, game_version="26.3", loader="neoforge")

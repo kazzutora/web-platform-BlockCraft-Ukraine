@@ -9,20 +9,21 @@ from rest_framework.response import Response
 
 from apps.core.cache import GuestCachedListMixin
 from apps.core.exceptions import DomainError
+from apps.core.game import game_context
 from apps.core.pagination import CatalogPagination
 from apps.core.schema import error_responses
 
-from . import selectors, services, tasks
+from . import selectors, services
 from .filters import ProjectFilter
 from .models import Category, Project, ProjectType
 from .serializers import (
     CategorySerializer,
     DownloadQuerySerializer,
+    ImportResponseSerializer,
+    ImportSerializer,
     NoVersionErrorSerializer,
     ProjectCardSerializer,
     ProjectDetailSerializer,
-    SuggestResponseSerializer,
-    SuggestSerializer,
     VersionsQuerySerializer,
     VersionsSerializer,
 )
@@ -31,7 +32,11 @@ LOADER_LABELS = {"fabric": "Fabric", "forge": "Forge", "neoforge": "NeoForge", "
 
 
 @extend_schema_view(
-    list=extend_schema(operation_id="mods_list", summary="Catalog of mods, packs and shaders"),
+    list=extend_schema(
+        operation_id="mods_list",
+        summary="Catalog of mods, resource packs, shaders and datapacks",
+        description="Without game_version / loader the viewer's «Моя гра» applies; all=1 — none.",
+    ),
     retrieve=extend_schema(
         operation_id="mods_retrieve",
         responses={200: ProjectDetailSerializer, **error_responses(404)},
@@ -48,11 +53,19 @@ class ModViewSet(
     pagination_class = CatalogPagination
     filter_backends = [DjangoFilterBackend]
     filterset_class = ProjectFilter
-    # Set per action (`suggest`); None means only the default anon throttle applies
+    # Set per action (`import_project`); None means only the default anon throttle applies
     throttle_scope: str | None = None
 
     def get_queryset(self):
         return selectors.catalog(self.request.user)
+
+    def get_serializer_context(self) -> dict:
+        return {**super().get_serializer_context(), "game": game_context(self.request)}
+
+    def guest_cache_vary(self, request: Request) -> str:
+        # Guests with different «Моя гра» get different defaults and `fits_my_game`
+        game = game_context(request)
+        return f"{game.game_version}:{game.loader}"
 
     def get_serializer_class(self):
         return ProjectDetailSerializer if self.action == "retrieve" else ProjectCardSerializer
@@ -158,32 +171,45 @@ class ModViewSet(
     def similar(self, request: Request, slug: str) -> Response:
         project = self.get_object()
         cards = selectors.similar(project=project, viewer=request.user)
-        return Response(ProjectCardSerializer(cards, many=True).data)
+        return Response(
+            ProjectCardSerializer(cards, many=True, context=self.get_serializer_context()).data
+        )
 
     @extend_schema(
-        operation_id="mods_suggest",
-        request=SuggestSerializer,
+        operation_id="mods_import",
+        request=ImportSerializer,
         responses={
-            202: SuggestResponseSerializer,
-            200: SuggestResponseSerializer,
+            202: ImportResponseSerializer,
+            200: ImportResponseSerializer,
             **error_responses(400, 401),
         },
-        description="Queue a Modrinth project for import; it waits for moderation.",
+        description=(
+            "Add a Modrinth project by link or slug. 202 — poll GET /jobs/{job_id}; "
+            "200 — already in the catalog. A modpack link is refused with `is_modpack`."
+        ),
     )
     @action(
         detail=False,
         methods=["post"],
+        url_path="import",
         permission_classes=[IsAuthenticated],
         throttle_scope="uploads",
     )
-    def suggest(self, request: Request) -> Response:
-        serializer = SuggestSerializer(data=request.data)
+    def import_project(self, request: Request) -> Response:
+        serializer = ImportSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         slug = serializer.validated_data["url"]
-        if Project.objects.filter(slug=slug).exists():
-            return Response({"slug": slug, "status": "exists"})
-        tasks.import_project.delay(slug=slug, suggested_by_id=request.user.pk)
-        return Response({"slug": slug, "status": "queued"}, status=status.HTTP_202_ACCEPTED)
+        if slug.startswith("modpack:"):
+            raise DomainError(
+                code="is_modpack",
+                message="Це збірка, а не мод: додай її через перевірку збірок.",
+                fields={"url": ["Це збірка, а не мод."]},
+            )
+        started = services.request_import(slug=slug, user=request.user)
+        payload = {"job_id": started.job_id, "slug": started.slug, "title": started.title}
+        if started.job_id is None:
+            return Response(payload)
+        return Response(payload, status=status.HTTP_202_ACCEPTED)
 
 
 @extend_schema_view(

@@ -48,18 +48,22 @@ export function withProfileDefaults(
     next.game_version = profile.game_version;
     fromProfile = true;
   }
-  const loader = profile.loader && profile.loader !== "vanilla" ? profile.loader : "";
-  if (!next.loader && loader && next.type === "mod") {
-    next.loader = loader;
+  if (!next.loader && profile.loader && next.type === "mod") {
+    next.loader = profile.loader;
     fromProfile = true;
   }
   return { filters: next, fromProfile };
 }
 
 export function toApiQuery(filters: ModFilters, page = filters.page): CatalogQuery {
-  const query: CatalogQuery = { type: filters.type, page };
-  if (filters.game_version) query.game_version = filters.game_version;
-  if (filters.loader && filters.type === "mod") query.loader = filters.loader;
+  // Game parameters always go explicitly, even empty: the page shows exactly the filters
+  // it applies, and the API does not add «Моя гра» on its own (that is for other clients)
+  const query: CatalogQuery = {
+    type: filters.type,
+    page,
+    game_version: filters.game_version,
+    loader: (filters.type === "mod" ? filters.loader : "") as CatalogQuery["loader"],
+  };
   if (filters.categories.length) query.category = filters.categories.join(",");
   if (filters.gpu_load && filters.type === "shader") {
     query.gpu_load = filters.gpu_load as CatalogQuery["gpu_load"];

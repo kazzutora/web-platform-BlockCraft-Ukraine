@@ -9,7 +9,8 @@ import { NavigateSelect } from "@/components/ui/NavigateSelect";
 import { type Category, projectTypes } from "./types";
 
 const copy = modsCopy.filters;
-const modLoaders = loaderOptions.filter((option) => option.value !== "vanilla");
+// «Без модів» keeps mods that also ship as a datapack (the API does the same)
+const modLoaders = loaderOptions;
 
 type CatalogFiltersProps = {
   filters: ModFilters;
@@ -114,6 +115,10 @@ export function CatalogFilters({
             </FilterChip>
           ))}
         </FilterRow>
+      )}
+
+      {filters.type === "datapack" && (
+        <p className="text-meta text-muted">{modsCopy.datapackHint}</p>
       )}
 
       {inviteToChoose && <p className="text-meta text-muted">{gameCopy.invite}</p>}

@@ -43,7 +43,7 @@ def test_favorites_need_sign_in(api_client):
 
 
 def test_unknown_kind_and_hidden_targets(auth_client):
-    ProjectFactory(slug="waiting", status=Project.Status.PENDING)
+    ProjectFactory(slug="waiting", is_hidden=True)
 
     unknown = favorite(auth_client, kind="planet")
     assert unknown.status_code == 400
@@ -81,7 +81,7 @@ def test_saved_lists_one_kind_newest_first_with_version_filter(auth_client, user
 def test_saved_skips_projects_that_were_hidden(auth_client):
     project = ProjectFactory(slug="sodium")
     favorite(auth_client)
-    Project.objects.filter(pk=project.pk).update(status=Project.Status.HIDDEN)
+    Project.objects.filter(pk=project.pk).update(is_hidden=True)
 
     assert auth_client.get("/api/v1/me/saved").json()["count"] == 0
 

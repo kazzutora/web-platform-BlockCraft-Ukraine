@@ -320,5 +320,67 @@
       "x-ratelimit-reset": "0"
     },
     "captured_at": "2026-11-07T18:31:13+00:00"
+  },
+  "project_datapack": {
+    "method": "GET",
+    "url": "https://api.modrinth.com/v2/project/mysticmons",
+    "params": null,
+    "body": null,
+    "status": 200,
+    "headers": {
+      "content-type": "application/json",
+      "x-ratelimit-limit": "300",
+      "x-ratelimit-remaining": "300",
+      "x-ratelimit-reset": "0"
+    },
+    "captured_at": "2026-11-09T22:32:58+00:00"
+  },
+  "project_versions_datapack": {
+    "method": "GET",
+    "url": "https://api.modrinth.com/v2/project/TiFXQSAQ/version",
+    "params": {
+      "game_versions": "[\"1.21.1\"]"
+    },
+    "body": null,
+    "status": 200,
+    "headers": {
+      "content-type": "application/json",
+      "x-ratelimit-limit": "300",
+      "x-ratelimit-remaining": "300",
+      "x-ratelimit-reset": "0"
+    },
+    "captured_at": "2026-11-09T22:32:58+00:00",
+    "note": "trimmed to the first 2 versions"
+  },
+  "project_terralith": {
+    "method": "GET",
+    "url": "https://api.modrinth.com/v2/project/terralith",
+    "params": null,
+    "body": null,
+    "status": 200,
+    "headers": {
+      "content-type": "application/json",
+      "x-ratelimit-limit": "300",
+      "x-ratelimit-remaining": "300",
+      "x-ratelimit-reset": "0"
+    },
+    "captured_at": "2026-11-09T22:32:59+00:00"
+  },
+  "project_versions_terralith": {
+    "method": "GET",
+    "url": "https://api.modrinth.com/v2/project/8oi3bsk5/version",
+    "params": {
+      "game_versions": "[\"1.21.1\"]"
+    },
+    "body": null,
+    "status": 200,
+    "headers": {
+      "content-type": "application/json",
+      "x-ratelimit-limit": "300",
+      "x-ratelimit-remaining": "300",
+      "x-ratelimit-reset": "0"
+    },
+    "captured_at": "2026-11-09T22:32:59+00:00",
+    "note": "trimmed to the first 3 versions"
   }
 }

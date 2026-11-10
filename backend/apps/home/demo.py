@@ -95,7 +95,7 @@ def _players(rng: random.Random) -> list[User]:
 
 def _library_and_social(rng: random.Random, players: list[User]) -> Summary:
     summary = Summary()
-    mods = list(Project.objects.published().order_by("-modrinth_downloads")[:40])
+    mods = list(Project.objects.visible().order_by("-modrinth_downloads")[:40])
     for index, player in enumerate(players):
         # Favorites
         for project in rng.sample(mods, min(5, len(mods))):
@@ -153,7 +153,7 @@ def _packs(rng: random.Random, players: list[User]) -> list[Pack]:
     ):
         for game_version, loader in PACK_TARGETS:
             fitting = list(
-                Project.objects.published()
+                Project.objects.visible()
                 .filter(
                     project_type="mod",
                     versions__game_versions__contains=[game_version],
@@ -199,7 +199,7 @@ class NoSyncedMods(Exception):
 
 @transaction.atomic
 def create(*, seed: int = 42) -> Summary:
-    if not Project.objects.published().exists():
+    if not Project.objects.visible().exists():
         raise NoSyncedMods
     rng = random.Random(seed)
     players = _players(rng)

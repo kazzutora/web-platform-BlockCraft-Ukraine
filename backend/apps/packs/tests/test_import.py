@@ -9,8 +9,8 @@ import pytest
 from apps.core.exceptions import DomainError
 from apps.mods.models import Project
 from apps.mods.tests.factories import ProjectFactory, VersionFactory
+from apps.mods.tests.fakes import FakeModrinth
 from apps.mods.tests.payloads import project_payload, version_payload
-from apps.mods.tests.test_sync import FakeModrinth
 from apps.packs import services, tasks
 from apps.packs.models import LoaderRelease, Pack
 from apps.sources.models import SyncRun
@@ -81,7 +81,7 @@ def modpack_version(version_id: str = "PACKV001", **overrides) -> dict:
 
 @pytest.fixture
 def fake():
-    sodium = ProjectFactory(modrinth_id="AANobbMI", slug="sodium")
+    sodium = ProjectFactory(external_id="AANobbMI", slug="sodium")
     VersionFactory(project=sodium, modrinth_version_id="SODIUM01")
     VersionFactory(project=sodium, modrinth_version_id="SODIUM02")
     files = [
@@ -104,9 +104,9 @@ def fake():
         # A plugin: not a type our catalog keeps
         {"path": "mods/plugin.jar", "downloads": [cdn("PLUGIN01", "PLUG0001")]},
     ]
-    modmenu = ProjectFactory(modrinth_id="mOgUt4GM", slug="modmenu")
+    modmenu = ProjectFactory(external_id="mOgUt4GM", slug="modmenu")
     VersionFactory(project=modmenu, modrinth_version_id="MODMENU2")
-    ProjectFactory(modrinth_id="w7ThoJFB", slug="zoomify")
+    ProjectFactory(external_id="w7ThoJFB", slug="zoomify")
     VersionFactory(project=Project.objects.get(slug="zoomify"), modrinth_version_id="ZOOM0001")
     return FakeModrinthWithFiles(
         [
@@ -148,7 +148,7 @@ def test_import_modpack_creates_an_official_pack(fake):
         "modmenu": ("MODMENU2", True),
         "zoomify": ("ZOOM0001", False),
     }
-    assert Project.objects.get(slug="iris").status == Project.Status.PUBLISHED
+    assert not Project.objects.get(slug="iris").is_hidden
     assert fake.downloads == [MRPACK_URL]
 
 
@@ -296,13 +296,13 @@ def test_versions_of_projects_in_packs_are_kept_fresh(user):
     from apps.mods import tasks as mod_tasks
 
     pack = PackFactory()
-    project = mod(slug="iris", modrinth_id="YL57xq9U")
+    project = mod(slug="iris", external_id="YL57xq9U")
     pack.items.create(project=project, version=project.versions.get())
     fake = FakeModrinth([], {"YL57xq9U": [version_payload("IRIS0002", "YL57xq9U")]})
 
     with mock.patch("apps.mods.tasks.ModrinthClient") as factory:
         factory.return_value.__enter__.return_value = fake
-        assert mod_tasks.sync_versions_for_tracked.delay().get()["updated"] == 1
+        assert mod_tasks.sync_versions.delay().get()["created"] == 1
 
     # The file left Modrinth: the item stays and waits for another pick
     item = pack.items.get()

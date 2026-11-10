@@ -6,7 +6,6 @@ from apps.core import kinds
 from apps.core.exceptions import DomainError
 from apps.library.models import Collection
 from apps.library.tests.factories import CollectionFactory
-from apps.mods.models import Project
 from apps.mods.tests.factories import ProjectFactory
 
 pytestmark = pytest.mark.django_db
@@ -20,7 +19,7 @@ def test_registered_kinds():
 
 def test_mod_is_resolved_by_slug_only_when_published():
     project = ProjectFactory(slug="sodium")
-    ProjectFactory(slug="waiting", status=Project.Status.PENDING)
+    ProjectFactory(slug="waiting", is_hidden=True)
 
     kind, obj = kinds.resolve("mod", "sodium")
     assert (kind.name, obj) == ("mod", project)

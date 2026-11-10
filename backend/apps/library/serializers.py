@@ -128,7 +128,7 @@ class CollectionItemSerializer(serializers.ModelSerializer):
     @extend_schema_field(ProjectCardSerializer(allow_null=True))
     def get_mod(self, item: CollectionItem) -> dict | None:
         target = item.target
-        if isinstance(target, Project) and target.status == Project.Status.PUBLISHED:
+        if isinstance(target, Project) and not target.is_hidden:
             return ProjectCardSerializer(target, context=self.context).data
         return None
 

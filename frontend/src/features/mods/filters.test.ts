@@ -47,12 +47,18 @@ describe("withProfileDefaults", () => {
     expect(filters.loader).toBe("");
   });
 
-  it("does nothing with «show all», for guests or vanilla players", () => {
+  it("does nothing with «show all» or for guests", () => {
     expect(withProfileDefaults(parseFilters({ all: "1" }), profile).fromProfile).toBe(false);
     expect(withProfileDefaults(parseFilters({}), null).fromProfile).toBe(false);
-    expect(
-      withProfileDefaults(parseFilters({}), { game_version: "", loader: "vanilla" }).fromProfile,
-    ).toBe(false);
+  });
+
+  it("keeps a vanilla game visible as the «Без модів» loader of the mods tab", () => {
+    const { filters } = withProfileDefaults(parseFilters({}), {
+      game_version: "",
+      loader: "vanilla",
+    });
+
+    expect(filters.loader).toBe("vanilla");
   });
 });
 
@@ -68,7 +74,21 @@ describe("toApiQuery", () => {
     expect(toApiQuery(filters)).toEqual({
       type: "resourcepack",
       page: 1,
+      game_version: "",
+      loader: "",
       category: "vanilla-like",
+    });
+  });
+
+  it("sends the game explicitly so the API adds nothing the page does not show", () => {
+    const filters = parseFilters({ type: "datapack", all: "1", loader: "fabric" });
+
+    expect(filters.type).toBe("datapack");
+    expect(toApiQuery(filters)).toEqual({
+      type: "datapack",
+      page: 1,
+      game_version: "",
+      loader: "",
     });
   });
 });

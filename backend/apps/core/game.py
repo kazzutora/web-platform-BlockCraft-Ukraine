@@ -1,5 +1,6 @@
 """Minecraft vocabulary shared by profiles, mods and servers, and «Моя гра»."""
 
+import contextlib
 import re
 from dataclasses import dataclass
 from typing import Any
@@ -53,7 +54,20 @@ def parse_game_cookie(value: str | None) -> tuple[str, str] | None:
 
 
 def game_context(request: Any) -> GameContext:
-    """The profile wins once it has a choice; until then guests and players use the cookie."""
+    """The profile wins once it has a choice; until then guests and players use the cookie.
+
+    Computed once per request: filters, serializers and the guest cache all ask for it.
+    """
+    holder = getattr(request, "_request", request)
+    cached = getattr(holder, "_bc_game_context", None)
+    if cached is None:
+        cached = _game_context(request)
+        with contextlib.suppress(AttributeError):
+            holder._bc_game_context = cached
+    return cached
+
+
+def _game_context(request: Any) -> GameContext:
     user = getattr(request, "user", None)
     if user is not None and user.is_authenticated:
         profile = getattr(user, "game_profile", None)

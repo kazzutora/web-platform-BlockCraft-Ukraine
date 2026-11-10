@@ -3,7 +3,7 @@ from unittest import mock
 import pytest
 
 from apps.library.models import Download
-from apps.mods.models import Project, ProjectType, ProjectVersion
+from apps.mods.models import ProjectType, ProjectVersion
 
 from .factories import CategoryFactory, ProjectFactory, VersionFactory
 
@@ -17,8 +17,8 @@ def slugs(response) -> list[str]:
 def test_catalog_lists_only_published_most_downloaded_first(api_client):
     ProjectFactory(slug="small", modrinth_downloads=10)
     ProjectFactory(slug="big", modrinth_downloads=10_000)
-    ProjectFactory(slug="waiting", status=Project.Status.PENDING)
-    ProjectFactory(slug="hidden", status=Project.Status.HIDDEN)
+    ProjectFactory(slug="waiting", is_hidden=True)
+    ProjectFactory(slug="hidden", is_hidden=True)
 
     response = api_client.get("/api/v1/mods")
 
@@ -122,13 +122,13 @@ def test_detail_includes_description_and_translation_flag(api_client):
 
 
 def test_detail_of_unpublished_project_is_404(api_client):
-    ProjectFactory(slug="waiting", status=Project.Status.PENDING)
+    ProjectFactory(slug="waiting", is_hidden=True)
 
     assert api_client.get("/api/v1/mods/waiting").status_code == 404
 
 
 def test_versions_recommend_a_file_and_list_dependencies(api_client):
-    sodium = ProjectFactory(slug="sodium", modrinth_id="AANobbMI")
+    sodium = ProjectFactory(slug="sodium", external_id="AANobbMI")
     iris = ProjectFactory(slug="iris")
     VersionFactory(
         project=iris,
@@ -212,8 +212,8 @@ def test_download_without_a_matching_file_explains_and_suggests(api_client):
     assert ProjectVersion.objects.count() == 1
 
 
-def test_suggest_requires_sign_in(api_client):
-    response = api_client.post("/api/v1/mods/suggest", {"url": "sodium"}, format="json")
+def test_import_requires_sign_in(api_client):
+    response = api_client.post("/api/v1/mods/import", {"url": "sodium"}, format="json")
 
     assert response.status_code == 401
 
@@ -223,40 +223,63 @@ def test_suggest_requires_sign_in(api_client):
     [
         "https://modrinth.com/mod/lithium",
         "modrinth.com/shader/lithium/",
+        "https://modrinth.com/datapack/lithium",
         "https://www.modrinth.com/project/Lithium?tab=versions",
         "lithium",
     ],
 )
-def test_suggest_queues_import_by_link_or_slug(auth_client, user, url):
-    with mock.patch("apps.mods.views.tasks.import_project.delay") as delay:
-        response = auth_client.post("/api/v1/mods/suggest", {"url": url}, format="json")
+def test_import_queues_a_job_by_link_or_slug(
+    auth_client, api_client, user, url, django_capture_on_commit_callbacks
+):
+    with (
+        mock.patch("apps.mods.tasks.import_project.delay") as delay,
+        django_capture_on_commit_callbacks(execute=True),
+    ):
+        response = auth_client.post("/api/v1/mods/import", {"url": url}, format="json")
 
     assert response.status_code == 202
-    assert response.json() == {"slug": "lithium", "status": "queued"}
-    delay.assert_called_once_with(slug="lithium", suggested_by_id=user.pk)
+    job_id = response.json()["job_id"]
+    delay.assert_called_once_with(job_id=job_id, slug="lithium", user_id=user.pk)
+    job = api_client.get(f"/api/v1/jobs/{job_id}").json()
+    assert (job["status"], job["kind"], job["result"]) == ("queued", "mods.import", None)
 
 
-def test_suggest_known_project_is_not_queued(auth_client):
-    ProjectFactory(slug="sodium")
+def test_import_of_a_known_project_answers_with_its_slug(auth_client):
+    sodium = ProjectFactory(slug="sodium")
 
-    with mock.patch("apps.mods.views.tasks.import_project.delay") as delay:
+    with mock.patch("apps.mods.tasks.import_project.delay") as delay:
         response = auth_client.post(
-            "/api/v1/mods/suggest", {"url": "https://modrinth.com/mod/sodium"}, format="json"
+            "/api/v1/mods/import", {"url": "https://modrinth.com/mod/sodium"}, format="json"
         )
 
-    assert response.json() == {"slug": "sodium", "status": "exists"}
+    assert response.status_code == 200
+    assert response.json() == {"job_id": None, "slug": "sodium", "title": sodium.title}
     delay.assert_not_called()
 
 
-def test_suggest_rejects_other_links(auth_client):
-    response = auth_client.post(
-        "/api/v1/mods/suggest",
-        {"url": "https://curseforge.com/minecraft/mc-mods/jei"},
-        format="json",
-    )
+@pytest.mark.parametrize(
+    ("url", "code"),
+    [
+        ("https://curseforge.com/minecraft/mc-mods/jei", "invalid"),
+        ("https://modrinth.com/modpack/fabulously-optimized", "is_modpack"),
+        ("hidden-one", "hidden_project"),
+    ],
+)
+def test_import_refuses_other_links_modpacks_and_hidden_projects(auth_client, url, code):
+    ProjectFactory(slug="hidden-one", is_hidden=True)
+
+    with mock.patch("apps.mods.tasks.import_project.delay") as delay:
+        response = auth_client.post("/api/v1/mods/import", {"url": url}, format="json")
 
     assert response.status_code == 400
+    assert response.json()["code"] == code
     assert list(response.json()["fields"]) == ["url"]
+    delay.assert_not_called()
+
+
+@pytest.mark.parametrize("job_id", ["not-a-uuid", "8a4f2a8e-36a4-4c2e-9d55-2a3a9c1f0c11"])
+def test_unknown_job_is_404(api_client, job_id):
+    assert api_client.get(f"/api/v1/jobs/{job_id}").status_code == 404
 
 
 def test_categories_by_type(api_client):
@@ -277,3 +300,62 @@ def test_similar_projects_share_categories(api_client):
     ProjectFactory(slug="jei")
 
     assert [p["slug"] for p in api_client.get("/api/v1/mods/sodium/similar").json()] == ["lithium"]
+
+
+def test_datapack_tab_includes_mods_that_ship_a_datapack(api_client):
+    ProjectFactory(slug="mysticmons", project_type=ProjectType.DATAPACK, loaders=["datapack"])
+    ProjectFactory(slug="terralith", loaders=["datapack", "fabric"])
+    ProjectFactory(slug="sodium", loaders=["fabric"])
+
+    tab = slugs(api_client.get("/api/v1/mods", {"type": "datapack", "all": "1"}))
+
+    assert sorted(tab) == ["mysticmons", "terralith"]
+
+
+@pytest.fixture
+def my_game(api_client, game_versions):
+    api_client.cookies["bc_game"] = "1.21.1:fabric"
+    ProjectFactory(slug="fits", loaders=["fabric"], game_versions=["1.21.1"])
+    ProjectFactory(slug="forge", loaders=["forge"], game_versions=["1.21.1"])
+    ProjectFactory(slug="old", loaders=["fabric"], game_versions=["1.20.1"])
+    return api_client
+
+
+def test_catalog_defaults_to_my_game_and_all_turns_it_off(my_game):
+    assert slugs(my_game.get("/api/v1/mods")) == ["fits"]
+    assert sorted(slugs(my_game.get("/api/v1/mods", {"all": "1"}))) == ["fits", "forge", "old"]
+    # A parameter in the query wins over «Моя гра», even an empty one
+    assert sorted(slugs(my_game.get("/api/v1/mods", {"loader": ""}))) == ["fits", "forge"]
+    assert slugs(my_game.get("/api/v1/mods", {"game_version": "1.20.1"})) == ["old"]
+
+
+def test_cards_say_whether_they_fit_my_game(my_game, api_client):
+    cards = my_game.get("/api/v1/mods", {"all": "1"}).json()["results"]
+
+    assert {card["slug"]: card["fits_my_game"] for card in cards} == {
+        "fits": True,
+        "forge": False,
+        "old": False,
+    }
+    api_client.cookies.clear()
+    assert {card["fits_my_game"] for card in api_client.get("/api/v1/mods").json()["results"]} == {
+        None
+    }
+
+
+def test_guest_cache_is_separate_for_each_game(my_game, api_client):
+    assert slugs(my_game.get("/api/v1/mods")) == ["fits"]
+
+    api_client.cookies["bc_game"] = "1.20.1:fabric"
+
+    assert slugs(api_client.get("/api/v1/mods")) == ["old"]
+
+
+def test_vanilla_game_keeps_mods_that_ship_a_datapack(api_client):
+    ProjectFactory(slug="terralith", loaders=["datapack", "fabric"])
+    ProjectFactory(slug="sodium", loaders=["fabric"])
+    ProjectFactory(slug="shader", project_type=ProjectType.SHADER, loaders=["iris"])
+
+    tab = slugs(api_client.get("/api/v1/mods", {"loader": "vanilla"}))
+
+    assert sorted(tab) == ["shader", "terralith"]

@@ -218,7 +218,7 @@ def complete_dependencies(pack: Pack, versions: Iterable[ProjectVersion] | None 
     if versions is None:
         versions = [item.version for item in pack.items.select_related("version") if item.version]
     queue = list(versions)
-    present = set(pack.items.values_list("project__modrinth_id", flat=True))
+    present = set(pack.items.values_list("project__external_id", flat=True))
     position = _next_position(pack)
     added = 0
     while queue:
@@ -226,7 +226,7 @@ def complete_dependencies(pack: Pack, versions: Iterable[ProjectVersion] | None 
             project = dependency.project
             if dependency.dependency_type != "required" or project is None:
                 continue
-            if project.modrinth_id in present:
+            if project.external_id in present:
                 continue
             version = _pick(pack, project)
             if version is None:
@@ -238,7 +238,7 @@ def complete_dependencies(pack: Pack, versions: Iterable[ProjectVersion] | None 
                 added_as_dependency=True,
                 position=position,
             )
-            present.add(project.modrinth_id)
+            present.add(project.external_id)
             queue.append(version)
             position += 1
             added += 1
@@ -260,7 +260,7 @@ def prune_dependencies(pack: Pack) -> int:
         orphans = [
             item.pk
             for item in items
-            if item.added_as_dependency and item.project.modrinth_id not in needed
+            if item.added_as_dependency and item.project.external_id not in needed
         ]
         if not orphans:
             return removed
@@ -278,7 +278,7 @@ def _queue_fill(pack: Pack) -> None:
 def add_item(*, pack: Pack, user: User, project_slug: str) -> PackItem:
     """Adds a project with the file for the pack's version and loader, plus its dependencies."""
     _check_owner(pack, user)
-    project = Project.objects.published().filter(slug=project_slug).first()
+    project = Project.objects.visible().filter(slug=project_slug).first()
     if project is None:
         raise _error("not_found", field="project", status=404)
     item = pack.items.filter(project=project).first()
@@ -622,9 +622,9 @@ def _store_official(
     pack.modrinth_downloads = data.downloads
 
     projects = {
-        project.modrinth_id: project
-        for project in Project.objects.published().filter(
-            modrinth_id__in={ref.project_id for ref in refs}
+        project.external_id: project
+        for project in Project.objects.visible().filter(
+            external_id__in={ref.project_id for ref in refs}
         )
     }
     files = {

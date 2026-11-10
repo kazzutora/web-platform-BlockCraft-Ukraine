@@ -2,6 +2,7 @@ from datetime import UTC, datetime, timedelta
 
 import factory
 
+from apps.core.models import Source
 from apps.mods.models import Category, Project, ProjectType, ProjectVersion
 
 
@@ -21,12 +22,15 @@ class ProjectFactory(factory.django.DjangoModelFactory):
         model = Project
         skip_postgeneration_save = True
 
-    modrinth_id = factory.Sequence(lambda n: f"MR{n:06d}")
+    source = Source.MODRINTH
+    external_id = factory.Sequence(lambda n: f"MR{n:06d}")
     slug = factory.Sequence(lambda n: f"project-{n}")
     project_type = ProjectType.MOD
+    external_url = factory.LazyAttribute(
+        lambda project: f"https://modrinth.com/{project.project_type}/{project.slug}"
+    )
     title = factory.Sequence(lambda n: f"Project {n}")
     summary = "A useful mod"
-    status = Project.Status.PUBLISHED
     loaders = factory.LazyFunction(lambda: ["fabric"])
     game_versions = factory.LazyFunction(lambda: ["1.21.1", "26.3"])
     modrinth_downloads = 1000
@@ -53,4 +57,6 @@ class VersionFactory(factory.django.DjangoModelFactory):
     )
     file_name = factory.LazyAttribute(lambda version: f"{version.modrinth_version_id}.jar")
     file_size = 1024
-    released_at = factory.Sequence(lambda n: datetime(2026, 1, 1, tzinfo=UTC) + timedelta(days=n))
+    date_published = factory.Sequence(
+        lambda n: datetime(2026, 1, 1, tzinfo=UTC) + timedelta(days=n)
+    )

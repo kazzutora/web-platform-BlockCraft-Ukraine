@@ -194,6 +194,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/jobs/{job_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Background job state
+         * @description State of a background job a page waits for; the random id is the access key.
+         */
+        get: operations["jobs_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/me": {
         parameters: {
             query?: never;
@@ -452,8 +472,8 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Catalog of mods, packs and shaders
-         * @description `list()` through `for_guests`; put it before ListModelMixin in the bases.
+         * Catalog of mods, resource packs, shaders and datapacks
+         * @description Without game_version / loader the viewer's «Моя гра» applies; all=1 — none.
          */
         get: operations["mods_list"];
         put?: never;
@@ -532,7 +552,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/mods/suggest": {
+    "/api/v1/mods/import": {
         parameters: {
             query?: never;
             header?: never;
@@ -541,8 +561,8 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Queue a Modrinth project for import; it waits for moderation. */
-        post: operations["mods_suggest"];
+        /** @description Add a Modrinth project by link or slug. 202 — poll GET /jobs/{job_id}; 200 — already in the catalog. A modpack link is refused with `is_modpack`. */
+        post: operations["mods_import"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1266,6 +1286,20 @@ export interface components {
             new_skins: components["schemas"]["SkinCard"][];
             new_servers: components["schemas"]["ServerCard"][];
         };
+        ImportRequest: {
+            /** @description Link to the project on Modrinth or its slug. */
+            url: string;
+        };
+        ImportResponse: {
+            /**
+             * Format: uuid
+             * @description Poll GET /jobs/{id}; null if known.
+             */
+            job_id: string | null;
+            /** @description Set when the project is already here. */
+            slug: string;
+            title: string;
+        };
         IpCopies: {
             ip_copies_count: number;
         };
@@ -1283,6 +1317,27 @@ export interface components {
          * @enum {string}
          */
         IssueTypeEnum: "no_version" | "missing_dependency" | "conflict";
+        Job: {
+            /** Format: uuid */
+            id: string;
+            /** @description What runs, e.g. mods.import. */
+            kind: string;
+            status: components["schemas"]["JobStatusEnum"];
+            /** @description What the job produced, e.g. {slug, project_type}. */
+            result: {
+                [key: string]: unknown;
+            } | null;
+            /** @description Error code when failed: not_found, unsupported_type, … */
+            error: string;
+        };
+        /**
+         * @description * `queued` - queued
+         *     * `running` - running
+         *     * `done` - done
+         *     * `failed` - failed
+         * @enum {string}
+         */
+        JobStatusEnum: "queued" | "running" | "done" | "failed";
         /**
          * @description * `collection` - collection
          *     * `mod` - mod
@@ -1832,6 +1887,8 @@ export interface components {
             readonly is_favorited: boolean;
             readonly my_review_stars: number | null;
             readonly source: components["schemas"]["SourceRef"];
+            /** @description Has files for the viewer's «Моя гра»; null when nothing is chosen. */
+            readonly fits_my_game: boolean | null;
         };
         /** @description Catalog card: one image, title, one line of metadata. */
         ProjectDetail: {
@@ -1856,22 +1913,28 @@ export interface components {
             readonly is_favorited: boolean;
             readonly my_review_stars: number | null;
             readonly source: components["schemas"]["SourceRef"];
+            /** @description Has files for the viewer's «Моя гра»; null when nothing is chosen. */
+            readonly fits_my_game: boolean | null;
             readonly summary_en: string;
             /**
              * Короткий опис українською
-             * @description Пишуть модератори й спільнота; показується замість англійського.
+             * @description Зі схваленого перекладу; показується замість англійського.
              */
             readonly summary_uk: string;
             /** Опис (HTML, очищений) */
             readonly body_html: string;
             readonly gallery: components["schemas"]["GalleryImage"][];
             readonly game_versions: string[];
+            /** На клієнті */
+            readonly client_side: components["schemas"]["ProjectSideEnum"];
+            /** На сервері */
+            readonly server_side: components["schemas"]["ProjectSideEnum"];
             readonly license: string;
             /** Format: uri */
             readonly source_url: string;
             readonly needs_translation: boolean;
             /**
-             * Опубліковано
+             * Опубліковано на Modrinth
              * Format: date-time
              */
             readonly published_at: string | null;
@@ -1879,12 +1942,21 @@ export interface components {
             readonly updated_at: string;
         };
         /**
+         * @description * `required` - Потрібен
+         *     * `optional` - Необов’язковий
+         *     * `unsupported` - Не працює
+         *     * `unknown` - Невідомо
+         * @enum {string}
+         */
+        ProjectSideEnum: "required" | "optional" | "unsupported" | "unknown";
+        /**
          * @description * `mod` - Мод
          *     * `resourcepack` - Ресурспак
          *     * `shader` - Шейдер
+         *     * `datapack` - Датапак
          * @enum {string}
          */
-        ProjectTypeEnum: "mod" | "resourcepack" | "shader";
+        ProjectTypeEnum: "mod" | "resourcepack" | "shader" | "datapack";
         ProjectVersion: {
             id: string;
             readonly name: string;
@@ -1895,7 +1967,7 @@ export interface components {
             readonly file_name: string;
             readonly file_size: number;
             /** Format: date-time */
-            readonly released_at: string;
+            readonly date_published: string;
         };
         /**
          * @description * `release` - Реліз
@@ -2271,20 +2343,6 @@ export interface components {
             players: number;
             is_online: boolean;
         };
-        SuggestRequest: {
-            /** @description Link to the project on Modrinth or its slug. */
-            url: string;
-        };
-        SuggestResponse: {
-            slug: string;
-            status: components["schemas"]["SuggestResponseStatusEnum"];
-        };
-        /**
-         * @description * `queued` - queued
-         *     * `exists` - exists
-         * @enum {string}
-         */
-        SuggestResponseStatusEnum: "queued" | "exists";
         /** @description `{kind, id}`: id is a slug or a number depending on the kind. */
         TargetRequest: {
             kind: components["schemas"]["KindEnum"];
@@ -2356,7 +2414,7 @@ export interface operations {
         parameters: {
             query?: {
                 /** @description Project type */
-                type?: "mod" | "resourcepack" | "shader";
+                type?: "datapack" | "mod" | "resourcepack" | "shader";
             };
             header?: never;
             path?: never;
@@ -2937,6 +2995,35 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Home"];
+                };
+            };
+        };
+    };
+    jobs_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Job"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
                 };
             };
         };
@@ -3692,8 +3779,11 @@ export interface operations {
     mods_list: {
         parameters: {
             query?: {
+                /** @description 1 — ignore «Моя гра» and show every version. */
+                all?: boolean;
                 /** @description Category slugs, comma-separated; all must match. */
                 category?: string;
+                /** @description Defaults to «Моя гра» of the viewer. */
                 game_version?: string;
                 /**
                  * @description * `light` - Легкий
@@ -3701,8 +3791,16 @@ export interface operations {
                  *     * `heavy` - Важкий
                  */
                 gpu_load?: "heavy" | "light" | "medium";
-                /** @description Applies to mods; resource packs and shaders pass. */
-                loader?: string;
+                /**
+                 * @description Applies to mods; defaults to «Моя гра». Vanilla keeps mods with a datapack.
+                 *
+                 *     * `fabric` - Fabric
+                 *     * `forge` - Forge
+                 *     * `neoforge` - NeoForge
+                 *     * `quilt` - Quilt
+                 *     * `vanilla` - Vanilla
+                 */
+                loader?: "fabric" | "forge" | "neoforge" | "quilt" | "vanilla";
                 /** @description A page number within the paginated result set. */
                 page?: number;
                 /** @description Number of results to return per page. */
@@ -3717,11 +3815,14 @@ export interface operations {
                  */
                 sort?: "new" | "popular" | "top" | "trend" | "updated";
                 /**
-                 * @description * `mod` - Мод
+                 * @description Datapacks include mods that also ship as a datapack.
+                 *
+                 *     * `mod` - Мод
                  *     * `resourcepack` - Ресурспак
                  *     * `shader` - Шейдер
+                 *     * `datapack` - Датапак
                  */
-                type?: "mod" | "resourcepack" | "shader";
+                type?: "datapack" | "mod" | "resourcepack" | "shader";
             };
             header?: never;
             path?: never;
@@ -3804,8 +3905,11 @@ export interface operations {
     mods_similar: {
         parameters: {
             query?: {
+                /** @description 1 — ignore «Моя гра» and show every version. */
+                all?: boolean;
                 /** @description Category slugs, comma-separated; all must match. */
                 category?: string;
+                /** @description Defaults to «Моя гра» of the viewer. */
                 game_version?: string;
                 /**
                  * @description * `light` - Легкий
@@ -3813,8 +3917,16 @@ export interface operations {
                  *     * `heavy` - Важкий
                  */
                 gpu_load?: "heavy" | "light" | "medium";
-                /** @description Applies to mods; resource packs and shaders pass. */
-                loader?: string;
+                /**
+                 * @description Applies to mods; defaults to «Моя гра». Vanilla keeps mods with a datapack.
+                 *
+                 *     * `fabric` - Fabric
+                 *     * `forge` - Forge
+                 *     * `neoforge` - NeoForge
+                 *     * `quilt` - Quilt
+                 *     * `vanilla` - Vanilla
+                 */
+                loader?: "fabric" | "forge" | "neoforge" | "quilt" | "vanilla";
                 q?: string;
                 /**
                  * @description * `popular` - popular
@@ -3825,11 +3937,14 @@ export interface operations {
                  */
                 sort?: "new" | "popular" | "top" | "trend" | "updated";
                 /**
-                 * @description * `mod` - Мод
+                 * @description Datapacks include mods that also ship as a datapack.
+                 *
+                 *     * `mod` - Мод
                  *     * `resourcepack` - Ресурспак
                  *     * `shader` - Шейдер
+                 *     * `datapack` - Датапак
                  */
-                type?: "mod" | "resourcepack" | "shader";
+                type?: "datapack" | "mod" | "resourcepack" | "shader";
             };
             header?: never;
             path: {
@@ -3881,7 +3996,7 @@ export interface operations {
             };
         };
     };
-    mods_suggest: {
+    mods_import: {
         parameters: {
             query?: never;
             header?: never;
@@ -3890,9 +4005,9 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["SuggestRequest"];
-                "application/x-www-form-urlencoded": components["schemas"]["SuggestRequest"];
-                "multipart/form-data": components["schemas"]["SuggestRequest"];
+                "application/json": components["schemas"]["ImportRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ImportRequest"];
+                "multipart/form-data": components["schemas"]["ImportRequest"];
             };
         };
         responses: {
@@ -3901,7 +4016,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["SuggestResponse"];
+                    "application/json": components["schemas"]["ImportResponse"];
                 };
             };
             202: {
@@ -3909,7 +4024,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["SuggestResponse"];
+                    "application/json": components["schemas"]["ImportResponse"];
                 };
             };
             400: {

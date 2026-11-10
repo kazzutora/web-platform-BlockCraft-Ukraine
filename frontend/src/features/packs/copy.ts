@@ -152,7 +152,7 @@ export const packsCopy = {
     search: "Знайти мод",
     searchPlaceholder: "Sodium, Create, JEI…",
     searchHint: "Показуємо лише ті, що мають файл для версії й лоадера зборки.",
-    types: { mod: "Моди", resourcepack: "Ресурспаки", shader: "Шейдери" },
+    types: { mod: "Моди", resourcepack: "Ресурспаки", shader: "Шейдери", datapack: "Датапаки" },
     add: "Додати",
     inPack: "У зборці",
     noResults: "Нічого не знайшли для цієї версії й лоадера.",

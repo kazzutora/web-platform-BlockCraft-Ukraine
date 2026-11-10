@@ -13,6 +13,7 @@ paths:
         schema:
           type: string
           enum:
+          - datapack
           - mod
           - resourcepack
           - shader
@@ -563,6 +564,36 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Home'
+          description: ''
+  /api/v1/jobs/{job_id}:
+    get:
+      operationId: jobs_retrieve
+      description: State of a background job a page waits for; the random id is the
+        access key.
+      summary: Background job state
+      parameters:
+      - in: path
+        name: job_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - core
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Job'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
           description: ''
   /api/v1/me:
     get:
@@ -1237,10 +1268,15 @@ paths:
   /api/v1/mods:
     get:
       operationId: mods_list
-      description: '`list()` through `for_guests`; put it before ListModelMixin in
-        the bases.'
-      summary: Catalog of mods, packs and shaders
+      description: Without game_version / loader the viewer's «Моя гра» applies; all=1
+        — none.
+      summary: Catalog of mods, resource packs, shaders and datapacks
       parameters:
+      - in: query
+        name: all
+        schema:
+          type: boolean
+        description: 1 — ignore «Моя гра» and show every version.
       - in: query
         name: category
         schema:
@@ -1250,6 +1286,7 @@ paths:
         name: game_version
         schema:
           type: string
+        description: Defaults to «Моя гра» of the viewer.
       - in: query
         name: gpu_load
         schema:
@@ -1267,7 +1304,20 @@ paths:
         name: loader
         schema:
           type: string
-        description: Applies to mods; resource packs and shaders pass.
+          enum:
+          - fabric
+          - forge
+          - neoforge
+          - quilt
+          - vanilla
+        description: |-
+          Applies to mods; defaults to «Моя гра». Vanilla keeps mods with a datapack.
+
+          * `fabric` - Fabric
+          * `forge` - Forge
+          * `neoforge` - NeoForge
+          * `quilt` - Quilt
+          * `vanilla` - Vanilla
       - name: page
         required: false
         in: query
@@ -1305,13 +1355,17 @@ paths:
         schema:
           type: string
           enum:
+          - datapack
           - mod
           - resourcepack
           - shader
         description: |-
+          Datapacks include mods that also ship as a datapack.
+
           * `mod` - Мод
           * `resourcepack` - Ресурспак
           * `shader` - Шейдер
+          * `datapack` - Датапак
       tags:
       - mods
       security:
@@ -1400,6 +1454,11 @@ paths:
         the bases.'
       parameters:
       - in: query
+        name: all
+        schema:
+          type: boolean
+        description: 1 — ignore «Моя гра» and show every version.
+      - in: query
         name: category
         schema:
           type: string
@@ -1408,6 +1467,7 @@ paths:
         name: game_version
         schema:
           type: string
+        description: Defaults to «Моя гра» of the viewer.
       - in: query
         name: gpu_load
         schema:
@@ -1425,7 +1485,20 @@ paths:
         name: loader
         schema:
           type: string
-        description: Applies to mods; resource packs and shaders pass.
+          enum:
+          - fabric
+          - forge
+          - neoforge
+          - quilt
+          - vanilla
+        description: |-
+          Applies to mods; defaults to «Моя гра». Vanilla keeps mods with a datapack.
+
+          * `fabric` - Fabric
+          * `forge` - Forge
+          * `neoforge` - NeoForge
+          * `quilt` - Quilt
+          * `vanilla` - Vanilla
       - in: query
         name: q
         schema:
@@ -1456,13 +1529,17 @@ paths:
         schema:
           type: string
           enum:
+          - datapack
           - mod
           - resourcepack
           - shader
         description: |-
+          Datapacks include mods that also ship as a datapack.
+
           * `mod` - Мод
           * `resourcepack` - Ресурспак
           * `shader` - Шейдер
+          * `datapack` - Датапак
       tags:
       - mods
       security:
@@ -1516,23 +1593,24 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiError'
           description: ''
-  /api/v1/mods/suggest:
+  /api/v1/mods/import:
     post:
-      operationId: mods_suggest
-      description: Queue a Modrinth project for import; it waits for moderation.
+      operationId: mods_import
+      description: Add a Modrinth project by link or slug. 202 — poll GET /jobs/{job_id};
+        200 — already in the catalog. A modpack link is refused with `is_modpack`.
       tags:
       - mods
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SuggestRequest'
+              $ref: '#/components/schemas/ImportRequest'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/SuggestRequest'
+              $ref: '#/components/schemas/ImportRequest'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/SuggestRequest'
+              $ref: '#/components/schemas/ImportRequest'
         required: true
       security:
       - cookieAuth: []
@@ -1541,13 +1619,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuggestResponse'
+                $ref: '#/components/schemas/ImportResponse'
           description: ''
         '200':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuggestResponse'
+                $ref: '#/components/schemas/ImportResponse'
           description: ''
         '400':
           content:
@@ -3965,6 +4043,33 @@ components:
       - packs
       - servers_online
       - skin_of_week
+    ImportRequest:
+      type: object
+      properties:
+        url:
+          type: string
+          minLength: 1
+          description: Link to the project on Modrinth or its slug.
+          maxLength: 300
+      required:
+      - url
+    ImportResponse:
+      type: object
+      properties:
+        job_id:
+          type: string
+          format: uuid
+          nullable: true
+          description: Poll GET /jobs/{id}; null if known.
+        slug:
+          type: string
+          description: Set when the project is already here.
+        title:
+          type: string
+      required:
+      - job_id
+      - slug
+      - title
     IpCopies:
       type: object
       properties:
@@ -4003,6 +4108,43 @@ components:
         * `no_version` - no_version
         * `missing_dependency` - missing_dependency
         * `conflict` - conflict
+    Job:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          type: string
+          description: What runs, e.g. mods.import.
+        status:
+          $ref: '#/components/schemas/JobStatusEnum'
+        result:
+          type: object
+          additionalProperties: {}
+          nullable: true
+          description: What the job produced, e.g. {slug, project_type}.
+        error:
+          type: string
+          description: 'Error code when failed: not_found, unsupported_type, …'
+      required:
+      - error
+      - id
+      - kind
+      - result
+      - status
+    JobStatusEnum:
+      enum:
+      - queued
+      - running
+      - done
+      - failed
+      type: string
+      description: |-
+        * `queued` - queued
+        * `running` - running
+        * `done` - done
+        * `failed` - failed
     KindEnum:
       enum:
       - collection
@@ -5405,10 +5547,17 @@ components:
           allOf:
           - $ref: '#/components/schemas/SourceRef'
           readOnly: true
+        fits_my_game:
+          type: boolean
+          nullable: true
+          readOnly: true
+          description: Has files for the viewer's «Моя гра»; null when nothing is
+            chosen.
       required:
       - categories
       - downloads
       - favorites_count
+      - fits_my_game
       - gpu_load
       - icon_url
       - is_favorited
@@ -5491,6 +5640,12 @@ components:
           allOf:
           - $ref: '#/components/schemas/SourceRef'
           readOnly: true
+        fits_my_game:
+          type: boolean
+          nullable: true
+          readOnly: true
+          description: Has files for the viewer's «Моя гра»; null when nothing is
+            chosen.
         summary_en:
           type: string
           readOnly: true
@@ -5498,7 +5653,7 @@ components:
           type: string
           readOnly: true
           title: Короткий опис українською
-          description: Пишуть модератори й спільнота; показується замість англійського.
+          description: Зі схваленого перекладу; показується замість англійського.
         body_html:
           type: string
           readOnly: true
@@ -5514,6 +5669,16 @@ components:
             type: string
             maxLength: 32
           readOnly: true
+        client_side:
+          allOf:
+          - $ref: '#/components/schemas/ProjectSideEnum'
+          readOnly: true
+          title: На клієнті
+        server_side:
+          allOf:
+          - $ref: '#/components/schemas/ProjectSideEnum'
+          readOnly: true
+          title: На сервері
         license:
           type: string
           readOnly: true
@@ -5529,7 +5694,7 @@ components:
           format: date-time
           readOnly: true
           nullable: true
-          title: Опубліковано
+          title: Опубліковано на Modrinth
         updated_at:
           type: string
           format: date-time
@@ -5537,8 +5702,10 @@ components:
       required:
       - body_html
       - categories
+      - client_side
       - downloads
       - favorites_count
+      - fits_my_game
       - gallery
       - game_versions
       - gpu_load
@@ -5554,6 +5721,7 @@ components:
       - published_at
       - rating_avg
       - rating_count
+      - server_side
       - slug
       - source
       - source_url
@@ -5562,16 +5730,30 @@ components:
       - summary_uk
       - title
       - updated_at
+    ProjectSideEnum:
+      enum:
+      - required
+      - optional
+      - unsupported
+      - unknown
+      type: string
+      description: |-
+        * `required` - Потрібен
+        * `optional` - Необов’язковий
+        * `unsupported` - Не працює
+        * `unknown` - Невідомо
     ProjectTypeEnum:
       enum:
       - mod
       - resourcepack
       - shader
+      - datapack
       type: string
       description: |-
         * `mod` - Мод
         * `resourcepack` - Ресурспак
         * `shader` - Шейдер
+        * `datapack` - Датапак
     ProjectVersion:
       type: object
       properties:
@@ -5605,18 +5787,18 @@ components:
         file_size:
           type: integer
           readOnly: true
-        released_at:
+        date_published:
           type: string
           format: date-time
           readOnly: true
       required:
+      - date_published
       - file_name
       - file_size
       - game_versions
       - id
       - loaders
       - name
-      - released_at
       - version_number
       - version_type
     ProjectVersionVersionTypeEnum:
@@ -6623,34 +6805,6 @@ components:
       - is_online
       - players
       - ts
-    SuggestRequest:
-      type: object
-      properties:
-        url:
-          type: string
-          minLength: 1
-          description: Link to the project on Modrinth or its slug.
-          maxLength: 300
-      required:
-      - url
-    SuggestResponse:
-      type: object
-      properties:
-        slug:
-          type: string
-        status:
-          $ref: '#/components/schemas/SuggestResponseStatusEnum'
-      required:
-      - slug
-      - status
-    SuggestResponseStatusEnum:
-      enum:
-      - queued
-      - exists
-      type: string
-      description: |-
-        * `queued` - queued
-        * `exists` - exists
     TargetRequest:
       type: object
       description: '`{kind, id}`: id is a slug or a number depending on the kind.'

@@ -1,9 +1,10 @@
 from dataclasses import dataclass
 
 from django.contrib.auth.models import AnonymousUser
-from django.db.models import Case, IntegerField, QuerySet, Value, When
+from django.db.models import Case, IntegerField, Q, QuerySet, Value, When
 from django.http import Http404
 
+from apps.core.game import GameContext, Loader
 from apps.core.kinds import Viewer, get_kind
 from apps.core.versions import is_release, latest_release, nearest_versions
 from apps.social.selectors import with_viewer_state
@@ -14,9 +15,42 @@ from .models import Project, ProjectType, ProjectVersion
 LOADER_AWARE_TYPES = {ProjectType.MOD}
 
 
+def of_type(project_type: str) -> Q:
+    """A tab of the catalog. Mods that also ship as a datapack (Terralith) are in both."""
+    if project_type == ProjectType.DATAPACK:
+        return Q(project_type=ProjectType.DATAPACK) | Q(
+            project_type=ProjectType.MOD, loaders__contains=["datapack"]
+        )
+    return Q(project_type=project_type)
+
+
+def for_loader(loader: str) -> Q:
+    """Only mods depend on the loader; a vanilla game takes mods that ship as datapacks."""
+    if not loader:
+        return Q()
+    wanted = "datapack" if loader == Loader.VANILLA else loader
+    return ~Q(project_type=ProjectType.MOD) | Q(loaders__contains=[wanted])
+
+
+def fits_game(project: Project, game: GameContext | None) -> bool | None:
+    """Whether the project has files for «Моя гра»; None when the viewer chose nothing.
+
+    Same rule as the catalog filters (project-level versions and loaders), so a card in
+    the filtered catalog never says it does not fit.
+    """
+    if game is None or not game.is_set:
+        return None
+    if game.game_version and game.game_version not in project.game_versions:
+        return False
+    if game.loader and project.project_type in LOADER_AWARE_TYPES:
+        wanted = "datapack" if game.loader == Loader.VANILLA else game.loader
+        return wanted in project.loaders
+    return True
+
+
 def catalog(viewer: Viewer | None = None) -> QuerySet[Project]:
-    """Published projects with the viewer's favorite/review state annotated."""
-    queryset = Project.objects.published().prefetch_related("categories")
+    """Visible projects with the viewer's favorite/review state annotated."""
+    queryset = Project.objects.visible().prefetch_related("categories")
     return with_viewer_state(queryset, viewer=viewer or AnonymousUser(), kind=get_kind("mod"))
 
 
@@ -35,7 +69,8 @@ def versions_for(
     if game_version:
         queryset = queryset.filter(game_versions__contains=[game_version])
     if loader and project.project_type in LOADER_AWARE_TYPES:
-        queryset = queryset.filter(loaders__contains=[loader])
+        wanted = "datapack" if loader == Loader.VANILLA else loader
+        queryset = queryset.filter(loaders__contains=[wanted])
     return queryset.annotate(
         stability=Case(
             When(version_type=ProjectVersion.VersionType.RELEASE, then=Value(0)),
@@ -43,7 +78,7 @@ def versions_for(
             default=Value(2),
             output_field=IntegerField(),
         )
-    ).order_by("stability", "-released_at")
+    ).order_by("stability", "-date_published")
 
 
 def resolve_version(
@@ -84,9 +119,9 @@ def dependencies_of(version: ProjectVersion | None) -> list[DependencyInfo]:
         return []
     items = [item for item in version.dependencies if item.get("project_id")]
     known = {
-        project.modrinth_id: project
-        for project in Project.objects.published().filter(
-            modrinth_id__in=[item["project_id"] for item in items]
+        project.external_id: project
+        for project in Project.objects.visible().filter(
+            external_id__in=[item["project_id"] for item in items]
         )
     }
     return [

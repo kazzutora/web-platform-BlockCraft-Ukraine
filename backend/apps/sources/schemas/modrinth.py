@@ -43,6 +43,9 @@ class ModrinthProject(BaseModel):
     loaders: list[str] = Field(default_factory=list)
     game_versions: list[str] = Field(default_factory=list)
     downloads: int = 0
+    followers: int = 0
+    client_side: str | None = None
+    server_side: str | None = None
     icon_url: str | None = None
     gallery: list[GalleryImage] = Field(default_factory=list)
     license: License | None = None

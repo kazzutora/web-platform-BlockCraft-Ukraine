@@ -3,7 +3,6 @@ import re
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
-from apps.core.models import Source
 from apps.sources.attribution import SourceRef, SourceRefSerializer, source_ref
 
 from . import selectors
@@ -29,6 +28,9 @@ class ProjectCardSerializer(serializers.ModelSerializer):
     is_favorited = serializers.SerializerMethodField()
     my_review_stars = serializers.SerializerMethodField()
     source = serializers.SerializerMethodField()
+    fits_my_game = serializers.SerializerMethodField(
+        help_text="Has files for the viewer's «Моя гра»; null when nothing is chosen."
+    )
 
     class Meta:
         model = Project
@@ -49,12 +51,16 @@ class ProjectCardSerializer(serializers.ModelSerializer):
             "is_favorited",
             "my_review_stars",
             "source",
+            "fits_my_game",
         ]
         read_only_fields = fields
 
     @extend_schema_field(SourceRefSerializer)
     def get_source(self, project: Project) -> SourceRef:
-        return source_ref(Source.MODRINTH, project.modrinth_url)
+        return source_ref(project.source, project.external_url)
+
+    def get_fits_my_game(self, project: Project) -> bool | None:
+        return selectors.fits_game(project, self.context.get("game"))
 
     def get_is_favorited(self, project: Project) -> bool:
         return bool(getattr(project, "is_favorited", False))
@@ -93,6 +99,8 @@ class ProjectDetailSerializer(ProjectCardSerializer):
             "body_html",
             "gallery",
             "game_versions",
+            "client_side",
+            "server_side",
             "license",
             "source_url",
             "needs_translation",
@@ -119,7 +127,7 @@ class ProjectVersionSerializer(serializers.ModelSerializer):
             "loaders",
             "file_name",
             "file_size",
-            "released_at",
+            "date_published",
         ]
         read_only_fields = fields
 
@@ -169,18 +177,19 @@ class NoVersionErrorSerializer(serializers.Serializer):
 
 
 MODRINTH_URL = re.compile(
-    r"^(?:https?://)?(?:www\.)?modrinth\.com/(?:mod|resourcepack|shader|plugin|datapack|modpack|project)/(?P<slug>[\w.-]+)/?(?:[?#].*)?$",
+    r"^(?:https?://)?(?:www\.)?modrinth\.com/(?P<type>mod|resourcepack|shader|plugin|datapack|modpack|project)/(?P<slug>[\w.-]+)/?(?:[?#].*)?$",
     re.IGNORECASE,
 )
 SLUG = re.compile(r"^[\w.-]{2,96}$")
 
 
-class SuggestSerializer(serializers.Serializer):
+class ImportSerializer(serializers.Serializer):
     url = serializers.CharField(
         max_length=300, help_text="Link to the project on Modrinth or its slug."
     )
 
     def validate_url(self, value: str) -> str:
+        """A link or slug → `sodium`; a modpack link → `modpack:<slug>`."""
         value = value.strip()
         match = MODRINTH_URL.match(value)
         slug = match.group("slug") if match else value
@@ -188,9 +197,14 @@ class SuggestSerializer(serializers.Serializer):
             raise serializers.ValidationError(
                 "Встав посилання на сторінку проєкту Modrinth, наприклад https://modrinth.com/mod/sodium."
             )
+        if match and match.group("type").lower() == "modpack":
+            return f"modpack:{slug.lower()}"
         return slug.lower()
 
 
-class SuggestResponseSerializer(serializers.Serializer):
-    slug = serializers.CharField()
-    status = serializers.ChoiceField(choices=["queued", "exists"])
+class ImportResponseSerializer(serializers.Serializer):
+    job_id = serializers.UUIDField(allow_null=True, help_text="Poll GET /jobs/{id}; null if known.")
+    slug = serializers.CharField(
+        allow_blank=True, help_text="Set when the project is already here."
+    )
+    title = serializers.CharField(allow_blank=True)

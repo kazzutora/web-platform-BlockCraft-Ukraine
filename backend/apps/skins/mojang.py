@@ -23,7 +23,7 @@ NOT_FOUND_TTL = 2 * 60
 
 
 def _cache_key(nickname: str) -> str:
-    return f"skins:mojang:{nickname.lower()}"
+    return f"skins:mojang:v2:{nickname.lower()}"
 
 
 def lookup(

@@ -67,7 +67,7 @@ def items_of(collection: Collection) -> QuerySet[CollectionItem]:
         "target",
         [
             Project.objects.prefetch_related("categories"),
-            Skin.objects.select_related("author"),
+            Skin.objects.all(),
             Server.objects.select_related("owner"),
             packs_with_preview(Pack.objects.select_related("author")),
             Collection.objects.all(),

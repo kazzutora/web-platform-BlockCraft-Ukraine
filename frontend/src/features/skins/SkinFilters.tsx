@@ -5,7 +5,7 @@ import { cn } from "@/lib/cn";
 
 import { skinsCopy } from "./copy";
 import { type SkinFilters as Filters, catalogHref } from "./filters";
-import { type ColorBucket, type Style, colorBuckets, styles } from "./types";
+import { type ColorBucket, colorBuckets, skinSources } from "./types";
 
 const copy = skinsCopy.filters;
 
@@ -24,11 +24,7 @@ const swatches: Record<ColorBucket, string> = {
   gray: "bg-swatch-gray",
 };
 
-function toggleStyle(list: Style[], style: Style): Style[] {
-  return list.includes(style) ? list.filter((item) => item !== style) : [...list, style];
-}
-
-/** Colour squares, model and style chips: every one is a link with other filters. */
+/** Colour squares, model and source chips: every one is a link with other filters. */
 export function SkinFilters({ filters }: { filters: Filters }) {
   const sortOptions = copy.sorts.map((sort) => ({
     ...sort,
@@ -72,14 +68,17 @@ export function SkinFilters({ filters }: { filters: Filters }) {
         <NavigateSelect label={copy.sort} value={filters.sort || "popular"} options={sortOptions} />
       </div>
 
-      <FilterRow label={copy.style}>
-        {styles.map((style) => (
+      <FilterRow label={copy.source}>
+        <FilterChip href={catalogHref(filters, { source: "" })} active={!filters.source}>
+          {copy.anySource}
+        </FilterChip>
+        {skinSources.map((source) => (
           <FilterChip
-            key={style}
-            href={catalogHref(filters, { styles: toggleStyle(filters.styles, style) })}
-            active={filters.styles.includes(style)}
+            key={source}
+            href={catalogHref(filters, { source: filters.source === source ? "" : source })}
+            active={filters.source === source}
           >
-            {skinsCopy.styles[style]}
+            {skinsCopy.sources[source]}
           </FilterChip>
         ))}
       </FilterRow>

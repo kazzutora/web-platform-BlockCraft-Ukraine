@@ -55,9 +55,9 @@ def skin_of_week(*, viewer: Viewer):
     """The skin with the highest trend among those published in the last 7 days (or any)."""
 
     def build() -> QuerySet:
-        recent = skins.catalog().filter(published_at__gte=timezone.now() - timedelta(days=7))
+        recent = skins.catalog().filter(created_at__gte=timezone.now() - timedelta(days=7))
         source = recent if recent.exists() else skins.catalog()
-        return source.order_by("-trend_score", "-favorites_count", "-published_at")[:1]
+        return source.order_by("-trend_score", "-favorites_count", "-created_at")[:1]
 
     found = _in_order(skins.catalog(viewer), _cached_ids("home:skin-of-week", HOME_TTL, build))
     return found[0] if found else None
@@ -83,7 +83,7 @@ def popular_packs(*, viewer: Viewer, limit: int = 4) -> list:
 
 def new_skins(*, viewer: Viewer, limit: int = 4) -> list:
     def build() -> QuerySet:
-        return skins.catalog().order_by("-published_at")[:limit]
+        return skins.catalog().order_by("-created_at")[:limit]
 
     return _in_order(skins.catalog(viewer), _cached_ids("home:new-skins", HOME_TTL, build))
 

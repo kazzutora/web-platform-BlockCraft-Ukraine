@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { type FormEvent, useState } from "react";
 
@@ -92,6 +93,12 @@ export function SkinLookup() {
                 <Icon name="download" />
                 {skinsCopy.detail.download}
               </a>
+              <Link
+                href={`/skins/add?nickname=${encodeURIComponent(player.data.nickname)}`}
+                className="self-start text-sm underline underline-offset-4"
+              >
+                {copy.addToCatalog}
+              </Link>
               <p className="max-w-prose text-meta text-muted">{copy.hint}</p>
             </div>
           </div>

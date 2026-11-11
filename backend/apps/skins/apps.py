@@ -9,6 +9,8 @@ class SkinsConfig(AppConfig):
     def ready(self) -> None:
         from apps.core import kinds
 
+        from .models import Skin
+
         kinds.register(
             kinds.Kind(
                 name="skin",
@@ -16,6 +18,6 @@ class SkinsConfig(AppConfig):
                 lookup_field="pk",
                 rating="favorites",
                 actions=frozenset({"favorite", "collect", "report"}),
-                owner_field="author",
+                visible=lambda viewer: Skin.objects.visible(),
             )
         )

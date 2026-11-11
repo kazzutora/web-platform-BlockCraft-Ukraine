@@ -240,7 +240,6 @@ SPECTACULAR_SETTINGS = {
         "ServerContentKindEnum": "apps.servers.models.ContentKind",
         "LoaderEnum": "apps.core.game.Loader",
         "PackLoaderEnum": "apps.packs.choices.PackLoader",
-        "SkinStyleEnum": "apps.skins.styles.Style",
         "PublishStatusEnum": "apps.core.models.Publishable.Status",
         "KindEnum": ["collection", "mod", "skin", "server", "pack"],
         "NotificationTypeEnum": "apps.notifications.models.Notification.Type",
@@ -289,6 +288,7 @@ CELERY_BEAT_SCHEDULE: dict[str, dict] = {
         "task": "servers.sync_modrinth",
         "schedule": crontab(hour="*/6", minute=10),
     },
+    "skins-sync-mineskin": {"task": "skins.sync_mineskin", "schedule": crontab(hour=2, minute=0)},
     "servers-cleanup-snapshots": {
         "task": "servers.cleanup_snapshots",
         "schedule": crontab(hour=4, minute=30),

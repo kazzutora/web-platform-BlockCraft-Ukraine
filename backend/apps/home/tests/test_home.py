@@ -12,6 +12,7 @@ from apps.mods.tests.factories import ProjectFactory
 from apps.packs.tests.factories import PackFactory
 from apps.servers import status
 from apps.servers.tests.factories import ServerFactory, SnapshotFactory, online
+from apps.skins.models import Skin
 from apps.skins.tests.factories import SkinFactory
 
 pytestmark = [pytest.mark.django_db, pytest.mark.usefixtures("game_versions")]
@@ -33,11 +34,13 @@ def content():
     SnapshotFactory(server=quiet, players_online=4)
     status.store({busy.pk: online(players=90), quiet.pk: online(players=4)})
     week = timezone.now() - timedelta(days=2)
-    SkinFactory(title="Вчорашній", trend_score=3, published_at=week)
-    SkinFactory(title="Хіт тижня", trend_score=8, published_at=week)
-    SkinFactory(
-        title="Торішній хіт", trend_score=50, published_at=timezone.now() - timedelta(days=300)
-    )
+    recent = [
+        SkinFactory(title="Вчорашній", trend_score=3),
+        SkinFactory(title="Хіт тижня", trend_score=8),
+    ]
+    Skin.objects.filter(pk__in=[skin.pk for skin in recent]).update(created_at=week)
+    old = SkinFactory(title="Торішній хіт", trend_score=50)
+    Skin.objects.filter(pk=old.pk).update(created_at=timezone.now() - timedelta(days=300))
     PackFactory(title="Техно", trend_score=4)
     PackFactory(title="Тиша")
 
@@ -66,7 +69,7 @@ def test_players_get_mods_for_their_version_and_loader(content):
 
 def test_viewer_state_is_personal_even_with_the_cache(content):
     first, second = UserFactory(), UserFactory()
-    skin = SkinFactory(title="Найновіший", published_at=timezone.now())
+    skin = SkinFactory(title="Найновіший")
     Favorite.objects.create(
         user=first, content_type=get_kind("skin").content_type, object_id=skin.pk
     )

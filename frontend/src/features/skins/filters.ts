@@ -2,16 +2,16 @@ import {
   type CatalogQuery,
   type ColorBucket,
   type SkinModel,
-  type Style,
+  type SkinSource,
   colorBuckets,
-  styles,
+  skinSources,
 } from "./types";
 
 /** Catalog state, kept in the URL query string. */
 export type SkinFilters = {
   color: ColorBucket | "";
   model: SkinModel | "";
-  styles: Style[];
+  source: SkinSource | "";
   sort: string;
   q: string;
   page: number;
@@ -31,9 +31,9 @@ export function parseFilters(params: SearchParams): SkinFilters {
   return {
     color: colorBuckets.includes(color) ? color : "",
     model: model === "classic" || model === "slim" ? model : "",
-    styles: first(params.style)
-      .split(",")
-      .filter((style): style is Style => styles.includes(style as Style)),
+    source: skinSources.includes(first(params.source) as SkinSource)
+      ? (first(params.source) as SkinSource)
+      : "",
     sort: sorts.includes(sort) ? sort : "",
     q: first(params.q),
     page: Math.max(1, Number.parseInt(first(params.page), 10) || 1),
@@ -44,7 +44,7 @@ export function toApiQuery(filters: SkinFilters, page = filters.page): CatalogQu
   const query: CatalogQuery = { page };
   if (filters.color) query.color = filters.color;
   if (filters.model) query.model = filters.model;
-  if (filters.styles.length) query.style = filters.styles.join(",");
+  if (filters.source) query.source = filters.source;
   if (filters.sort) query.sort = filters.sort as CatalogQuery["sort"];
   if (filters.q) query.q = filters.q;
   return query;
@@ -56,7 +56,7 @@ export function catalogHref(filters: SkinFilters, change: Partial<SkinFilters> =
   const params = new URLSearchParams();
   if (next.color) params.set("color", next.color);
   if (next.model) params.set("model", next.model);
-  if (next.styles.length) params.set("style", next.styles.join(","));
+  if (next.source) params.set("source", next.source);
   if (next.sort) params.set("sort", next.sort);
   if (next.q) params.set("q", next.q);
   const query = params.toString();

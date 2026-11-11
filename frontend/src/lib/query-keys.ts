@@ -23,6 +23,7 @@ export const queryKeys = {
     mine: () => [...queryKeys.skins.all, "mine"] as const,
     lookup: (nickname: string) =>
       [...queryKeys.skins.all, "lookup", nickname.toLowerCase()] as const,
+    addJob: (id: string) => [...queryKeys.skins.all, "add-job", id] as const,
   },
   notifications: {
     all: ["notifications"] as const,

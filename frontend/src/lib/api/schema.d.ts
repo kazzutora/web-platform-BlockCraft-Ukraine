@@ -490,9 +490,10 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        /** @description The skin shown in my profile. */
+        /** @description «Мій скін»: any skin of the catalog, shown in the profile. */
         put: operations["me_skin_set"];
         post?: never;
+        /** @description «Мій скін»: any skin of the catalog, shown in the profile. */
         delete: operations["me_skin_clear"];
         options?: never;
         head?: never;
@@ -1028,12 +1029,13 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Catalog of published skins
+         * Catalog of skins from the sources
          * @description `list()` through `for_guests`; put it before ListModelMixin in the bases.
          */
         get: operations["skins_list"];
         put?: never;
-        post?: never;
+        /** @description Add a skin to the catalog: a Java nickname (Mojang) or a MineSkin link or UUID. 202 — poll GET /jobs/{job_id}; 200 — the skin is already here (`id`). */
+        post: operations["skins_add"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1047,7 +1049,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Published skins for everyone; the author also sees the rest. */
+        /** @description `list()` through `for_guests`; put it before ListModelMixin in the bases. */
         get: operations["skins_retrieve"];
         put?: never;
         post?: never;
@@ -1327,9 +1329,6 @@ export interface components {
             a: string;
             b: string;
             declared_by: string;
-        };
-        CurrentSkinRequest: {
-            skin_id: number;
         };
         Dependency: {
             project_id: string;
@@ -1682,6 +1681,9 @@ export interface components {
             readonly visibility: components["schemas"]["PackVisibilityEnum"];
             /** Format: date-time */
             readonly updated_at: string;
+        };
+        MySkinRequest: {
+            skin_id: number;
         };
         NoVersionError: {
             detail: string;
@@ -2569,76 +2571,66 @@ export interface components {
             /** Format: date-time */
             readonly created_at: string;
         };
-        /** @description Catalog card: the 2D preview (the texture until it is rendered), title, counters. */
+        /** @description Either a Java nickname (Mojang) or a MineSkin link / UUID. */
+        SkinAddRequest: {
+            nickname?: string;
+            mineskin?: string;
+        };
+        SkinAddResult: {
+            /** @description Poll GET /jobs/{id}. */
+            job_id?: string;
+            /** @description Already in the catalog. */
+            id?: number;
+            title?: string;
+        };
+        /** @description Catalog card: the 2D preview (the texture until there is one), title, source. */
         SkinCard: {
             readonly id: number;
             /** Назва */
             readonly title: string;
-            readonly author: components["schemas"]["UserBrief"];
+            /** Нік гравця */
+            readonly player_name: string;
             /** Модель */
             readonly model: components["schemas"]["ModelEnum"];
+            /** @description Our cached 64×64 PNG. */
             readonly texture_url: string;
             readonly preview_url: string | null;
             /** Домінантний колір */
             readonly dominant_color: string;
             /** Колір */
             readonly color_bucket: components["schemas"]["ColorBucketEnum"];
-            readonly style_tags: components["schemas"]["SkinStyleEnum"][];
             readonly favorites_count: number;
             readonly downloads_count: number;
             readonly is_favorited: boolean;
+            readonly source: components["schemas"]["SourceRef"];
         };
-        /** @description Catalog card: the 2D preview (the texture until it is rendered), title, counters. */
+        /** @description Catalog card: the 2D preview (the texture until there is one), title, source. */
         SkinDetail: {
             readonly id: number;
             /** Назва */
             readonly title: string;
-            readonly author: components["schemas"]["UserBrief"];
+            /** Нік гравця */
+            readonly player_name: string;
             /** Модель */
             readonly model: components["schemas"]["ModelEnum"];
+            /** @description Our cached 64×64 PNG. */
             readonly texture_url: string;
             readonly preview_url: string | null;
             /** Домінантний колір */
             readonly dominant_color: string;
             /** Колір */
             readonly color_bucket: components["schemas"]["ColorBucketEnum"];
-            readonly style_tags: components["schemas"]["SkinStyleEnum"][];
             readonly favorites_count: number;
             readonly downloads_count: number;
             readonly is_favorited: boolean;
-            /** Статус */
-            readonly status: components["schemas"]["PublishStatusEnum"];
-            /** Причина відхилення */
-            readonly rejection_reason: string;
-            /**
-             * Поточний у профілі
-             * @default false
-             */
-            readonly is_current: boolean;
-            readonly is_mine: boolean;
+            readonly source: components["schemas"]["SourceRef"];
+            readonly added_by: components["schemas"]["UserBrief"] | null;
+            readonly source_views: number;
+            /** @description The viewer's «Мій скін». */
+            readonly is_my_skin: boolean;
             /** Format: date-time */
             readonly created_at: string;
-            /**
-             * Опубліковано
-             * Format: date-time
-             */
-            readonly published_at: string | null;
         };
-        /**
-         * @description * `casual` - Повсякденний
-         *     * `fantasy` - Фентезі
-         *     * `medieval` - Середньовіччя
-         *     * `scifi` - Наукова фантастика
-         *     * `anime` - Аніме
-         *     * `horror` - Жахи
-         *     * `cute` - Милий
-         *     * `mob` - Моби
-         *     * `military` - Військовий
-         *     * `sport` - Спорт
-         *     * `ukrainian` - Український
-         * @enum {string}
-         */
-        SkinStyleEnum: "casual" | "fantasy" | "medieval" | "scifi" | "anime" | "horror" | "cute" | "mob" | "military" | "sport" | "ukrainian";
         Source: {
             key: string;
             name: string;
@@ -4180,9 +4172,9 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["CurrentSkinRequest"];
-                "application/x-www-form-urlencoded": components["schemas"]["CurrentSkinRequest"];
-                "multipart/form-data": components["schemas"]["CurrentSkinRequest"];
+                "application/json": components["schemas"]["MySkinRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["MySkinRequest"];
+                "multipart/form-data": components["schemas"]["MySkinRequest"];
             };
         };
         responses: {
@@ -4203,14 +4195,6 @@ export interface operations {
                 };
             };
             401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -6057,8 +6041,6 @@ export interface operations {
     skins_list: {
         parameters: {
             query?: {
-                /** @description Author nickname. */
-                author?: string;
                 /**
                  * @description * `red` - Червоний
                  *     * `orange` - Помаранчевий
@@ -6083,6 +6065,7 @@ export interface operations {
                 page?: number;
                 /** @description Number of results to return per page. */
                 page_size?: number;
+                /** @description Title or player nickname. */
                 q?: string;
                 /**
                  * @description * `popular` - popular
@@ -6091,8 +6074,11 @@ export interface operations {
                  *     * `trend` - trend
                  */
                 sort?: "new" | "popular" | "top" | "trend";
-                /** @description Style slugs, comma-separated; any may match. */
-                style?: string;
+                /**
+                 * @description * `mineskin` - MineSkin
+                 *     * `mojang` - Mojang
+                 */
+                source?: "mineskin" | "mojang";
             };
             header?: never;
             path?: never;
@@ -6106,6 +6092,63 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PaginatedSkinCardList"];
+                };
+            };
+        };
+    };
+    skins_add: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["SkinAddRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["SkinAddRequest"];
+                "multipart/form-data": components["schemas"]["SkinAddRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SkinAddResult"];
+                };
+            };
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SkinAddResult"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
                 };
             };
         };
@@ -6172,8 +6215,6 @@ export interface operations {
     skins_similar: {
         parameters: {
             query?: {
-                /** @description Author nickname. */
-                author?: string;
                 /**
                  * @description * `red` - Червоний
                  *     * `orange` - Помаранчевий
@@ -6194,6 +6235,7 @@ export interface operations {
                  *     * `slim` - Тонкі руки (Алекс)
                  */
                 model?: "classic" | "slim";
+                /** @description Title or player nickname. */
                 q?: string;
                 /**
                  * @description * `popular` - popular
@@ -6202,8 +6244,11 @@ export interface operations {
                  *     * `trend` - trend
                  */
                 sort?: "new" | "popular" | "top" | "trend";
-                /** @description Style slugs, comma-separated; any may match. */
-                style?: string;
+                /**
+                 * @description * `mineskin` - MineSkin
+                 *     * `mojang` - Mojang
+                 */
+                source?: "mineskin" | "mojang";
             };
             header?: never;
             path: {

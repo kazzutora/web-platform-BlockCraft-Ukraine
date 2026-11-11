@@ -1,40 +1,42 @@
+from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
 from apps.accounts.serializers import UserBriefSerializer
+from apps.sources.attribution import SourceRef, SourceRefSerializer, source_ref
 
 from .models import Skin
 from .mojang import NICKNAME
 
 
 class SkinCardSerializer(serializers.ModelSerializer):
-    """Catalog card: the 2D preview (the texture until it is rendered), title, counters."""
+    """Catalog card: the 2D preview (the texture until there is one), title, source."""
 
-    author = UserBriefSerializer(read_only=True)
-    texture_url = serializers.SerializerMethodField()
+    texture_url = serializers.SerializerMethodField(help_text="Our cached 64×64 PNG.")
     preview_url = serializers.SerializerMethodField()
     # Viewer state from social.selectors.with_viewer_state (false for guests)
     is_favorited = serializers.SerializerMethodField()
+    source = serializers.SerializerMethodField()
 
     class Meta:
         model = Skin
         fields = [
             "id",
             "title",
-            "author",
+            "player_name",
             "model",
             "texture_url",
             "preview_url",
             "dominant_color",
             "color_bucket",
-            "style_tags",
             "favorites_count",
             "downloads_count",
             "is_favorited",
+            "source",
         ]
         read_only_fields = fields
 
     def get_texture_url(self, skin: Skin) -> str:
-        return skin.file.url
+        return skin.texture.url
 
     def get_preview_url(self, skin: Skin) -> str | None:
         return skin.preview.url if skin.preview else None
@@ -42,25 +44,27 @@ class SkinCardSerializer(serializers.ModelSerializer):
     def get_is_favorited(self, skin: Skin) -> bool:
         return bool(getattr(skin, "is_favorited", False))
 
+    @extend_schema_field(SourceRefSerializer)
+    def get_source(self, skin: Skin) -> SourceRef:
+        return source_ref(skin.source, skin.external_url or skin.texture_url)
+
 
 class SkinDetailSerializer(SkinCardSerializer):
-    is_mine = serializers.SerializerMethodField()
+    added_by = UserBriefSerializer(read_only=True, allow_null=True)
+    is_my_skin = serializers.SerializerMethodField(help_text="The viewer's «Мій скін».")
 
     class Meta(SkinCardSerializer.Meta):
         fields = [
             *SkinCardSerializer.Meta.fields,
-            "status",
-            "rejection_reason",
-            "is_current",
-            "is_mine",
+            "added_by",
+            "source_views",
+            "is_my_skin",
             "created_at",
-            "published_at",
         ]
         read_only_fields = fields
 
-    def get_is_mine(self, skin: Skin) -> bool:
-        request = self.context.get("request")
-        return bool(request and request.user.is_authenticated and skin.author_id == request.user.pk)
+    def get_is_my_skin(self, skin: Skin) -> bool:
+        return self.context.get("my_skin_id") == skin.pk
 
 
 class LookupQuerySerializer(serializers.Serializer):
@@ -79,5 +83,31 @@ class LookupResultSerializer(serializers.Serializer):
     )
 
 
-class CurrentSkinSerializer(serializers.Serializer):
+class SkinAddSerializer(serializers.Serializer):
+    """Either a Java nickname (Mojang) or a MineSkin link / UUID."""
+
+    nickname = serializers.RegexField(
+        NICKNAME,
+        required=False,
+        error_messages={"invalid": "Нік у Minecraft — 3–16 латинських літер, цифр або «_»."},
+    )
+    mineskin = serializers.CharField(
+        required=False,
+        max_length=200,
+        error_messages={"blank": "Встав посилання на скін MineSkin або його UUID."},
+    )
+
+    def validate(self, attrs: dict) -> dict:
+        if bool(attrs.get("nickname")) == bool(attrs.get("mineskin")):
+            raise serializers.ValidationError("Вкажи нік або посилання MineSkin — щось одне.")
+        return attrs
+
+
+class SkinAddResultSerializer(serializers.Serializer):
+    job_id = serializers.CharField(required=False, help_text="Poll GET /jobs/{id}.")
+    id = serializers.IntegerField(required=False, help_text="Already in the catalog.")
+    title = serializers.CharField(required=False)
+
+
+class MySkinSerializer(serializers.Serializer):
     skin_id = serializers.IntegerField()

@@ -50,7 +50,9 @@ def _base(kind: str, identifier: str, obj: Model, **fields) -> dict:
         "id": identifier,
         "score": getattr(obj, "score", 0.0),
         "trend_score": getattr(obj, "trend_score", 0.0),
-        "published_at": _timestamp(getattr(obj, "published_at", None)),
+        "published_at": _timestamp(
+            getattr(obj, "published_at", None) or getattr(obj, "created_at", None)
+        ),
         "popularity": 0,
         "tags": [],
         "game_versions": [],
@@ -83,17 +85,16 @@ def mod_document(project: Project) -> dict:
 
 
 def skin_document(skin: Skin) -> dict:
-    image = skin.preview or skin.file
+    image = skin.preview or skin.texture
     return _base(
         "skin",
         str(skin.pk),
         skin,
         title=skin.title,
         summary="",
-        tags=skin.style_tags,
+        tags=[skin.player_name] if skin.player_name else [],
         color_bucket=skin.color_bucket,
-        popularity=skin.downloads_count + 10 * skin.favorites_count,
-        author=skin.author.nickname,
+        popularity=skin.downloads_count + 10 * skin.favorites_count + skin.source_views // 100,
         image=image.url if image else None,
     )
 
@@ -163,7 +164,7 @@ class Source:
 # Only what anyone may open is searchable
 SOURCES: dict[str, Source] = {
     "mod": Source(lambda: Project.objects.visible().prefetch_related("categories"), mod_document),
-    "skin": Source(lambda: Skin.objects.published().select_related("author"), skin_document),
+    "skin": Source(lambda: Skin.objects.visible(), skin_document),
     "pack": Source(
         lambda: listed_packs().select_related("author").prefetch_related("items__project"),
         pack_document,

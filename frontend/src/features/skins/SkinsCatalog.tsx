@@ -12,7 +12,7 @@ import { LoadMoreSkins } from "./LoadMoreSkins";
 import { SkinCard } from "./SkinCard";
 import { SkinFilters } from "./SkinFilters";
 
-/** /skins: server-rendered first page with colour, model and style filters. */
+/** /skins: real skins from MineSkin and Mojang; colour, model and source filters. */
 export async function SkinsCatalog({ filters }: { filters: Filters }) {
   const query = toApiQuery(filters);
   const page = await getCatalog(query);
@@ -28,6 +28,10 @@ export async function SkinsCatalog({ filters }: { filters: Filters }) {
             <ButtonLink href="/skins/lookup" variant="secondary">
               <Icon name="search" />
               {skinsCopy.lookup}
+            </ButtonLink>
+            <ButtonLink href="/skins/add" variant="ghost">
+              <Icon name="plus" />
+              {skinsCopy.add.link}
             </ButtonLink>
           </div>
           <SkinFilters filters={filters} />

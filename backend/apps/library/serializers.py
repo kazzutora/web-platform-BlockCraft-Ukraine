@@ -19,7 +19,7 @@ from .selectors import PREVIEW_ITEMS, can_edit
 def thumbnail_of(target) -> str | None:
     """Image for collection previews; each kind exposes its own picture field."""
     if isinstance(target, Skin):
-        image = target.preview or target.file
+        image = target.preview or target.texture
         return image.url if image else None
     if isinstance(target, Server):
         return target.icon_url or target.banner_url or None
@@ -135,7 +135,7 @@ class CollectionItemSerializer(serializers.ModelSerializer):
     @extend_schema_field(SkinCardSerializer(allow_null=True))
     def get_skin(self, item: CollectionItem) -> dict | None:
         target = item.target
-        if isinstance(target, Skin) and target.status == Skin.Status.PUBLISHED:
+        if isinstance(target, Skin) and not target.is_hidden:
             return SkinCardSerializer(target, context=self.context).data
         return None
 

@@ -1,10 +1,9 @@
-from datetime import UTC, datetime
 from io import BytesIO
 
 import factory
 from PIL import Image
 
-from apps.accounts.tests.factories import UserFactory
+from apps.core.models import Source
 from apps.skins.models import Skin
 
 # Base-layer areas of the 64×64 layout: head, body, right arm, right leg, left leg, left arm
@@ -41,15 +40,18 @@ def skin_png(**kwargs) -> bytes:
 
 
 class SkinFactory(factory.django.DjangoModelFactory):
+    """A skin from MineSkin's gallery, as the catalog is made of."""
+
     class Meta:
         model = Skin
 
-    author = factory.SubFactory(UserFactory)
+    source = Source.MINESKIN
+    external_id = factory.Sequence(lambda n: f"{n:032x}")
+    external_url = factory.LazyAttribute(lambda s: f"https://mineskin.org/skins/{s.external_id}")
+    texture_url = factory.Sequence(lambda n: f"https://textures.minecraft.net/texture/{n:064x}")
     title = factory.Sequence(lambda n: f"Скін {n}")
-    file = factory.django.FileField(filename="skin.png", data=factory.LazyFunction(skin_png))
+    texture = factory.django.FileField(filename="skin.png", data=factory.LazyFunction(skin_png))
     model = Skin.Model.CLASSIC
     dominant_color = "#be2828"
     color_bucket = "red"
     texture_hash = factory.Sequence(lambda n: f"{n:064x}")
-    status = Skin.Status.PUBLISHED
-    published_at = factory.LazyFunction(lambda: datetime(2026, 1, 1, tzinfo=UTC))

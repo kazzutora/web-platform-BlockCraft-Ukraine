@@ -1,6 +1,7 @@
 import Image from "next/image";
 
 import { Card } from "@/components/ui/Card";
+import { SourceBadge } from "@/components/ui/SourceBadge";
 import { SaveToggle } from "@/features/library/SaveToggle";
 import { formatCount } from "@/features/mods/format";
 
@@ -9,11 +10,17 @@ import type { SkinCard as SkinCardData } from "./types";
 
 const copy = skinsCopy.card;
 
-/** «Alex_UA · ⬇ 340». */
-function meta(skin: SkinCardData): string {
-  return [skin.author.nickname, copy.downloads(formatCount(skin.downloads_count))]
-    .filter(Boolean)
-    .join(" · ");
+/** «Тонкі руки · ⬇ 340 · MineSkin ↗». */
+function meta(skin: SkinCardData) {
+  return (
+    <>
+      {[skinsCopy.models[skin.model], copy.downloads(formatCount(skin.downloads_count))].join(
+        " · ",
+      )}
+      {" · "}
+      <SourceBadge {...skin.source} label={copy.source(skin.title, skin.source.name)} />
+    </>
+  );
 }
 
 /** The 2D front render on the cover (the raw texture until the preview is ready). */

@@ -51,6 +51,7 @@ class Skin(BaseModel):
     variant: Literal["classic", "slim"] | None = None
     texture: Texture
     tags: list[str | dict] = Field(default_factory=list)
+    views: int = 0
     duplicate: bool = False
 
 

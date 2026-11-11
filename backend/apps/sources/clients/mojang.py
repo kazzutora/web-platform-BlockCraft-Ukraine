@@ -37,6 +37,8 @@ class PlayerSkin:
     #: None when the player uses a default skin
     model: str | None
     texture_png: bytes | None
+    #: https://textures.minecraft.net/texture/<id>; empty for a default skin
+    texture_url: str = ""
 
 
 class MojangClient(BaseClient):
@@ -73,18 +75,29 @@ class MojangClient(BaseClient):
         if skin is None:
             return PlayerSkin(nickname=profile.name, uuid=profile.id, model=None, texture_png=None)
 
-        url = urlparse(skin.url)
-        if url.hostname not in TEXTURE_HOSTS:
-            raise MojangError(f"unexpected texture host {url.hostname}")
-        response = self._get(url._replace(scheme="https").geturl())
-        if response is None:
-            raise MojangError("texture is gone")
+        url = texture_https(skin.url)
         return PlayerSkin(
             nickname=profile.name,
             uuid=profile.id,
             model="slim" if skin.metadata.model == "slim" else "classic",
-            texture_png=response.content,
+            texture_png=self.texture(url),
+            texture_url=url,
         )
+
+    def texture(self, url: str) -> bytes:
+        """A skin PNG from textures.minecraft.net (MineSkin points there too)."""
+        response = self._get(texture_https(url))
+        if response is None:
+            raise MojangError("texture is gone")
+        return response.content
+
+
+def texture_https(url: str) -> str:
+    """Only textures.minecraft.net, always over HTTPS."""
+    parsed = urlparse(url)
+    if parsed.hostname not in TEXTURE_HOSTS:
+        raise MojangError(f"unexpected texture host {parsed.hostname}")
+    return parsed._replace(scheme="https").geturl()
 
 
 def _decode(encoded: str) -> object:

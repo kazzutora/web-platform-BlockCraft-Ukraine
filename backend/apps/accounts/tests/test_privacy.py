@@ -37,7 +37,7 @@ def player():
     Project.objects.filter(pk=project.pk).update(favorites_count=1)
     server = ServerFactory()
     social.upsert_review(user=user, kind="server", identifier=server.slug, stars=4, text="Ок")
-    SkinFactory(author=user, title="Мій скін")
+    SkinFactory(added_by=user, title="Мій скін")
     original = PackFactory(slug="original", forks_count=1)
     PackFactory(author=user, slug="my-fork", forked_from=original)
     return user
@@ -81,7 +81,7 @@ def test_anonymize_keeps_content_without_the_person(player):
         "",
     )
     assert not player.has_usable_password()
-    assert Skin.objects.filter(author=player).exists()
+    assert Skin.objects.filter(added_by=player).exists()
     assert Review.objects.filter(user=player).count() == 2
     assert client.get("/api/v1/me").status_code == 401
 
@@ -93,7 +93,8 @@ def test_delete_removes_everything_and_fixes_counters(player):
     assert client_for(player).delete("/api/v1/me?mode=delete&confirm=Mavka").status_code == 204
 
     assert not User.objects.filter(pk=player.pk).exists()
-    assert not Skin.objects.exists()
+    # A skin from a source stays in the catalog, only who added it is forgotten
+    assert Skin.objects.get().added_by is None
     sodium.refresh_from_db()
     assert (sodium.rating_count, sodium.rating_avg, sodium.favorites_count) == (0, 0, 0)
     server = ServerFactory._meta.model.objects.get()

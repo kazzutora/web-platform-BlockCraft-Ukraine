@@ -7,7 +7,7 @@ describe("skin filters", () => {
     const filters = parseFilters({
       color: "blue",
       model: "slim",
-      style: "anime,unknown,ukrainian",
+      source: "mojang",
       sort: "weird",
       page: "2",
     });
@@ -15,7 +15,7 @@ describe("skin filters", () => {
     expect(filters).toEqual({
       color: "blue",
       model: "slim",
-      styles: ["anime", "ukrainian"],
+      source: "mojang",
       sort: "",
       q: "",
       page: 2,
@@ -23,15 +23,15 @@ describe("skin filters", () => {
   });
 
   it("ignores an unknown colour and model", () => {
-    const filters = parseFilters({ color: "magenta", model: "wide" });
+    const filters = parseFilters({ color: "magenta", model: "wide", source: "namemc" });
 
-    expect([filters.color, filters.model]).toEqual(["", ""]);
+    expect([filters.color, filters.model, filters.source]).toEqual(["", "", ""]);
   });
 
   it("builds the API query without empty filters", () => {
-    expect(toApiQuery(parseFilters({ style: "cute,mob", sort: "new" }))).toEqual({
+    expect(toApiQuery(parseFilters({ source: "mineskin", sort: "new" }))).toEqual({
       page: 1,
-      style: "cute,mob",
+      source: "mineskin",
       sort: "new",
     });
   });

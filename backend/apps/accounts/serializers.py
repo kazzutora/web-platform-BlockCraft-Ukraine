@@ -109,16 +109,16 @@ class PublicProfileSerializer(serializers.Serializer):
     bio = serializers.CharField(allow_null=True)
     mc_nickname = serializers.CharField(allow_null=True)
     date_joined = serializers.DateTimeField(allow_null=True)
-    #: The published skin the player picked; null — show the skin of `mc_nickname` if any
+    #: «Мій скін» the player picked; null — show the skin of `mc_nickname` if any
     skin = ProfileSkinSerializer(allow_null=True)
 
     @classmethod
     def from_user(cls, user: User, *, full: bool) -> "PublicProfileSerializer":
-        from apps.skins.selectors import current_skin_of
+        from apps.skins.selectors import my_skin
 
-        skin = current_skin_of(user) if full else None
+        skin = my_skin(user) if full else None
         data = {
-            "skin": {"id": skin.pk, "texture_url": skin.file.url, "model": skin.model}
+            "skin": {"id": skin.pk, "texture_url": skin.texture.url, "model": skin.model}
             if skin
             else None,
             "nickname": user.nickname,

@@ -200,3 +200,18 @@ def analyse(upload: BinaryIO, *, size: int | None = None, model: str = "") -> An
         color_bucket=bucket,
         texture_hash=hashlib.sha256(image.tobytes()).hexdigest(),
     )
+
+
+#: The front of the head and of the body: a skin people can wear covers them
+_FACE: Box = (8, 8, 8, 8)
+_CHEST: Box = (20, 20, 8, 12)
+
+
+def _opaque_share(image: Image.Image, box: Box) -> float:
+    histogram = _crop(image, box).getchannel("A").histogram()
+    return 1 - histogram[0] / sum(histogram)
+
+
+def is_wearable(image: Image.Image) -> bool:
+    """False for the parts plugins upload as «skins» (a lone arm, a head-only texture)."""
+    return _opaque_share(image, _FACE) >= 0.75 and _opaque_share(image, _CHEST) >= 0.5

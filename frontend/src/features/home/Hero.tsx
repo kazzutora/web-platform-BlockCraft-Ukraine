@@ -1,16 +1,26 @@
+import { Suspense } from "react";
+
 import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { Illustration } from "@/components/ui/Illustration";
+import { Skeleton } from "@/components/ui/Skeleton";
+import { GameChipArea } from "@/features/game/GameChipArea";
 
 import { homeCopy as copy } from "./copy";
 
-/** Display title, one line, the search field and the island illustration. */
+/** Display title, one line, «Моя гра» and the search field (tech.md 10.4). */
 export function Hero() {
   return (
     <section className="flex flex-col items-center gap-8 pt-8 text-center md:pt-16">
       <Illustration name="home" size={160} className="md:size-48" />
       <h1 className="text-display">{copy.title}</h1>
       <p className="max-w-prose text-lg text-muted">{copy.lead}</p>
+      {/* On phones the chip already sits right under the header */}
+      <div className="hidden md:block">
+        <Suspense fallback={<Skeleton className="h-10 w-48" />}>
+          <GameChipArea />
+        </Suspense>
+      </div>
       {/* A plain GET form: Ctrl+K opens the overlay with suggestions */}
       <form
         action="/search"

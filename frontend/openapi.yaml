@@ -656,7 +656,9 @@ paths:
   /api/v1/home:
     get:
       operationId: home
-      description: Home page blocks. Which objects to show is cached for 5 minutes.
+      description: 'Home page blocks (tech.md 10.4) for «Моя гра» of the viewer: mods
+        and packs that fit it; without it — this week''s popular. Which objects to
+        show is cached.'
       tags:
       - home
       security:
@@ -2997,8 +2999,10 @@ paths:
   /api/v1/search:
     get:
       operationId: search
-      description: 'Typo-tolerant search over mods, skins, servers and public collections:
-        groups of 5, or with `kind` one page of 24.'
+      description: 'Typo-tolerant search over mods, packs, skins, servers and public
+        collections: groups of 5, or with `kind` one page of 24. Ukrainian words and
+        Cyrillic spellings of Latin names work too; `mine=1` keeps what fits «Моя
+        гра».'
       parameters:
       - in: query
         name: kind
@@ -3017,6 +3021,12 @@ paths:
           * `skin` - skin
           * `server` - server
           * `collection` - collection
+      - in: query
+        name: mine
+        schema:
+          type: boolean
+          default: false
+        description: Only mods and packs that fit «Моя гра».
       - in: query
         name: page
         schema:
@@ -4765,7 +4775,7 @@ components:
           allOf:
           - $ref: '#/components/schemas/BasisEnum'
           description: |-
-            `profile`: for the player's version and loader; `popular`: this week's best.
+            `profile`: for «Моя гра» (mods and packs fit it); `popular`: this week's best.
 
             * `profile` - profile
             * `popular` - popular
@@ -4924,29 +4934,27 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/PackCard'
-        skin_of_week:
-          allOf:
-          - $ref: '#/components/schemas/SkinCard'
-          nullable: true
+          description: '«Готові збірки»: for «Моя гра» when chosen.'
         servers_online:
           type: array
           items:
             $ref: '#/components/schemas/ServerCard'
-        new_skins:
+          description: Ukrainian-speaking, online now.
+        skin_of_day:
+          allOf:
+          - $ref: '#/components/schemas/SkinCard'
+          nullable: true
+        skins:
           type: array
           items:
             $ref: '#/components/schemas/SkinCard'
-        new_servers:
-          type: array
-          items:
-            $ref: '#/components/schemas/ServerCard'
+          description: The newest, without the skin of the day.
       required:
       - for_you
-      - new_servers
-      - new_skins
       - packs
       - servers_online
-      - skin_of_week
+      - skin_of_day
+      - skins
     IdentifyRequestRequest:
       type: object
       properties:
@@ -7621,9 +7629,21 @@ components:
         items_count:
           type: integer
           nullable: true
+        source:
+          type: string
+          nullable: true
+        languages:
+          type: array
+          items:
+            type: string
+        fits_my_game:
+          type: boolean
+          nullable: true
+          description: 'Mods and packs: fits «Моя гра»; null — not chosen or no game.'
       required:
       - author
       - color_bucket
+      - fits_my_game
       - id
       - image
       - kind

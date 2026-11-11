@@ -244,7 +244,7 @@ blockcraft/
 | `GET /reviews…`, `PUT /reviews`, `DELETE /reviews/{id}`, `POST /reviews/{id}/vote`, `PUT /reviews/{id}/reply` | відгуки + відповідь автора/власника | R7 |
 | `GET /translations?kind=&id=`, `POST /translations`, `POST /translations/{id}/review` `{decision, reason?}`, `GET /translations/queue` | переклади; рішення — лише модератор; черга — для модераторів | R7 |
 | `POST /reports` `{kind, id, reason}` (kind — будь-який kind каталогу або `review`), `/me/notifications…` | як у v1 + скарги на відгуки | R7 |
-| `GET /search?q=&kind=`, `GET /home`, `GET /top?kind=&period=` | + kind `pack`, фільтр «Моя гра» | R8 |
+| `GET /search?q=&kind=&mine=`, `GET /home`, `GET /top?kind=&period=` | + kind `pack`; `mine=1` — лише моди й збірки під «Мою гру», `fits_my_game` у кожному результаті; `/home` — блоки 10.4 | R8 |
 
 ---
 
@@ -417,6 +417,8 @@ v1: `/skins/new`, `/create` — видалити; `/me/works` → `/me/packs` у
 
 ### 10.4 Головна
 Герой («Збери свій Minecraft», рядок пояснення, `GameChip`, пошук) → «Популярне для 1.21.1 · Fabric» (8 модів) → «Готові збірки» (4) → смуга «Перевір свої моди» → «Сервери онлайн · українською» (5 рядків) → «Скін дня» (3D) + 6 скінів → футер з «Дані: Modrinth, MineSkin, Mojang» і дисклеймером «Не є офіційним продуктом Minecraft. Не пов'язано з Mojang або Microsoft».
+
+Уточнення R8: моди й збірки — за правилом каталогів (vanilla — ресурспаки, шейдери, датапаки; збірки vanilla — будь-якого лоадера версії); «Скін дня» — один із 30 найпопулярніших скінів, щодня інший і однаковий для всіх; 6 скінів — найновіші без скіна дня; `GameChip` у герої — від `md` (на телефоні він одразу під шапкою).
 
 ### 10.5 Ключові екрани
 - **Сторінка мода:** ліворуч іконка/галерея, праворуч H1, 2 рядки (українською, якщо є переклад), `TakeButton` «Завантажити для 1.21.1 · Fabric», «В збірку», «Зберегти», `SourceBadge`. Під ним — блок «Що встановити» (`ResolutionView`). Вкладки: Опис · Версії · Відгуки · Схоже.

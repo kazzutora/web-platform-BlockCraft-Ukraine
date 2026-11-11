@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Illustration } from "@/components/ui/Illustration";
 import { cn } from "@/lib/cn";
 
+import { searchCopy } from "./copy";
 import { hitMeta } from "./hits";
 import type { SearchHit } from "./types";
 
@@ -14,8 +15,11 @@ const art = {
   collection: "packs",
 } as const;
 
-/** Thumbnail, title and one line of metadata (no link: the overlay rows are listbox options). */
-export function HitContent({ hit }: { hit: SearchHit }) {
+/**
+ * Thumbnail, title and one line of metadata (no link: the overlay rows are listbox options).
+ * A mod or pack without files for «Моя гра» says so: «не для 1.21.1 · Fabric».
+ */
+export function HitContent({ hit, gameLabel = "" }: { hit: SearchHit; gameLabel?: string }) {
   const pixelated = hit.kind === "skin";
   return (
     <>
@@ -38,7 +42,12 @@ export function HitContent({ hit }: { hit: SearchHit }) {
       </span>
       <span className="flex min-w-0 flex-col">
         <span className="truncate font-medium">{hit.title}</span>
-        <span className="truncate text-meta text-muted">{hitMeta(hit)}</span>
+        <span className="truncate text-meta text-muted">
+          {hit.fits_my_game === false && (
+            <span className="text-danger">{searchCopy.notForGame(gameLabel)} · </span>
+          )}
+          {hitMeta(hit)}
+        </span>
       </span>
     </>
   );

@@ -5,6 +5,7 @@ from dataclasses import dataclass
 
 from django.db.models import Model, QuerySet
 
+from apps.core.models import Source as Origin
 from apps.core.versions import latest_release
 from apps.library.models import Collection
 from apps.mods.models import Project
@@ -12,6 +13,8 @@ from apps.packs.models import Pack
 from apps.packs.selectors import listed as listed_packs
 from apps.servers.models import Server
 from apps.skins.models import Skin
+
+from .synonyms_uk import SYNONYMS_UK
 
 INDEX_SETTINGS = {
     "searchableAttributes": ["title", "tags", "summary", "author"],
@@ -22,6 +25,8 @@ INDEX_SETTINGS = {
         "loaders",
         "color_bucket",
         "modes",
+        "languages",
+        "source",
     ],
     "sortableAttributes": ["score", "trend_score", "published_at", "popularity"],
     # Relevance first; among equally good matches the popular one wins («sodim» → Sodium)
@@ -36,6 +41,16 @@ INDEX_SETTINGS = {
         "score:desc",
     ],
     "displayedAttributes": ["*"],
+    "synonyms": SYNONYMS_UK,
+}
+
+
+#: Ukrainian names of project types for the tags
+TYPE_WORDS_UK = {
+    "mod": "мод",
+    "resourcepack": "ресурспак текстури",
+    "shader": "шейдер",
+    "datapack": "датапак",
 }
 
 
@@ -62,6 +77,8 @@ def _base(kind: str, identifier: str, obj: Model, **fields) -> dict:
         "project_type": None,
         "author": None,
         "image": None,
+        "languages": [],
+        "source": None,
         **fields,
     }
 
@@ -74,7 +91,12 @@ def mod_document(project: Project) -> dict:
         project,
         title=project.title,
         summary=project.summary_uk or project.summary,
-        tags=[c.slug for c in categories] + [c.name_uk for c in categories],
+        # «шейдери» finds shaders: the type in both languages; the English summary too
+        tags=[c.slug for c in categories]
+        + [c.name_uk for c in categories]
+        + [project.project_type, TYPE_WORDS_UK.get(project.project_type, "")]
+        + ([project.summary] if project.summary_uk else []),
+        source=Origin.MODRINTH.value,
         game_versions=project.game_versions,
         loaders=project.loaders,
         project_type=project.project_type,
@@ -93,6 +115,7 @@ def skin_document(skin: Skin) -> dict:
         title=skin.title,
         summary="",
         tags=[skin.player_name] if skin.player_name else [],
+        source=skin.source,
         color_bucket=skin.color_bucket,
         popularity=skin.downloads_count + 10 * skin.favorites_count + skin.source_views // 100,
         image=image.url if image else None,
@@ -109,6 +132,8 @@ def server_document(server: Server) -> dict:
         tags=[server.java_host or server.bedrock_host, *server.supported_versions],
         game_versions=server.supported_versions,
         modes=server.categories,
+        languages=server.languages,
+        source=Origin.MODRINTH.value if server.source == Origin.MODRINTH else None,
         popularity=10 * server.favorites_count
         + 5 * server.rating_count
         + server.ip_copies_count
@@ -139,6 +164,7 @@ def pack_document(pack: Pack) -> dict:
         image=image,
         latest_game_version=pack.game_version,
         items_count=len(items),
+        source=Origin.MODRINTH.value if pack.origin == "modrinth" else None,
     )
 
 

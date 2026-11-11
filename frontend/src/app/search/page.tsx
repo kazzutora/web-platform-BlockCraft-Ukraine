@@ -5,6 +5,8 @@ import { Container } from "@/components/layout/Container";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { getGameContext } from "@/features/game/context";
+import { gameName } from "@/features/game/labels";
 import { searchCopy as copy } from "@/features/search/copy";
 import { SearchResults } from "@/features/search/SearchResults";
 import { type SearchKind, searchKinds } from "@/features/search/types";
@@ -30,6 +32,9 @@ async function Results({ searchParams }: Pick<PageProps<"/search">, "searchParam
   const q = first(params.q).slice(0, 100);
   const kind = first(params.kind) as SearchKind;
   const page = Math.max(1, Number.parseInt(first(params.page), 10) || 1);
+  const mine = first(params.mine) === "1";
+  const game = await getGameContext();
+  const gameLabel = game.source === "none" ? "" : gameName(game);
 
   return (
     <div className="flex flex-col gap-10">
@@ -47,12 +52,19 @@ async function Results({ searchParams }: Pick<PageProps<"/search">, "searchParam
           />
         </div>
         {searchKinds.includes(kind) && <input type="hidden" name="kind" value={kind} />}
+        {mine && gameLabel && <input type="hidden" name="mine" value="1" />}
         <Button type="submit" size="lg">
           {copy.submit}
         </Button>
       </form>
       {q ? (
-        <SearchResults q={q} kind={searchKinds.includes(kind) ? kind : undefined} page={page} />
+        <SearchResults
+          q={q}
+          kind={searchKinds.includes(kind) ? kind : undefined}
+          page={page}
+          mine={mine}
+          gameLabel={gameLabel}
+        />
       ) : (
         <p className="text-muted">{copy.hint}</p>
       )}

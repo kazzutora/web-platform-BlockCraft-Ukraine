@@ -1,10 +1,11 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 
+import { ButtonLink } from "@/components/ui/ButtonLink";
 import { CardGrid } from "@/components/ui/CardGrid";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Icon } from "@/components/ui/Icon";
-import { loaderName } from "@/features/mods/format";
+import { gameName } from "@/features/game/labels";
 import { ModCard } from "@/features/mods/ModCard";
 import { PackCard } from "@/features/packs/PackCard";
 import { ServerRow } from "@/features/servers/ServerRow";
@@ -43,35 +44,97 @@ function Section({
   );
 }
 
-/** Everything under the hero: for your version, skin of the week, servers online, packs, new. */
+/** Everything under the hero, in the order of tech.md 10.4. */
 export async function HomeSections() {
   const home = await getHome();
   const forYou = home.for_you;
-  const skin = home.skin_of_week;
+  const personal = forYou.basis === "profile";
+  // Only «Без модів» chosen: «Популярне для гри без модів»
+  const game = !personal
+    ? ""
+    : forYou.game_version || forYou.loader !== "vanilla"
+      ? gameName(forYou)
+      : copy.vanillaGame;
+  const skin = home.skin_of_day;
 
   return (
     <div className="flex flex-col gap-28 md:gap-36">
       <Section
-        title={
-          forYou.basis === "profile"
-            ? copy.forYou(forYou.game_version, forYou.loader ? loaderName(forYou.loader) : "")
-            : copy.popular
-        }
+        title={personal ? copy.forYou(game) : copy.popular}
         link={{ href: "/mods", label: copy.allMods }}
       >
+        {!personal && <p className="-mt-4 max-w-prose text-muted">{copy.invite}</p>}
         {forYou.mods.length ? (
           <CardGrid>
             {forYou.mods.map((project, index) => (
-              <ModCard key={project.slug} project={project} eager={index < 4} />
+              <ModCard key={project.slug} project={project} eager={index < 4} gameLabel={game} />
             ))}
           </CardGrid>
         ) : (
-          <EmptyState title={copy.empty} illustration="mods" />
+          <EmptyState
+            title={personal ? copy.empty : copy.emptyPopular}
+            illustration="mods"
+            action={
+              <ButtonLink href="/mods?all=1" variant="secondary">
+                {copy.allVersionsMods}
+              </ButtonLink>
+            }
+          />
+        )}
+      </Section>
+
+      <Section title={copy.packs} link={{ href: "/packs", label: copy.allPacks }}>
+        {home.packs.length ? (
+          <CardGrid>
+            {home.packs.map((pack) => (
+              <PackCard key={pack.slug} pack={pack} gameLabel={game} />
+            ))}
+          </CardGrid>
+        ) : (
+          <EmptyState
+            title={personal ? copy.noPacks(game) : copy.noPacksAtAll}
+            illustration="packs"
+            action={
+              <ButtonLink href="/packs?all=1" variant="secondary">
+                {copy.allVersionsPacks}
+              </ButtonLink>
+            }
+          />
+        )}
+      </Section>
+
+      <section className="flex flex-col gap-6 border border-line bg-surface p-8 md:flex-row md:items-center md:justify-between md:p-12">
+        <div className="flex max-w-prose flex-col gap-3">
+          <h2 className="text-h2">{copy.check.title}</h2>
+          <p className="text-muted">{copy.check.text}</p>
+        </div>
+        <ButtonLink
+          href="/import"
+          variant="secondary"
+          size="lg"
+          className="self-start md:self-auto"
+        >
+          {copy.check.action}
+        </ButtonLink>
+      </section>
+
+      <Section
+        title={copy.serversOnline}
+        link={{ href: "/servers?online=1&sort=online&language=uk", label: copy.allServers }}
+      >
+        {home.servers_online.length ? (
+          <ul className="flex flex-col">
+            {home.servers_online.map((server) => (
+              <ServerRow key={server.slug} server={server} />
+            ))}
+          </ul>
+        ) : (
+          <p className="text-muted">{copy.noServers}</p>
         )}
       </Section>
 
       {skin && (
-        <Section title={copy.skinOfWeek} link={{ href: "/skins", label: copy.allSkins }}>
+        <Section title={copy.skinOfDay} link={{ href: "/skins", label: copy.allSkins }}>
           <div className="grid gap-10 md:grid-cols-2 md:items-center md:gap-16">
             <div className="relative aspect-square border border-line bg-surface">
               <SkinViewer
@@ -96,52 +159,13 @@ export async function HomeSections() {
               </Link>
             </div>
           </div>
-        </Section>
-      )}
-
-      <Section
-        title={copy.serversOnline}
-        link={{ href: "/servers?online=1&sort=online", label: copy.allServers }}
-      >
-        {home.servers_online.length ? (
-          <ul className="flex flex-col">
-            {home.servers_online.map((server) => (
-              <ServerRow key={server.slug} server={server} />
-            ))}
-          </ul>
-        ) : (
-          <p className="text-muted">{copy.noServers}</p>
-        )}
-      </Section>
-
-      {home.packs.length > 0 && (
-        <Section title={copy.packs} link={{ href: "/packs", label: copy.allPacks }}>
-          <CardGrid>
-            {home.packs.map((pack) => (
-              <PackCard key={pack.slug} pack={pack} />
-            ))}
-          </CardGrid>
-        </Section>
-      )}
-
-      {(home.new_skins.length > 0 || home.new_servers.length > 0) && (
-        <Section title={copy.fresh} link={{ href: "/top", label: copy.top }}>
-          <div className="flex flex-col gap-10">
-            {home.new_skins.length > 0 && (
-              <CardGrid>
-                {home.new_skins.map((item) => (
-                  <SkinCard key={item.id} skin={item} />
-                ))}
-              </CardGrid>
-            )}
-            {home.new_servers.length > 0 && (
-              <ul className="flex flex-col border-t border-line">
-                {home.new_servers.map((server) => (
-                  <ServerRow key={server.slug} server={server} />
-                ))}
-              </ul>
-            )}
-          </div>
+          {home.skins.length > 0 && (
+            <CardGrid>
+              {home.skins.map((item) => (
+                <SkinCard key={item.id} skin={item} />
+              ))}
+            </CardGrid>
+          )}
         </Section>
       )}
     </div>

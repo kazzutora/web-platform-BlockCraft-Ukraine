@@ -21,8 +21,8 @@ export function hitHref(hit: Pick<SearchHit, "kind" | "id">): string {
   }
 }
 
-/** One line under the title: «Мод · 26.3 · Fabric», «Скін · Mavka», «play.sich.ua · Виживання». */
-export function hitMeta(hit: SearchHit): string {
+/** «Мод · 26.3 · Fabric», «Скін · Mavka», «play.sich.ua · Виживання». */
+function kindMeta(hit: SearchHit): string {
   const kinds = searchCopy.kind;
   switch (hit.kind) {
     case "mod": {
@@ -55,4 +55,10 @@ export function hitMeta(hit: SearchHit): string {
         .filter(Boolean)
         .join(" · ");
   }
+}
+
+/** One line under the title, the source last: «Мод · 26.3 · Fabric · Modrinth». */
+export function hitMeta(hit: SearchHit): string {
+  const source = hit.source ? (searchCopy.sources[hit.source] ?? "") : "";
+  return [kindMeta(hit), source].filter(Boolean).join(" · ");
 }

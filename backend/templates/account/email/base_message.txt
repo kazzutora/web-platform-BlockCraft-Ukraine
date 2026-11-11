@@ -1,0 +1,7 @@
+{% autoescape off %}Привіт від {{ current_site.name }}!
+
+{% block content %}{% endblock content %}
+
+Дякуємо, що ти з нами!
+{{ current_site.name }} · {{ current_site.domain }}
+{% endautoescape %}

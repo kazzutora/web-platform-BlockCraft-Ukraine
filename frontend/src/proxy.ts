@@ -8,7 +8,7 @@ const SESSION_COOKIE = "sessionid";
 const PROTECTED = [
   /^\/me(\/|$)/,
   /^\/welcome$/,
-  /^\/servers\/new$/,
+  /^\/servers\/add$/,
   /^\/servers\/[^/]+\/edit$/,
   /^\/packs\/new$/,
   /^\/packs\/[^/]+\/edit$/,

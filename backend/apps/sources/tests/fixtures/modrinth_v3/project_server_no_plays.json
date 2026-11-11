@@ -1,0 +1,143 @@
+{
+  "id": "ku3kbXlr",
+  "slug": "merkatin",
+  "project_types": [
+    "minecraft_java_server"
+  ],
+  "games": [
+    "minecraft-java",
+    "minecraft-bedrock"
+  ],
+  "team_id": "qwbA8sjb",
+  "organization": null,
+  "name": "Merkatin",
+  "summary": "Атмосферный приключенческий Minecraft-сервер с магией, технологиями, исследованиями и живым миром.",
+  "description": "# ✦ Merkatin ✦\n\n> **Мир, в котором инженерия соседствует с магией, а каждое путешествие может стать новой историей.**\n\n**Merkatin** — атмосферный Minecraft-сервер и авторская модифицированная сборка, созданные для спокойной совместной игры, исследования большого мира, развития поселений и долгосрочных приключений.\n\nЗдесь нет единственного «правильного» пути. Стройте сложные механизмы, осваивайте т",
+  "published": "2026-05-16T12:01:25.354728Z",
+  "updated": "2026-10-22T00:11:35.211011Z",
+  "approved": "2026-10-25T20:25:22.022182Z",
+  "queued": "2026-10-22T00:13:03.473671Z",
+  "status": "approved",
+  "requested_status": "approved",
+  "moderator_message": null,
+  "license": {
+    "id": "LicenseRef-Unknown",
+    "name": "",
+    "url": null
+  },
+  "downloads": 13,
+  "followers": 0,
+  "categories": [
+    "rpg",
+    "survival-mode",
+    "whitelisted"
+  ],
+  "additional_categories": [
+    "network",
+    "plots",
+    "pve",
+    "smp",
+    "social",
+    "towns"
+  ],
+  "loaders": [
+    "mrpack"
+  ],
+  "versions": [
+    "CFv6uHPX",
+    "znGkNpTf",
+    "Vw5UDpeD",
+    "XbfW2psr"
+  ],
+  "icon_url": "https://cdn.modrinth.com/data/ku3kbXlr/c1e88a915c6d850d89b146951a46a458a9d2d287_96.webp",
+  "raw_icon_url": "https://cdn.modrinth.com/data/ku3kbXlr/c1e88a915c6d850d89b146951a46a458a9d2d287.jpeg",
+  "link_urls": {
+    "site": {
+      "platform": "site",
+      "donation": false,
+      "url": "https://merkatin.pages.dev/"
+    },
+    "discord": {
+      "platform": "discord",
+      "donation": false,
+      "url": "https://discord.gg/3eU4Qgy73P"
+    }
+  },
+  "gallery": [
+    {
+      "id": 567750,
+      "url": "https://cdn.modrinth.com/data/ku3kbXlr/images/f329b54ccb5bb9dd93961df07f1c16492d57eb63_350.webp",
+      "raw_url": "https://cdn.modrinth.com/data/ku3kbXlr/images/f329b54ccb5bb9dd93961df07f1c16492d57eb63.png",
+      "featured": false,
+      "name": "__mc_server_banner__",
+      "description": null,
+      "created": "2026-05-16T12:02:32.768618Z",
+      "ordering": 0
+    },
+    {
+      "id": 809578,
+      "url": "https://cdn.modrinth.com/data/ku3kbXlr/images/35410cbf5c5210b17ab021e180bc835b54e1684e_350.webp",
+      "raw_url": "https://cdn.modrinth.com/data/ku3kbXlr/images/35410cbf5c5210b17ab021e180bc835b54e1684e.png",
+      "featured": false,
+      "name": null,
+      "description": null,
+      "created": "2026-10-21T22:29:06.392222Z",
+      "ordering": 0
+    }
+  ],
+  "color": 9013121,
+  "thread_id": "ftttvYKs",
+  "monetization_status": "force-demonetized",
+  "side_types_migration_review_status": "reviewed",
+  "minecraft_mod": null,
+  "minecraft_server": {
+    "max_players": null,
+    "country": null,
+    "region": "russia",
+    "languages": [
+      "ru",
+      "be",
+      "uk"
+    ],
+    "active_version": null
+  },
+  "minecraft_java_server": {
+    "address": "45.11.18.95:28001",
+    "content": {
+      "kind": "modpack",
+      "version_id": "XbfW2psr",
+      "project_id": "ku3kbXlr",
+      "project_name": "Merkatin",
+      "project_icon": "https://cdn.modrinth.com/data/ku3kbXlr/c1e88a915c6d850d89b146951a46a458a9d2d287_96.webp"
+    },
+    "ping": {
+      "when": "2026-11-11T15:02:45.469811519Z",
+      "address": "45.11.18.95:28001",
+      "data": {
+        "latency": {
+          "secs": 0,
+          "nanos": 399198124
+        },
+        "version_name": "1.21.1",
+        "version_protocol": 767,
+        "description": "Merkatin",
+        "players_online": 0,
+        "players_max": 15
+      }
+    },
+    "verified_plays_2w": null,
+    "verified_plays_4w": null
+  },
+  "minecraft_bedrock_server": {
+    "address": ""
+  },
+  "environment": [
+    "client_and_server"
+  ],
+  "game_versions": [
+    "1.21.1"
+  ],
+  "mrpack_loaders": [
+    "neoforge"
+  ]
+}

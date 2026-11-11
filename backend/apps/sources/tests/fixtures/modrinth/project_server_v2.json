@@ -1,0 +1,116 @@
+{
+  "client_side": "unknown",
+  "server_side": "unknown",
+  "game_versions": [
+    "1.21.1"
+  ],
+  "environment": [
+    "client_and_server"
+  ],
+  "id": "hMclbsMN",
+  "slug": "submine",
+  "project_type": "modpack",
+  "team": "ceIOY0sT",
+  "organization": null,
+  "title": "SubMine - SMP",
+  "description": "Seasons of the year, guilds, a dynamic ecosystem, and more",
+  "body": "💥SubMine opens its doors to its players with new features...\n\n● Want mechanisms? Create!\n● Want to explore the world? A variety of biomes and dungeons will brighten up your leisure time.\n● Want to farm? A variety of crops and mechanics will help you with that.\n● Tired of boring mobs? No problem! There are new ones!\n● Want to protect your building? Privates will help you!\n\nAnd much more!\n🗣The serve…",
+  "body_url": null,
+  "published": "2026-03-04T20:45:23.869006Z",
+  "updated": "2026-06-11T10:36:26.021427Z",
+  "approved": "2026-03-17T04:31:06.263897Z",
+  "queued": "2026-03-16T16:04:04.333965Z",
+  "status": "approved",
+  "requested_status": "approved",
+  "moderator_message": null,
+  "license": {
+    "id": "LicenseRef-Unknown",
+    "name": "",
+    "url": null
+  },
+  "downloads": 50,
+  "followers": 0,
+  "categories": [
+    "custom-content",
+    "offline-mode",
+    "recording-smp"
+  ],
+  "additional_categories": [
+    "creator-community",
+    "crossplay",
+    "pve",
+    "questing",
+    "smp",
+    "social",
+    "survival-mode",
+    "teams",
+    "technical",
+    "vanilla-like"
+  ],
+  "loaders": [
+    "neoforge"
+  ],
+  "versions": [
+    "Pgepf2GB",
+    "TeiGt5l4",
+    "72nbDCZT",
+    "JsOtePr6"
+  ],
+  "icon_url": "https://cdn.modrinth.com/data/hMclbsMN/9217f34a072c77bfbd155a335e1484f7ef8f7136_96.webp",
+  "raw_icon_url": "https://cdn.modrinth.com/data/hMclbsMN/9217f34a072c77bfbd155a335e1484f7ef8f7136.png",
+  "issues_url": null,
+  "source_url": null,
+  "wiki_url": null,
+  "discord_url": "https://discord.com/invite/hwTGGK8fUC",
+  "donation_urls": [],
+  "gallery": [
+    {
+      "url": "https://cdn.modrinth.com/data/hMclbsMN/images/2addcecdb61c19f78a0ea35d9d64a04b9df68fbe_350.webp",
+      "raw_url": "https://cdn.modrinth.com/data/hMclbsMN/images/2addcecdb61c19f78a0ea35d9d64a04b9df68fbe.png",
+      "featured": false,
+      "title": null,
+      "description": null,
+      "created": "2026-05-17T07:35:26.997201Z",
+      "ordering": 0
+    },
+    {
+      "url": "https://cdn.modrinth.com/data/hMclbsMN/images/3d3615c6338867ab4c8d514d7c54e2d8e66286fa_350.webp",
+      "raw_url": "https://cdn.modrinth.com/data/hMclbsMN/images/3d3615c6338867ab4c8d514d7c54e2d8e66286fa.png",
+      "featured": false,
+      "title": null,
+      "description": null,
+      "created": "2026-05-17T07:35:49.013902Z",
+      "ordering": 0
+    },
+    {
+      "url": "https://cdn.modrinth.com/data/hMclbsMN/images/f914c43368ccd773747125748418b53f889532c3_350.webp",
+      "raw_url": "https://cdn.modrinth.com/data/hMclbsMN/images/f914c43368ccd773747125748418b53f889532c3.png",
+      "featured": false,
+      "title": null,
+      "description": null,
+      "created": "2026-05-17T07:36:24.117180Z",
+      "ordering": 0
+    },
+    {
+      "url": "https://cdn.modrinth.com/data/hMclbsMN/images/dca3ee0ba954b6f4cde3854885e243de2b66a37d_350.webp",
+      "raw_url": "https://cdn.modrinth.com/data/hMclbsMN/images/dca3ee0ba954b6f4cde3854885e243de2b66a37d.png",
+      "featured": false,
+      "title": null,
+      "description": null,
+      "created": "2026-05-17T07:36:41.667933Z",
+      "ordering": 0
+    },
+    {
+      "url": "https://cdn.modrinth.com/data/hMclbsMN/images/18f2a80a2bcab379f208f73fe63a2310a4625ab2_350.webp",
+      "raw_url": "https://cdn.modrinth.com/data/hMclbsMN/images/18f2a80a2bcab379f208f73fe63a2310a4625ab2.png",
+      "featured": false,
+      "title": null,
+      "description": null,
+      "created": "2026-05-17T07:37:04.210388Z",
+      "ordering": 0
+    }
+  ],
+  "color": 2182243,
+  "thread_id": "ZT2rHfDu",
+  "monetization_status": "force-demonetized"
+}

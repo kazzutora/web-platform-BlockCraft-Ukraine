@@ -13,7 +13,7 @@ import { queryKeys } from "@/lib/query-keys";
 import { serversCopy } from "./copy";
 import { ServerRow } from "./ServerRow";
 
-/** /me/packs → «Сервери»: my servers with their moderation status. */
+/** /me/packs → «Сервери»: servers I own and the ones waiting for the code in the MOTD. */
 export function MyServers() {
   const servers = useQuery({
     queryKey: queryKeys.servers.mine(),
@@ -27,7 +27,7 @@ export function MyServers() {
   });
 
   const add = (
-    <ButtonLink href="/servers/new">
+    <ButtonLink href="/servers/add">
       <Icon name="plus" />
       {serversCopy.add}
     </ButtonLink>
@@ -47,11 +47,7 @@ export function MyServers() {
           <ServerRow
             key={server.slug}
             server={server}
-            badge={
-              server.status !== "published" && (
-                <Badge tone="accent">{serversCopy.mine.status[server.status]}</Badge>
-              )
-            }
+            badge={!server.is_mine && <Badge tone="accent">{serversCopy.mine.waiting}</Badge>}
           />
         ))}
       </ul>

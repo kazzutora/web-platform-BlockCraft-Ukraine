@@ -7,16 +7,17 @@ import { api } from "@/lib/api/client";
 import { queryKeys } from "@/lib/query-keys";
 
 import { ServerRow } from "./ServerRow";
-import type { CatalogQuery } from "./types";
+import type { CatalogQuery, ServerCategory } from "./types";
 
 type LoadMoreServersProps = {
   query: CatalogQuery;
   /** First page that is not rendered yet. */
   startPage: number;
+  categories: ServerCategory[];
 };
 
 /** «Показати ще»: appends the next pages under the server-rendered first one. */
-export function LoadMoreServers({ query, startPage }: LoadMoreServersProps) {
+export function LoadMoreServers({ query, startPage, categories }: LoadMoreServersProps) {
   const pages = useInfiniteQuery({
     queryKey: queryKeys.servers.catalog(query),
     initialPageParam: startPage,
@@ -39,7 +40,9 @@ export function LoadMoreServers({ query, startPage }: LoadMoreServersProps) {
       {loaded.length > 0 && (
         <ul className="-mt-10 flex flex-col md:-mt-16">
           {loaded.flatMap((page) =>
-            page.results.map((server) => <ServerRow key={server.slug} server={server} />),
+            page.results.map((server) => (
+              <ServerRow key={server.slug} server={server} categories={categories} />
+            )),
           )}
         </ul>
       )}

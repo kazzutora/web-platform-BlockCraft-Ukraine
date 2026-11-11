@@ -131,7 +131,7 @@ def test_meta_is_cached(api_client, game_versions, django_assert_num_queries):
         assert api_client.get("/api/v1/meta").status_code == 200
 
     selectors.forget_meta()
-    with django_assert_num_queries(2):
+    with django_assert_num_queries(4):
         api_client.get("/api/v1/meta")
 
 

@@ -72,6 +72,12 @@ SOURCES: tuple[SourceInfo, ...] = (
                 task="apps.packs.tasks.import_official",
                 accepts_limit=True,
             ),
+            Job(
+                key="servers",
+                title="Сервери: спершу україномовні, далі популярні, з паками для входу",
+                task="apps.servers.tasks.sync_modrinth",
+                accepts_limit=True,
+            ),
         ),
     ),
     SourceInfo(

@@ -40,10 +40,27 @@ class GameVersionSerializer(serializers.ModelSerializer):
         fields = ["version", "version_type", "released_at", "is_major"]
 
 
+class ServerCategorySerializer(serializers.Serializer):
+    slug = serializers.CharField()
+    name = serializers.CharField()
+    header = serializers.CharField()
+    header_name = serializers.CharField()
+
+
 class MetaSerializer(serializers.Serializer):
     game_versions = GameVersionSerializer(many=True, help_text="Supported, newest first.")
     loaders = serializers.ListField(child=serializers.ChoiceField(choices=Loader.choices))
     categories = CategorySerializer(many=True)
+    server_languages = serializers.ListField(
+        child=serializers.CharField(), help_text="ISO 639-1 codes of listed servers."
+    )
+    server_countries = serializers.ListField(
+        child=serializers.CharField(), help_text="ISO 3166-1 alpha-2 codes of listed servers."
+    )
+    server_categories = ServerCategorySerializer(many=True)
+    server_default_language = serializers.CharField(
+        allow_blank=True, help_text="«uk» while there are at least 5 such servers, else empty."
+    )
 
 
 class RunSummarySerializer(serializers.Serializer):

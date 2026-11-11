@@ -22,8 +22,14 @@ export function ServerTile({ server }: { server: ServerCard }) {
         .join(" · ")}
       action={<SaveToggle kind="server" id={server.slug} saved={server.is_favorited} />}
       cover={
-        server.banner_url ? (
-          <Image src={server.banner_url} alt="" fill unoptimized className="object-cover" />
+        server.banner_url || server.icon_url ? (
+          <Image
+            src={server.banner_url || server.icon_url}
+            alt=""
+            fill
+            unoptimized
+            className="object-cover"
+          />
         ) : (
           <div className="flex size-full items-center justify-center">
             <Illustration name="servers" size={96} />

@@ -922,13 +922,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /**
-         * Catalog of published servers
-         * @description No PUT on the server itself: edits are PATCH, PUT is the banner upload.
-         */
+        /** Catalog of listed servers */
         get: operations["servers_list"];
         put?: never;
-        /** @description A new author's first three works wait for moderation (`pending`). */
+        /** @description «Мій сервер»: the address must answer a ping; returns the server with a code for the MOTD. A server already listed (from Modrinth) is claimed the same way. */
         post: operations["servers_create"];
         delete?: never;
         options?: never;
@@ -943,34 +940,15 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Published servers for everyone; the owner also sees pending ones. */
+        /** @description Listed servers for everyone; whoever claims one also sees it unproved. */
         get: operations["servers_retrieve"];
         put?: never;
         post?: never;
-        /** @description No PUT on the server itself: edits are PATCH, PUT is the banner upload. */
         delete: operations["servers_delete"];
         options?: never;
         head?: never;
-        /** @description Changing host, port or edition resets the verification. */
+        /** @description The owner: Ukrainian description, links, the pack to join with. */
         patch: operations["servers_update"];
-        trace?: never;
-    };
-    "/api/v1/servers/{slug}/banner": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /** @description No PUT on the server itself: edits are PATCH, PUT is the banner upload. */
-        put: operations["servers_banner_upload"];
-        post?: never;
-        /** @description No PUT on the server itself: edits are PATCH, PUT is the banner upload. */
-        delete: operations["servers_banner_delete"];
-        options?: never;
-        head?: never;
-        patch?: never;
         trace?: never;
     };
     "/api/v1/servers/{slug}/copy-ip": {
@@ -984,6 +962,23 @@ export interface paths {
         put?: never;
         /** @description Counts «Скопіювати IP»; anyone may call it, rate-limited. */
         post: operations["servers_copy_ip"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/servers/{slug}/join": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description «Щоб зайти»: a game version, or the pack to take; whether «Моя гра» fits. */
+        get: operations["servers_join"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -1189,13 +1184,6 @@ export interface components {
         AvatarUploadRequest: {
             /** Format: binary */
             avatar: string;
-        };
-        BannerUploadRequest: {
-            /**
-             * Format: binary
-             * @description PNG, JPEG or WebP up to 2 MB; cropped to 1200×300.
-             */
-            banner: string;
         };
         /**
          * @description * `profile` - profile
@@ -1529,6 +1517,19 @@ export interface components {
          * @enum {string}
          */
         JobStatusEnum: "queued" | "running" | "done" | "failed";
+        /** @description «Щоб зайти»: the address, and either a game version or a pack to take. */
+        Join: {
+            address: string;
+            edition: string;
+            kind: components["schemas"]["ServerContentKindEnum"];
+            versions: string[];
+            recommended_version: string;
+            pack: components["schemas"]["PackCard"] | null;
+            /** @description Modded, and the pack is still being imported from Modrinth. */
+            pack_pending: boolean;
+            /** @description The viewer's «Моя гра» can join as it is; null — unknown. */
+            fits_my_game: boolean | null;
+        };
         /**
          * @description * `collection` - collection
          *     * `mod` - mod
@@ -1609,6 +1610,13 @@ export interface components {
             game_versions: components["schemas"]["GameVersion"][];
             loaders: components["schemas"]["LoaderEnum"][];
             categories: components["schemas"]["Category"][];
+            /** @description ISO 639-1 codes of listed servers. */
+            server_languages: string[];
+            /** @description ISO 3166-1 alpha-2 codes of listed servers. */
+            server_countries: string[];
+            server_categories: components["schemas"]["ServerCategory"][];
+            /** @description «uk» while there are at least 5 such servers, else empty. */
+            server_default_language: string;
         };
         /**
          * @description * `classic` - Класична (Стів)
@@ -1616,20 +1624,6 @@ export interface components {
          * @enum {string}
          */
         ModelEnum: "classic" | "slim";
-        /**
-         * @description * `survival` - Виживання
-         *     * `smp` - SMP
-         *     * `creative` - Творчий
-         *     * `anarchy` - Анархія
-         *     * `rp` - Рольова гра
-         *     * `minigames` - Мініігри
-         *     * `skyblock` - SkyBlock
-         *     * `pvp` - PvP
-         *     * `modded` - З модами
-         *     * `hardcore` - Хардкор
-         * @enum {string}
-         */
-        ModesEnum: "survival" | "smp" | "creative" | "anarchy" | "rp" | "minigames" | "skyblock" | "pvp" | "modded" | "hardcore";
         MyCollection: {
             readonly id: number;
             /** Назва */
@@ -2105,21 +2099,21 @@ export interface components {
             notes_md?: string;
             visibility?: components["schemas"]["PackVisibilityEnum"];
         };
+        /** @description What an owner may change; name, languages… only for servers added here. */
         PatchedServerWriteRequest: {
             name?: string;
-            /** @description play.example.com, an IP or host:port */
-            host?: string;
-            /** @description Empty: 25565 (Java) or 19132 (Bedrock). */
-            port?: number | null;
-            edition?: components["schemas"]["ServerEditionEnum"];
-            modes?: components["schemas"]["ModesEnum"][];
-            versions_label?: string;
-            language?: components["schemas"]["ServerLanguageEnum"];
-            description?: string;
+            summary?: string;
+            description_uk_md?: string;
             discord_url?: string;
             website_url?: string;
-            /** @default false */
-            has_whitelist: boolean;
+            /** @description Pack slug; empty clears. */
+            required_pack?: string;
+            languages?: string[];
+            country?: string;
+            categories?: string[];
+            content_kind?: components["schemas"]["ServerContentKindEnum"];
+            supported_versions?: string[];
+            recommended_version?: string;
         };
         PatchedUserSettingsRequest: {
             theme?: components["schemas"]["ThemeEnum"];
@@ -2452,24 +2446,44 @@ export interface components {
             q: string;
             groups: components["schemas"]["SearchGroup"][];
         };
-        /** @description Catalog row: name, modes, address and live online from Redis (context `live`). */
+        /**
+         * @description * `java` - java
+         *     * `bedrock` - bedrock
+         * @enum {string}
+         */
+        ServerAddEditionEnum: "java" | "bedrock";
+        ServerAddRequest: {
+            /** @description play.example.com, an IP, host:port */
+            address: string;
+            /** @default java */
+            edition: components["schemas"]["ServerAddEditionEnum"];
+        };
+        /** @description Catalog row: name, address, what is needed to join and live online (context `live`). */
         ServerCard: {
             readonly slug: string;
             /** Назва */
             readonly name: string;
+            /** Коротко */
+            readonly summary: string;
             readonly address: string;
-            /** Видання */
-            readonly edition: components["schemas"]["ServerEditionEnum"];
-            readonly modes: components["schemas"]["ModesEnum"][];
-            /** Версії */
-            readonly versions_label: string;
-            /** Мова */
-            readonly language: components["schemas"]["ServerLanguageEnum"];
-            /** Вайтліст */
-            readonly has_whitelist: boolean;
-            /** Перевірено */
+            readonly edition: string;
+            /** Країна */
+            readonly country: string;
+            readonly languages: string[];
+            readonly categories: string[];
+            /** Що потрібно */
+            readonly content_kind: components["schemas"]["ServerContentKindEnum"];
+            readonly supported_versions: string[];
+            /** Рекомендована версія */
+            readonly recommended_version: string;
+            /** Format: uri */
+            readonly icon_url: string;
+            /** Format: uri */
+            readonly banner_url: string;
+            /** Підтверджено */
             readonly is_verified: boolean;
-            readonly banner_url: string | null;
+            /** Гравців за 2 тижні (Modrinth) */
+            readonly modrinth_plays: number;
             /** Format: double */
             readonly rating_avg: number;
             readonly rating_count: number;
@@ -2477,25 +2491,46 @@ export interface components {
             readonly is_favorited: boolean;
             readonly my_review_stars: number | null;
             readonly live: components["schemas"]["LiveStatus"] | null;
+            readonly source: components["schemas"]["SourceRef"] | null;
         };
-        /** @description Catalog row: name, modes, address and live online from Redis (context `live`). */
+        ServerCategory: {
+            slug: string;
+            name: string;
+            header: string;
+            header_name: string;
+        };
+        /**
+         * @description * `vanilla` - Без модів
+         *     * `modded` - З модами
+         * @enum {string}
+         */
+        ServerContentKindEnum: "vanilla" | "modded";
+        /** @description Catalog row: name, address, what is needed to join and live online (context `live`). */
         ServerDetail: {
             readonly slug: string;
             /** Назва */
             readonly name: string;
+            /** Коротко */
+            readonly summary: string;
             readonly address: string;
-            /** Видання */
-            readonly edition: components["schemas"]["ServerEditionEnum"];
-            readonly modes: components["schemas"]["ModesEnum"][];
-            /** Версії */
-            readonly versions_label: string;
-            /** Мова */
-            readonly language: components["schemas"]["ServerLanguageEnum"];
-            /** Вайтліст */
-            readonly has_whitelist: boolean;
-            /** Перевірено */
+            readonly edition: string;
+            /** Країна */
+            readonly country: string;
+            readonly languages: string[];
+            readonly categories: string[];
+            /** Що потрібно */
+            readonly content_kind: components["schemas"]["ServerContentKindEnum"];
+            readonly supported_versions: string[];
+            /** Рекомендована версія */
+            readonly recommended_version: string;
+            /** Format: uri */
+            readonly icon_url: string;
+            /** Format: uri */
+            readonly banner_url: string;
+            /** Підтверджено */
             readonly is_verified: boolean;
-            readonly banner_url: string | null;
+            /** Гравців за 2 тижні (Modrinth) */
+            readonly modrinth_plays: number;
             /** Format: double */
             readonly rating_avg: number;
             readonly rating_count: number;
@@ -2503,59 +2538,36 @@ export interface components {
             readonly is_favorited: boolean;
             readonly my_review_stars: number | null;
             readonly live: components["schemas"]["LiveStatus"] | null;
-            /** Адреса */
-            readonly host: string;
-            /** Порт */
-            readonly port: number;
-            /** Опис */
-            readonly description: string;
+            readonly source: components["schemas"]["SourceRef"] | null;
+            /** Адреса Java */
+            readonly java_host: string;
+            /** Порт Java */
+            readonly java_port: number;
+            /** Адреса Bedrock */
+            readonly bedrock_host: string;
+            /** Порт Bedrock */
+            readonly bedrock_port: number;
+            /** Опис (з джерела) */
+            readonly description_html: string;
+            /** Опис українською */
+            readonly description_uk_md: string;
+            readonly description_uk_html: string;
             /** Format: uri */
             readonly discord_url: string;
             /** Format: uri */
             readonly website_url: string;
-            readonly author: components["schemas"]["UserBrief"];
+            readonly required_pack: components["schemas"]["PackCard"] | null;
+            readonly owner: components["schemas"]["UserBrief"] | null;
             readonly ip_copies_count: number;
             /** Format: date-time */
             readonly last_online_at: string | null;
-            /** Статус */
-            readonly status: components["schemas"]["PublishStatusEnum"];
-            /** Причина відхилення */
-            readonly rejection_reason: string;
+            /** @description The viewer owns it (code proved). */
             readonly is_mine: boolean;
-            /** @description Only the owner sees the code for the MOTD. */
+            /** @description The viewer asked to own it and has to put the code into the MOTD. */
+            readonly is_claimed_by_me: boolean;
             readonly verify_code: string | null;
             /** Format: date-time */
             readonly created_at: string;
-        };
-        /**
-         * @description * `java` - Java
-         *     * `bedrock` - Bedrock
-         *     * `both` - Java і Bedrock
-         * @enum {string}
-         */
-        ServerEditionEnum: "java" | "bedrock" | "both";
-        /**
-         * @description * `uk` - Українська
-         *     * `multi` - Кілька мов
-         *     * `en` - Англійська
-         * @enum {string}
-         */
-        ServerLanguageEnum: "uk" | "multi" | "en";
-        ServerWriteRequest: {
-            name: string;
-            /** @description play.example.com, an IP or host:port */
-            host: string;
-            /** @description Empty: 25565 (Java) or 19132 (Bedrock). */
-            port?: number | null;
-            edition: components["schemas"]["ServerEditionEnum"];
-            modes: components["schemas"]["ModesEnum"][];
-            versions_label?: string;
-            language: components["schemas"]["ServerLanguageEnum"];
-            description?: string;
-            discord_url?: string;
-            website_url?: string;
-            /** @default false */
-            has_whitelist: boolean;
         };
         /** @description Catalog card: the 2D preview (the texture until it is rendered), title, counters. */
         SkinCard: {
@@ -5648,24 +5660,19 @@ export interface operations {
     servers_list: {
         parameters: {
             query?: {
-                /** @description Owner nickname. */
-                author?: string;
+                /** @description 1 — every language. */
+                all?: boolean;
+                /** @description Modrinth categories, comma-separated; any. */
+                category?: string;
+                /** @description ISO 3166-1 alpha-2. */
+                country?: string;
                 /**
-                 * @description `java` and `bedrock` include servers for both.
-                 *
-                 *     * `java` - Java
-                 *     * `bedrock` - Bedrock
-                 *     * `both` - Java і Bedrock
+                 * @description * `vanilla` - Без модів
+                 *     * `modded` - З модами
                  */
-                edition?: "bedrock" | "both" | "java";
-                /**
-                 * @description * `uk` - Українська
-                 *     * `multi` - Кілька мов
-                 *     * `en` - Англійська
-                 */
-                language?: "en" | "multi" | "uk";
-                /** @description Mode slugs, comma-separated; any may match. */
-                mode?: string;
+                kind?: "modded" | "vanilla";
+                /** @description ISO 639-1; default «uk» if ≥ 5 such servers. */
+                language?: string;
                 online?: boolean;
                 /** @description A page number within the paginated result set. */
                 page?: number;
@@ -5680,8 +5687,8 @@ export interface operations {
                  *     * `trend` - trend
                  */
                 sort?: "new" | "online" | "popular" | "top" | "trend";
+                /** @description A game version. */
                 version?: string;
-                whitelist?: boolean;
             };
             header?: never;
             path?: never;
@@ -5708,9 +5715,9 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["ServerWriteRequest"];
-                "application/x-www-form-urlencoded": components["schemas"]["ServerWriteRequest"];
-                "multipart/form-data": components["schemas"]["ServerWriteRequest"];
+                "application/json": components["schemas"]["ServerAddRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ServerAddRequest"];
+                "multipart/form-data": components["schemas"]["ServerAddRequest"];
             };
         };
         responses: {
@@ -5872,108 +5879,6 @@ export interface operations {
             };
         };
     };
-    servers_banner_upload: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                slug: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "multipart/form-data": components["schemas"]["BannerUploadRequest"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ServerDetail"];
-                };
-            };
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-        };
-    };
-    servers_banner_delete: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                slug: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ServerDetail"];
-                };
-            };
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-        };
-    };
     servers_copy_ip: {
         parameters: {
             query?: never;
@@ -6002,6 +5907,35 @@ export interface operations {
                 };
             };
             429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    servers_join: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Join"];
+                };
+            };
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };

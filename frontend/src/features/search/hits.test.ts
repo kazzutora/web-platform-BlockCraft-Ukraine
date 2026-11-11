@@ -32,8 +32,8 @@ describe("search hits", () => {
     expect(hitMeta(base)).toBe("Мод · 26.3 · Fabric, Quilt");
     expect(hitMeta({ ...base, kind: "skin", author: "Mavka" })).toBe("Скін · Mavka");
     expect(
-      hitMeta({ ...base, kind: "server", address: "play.sich.ua", modes: ["survival", "rp"] }),
-    ).toBe("play.sich.ua · Виживання, Рольова гра");
+      hitMeta({ ...base, kind: "server", address: "play.sich.ua", modes: ["smp", "pvp"] }),
+    ).toBe("play.sich.ua · smp, pvp");
     expect(hitMeta({ ...base, kind: "collection", items_count: 3 })).toBe("Колекція · 3 елементи");
     expect(
       hitMeta({

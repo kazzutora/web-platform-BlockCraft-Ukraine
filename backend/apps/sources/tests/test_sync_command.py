@@ -30,11 +30,13 @@ def test_one_source_runs_all_its_jobs():
         mock.patch("apps.mods.tasks.sync_catalog") as catalog,
         mock.patch("apps.mods.tasks.sync_versions") as versions,
         mock.patch("apps.packs.tasks.import_official") as modpacks,
+        mock.patch("apps.servers.tasks.sync_modrinth") as servers,
         mock.patch("apps.packs.tasks.refresh_loader_versions") as loaders,
     ):
         output = run("--source", "modrinth")
 
     modpacks.assert_called_once_with()
+    servers.assert_called_once_with()
 
     game_versions.assert_called_once_with()
     catalog.assert_called_once_with()
@@ -48,11 +50,13 @@ def test_limit_goes_only_to_jobs_that_accept_it():
         mock.patch("apps.sources.tasks.sync_game_versions") as game_versions,
         mock.patch("apps.mods.tasks.sync_catalog") as catalog,
         mock.patch("apps.mods.tasks.sync_versions") as versions,
+        mock.patch("apps.servers.tasks.sync_modrinth") as servers,
         mock.patch("apps.packs.tasks.import_official") as modpacks,
     ):
         run("--source", "modrinth", "--limit", "20")
 
     modpacks.assert_called_once_with(limit=20)
+    servers.assert_called_once_with(limit=20)
 
     game_versions.assert_called_once_with()
 

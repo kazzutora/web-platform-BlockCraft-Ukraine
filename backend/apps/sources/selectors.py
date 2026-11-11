@@ -12,17 +12,24 @@ META_TTL = 10 * 60
 
 
 def meta() -> dict[str, Any]:
-    """What every form and filter needs: supported versions, loaders, categories (GET /meta)."""
+    """Versions, loaders, categories, server languages and countries (GET /meta)."""
     return cache.get_or_set(META_KEY, _build_meta, META_TTL)
 
 
 def _build_meta() -> dict[str, Any]:
     from apps.mods.models import Category
+    from apps.servers.categories import server_categories
+    from apps.servers.selectors import default_language, facets
 
+    servers = facets()
     return {
         "game_versions": list(GameVersion.objects.supported()),
         "loaders": list(Loader.values),
         "categories": list(Category.objects.all()),
+        "server_languages": servers["languages"],
+        "server_countries": servers["countries"],
+        "server_categories": server_categories(),
+        "server_default_language": default_language(),
     }
 
 

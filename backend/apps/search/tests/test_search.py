@@ -100,7 +100,7 @@ def test_only_public_objects_are_searchable():
 
 
 def test_server_and_skin_documents():
-    server = ServerFactory(name="Січ", modes=["survival", "rp"])
+    server = ServerFactory(name="Січ", categories=["survival", "roleplay"])
     skin = SkinFactory(title="Мавка", color_bucket="green", style_tags=["ukrainian"])
 
     server_doc = documents.document_for("server", server.pk)
@@ -108,7 +108,7 @@ def test_server_and_skin_documents():
 
     assert (server_doc["id"], server_doc["modes"], server_doc["address"]) == (
         server.slug,
-        ["survival", "rp"],
+        ["survival", "roleplay"],
         server.address,
     )
     assert (skin_doc["id"], skin_doc["color_bucket"], skin_doc["author"]) == (

@@ -1,0 +1,55 @@
+{
+  "client_side": "required",
+  "server_side": "required",
+  "game_versions": [
+    "1.20.1"
+  ],
+  "environment": [
+    "client_and_server"
+  ],
+  "id": "shAGUyEd",
+  "slug": "rosedalean-smp",
+  "project_type": "modpack",
+  "team": "OhNdFEzJ",
+  "organization": "818BG3nr",
+  "title": "Rosedalean SMP Modpack",
+  "description": "The official Rosedalean SMP Modpack",
+  "body": "# This modpack was made specifically for the [Rosedalean SMP](https://modrinth.com/server/rosedalean-smp-season-2) server!!!\n\nWelcome to the Rosedalean SMP! We are currently in season 2 which means a fresh start and a whole new chance for you to get involved!\n\nWe've specially curated a wide range of standout mods perfect for all types of players! Such as an array of furniture mods, the create mod …",
+  "body_url": null,
+  "published": "2026-08-09T01:47:43.024061Z",
+  "updated": "2026-10-07T17:35:32.900695Z",
+  "approved": "2026-09-10T18:16:38.699328Z",
+  "queued": "2026-08-09T02:47:22.659466Z",
+  "status": "approved",
+  "requested_status": "approved",
+  "moderator_message": null,
+  "license": {
+    "id": "LicenseRef-All-Rights-Reserved",
+    "name": "",
+    "url": null
+  },
+  "downloads": 910,
+  "followers": 0,
+  "categories": [],
+  "additional_categories": [],
+  "loaders": [
+    "fabric"
+  ],
+  "versions": [
+    "68u0lF3F",
+    "ASoelio8",
+    "umHJEmlT",
+    "7l2yJNvH"
+  ],
+  "icon_url": "https://cdn.modrinth.com/data/shAGUyEd/f7c2986ff1ff3750f410d1c68a0ed332c3e8f707_96.webp",
+  "raw_icon_url": "https://cdn.modrinth.com/data/shAGUyEd/f7c2986ff1ff3750f410d1c68a0ed332c3e8f707.png",
+  "issues_url": "https://github.com/Rosedalean-SMP/rosedalean-modpack/issues",
+  "source_url": "https://github.com/Rosedalean-SMP/rosedalean-modpack",
+  "wiki_url": null,
+  "discord_url": null,
+  "donation_urls": [],
+  "gallery": [],
+  "color": 14794938,
+  "thread_id": "mtVOHmOB",
+  "monetization_status": "monetized"
+}

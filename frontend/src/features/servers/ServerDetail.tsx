@@ -6,17 +6,23 @@ import { Container } from "@/components/layout/Container";
 import { Badge } from "@/components/ui/Badge";
 import { Chip } from "@/components/ui/Chip";
 import { Icon } from "@/components/ui/Icon";
+import { SourceBadge } from "@/components/ui/SourceBadge";
 import { Tabs } from "@/components/ui/Tabs";
+import { getGameContext } from "@/features/game/context";
+import { getMeta } from "@/features/game/meta";
 import { AddToCollection } from "@/features/library/AddToCollection";
 import { SaveToggle } from "@/features/library/SaveToggle";
+import { loaderName } from "@/features/mods/format";
 import { ReportButton } from "@/features/moderation/ReportButton";
 import { Reviews } from "@/features/social/Reviews";
 import { cn } from "@/lib/cn";
 
-import { getServer, getStats } from "./api";
-import { serversCopy } from "./copy";
+import { getJoin, getServer, getStats } from "./api";
+import { countryName, languageName, serversCopy } from "./copy";
 import { CopyAddress } from "./CopyAddress";
+import { JoinBlock } from "./JoinBlock";
 import { OnlineChart } from "./OnlineChart";
+import { categoryName } from "./ServerRow";
 import { ServerOwnerActions } from "./ServerOwnerActions";
 import type { LiveStatus } from "./types";
 import { VerifyPanel } from "./VerifyPanel";
@@ -24,40 +30,46 @@ import { VerifyPanel } from "./VerifyPanel";
 const copy = serversCopy.detail;
 const live = serversCopy.live;
 
-/** /servers/[slug]: banner, the big online counter, address, chart, reviews. */
+/** /servers/[slug]: online, «Щоб зайти», the address; then description, chart, reviews. */
 export async function ServerDetail({ slug }: { slug: string }) {
   const server = await getServer(slug);
   if (!server) notFound();
-  const stats = await getStats(slug);
-  const published = server.status === "published";
+  const [stats, join, game, meta] = await Promise.all([
+    getStats(slug),
+    getJoin(slug),
+    getGameContext(),
+    getMeta(),
+  ]);
+  const listed = server.source !== null || server.is_verified;
+  // A pack to take is the main action of a modded server; otherwise it is the address
+  const packIsMain = Boolean(join?.kind === "modded" && join.pack);
   const facts = [
-    { label: serversCopy.filters.edition, value: serversCopy.editions[server.edition] },
-    { label: copy.versions, value: server.versions_label },
-    { label: serversCopy.filters.language, value: serversCopy.languages[server.language] },
+    { label: copy.country, value: server.country ? countryName(server.country) : "" },
+    { label: copy.languages, value: server.languages.map(languageName).join(", ") },
     {
-      label: serversCopy.filters.mode,
-      value: server.modes.map((m) => serversCopy.modes[m]).join(", "),
+      label: copy.categories,
+      value: server.categories.map((slug) => categoryName(slug, meta.server_categories)).join(", "),
     },
   ].filter((fact) => fact.value);
 
   return (
     <div className="flex flex-col">
-      {!published && (
+      {!listed && (
         <p role="status" className="border-b border-line bg-surface px-4 py-3 text-center text-sm">
-          {server.status === "rejected" ? copy.rejected(server.rejection_reason) : copy.pending}
+          {copy.waiting}
         </p>
       )}
       <Container className="flex flex-col gap-12 py-12 md:py-16">
         {server.banner_url && (
-          <div className="aspect-[4/1] w-full overflow-hidden border border-line bg-surface">
+          <div className="relative aspect-[4/1] w-full overflow-hidden border border-line bg-surface">
             <Image
               src={server.banner_url}
               alt=""
-              width={1200}
-              height={300}
+              fill
+              sizes="(min-width: 1200px) 1200px, 100vw"
               unoptimized
               priority
-              className="size-full object-cover"
+              className="object-cover"
             />
           </div>
         )}
@@ -65,11 +77,18 @@ export async function ServerDetail({ slug }: { slug: string }) {
         <header className="grid gap-10 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
           <div className="flex flex-col gap-6">
             <div className="flex flex-wrap items-center gap-3">
-              <Chip tone="servers">{serversCopy.label}</Chip>
+              <Chip tone="servers">{serversCopy.kinds[server.content_kind]}</Chip>
               {server.is_verified && <Badge icon="check">{serversCopy.verified}</Badge>}
-              {server.has_whitelist && <Badge>{serversCopy.whitelist}</Badge>}
             </div>
-            <h1 className="text-h1">{server.name}</h1>
+            <div className="flex items-center gap-4">
+              {server.icon_url && (
+                <div className="relative size-16 shrink-0 overflow-hidden border border-line">
+                  <Image src={server.icon_url} alt="" fill sizes="64px" unoptimized />
+                </div>
+              )}
+              <h1 className="text-h1 break-words">{server.name}</h1>
+            </div>
+            {server.summary && <p className="max-w-prose text-muted">{server.summary}</p>}
             <div className="flex flex-wrap items-center gap-3">
               <code className="border border-line px-3 py-2 font-mono text-base break-all">
                 {server.address}
@@ -78,9 +97,9 @@ export async function ServerDetail({ slug }: { slug: string }) {
                 slug={server.slug}
                 address={server.address}
                 size="lg"
-                variant="primary"
+                variant={packIsMain ? "secondary" : "primary"}
               />
-              {published && (
+              {listed && (
                 <>
                   <SaveToggle
                     kind="server"
@@ -92,15 +111,42 @@ export async function ServerDetail({ slug }: { slug: string }) {
                   <AddToCollection kind="server" id={server.slug} />
                 </>
               )}
-              {server.is_mine && <ServerOwnerActions slug={server.slug} />}
-              {published && !server.is_mine && <ReportButton kind="server" id={server.slug} />}
+              {server.is_mine && (
+                <ServerOwnerActions slug={server.slug} canDelete={server.source === null} />
+              )}
+              {listed && !server.is_mine && <ReportButton kind="server" id={server.slug} />}
+            </div>
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+              {server.source && (
+                <SourceBadge
+                  {...server.source}
+                  label={copy.source(server.name, server.source.name)}
+                />
+              )}
+              {!server.owner && !server.is_claimed_by_me && (
+                <Link
+                  href={`/servers/add?address=${encodeURIComponent(server.address)}`}
+                  className="text-meta text-muted underline underline-offset-4 hover:text-text"
+                >
+                  {copy.claim}
+                </Link>
+              )}
             </div>
           </div>
           <OnlineCounter live={server.live} />
         </header>
 
-        {server.is_mine && server.verify_code && (
+        {server.is_claimed_by_me && server.verify_code && (
           <VerifyPanel slug={server.slug} code={server.verify_code} />
+        )}
+
+        {join && (
+          <JoinBlock
+            join={join}
+            gameLabel={[game.game_version, game.loader && loaderName(game.loader)]
+              .filter(Boolean)
+              .join(" · ")}
+          />
         )}
 
         <Tabs
@@ -111,9 +157,29 @@ export async function ServerDetail({ slug }: { slug: string }) {
               label: copy.tabs.about,
               content: (
                 <div className="grid gap-10 md:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
-                  <p className="max-w-prose whitespace-pre-line">
-                    {server.description || <span className="text-muted">{copy.noDescription}</span>}
-                  </p>
+                  <div className="flex min-w-0 flex-col gap-8">
+                    {server.description_uk_html && (
+                      <section className="flex flex-col gap-3">
+                        <h3 className="caps font-sans text-muted">{copy.ownerDescription}</h3>
+                        {/* Rendered from markdown and sanitized (nh3) on the server */}
+                        <div
+                          className="rich-text"
+                          dangerouslySetInnerHTML={{ __html: server.description_uk_html }}
+                        />
+                      </section>
+                    )}
+                    {server.description_html ? (
+                      // Sanitized (nh3) when synced from Modrinth
+                      <div
+                        className="rich-text"
+                        dangerouslySetInnerHTML={{ __html: server.description_html }}
+                      />
+                    ) : (
+                      !server.description_uk_html && (
+                        <p className="text-muted">{copy.noDescription}</p>
+                      )
+                    )}
+                  </div>
                   <dl className="flex flex-col gap-4">
                     {facts.map((fact) => (
                       <div key={fact.label} className="flex flex-col gap-1">
@@ -121,17 +187,19 @@ export async function ServerDetail({ slug }: { slug: string }) {
                         <dd>{fact.value}</dd>
                       </div>
                     ))}
-                    <div className="flex flex-col gap-1">
-                      <dt className="text-meta text-muted">{copy.owner}</dt>
-                      <dd>
-                        <Link
-                          href={`/u/${server.author.nickname}`}
-                          className="underline underline-offset-4"
-                        >
-                          {server.author.nickname}
-                        </Link>
-                      </dd>
-                    </div>
+                    {server.owner && (
+                      <div className="flex flex-col gap-1">
+                        <dt className="text-meta text-muted">{copy.owner}</dt>
+                        <dd>
+                          <Link
+                            href={`/u/${server.owner.nickname}`}
+                            className="underline underline-offset-4"
+                          >
+                            {server.owner.nickname}
+                          </Link>
+                        </dd>
+                      </div>
+                    )}
                     {(server.discord_url || server.website_url) && (
                       <div className="flex flex-wrap gap-4 pt-2">
                         {server.discord_url && (
@@ -151,7 +219,7 @@ export async function ServerDetail({ slug }: { slug: string }) {
               label: copy.tabs.stats,
               content: <OnlineChart slug={server.slug} initial={stats} />,
             },
-            ...(published
+            ...(listed
               ? [
                   {
                     value: "reviews",

@@ -36,13 +36,14 @@ def get(server_id: int) -> dict | None:
 # Verification checks run in Celery; the page asks for their outcome
 
 
-def _verify_key(server_id: int) -> str:
-    return f"server:verify:{server_id}"
+def _verify_key(server_id: int, user_id: int) -> str:
+    return f"server:verify:{server_id}:{user_id}"
 
 
-def set_verification(server_id: int, state: str) -> None:
-    cache.set(_verify_key(server_id), state, 10 * 60)
+def set_verification(server_id: int, user_id: int, state: str) -> None:
+    """Each player checks their own code: one check never hides another's outcome."""
+    cache.set(_verify_key(server_id, user_id), state, 10 * 60)
 
 
-def get_verification(server_id: int) -> str | None:
-    return cache.get(_verify_key(server_id))
+def get_verification(server_id: int, user_id: int) -> str | None:
+    return cache.get(_verify_key(server_id, user_id))

@@ -399,5 +399,50 @@
     },
     "captured_at": "2026-11-10T01:31:14+00:00",
     "note": "slugs in ids; body trimmed to 200 characters"
+  },
+  "version_server_pack": {
+    "method": "GET",
+    "url": "https://api.modrinth.com/v2/version/JsOtePr6",
+    "params": null,
+    "body": null,
+    "status": 200,
+    "headers": {
+      "content-type": "application/json",
+      "x-ratelimit-limit": "300",
+      "x-ratelimit-remaining": "299",
+      "x-ratelimit-reset": "0"
+    },
+    "captured_at": "2026-11-10T04:39:38+00:00",
+    "note": "modpack uploaded into the server project hMclbsMN (SubMine)"
+  },
+  "project_server_v2": {
+    "method": "GET",
+    "url": "https://api.modrinth.com/v2/project/hMclbsMN",
+    "params": null,
+    "body": null,
+    "status": 200,
+    "headers": {
+      "content-type": "application/json",
+      "x-ratelimit-limit": "300",
+      "x-ratelimit-remaining": "299",
+      "x-ratelimit-reset": "0"
+    },
+    "captured_at": "2026-11-10T04:39:38+00:00",
+    "note": "a server project read through v2; body trimmed to 400 characters"
+  },
+  "project_server_external_pack_v2": {
+    "method": "GET",
+    "url": "https://api.modrinth.com/v2/project/shAGUyEd",
+    "params": null,
+    "body": null,
+    "status": 200,
+    "headers": {
+      "content-type": "application/json",
+      "x-ratelimit-limit": "300",
+      "x-ratelimit-remaining": "299",
+      "x-ratelimit-reset": "0"
+    },
+    "captured_at": "2026-11-10T04:39:38+00:00",
+    "note": "the separate modpack of server zghks7Se (Rosedalean); body trimmed to 400 characters"
   }
 }

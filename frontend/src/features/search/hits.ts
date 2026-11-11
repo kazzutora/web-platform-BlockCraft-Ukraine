@@ -1,5 +1,4 @@
 import { loaderName, mainLoadersOf } from "@/features/mods/format";
-import { serversCopy } from "@/features/servers/copy";
 import { plural } from "@/lib/plural";
 
 import { searchCopy } from "./copy";
@@ -45,15 +44,7 @@ export function hitMeta(hit: SearchHit): string {
         .filter(Boolean)
         .join(" · ");
     case "server":
-      return [
-        hit.address,
-        hit.modes
-          .slice(0, 2)
-          .map((mode) => serversCopy.modes[mode as keyof typeof serversCopy.modes] ?? mode)
-          .join(", "),
-      ]
-        .filter(Boolean)
-        .join(" · ");
+      return [hit.address, hit.modes.slice(0, 2).join(", ")].filter(Boolean).join(" · ");
     default:
       return [
         kinds.collection,

@@ -90,7 +90,7 @@ def new_skins(*, viewer: Viewer, limit: int = 4) -> list:
 
 def new_servers(*, viewer: Viewer, limit: int = 3) -> list:
     def build() -> QuerySet:
-        return servers.catalog().order_by("-published_at")[:limit]
+        return servers.catalog().order_by("-created_at")[:limit]
 
     return _in_order(servers.catalog(viewer), _cached_ids("home:new-servers", HOME_TTL, build))
 

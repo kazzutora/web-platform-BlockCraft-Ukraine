@@ -1,27 +1,40 @@
-from datetime import UTC, datetime
-
 import factory
 from django.utils import timezone
 
 from apps.accounts.tests.factories import UserFactory
-from apps.servers.models import Server, ServerSnapshot
+from apps.core.models import Source
+from apps.servers.models import ContentKind, Server, ServerSnapshot
 from apps.sources.clients.ping import PingResult
 
 
 class ServerFactory(factory.django.DjangoModelFactory):
+    """A server mirrored from Modrinth, as the catalog is made of; `owned()` for one added here."""
+
     class Meta:
         model = Server
 
-    author = factory.SubFactory(UserFactory)
+    source = Source.MODRINTH
+    external_id = factory.Sequence(lambda n: f"SRV{n:05d}")
+    external_url = factory.LazyAttribute(lambda s: f"https://modrinth.com/server/{s.slug}")
     name = factory.Sequence(lambda n: f"Сервер {n}")
     slug = factory.Sequence(lambda n: f"server-{n}")
-    host = factory.Sequence(lambda n: f"play{n}.example.com")
-    port = 25565
-    edition = "java"
-    modes = factory.LazyFunction(lambda: ["survival"])
-    language = "uk"
-    status = Server.Status.PUBLISHED
-    published_at = factory.LazyFunction(lambda: datetime(2026, 1, 1, tzinfo=UTC))
+    java_host = factory.Sequence(lambda n: f"play{n}.example.com")
+    java_port = 25565
+    languages = factory.LazyFunction(lambda: ["uk"])
+    categories = factory.LazyFunction(lambda: ["smp"])
+    content_kind = ContentKind.VANILLA
+    supported_versions = factory.LazyFunction(lambda: ["1.21.1"])
+    recommended_version = "1.21.1"
+    synced_at = factory.LazyFunction(timezone.now)
+
+    class Params:
+        owned = factory.Trait(
+            source=Source.OWNER,
+            external_id=factory.LazyAttribute(lambda s: f"{s.java_host}:{s.java_port}"),
+            external_url="",
+            owner=factory.SubFactory(UserFactory),
+            is_verified=True,
+        )
 
 
 class SnapshotFactory(factory.django.DjangoModelFactory):

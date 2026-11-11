@@ -75,8 +75,8 @@ def export(user: User) -> dict:
             for s in Skin.objects.filter(author=user)
         ],
         "servers": [
-            {"slug": s.slug, "name": s.name, "address": s.address, "status": s.status}
-            for s in Server.objects.filter(author=user)
+            {"slug": s.slug, "name": s.name, "address": s.address, "is_verified": s.is_verified}
+            for s in Server.objects.filter(owner=user)
         ],
         "packs": [
             {

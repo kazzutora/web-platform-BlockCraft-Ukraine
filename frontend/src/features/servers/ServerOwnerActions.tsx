@@ -17,7 +17,7 @@ import { serversCopy } from "./copy";
 const copy = serversCopy.detail;
 
 /** For the owner: edit the listing or delete it. */
-export function ServerOwnerActions({ slug }: { slug: string }) {
+export function ServerOwnerActions({ slug, canDelete }: { slug: string; canDelete: boolean }) {
   const router = useRouter();
   const toast = useToast();
   const queryClient = useQueryClient();
@@ -44,23 +44,25 @@ export function ServerOwnerActions({ slug }: { slug: string }) {
         <Icon name="pencil" />
         {copy.edit}
       </ButtonLink>
-      <Dialog
-        title={copy.deleteTitle}
-        description={copy.deleteText}
-        open={deleting}
-        onOpenChange={setDeleting}
-        trigger={<Button variant="ghost">{copy.delete}</Button>}
-        footer={
-          <>
-            <Button variant="ghost" onClick={() => setDeleting(false)}>
-              {copy.cancel}
-            </Button>
-            <Button loading={remove.isPending} onClick={() => remove.mutate()}>
-              {copy.delete}
-            </Button>
-          </>
-        }
-      />
+      {canDelete && (
+        <Dialog
+          title={copy.deleteTitle}
+          description={copy.deleteText}
+          open={deleting}
+          onOpenChange={setDeleting}
+          trigger={<Button variant="ghost">{copy.delete}</Button>}
+          footer={
+            <>
+              <Button variant="ghost" onClick={() => setDeleting(false)}>
+                {copy.cancel}
+              </Button>
+              <Button loading={remove.isPending} onClick={() => remove.mutate()}>
+                {copy.delete}
+              </Button>
+            </>
+          }
+        />
+      )}
     </>
   );
 }

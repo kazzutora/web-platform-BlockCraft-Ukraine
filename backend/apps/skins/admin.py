@@ -6,23 +6,35 @@ from .models import Skin
 
 @admin.register(Skin)
 class SkinAdmin(admin.ModelAdmin):
-    list_display = ["thumbnail", "title", "author", "status", "model", "color_bucket", "created_at"]
+    list_display = [
+        "thumbnail",
+        "title",
+        "source",
+        "model",
+        "color_bucket",
+        "is_hidden",
+        "created_at",
+    ]
     list_display_links = ["thumbnail", "title"]
-    list_filter = ["status", "model", "color_bucket"]
-    search_fields = ["title", "author__nickname"]
-    raw_id_fields = ["author", "parent"]
+    list_filter = ["source", "is_hidden", "model", "color_bucket"]
+    search_fields = ["title", "player_name", "external_id"]
+    raw_id_fields = ["added_by"]
     readonly_fields = [
         "thumbnail",
+        "source",
+        "external_id",
+        "external_url",
+        "texture_url",
         "texture_hash",
         "dominant_color",
+        "source_views",
         "favorites_count",
         "downloads_count",
-        "published_at",
     ]
 
     @admin.display(description="прев'ю")
     def thumbnail(self, skin: Skin) -> str:
-        image = skin.preview or skin.file
+        image = skin.preview or skin.texture
         if not image:
             return "—"
         return format_html(

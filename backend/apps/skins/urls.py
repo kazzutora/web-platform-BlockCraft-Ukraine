@@ -7,6 +7,6 @@ router = SimpleRouter(trailing_slash=False)
 router.register("skins", views.SkinViewSet, basename="skins")
 
 urlpatterns = [
-    path("me/skin", views.CurrentSkinView.as_view(), name="me-skin"),
+    path("me/skin", views.MySkinView.as_view(), name="me-skin"),
     *router.urls,
 ]

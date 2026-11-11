@@ -127,6 +127,15 @@ class UserSettings(models.Model):
     notify_prefs = models.JSONField(default=dict, blank=True)
     history_enabled = models.BooleanField(default=True)
     collections_visible = models.BooleanField(default=True)
+    #: «Мій скін»: shown in the profile; any skin of the catalog
+    skin = models.ForeignKey(
+        "skins.Skin",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="+",
+        verbose_name="мій скін",
+    )
 
     class Meta:
         verbose_name = "налаштування"

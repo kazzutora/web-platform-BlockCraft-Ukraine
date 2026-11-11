@@ -9,6 +9,7 @@ const PROTECTED = [
   /^\/me(\/|$)/,
   /^\/welcome$/,
   /^\/servers\/add$/,
+  /^\/skins\/add$/,
   /^\/servers\/[^/]+\/edit$/,
   /^\/packs\/new$/,
   /^\/packs\/[^/]+\/edit$/,

@@ -85,7 +85,7 @@ export async function HomeSections() {
             <div className="flex flex-col gap-4">
               <p className="text-h1">{skin.title}</p>
               <p className="text-muted">
-                {copy.skinBy(skin.author.nickname)} · {skinsCopy.models[skin.model]}
+                {skin.source.name} · {skinsCopy.models[skin.model]}
               </p>
               <Link
                 href={`/skins/${skin.id}`}

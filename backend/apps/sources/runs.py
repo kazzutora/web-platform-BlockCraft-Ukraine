@@ -7,6 +7,7 @@ from dataclasses import dataclass, field
 from datetime import timedelta
 from typing import Any
 
+from celery.exceptions import SoftTimeLimitExceeded
 from django.utils import timezone
 
 from .models import SyncRun
@@ -51,6 +52,9 @@ class SyncCounter:
         """Processes one item: an exception counts as failed instead of stopping the job."""
         try:
             yield
+        except SoftTimeLimitExceeded:
+            # The task is out of time: stop it (sync_run closes the run), do not count an item
+            raise
         except Exception as error:
             logger.warning("Sync item failed: %s", context, exc_info=True)
             self.fail(error, **context)

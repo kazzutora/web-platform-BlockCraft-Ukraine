@@ -3,7 +3,7 @@
 from django.db import transaction
 from django.utils import timezone
 
-from .models import User
+from .models import User, UserSettings
 
 
 def _target(row) -> dict:
@@ -50,6 +50,7 @@ def export(user: User) -> dict:
             "language": settings.language,
             "notify_prefs": settings.notify_prefs,
             "collections_visible": settings.collections_visible,
+            "my_skin": settings.skin_id,
         },
         "favorites": [
             {**_target(f), "saved_at": f.created_at.isoformat()}
@@ -71,8 +72,8 @@ def export(user: User) -> dict:
             for r in Review.objects.filter(user=user).prefetch_related("target")
         ],
         "skins": [
-            {"id": s.pk, "title": s.title, "status": s.status, "texture": s.file.url}
-            for s in Skin.objects.filter(author=user)
+            {"id": s.pk, "title": s.title, "source": s.source, "texture": s.texture.url}
+            for s in Skin.objects.filter(added_by=user)
         ],
         "servers": [
             {"slug": s.slug, "name": s.name, "address": s.address, "is_verified": s.is_verified}
@@ -122,13 +123,12 @@ def anonymize(user: User) -> None:
     """The content stays (skins, servers, reviews, comments) under a placeholder name;
     everything that identifies the person goes."""
     from apps.notifications.models import Notification
-    from apps.skins.models import Skin
 
     _sign_out_everywhere(user)
     if user.avatar:
         user.avatar.delete(save=False)
     Notification.objects.filter(user=user).delete()
-    Skin.objects.filter(author=user, is_current=True).update(is_current=False)
+    UserSettings.objects.filter(user=user).update(skin=None)
     user.email = f"deleted-{user.pk}@deleted.invalid"
     user.nickname = f"deleted_{user.pk}"
     user.bio = ""

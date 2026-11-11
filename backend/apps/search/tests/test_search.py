@@ -90,7 +90,7 @@ def test_mod_document_has_search_fields():
 
 
 def test_only_public_objects_are_searchable():
-    pending = SkinFactory(status=Skin.Status.PENDING)
+    pending = SkinFactory(is_hidden=True)
     private = CollectionFactory(visibility="private", items_count=3)
     empty = CollectionFactory(items_count=0)
 
@@ -101,7 +101,7 @@ def test_only_public_objects_are_searchable():
 
 def test_server_and_skin_documents():
     server = ServerFactory(name="Січ", categories=["survival", "roleplay"])
-    skin = SkinFactory(title="Мавка", color_bucket="green", style_tags=["ukrainian"])
+    skin = SkinFactory(title="Мавка", color_bucket="green")
 
     server_doc = documents.document_for("server", server.pk)
     skin_doc = documents.document_for("skin", skin.pk)
@@ -114,7 +114,7 @@ def test_server_and_skin_documents():
     assert (skin_doc["id"], skin_doc["color_bucket"], skin_doc["author"]) == (
         str(skin.pk),
         "green",
-        skin.author.nickname,
+        None,
     )
 
 
@@ -147,7 +147,7 @@ def test_index_object_adds_and_removes():
     assert services.index_object(kind="skin", pk=skin.pk, client_factory=lambda: fake) is True
     assert f"skin-{skin.pk}" in fake.documents["content"]
 
-    Skin.objects.filter(pk=skin.pk).update(status=Skin.Status.HIDDEN)
+    Skin.objects.filter(pk=skin.pk).update(is_hidden=True)
     assert services.index_object(kind="skin", pk=skin.pk, client_factory=lambda: fake) is False
     assert f"skin-{skin.pk}" not in fake.documents["content"]
 

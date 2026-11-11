@@ -163,7 +163,7 @@ blockcraft/
 
 ### 6.6 skins — v1: обробка текстури, 3D, пошук за ніком лишити; завантаження видалити
 
-- `Skin` (TimeStamped, Sourced[`mineskin` | `mojang`], Engagement без відгуків): `title` (назва з джерела або нік), `texture` (кеш PNG 64×64), `texture_url` (`textures.minecraft.net/…`), `texture_hash` (SHA-256 пікселів, **unique** — та сама текстура з різних джерел не дублюється, перше джерело перемагає), `model` (classic / slim), `dominant_color`, `color_bucket`, `preview` (2D PNG), `player_name` (для `mojang`), `source_views` (з MineSkin, якщо є), `added_by` (FK User, nullable). v1: `author`, `style_tags`, `parent`, `source=upload/recolor`, `status` — прибрати.
+- `Skin` (TimeStamped, Sourced[`mineskin` | `mojang`], Engagement без відгуків): `title` (назва з джерела або нік), `texture` (кеш PNG 64×64), `texture_url` (`textures.minecraft.net/…`), `texture_hash` (SHA-256 пікселів, **unique** — та сама текстура з різних джерел не дублюється, перше джерело перемагає), `model` (classic / slim), `dominant_color`, `color_bucket`, `preview` (2D PNG), `player_name` (для `mojang`), `source_views` (з MineSkin, якщо є), `added_by` (FK User, nullable). `external_id` — uuid MineSkin або id текстури textures.minecraft.net (для Mojang: кожна текстура гравця — окремий скін). v1: `author`, `style_tags`, `parent`, `source=upload/recolor`, `status` — прибрати.
 - «Мій скін» — `UserSettings.skin` (FK Skin, nullable) замість v1 `Skin.is_current`.
 
 ### 6.7 library — v1: лишити

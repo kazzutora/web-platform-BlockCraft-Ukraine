@@ -85,6 +85,14 @@ SOURCES: tuple[SourceInfo, ...] = (
         name="MineSkin",
         description="Публічна галерея скінів Minecraft: текстура, модель і назва кожного скіна.",
         url="https://mineskin.org",
+        jobs=(
+            Job(
+                key="gallery",
+                title="Скіни з назвами з публічної галереї, без дублікатів",
+                task="apps.skins.tasks.sync_mineskin",
+                accepts_limit=True,
+            ),
+        ),
     ),
     SourceInfo(
         key=Source.MOJANG,

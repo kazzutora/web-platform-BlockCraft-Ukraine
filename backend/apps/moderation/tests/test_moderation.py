@@ -13,8 +13,8 @@ from apps.moderation import services
 from apps.moderation.models import Report, Sanction
 from apps.moderation.tasks import lift_expired_bans
 from apps.notifications.models import Notification
+from apps.packs.tests.factories import PackFactory
 from apps.servers.tests.factories import ServerFactory
-from apps.skins.models import Skin
 from apps.skins.tests.factories import SkinFactory
 
 pytestmark = pytest.mark.django_db
@@ -50,7 +50,8 @@ def test_one_open_report_per_player_and_no_reports_on_own_work():
     report(player, "skin", skin.pk)
 
     assert report(player, "skin", skin.pk).json()["code"] == "already_reported"
-    assert report(skin.author, "skin", skin.pk).json()["code"] == "own_object"
+    pack = PackFactory()
+    assert report(pack.author, "pack", pack.slug).json()["code"] == "own_object"
 
 
 def test_five_independent_reports_hide_the_object(api_client):
@@ -58,12 +59,12 @@ def test_five_independent_reports_hide_the_object(api_client):
     for _ in range(4):
         report(UserFactory(), "skin", skin.pk)
     skin.refresh_from_db()
-    assert skin.status == Skin.Status.PUBLISHED
+    assert not skin.is_hidden
 
     report(UserFactory(), "skin", skin.pk, reason="stolen")
 
     skin.refresh_from_db()
-    assert skin.status == Skin.Status.HIDDEN
+    assert skin.is_hidden
     assert api_client.get(f"/api/v1/skins/{skin.pk}").status_code == 404
     assert Report.objects.filter(auto_hidden=True).count() == 5
 
@@ -85,15 +86,15 @@ def test_reports_are_rate_limited():
 
 
 def test_accepting_reports_hides_and_notifies_the_author():
-    skin = SkinFactory(title="Сумнівний")
-    report(UserFactory(), "skin", skin.pk)
+    pack = PackFactory(title="Сумнівний")
+    report(UserFactory(), "pack", pack.slug)
 
     services.accept_reports(reports=Report.objects.all(), moderator=UserFactory())
 
-    skin.refresh_from_db()
-    assert skin.status == Skin.Status.HIDDEN
+    pack.refresh_from_db()
+    assert pack.status == pack.Status.HIDDEN
     assert Report.objects.get().status == Report.Status.ACCEPTED
-    note = Notification.objects.get(user=skin.author)
+    note = Notification.objects.get(user=pack.author)
     assert (note.type, note.payload["title"]) == ("hidden", "Сумнівний")
 
 
@@ -122,7 +123,7 @@ def test_admin_report_queue_accepts(admin_client):
     )
 
     skin.refresh_from_db()
-    assert skin.status == Skin.Status.HIDDEN
+    assert skin.is_hidden
 
 
 # Sanctions

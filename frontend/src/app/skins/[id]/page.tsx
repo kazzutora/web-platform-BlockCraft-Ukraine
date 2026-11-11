@@ -17,8 +17,7 @@ export async function generateMetadata({ params }: PageProps<"/skins/[id]">): Pr
   if (!skin) return {};
   return {
     title: `${skin.title} — ${skinsCopy.label.toLowerCase()}`,
-    description: `${skinsCopy.label} від ${skin.author.nickname}: 3D-перегляд і PNG.`,
-    ...(skin.status === "published" ? {} : { robots: { index: false } }),
+    description: `${skinsCopy.label} «${skin.title}» з ${skin.source.name}: 3D-перегляд і PNG.`,
   };
 }
 

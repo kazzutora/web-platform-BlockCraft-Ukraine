@@ -1,33 +1,32 @@
 import django_filters
-from django.db.models import QuerySet
-from django.db.models.functions import Lower
+from django.db.models import Q, QuerySet
+
+from apps.core.models import Source
 
 from .models import Skin
-from .styles import ColorBucket, Style
+from .styles import ColorBucket
 
 SORTS = {
-    "popular": ["-downloads_count", "-favorites_count"],
-    "new": ["-published_at"],
+    "popular": ["-favorites_count", "-downloads_count", "-source_views"],
+    "new": ["-created_at"],
     "top": ["-favorites_count", "-downloads_count"],
     "trend": ["-trend_score", "-favorites_count"],
 }
+SKIN_SOURCES = [(Source.MINESKIN.value, "MineSkin"), (Source.MOJANG.value, "Mojang")]
 
 
 class SkinFilter(django_filters.FilterSet):
-    style = django_filters.CharFilter(
-        method="filter_style", help_text="Style slugs, comma-separated; any may match."
-    )
     color = django_filters.ChoiceFilter(field_name="color_bucket", choices=ColorBucket.choices)
     model = django_filters.ChoiceFilter(choices=Skin.Model.choices)
-    author = django_filters.CharFilter(method="filter_author", help_text="Author nickname.")
-    q = django_filters.CharFilter(field_name="title", lookup_expr="icontains")
+    source = django_filters.ChoiceFilter(choices=SKIN_SOURCES)
+    q = django_filters.CharFilter(method="filter_q", help_text="Title or player nickname.")
     sort = django_filters.ChoiceFilter(
         method="filter_sort", choices=[(key, key) for key in SORTS], empty_label=None
     )
 
     class Meta:
         model = Skin
-        fields = ["style", "color", "model", "author", "q", "sort"]
+        fields = ["color", "model", "source", "q", "sort"]
 
     @property
     def qs(self) -> QuerySet[Skin]:
@@ -36,14 +35,9 @@ class SkinFilter(django_filters.FilterSet):
             queryset = queryset.order_by(*SORTS["popular"])
         return queryset
 
-    def filter_style(self, queryset, name, value: str):
-        styles = [part for part in (p.strip() for p in value.split(",")) if part in Style.values]
-        return queryset.filter(style_tags__overlap=styles) if styles else queryset
-
-    def filter_author(self, queryset, name, value: str):
-        return queryset.alias(author_nickname=Lower("author__nickname")).filter(
-            author_nickname=value.lower()
-        )
+    def filter_q(self, queryset, name, value: str):
+        value = value.strip()
+        return queryset.filter(Q(title__icontains=value) | Q(player_name__iexact=value))
 
     def filter_sort(self, queryset, name, value: str):
         return queryset.order_by(*SORTS[value])

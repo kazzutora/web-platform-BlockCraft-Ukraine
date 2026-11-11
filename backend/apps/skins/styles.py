@@ -1,23 +1,6 @@
-"""Fixed lists behind the skin catalog filters: style tags and colour buckets."""
+"""Colour buckets behind the skin catalog filter (computed from the texture)."""
 
 from django.db import models
-
-
-class Style(models.TextChoices):
-    CASUAL = "casual", "Повсякденний"
-    FANTASY = "fantasy", "Фентезі"
-    MEDIEVAL = "medieval", "Середньовіччя"
-    SCIFI = "scifi", "Наукова фантастика"
-    ANIME = "anime", "Аніме"
-    HORROR = "horror", "Жахи"
-    CUTE = "cute", "Милий"
-    MOB = "mob", "Моби"
-    MILITARY = "military", "Військовий"
-    SPORT = "sport", "Спорт"
-    UKRAINIAN = "ukrainian", "Український"
-
-
-MAX_STYLES = 3
 
 
 class ColorBucket(models.TextChoices):

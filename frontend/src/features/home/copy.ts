@@ -8,7 +8,6 @@ export const homeCopy = {
   popular: "Популярне цього тижня",
   allMods: "Усі моди",
   skinOfWeek: "Скін тижня",
-  skinBy: (author: string) => `від ${author}`,
   openSkin: "Відкрити скін",
   allSkins: "Усі скіни",
   serversOnline: "Сервери онлайн зараз",

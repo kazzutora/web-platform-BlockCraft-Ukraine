@@ -143,7 +143,7 @@ blockcraft/
 ### 6.3 mods — v1: лишити, розширити
 
 - `Category`: `slug`, `name_uk`, `project_type`, `header` (група з Modrinth). Українські назви — фікстура для всіх типів.
-- `Project` (TimeStamped, Sourced[`modrinth`], Engagement): `project_type` (mod / resourcepack / shader / datapack), `slug`, `title`, `summary`, `summary_uk` + `summary_uk_by` (денормалізовано зі схваленого перекладу; `summary_uk_by` і `body_uk_html` додаються в R7.2), `body_html`, `icon_url`, `gallery`, `categories` M2M, `loaders`, `game_versions` (Array, GIN), `client_side`, `server_side`, `license`, `source_url`, `modrinth_downloads`, `modrinth_follows`, `published_at` (дата на Modrinth), `modrinth_updated_at`, `versions_synced_at` (коли читали версії; старше за `modrinth_updated_at` — версії застаріли), `gpu_load` (+ `gpu_load_manual`), `imported_by` (FK User, nullable — хто додав за посиланням). Тип `datapack` — лише проєкт, у якого всі лоадери `datapack`/`minecraft`; мод, що також є датапаком (Terralith), лишається `mod`, а у вкладці «Датапаки» каталогу показується за лоадером `datapack`. Категорій датапаків Modrinth не має — `Category` з `project_type=datapack` є копіями категорій модів. v1: `Publishable`, `status`, `claimed_by`, `suggested_by` → прибрати (імпортований з Modrinth контент уже пройшов модерацію Modrinth; приховування — `is_hidden`).
+- `Project` (TimeStamped, Sourced[`modrinth`], Engagement): `project_type` (mod / resourcepack / shader / datapack), `slug`, `title`, `summary`, `summary_uk` + `summary_uk_by`, `body_uk_html` + `body_uk_by` (денормалізовано зі схваленого перекладу; ті самі поля мають `Pack` і `Server`), `body_html`, `icon_url`, `gallery`, `categories` M2M, `loaders`, `game_versions` (Array, GIN), `client_side`, `server_side`, `license`, `source_url`, `modrinth_downloads`, `modrinth_follows`, `published_at` (дата на Modrinth), `modrinth_updated_at`, `versions_synced_at` (коли читали версії; старше за `modrinth_updated_at` — версії застаріли), `gpu_load` (+ `gpu_load_manual`), `imported_by` (FK User, nullable — хто додав за посиланням). Тип `datapack` — лише проєкт, у якого всі лоадери `datapack`/`minecraft`; мод, що також є датапаком (Terralith), лишається `mod`, а у вкладці «Датапаки» каталогу показується за лоадером `datapack`. Категорій датапаків Modrinth не має — `Category` з `project_type=datapack` є копіями категорій модів. v1: `Publishable`, `status`, `claimed_by`, `suggested_by` → прибрати (імпортований з Modrinth контент уже пройшов модерацію Modrinth; приховування — `is_hidden`).
 - `ProjectVersion`: `project`, `modrinth_version_id` (unique), `name`, `version_number`, `version_type`, `game_versions` (GIN), `loaders` (GIN), `date_published`, `file_url`, `file_name`, `file_size`, `sha1` (індекс), `sha512` (індекс), `dependencies` (JSON: `[{project_id, version_id, dependency_type}]` — **обов'язково з `version_id`**, якщо джерело його дає). Зберігаються версії лише для підтримуваних `GameVersion`.
 
 ### 6.4 packs — v1 WIP етапу 10: доробити
@@ -180,7 +180,7 @@ blockcraft/
 ### 6.9 translations (НОВЕ)
 
 - `Translation` (TimeStamped, Authored, Publishable): generic target (`mod`; `pack` з `origin=modrinth`; `server` з `source=modrinth`), `field` (summary / description), `text` (summary ≤ 300; description ≤ 20 000, markdown → `nh3`), `status` (pending / published / rejected / superseded), `reviewed_by`, `reviewed_at`, `reject_reason`.
-- Схвалення: денормалізація в `summary_uk` / `*_uk_html` цілі + `*_uk_by`; попередній `published` → `superseded`. Один `pending` на автора + ціль + поле.
+- Схвалення: денормалізація в `summary_uk` / `body_uk_html` цілі + `*_uk_by` (однаково для мода, модпака й сервера); попередній `published` → `superseded`. Один `pending` на автора + ціль + поле.
 
 ### 6.10 moderation, notifications, accounts
 
@@ -206,7 +206,7 @@ blockcraft/
 | `GET /sources` | джерела: назва, опис, сайт, умови, остання синхронізація (статус, час, лічильники) | R1 |
 | `GET/PUT/PATCH /me/game` | «Моя гра» гравця (гість — cookie `bc_game`, без ендпоінта); замінює v1 `/me/game-profile` | R1 |
 | `/me`, `/me/avatar`, `/me/settings`, `/me/onboarding`, `/me/export`, `DELETE /me` | як у v1 | — |
-| `GET /me/activity?section=took\|shared&page=` | «Взяв» (Download) і «Поділився» (збірки, добірки, відгуки, переклади, сервери, додані скіни) | R7 |
+| `GET /me/activity?section=took|shared&page=`, `GET /users/{nickname}/shared?page=` | «Взяв» (Download: файл, `.mrpack`, IP, PNG) і «Поділився» (збірки, добірки, відгуки, переклади, сервери, додані скіни) з лічильниками; публічне — лише те, що бачить гість | R7 |
 | `GET /mods?type=&game_version=&loader=&category=&q=&sort=&all=` | каталог; без `game_version`/`loader` — береться «Моя гра», `all=1` — без фільтра гри | R2 |
 | `GET /mods/{slug}` | сторінка | R2 |
 | `GET /mods/{slug}/versions?game_version=&loader=` | версії | R2 |
@@ -242,8 +242,8 @@ blockcraft/
 | `PUT/DELETE /me/skin` `{skin_id}` | «Мій скін» | R6 |
 | `/favorites`, `/me/saved`, `/collections…`, `/me/collections` | як у v1 (+ kind `pack`) | R7 |
 | `GET /reviews…`, `PUT /reviews`, `DELETE /reviews/{id}`, `POST /reviews/{id}/vote`, `PUT /reviews/{id}/reply` | відгуки + відповідь автора/власника | R7 |
-| `GET /translations?kind=&id=`, `POST /translations`, `POST /translations/{id}/review` `{decision, reason?}` | переклади; рішення — лише модератор | R7 |
-| `POST /reports`, `/me/notifications…` | як у v1 | R7 |
+| `GET /translations?kind=&id=`, `POST /translations`, `POST /translations/{id}/review` `{decision, reason?}`, `GET /translations/queue` | переклади; рішення — лише модератор; черга — для модераторів | R7 |
+| `POST /reports` `{kind, id, reason}` (kind — будь-який kind каталогу або `review`), `/me/notifications…` | як у v1 + скарги на відгуки | R7 |
 | `GET /search?q=&kind=`, `GET /home`, `GET /top?kind=&period=` | + kind `pack`, фільтр «Моя гра» | R8 |
 
 ---

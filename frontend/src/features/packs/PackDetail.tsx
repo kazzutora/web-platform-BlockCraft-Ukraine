@@ -13,6 +13,8 @@ import { SaveToggle } from "@/features/library/SaveToggle";
 import { ReportButton } from "@/features/moderation/ReportButton";
 import { formatFileSize } from "@/features/mods/format";
 import { Reviews } from "@/features/social/Reviews";
+import { translationsCopy } from "@/features/translations/copy";
+import { TranslationBlock } from "@/features/translations/TranslationBlock";
 import { plural } from "@/lib/plural";
 
 import { exportUrl, getFiles, getPack } from "./api";
@@ -69,6 +71,11 @@ export async function PackDetail({ slug, shareToken = "" }: PackDetailProps) {
             </div>
             <h1 className="text-h1">{pack.title}</h1>
             {pack.summary && <p className="max-w-prose text-muted">{pack.summary}</p>}
+            {pack.summary_uk_by && (
+              <p className="text-meta text-muted">
+                {translationsCopy.summaryBy(pack.summary_uk_by.nickname)}
+              </p>
+            )}
             <p className="text-meta text-muted">
               {[
                 target,
@@ -211,7 +218,19 @@ function Credits({ pack }: { pack: Pack }) {
 }
 
 function About({ pack }: { pack: Pack }) {
-  const html = pack.origin === "modrinth" ? pack.description_html : pack.notes_html;
+  if (pack.origin === "modrinth") {
+    return (
+      <TranslationBlock
+        kind="pack"
+        id={pack.slug}
+        originalHtml={pack.description_html}
+        ukrainianHtml={pack.body_uk_html}
+        translator={pack.body_uk_by?.nickname ?? null}
+        noDescription={copy.noAbout}
+      />
+    );
+  }
+  const html = pack.notes_html;
   if (!html) return <p className="text-muted">{copy.noAbout}</p>;
   return (
     <div className="flex flex-col gap-4">

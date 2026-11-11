@@ -18,6 +18,10 @@ class ReviewSerializer(serializers.ModelSerializer):
     user = UserBriefSerializer(read_only=True)
     is_mine = serializers.SerializerMethodField()
     my_vote = serializers.SerializerMethodField()
+    reply_by = UserBriefSerializer(read_only=True, allow_null=True)
+    can_reply = serializers.SerializerMethodField(
+        help_text="The viewer is the author or owner of what is reviewed."
+    )
 
     class Meta:
         model = Review
@@ -31,6 +35,10 @@ class ReviewSerializer(serializers.ModelSerializer):
             "updated_at",
             "is_mine",
             "my_vote",
+            "reply_text",
+            "reply_by",
+            "replied_at",
+            "can_reply",
         ]
         read_only_fields = fields
 
@@ -41,6 +49,13 @@ class ReviewSerializer(serializers.ModelSerializer):
     def get_my_vote(self, review: Review) -> bool | None:
         """True: «корисно», False: «не корисно», null: no vote (annotated by the view)."""
         return getattr(review, "my_vote", None)
+
+    def get_can_reply(self, review: Review) -> bool:
+        return bool(self.context.get("can_reply"))
+
+
+class ReviewReplySerializer(serializers.Serializer):
+    text = serializers.CharField(max_length=500, allow_blank=True)
 
 
 class ReviewsQuerySerializer(TargetQuerySerializer):

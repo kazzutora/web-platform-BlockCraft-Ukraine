@@ -25,7 +25,8 @@ import { formatCount, formatDate, mainLoadersOf } from "./format";
 import { ModCard } from "./ModCard";
 import { ModGallery } from "./ModGallery";
 import { downloadTarget } from "./target";
-import { TranslationBanner } from "./TranslationBanner";
+import { translationsCopy } from "@/features/translations/copy";
+import { TranslationBlock } from "@/features/translations/TranslationBlock";
 import { VersionPicker } from "./VersionPicker";
 import { VersionsList } from "./VersionsList";
 
@@ -63,6 +64,7 @@ export async function ModDetail({ slug, searchParams }: ModDetailProps) {
     `⬇ ${formatCount(project.downloads)}`,
     project.license && `${copy.license}: ${project.license}`,
     project.updated_at && copy.updated(formatDate(project.updated_at)),
+    project.summary_uk_by && translationsCopy.summaryBy(project.summary_uk_by.nickname),
   ]
     .filter(Boolean)
     .join(" · ");
@@ -151,18 +153,14 @@ export async function ModDetail({ slug, searchParams }: ModDetailProps) {
             value: "about",
             label: copy.tabs.about,
             content: (
-              <div className="flex flex-col gap-6">
-                {project.needs_translation && <TranslationBanner projectId={project.id} />}
-                {project.body_html ? (
-                  // body_html is sanitized on the server (nh3) when synced from Modrinth
-                  <div
-                    className="rich-text"
-                    dangerouslySetInnerHTML={{ __html: project.body_html }}
-                  />
-                ) : (
-                  <p className="text-muted">{copy.noDescription}</p>
-                )}
-              </div>
+              <TranslationBlock
+                kind="mod"
+                id={project.slug}
+                originalHtml={project.body_html}
+                ukrainianHtml={project.body_uk_html}
+                translator={project.body_uk_by?.nickname ?? null}
+                noDescription={copy.noDescription}
+              />
             ),
           },
           {

@@ -21,16 +21,36 @@ AUTO_HIDE_REPORTS = 5
 # What can be reported
 
 
+#: Not a catalog kind, but players report it too (tech.md 6.10)
+REVIEW = "review"
+
+
 def resolve_target(*, kind: str, identifier: str, viewer: User) -> Model:
-    """A visible object of a kind that allows reports."""
+    """A visible object of a kind that allows reports, or a published review."""
+    if kind == REVIEW:
+        from django.http import Http404
+
+        from apps.social.models import Review
+
+        review = Review.objects.filter(
+            pk=int(identifier) if str(identifier).isdigit() else 0,
+            status=Review.Status.PUBLISHED,
+        ).first()
+        if review is None:
+            raise Http404
+        return review
     _, target = kinds.resolve(kind, identifier, viewer=viewer, action="report")
     return target
 
 
 def author_of(target: Model) -> User | None:
+    from apps.social.models import Review
+
     if isinstance(target, Collection):
         return target.owner
-    return getattr(target, "author", None)
+    if isinstance(target, Review):
+        return target.user
+    return getattr(target, "author", None) or getattr(target, "owner", None)
 
 
 def _set_visible(target: Model, visible: bool) -> None:
@@ -48,6 +68,13 @@ def _set_visible(target: Model, visible: bool) -> None:
         return
     target.status = Publishable.Status.PUBLISHED if visible else Publishable.Status.HIDDEN
     target.save(update_fields=["status"])
+    from apps.social.models import Review
+
+    if isinstance(target, Review):
+        # A hidden review stops counting in the rating
+        from apps.social.services import recompute_rating
+
+        recompute_rating(content_type=target.content_type, object_id=target.object_id)
 
 
 def _hide(target: Model) -> None:

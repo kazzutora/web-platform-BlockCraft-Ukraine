@@ -17,7 +17,7 @@ from django.http import Http404
 
 from .exceptions import DomainError
 
-Action = Literal["favorite", "review", "collect", "report"]
+Action = Literal["favorite", "review", "collect", "report", "translate"]
 Viewer = Any  # User or AnonymousUser
 
 

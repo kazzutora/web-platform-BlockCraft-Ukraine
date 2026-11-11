@@ -72,6 +72,26 @@ class Server(TimeStamped, Sourced, Engagement):
     modpack_project_id = models.CharField(max_length=16, blank=True)
     modpack_version_id = models.CharField(max_length=16, blank=True)
     summary = models.CharField("коротко", max_length=280, blank=True)
+    #: From an approved translation (translations app), shown instead of `summary`
+    summary_uk = models.CharField("коротко українською", max_length=300, blank=True)
+    summary_uk_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="+",
+        verbose_name="переклав короткий опис",
+    )
+    #: The approved Ukrainian translation of the description (markdown → sanitized HTML)
+    body_uk_html = models.TextField("опис українською", blank=True, editable=False)
+    body_uk_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="+",
+        verbose_name="переклав опис",
+    )
     description_html = models.TextField("опис (з джерела)", blank=True, editable=False)
     #: Written by the owner here, in Ukrainian (markdown → sanitized HTML)
     description_uk_md = models.TextField("опис українською", max_length=5000, blank=True)

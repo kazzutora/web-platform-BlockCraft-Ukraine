@@ -30,8 +30,12 @@ PAGE_SIZE = 64
 UNNAMED = "Скін з MineSkin"
 
 
-def record_download(*, skin: Skin) -> None:
+def record_download(*, skin: Skin, user: User | None = None) -> None:
+    from apps.library.models import Download
+    from apps.library.services import record_took
+
     bump(skin, "downloads_count")
+    record_took(user=user, target=skin, action=Download.Action.DOWNLOAD_PNG)
 
 
 # «Мій скін»

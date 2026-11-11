@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "apps.home",
     "apps.notifications",
     "apps.moderation",
+    "apps.translations",
 ]
 
 MIDDLEWARE = [
@@ -213,6 +214,8 @@ REST_FRAMEWORK = {
         "uploads": "20/hour",
         "comments": "30/hour",
         "reviews": "20/day",
+        "translations": "30/day",
+        "review_replies": "100/day",
         "reports": "20/day",
         "lookup": "30/min",
         "copy_ip": "60/hour",
@@ -255,6 +258,9 @@ SPECTACULAR_SETTINGS = {
         "ReasonEnum": "apps.moderation.models.Report.Reason",
         "CompatItemStatusEnum": ["ok", "no_version", "pinned_incompatible", "mod_needs_loader"],
         "CompatStatusEnum": ["ok", "warnings", "errors", "incomplete"],
+        "TranslationStatusEnum": "apps.translations.models.Translation.Status",
+        "TranslationFieldEnum": "apps.translations.models.Translation.Field",
+        "TookActionEnum": "apps.library.models.Download.Action",
     },
 }
 

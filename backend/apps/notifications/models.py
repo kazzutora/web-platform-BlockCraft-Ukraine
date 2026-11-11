@@ -6,14 +6,19 @@ class Notification(models.Model):
     class Type(models.TextChoices):
         HIDDEN = "hidden", "Роботу приховано після скарг"
         RESTORED = "restored", "Роботу повернуто"
-        REVIEW = "review", "Новий відгук"
         WARNING = "warning", "Попередження"
         PACK_ATTENTION = "pack_attention", "Збірка потребує уваги"
+        REVIEW_ON_YOUR_PACK = "review_on_your_pack", "Відгук на мою збірку"
+        REVIEW_ON_YOUR_SERVER = "review_on_your_server", "Відгук на мій сервер"
+        REVIEW_REPLY = "review_reply", "Відповідь на мій відгук"
+        SERVER_VERIFIED = "server_verified", "Сервер підтверджено"
+        TRANSLATION_PUBLISHED = "translation_published", "Переклад схвалено"
+        TRANSLATION_REJECTED = "translation_rejected", "Переклад відхилено"
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="notifications"
     )
-    type = models.CharField(max_length=16, choices=Type.choices)
+    type = models.CharField(max_length=32, choices=Type.choices)
     #: {kind, id, title, reason, actor, excerpt}: what the text and the link need
     payload = models.JSONField(default=dict)
     is_read = models.BooleanField(default=False)

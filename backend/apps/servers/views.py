@@ -195,7 +195,7 @@ class ServerViewSet(
     @action(detail=True, methods=["post"], url_path="copy-ip")
     def copy_ip(self, request: Request, slug: str) -> Response:
         server = self.get_object()
-        services.record_ip_copy(server=server)
+        services.record_ip_copy(server=server, user=request.user)
         server.refresh_from_db(fields=["ip_copies_count"])
         return Response({"ip_copies_count": server.ip_copies_count})
 

@@ -5,6 +5,7 @@ export const queryKeys = {
     all: ["me"] as const,
     account: () => [...queryKeys.me.all, "account"] as const,
     settings: () => [...queryKeys.me.all, "settings"] as const,
+    activity: (section: string) => [...queryKeys.me.all, "activity", section] as const,
   },
   auth: {
     config: ["auth", "config"] as const,
@@ -42,6 +43,9 @@ export const queryKeys = {
   },
   mods: {
     importJob: (id: string) => ["mods", "import-job", id] as const,
+  },
+  translations: {
+    of: (kind: string, id: string) => ["translations", kind, id] as const,
   },
   search: {
     suggest: (q: string) => ["search", "suggest", q] as const,

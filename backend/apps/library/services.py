@@ -179,3 +179,33 @@ def copy_collection(*, source: Collection, user: User) -> Collection:
     Collection.objects.filter(pk=copy.pk).update(items_count=len(items))
     copy.refresh_from_db()
     return copy
+
+
+# «Взяв»
+
+
+def record_took(
+    *,
+    user,
+    target,
+    action: str,
+    game_version: str = "",
+    loader: str = "",
+    **extra,
+) -> None:
+    """A signed-in player took something; guests only move the counters (tech.md 6.7)."""
+    from django.contrib.contenttypes.models import ContentType
+
+    from .models import Download
+
+    if user is None or not user.is_authenticated:
+        return
+    Download.objects.create(
+        user=user,
+        content_type=ContentType.objects.get_for_model(target._meta.model),
+        object_id=target.pk,
+        action=action,
+        game_version=game_version[:32],
+        loader=loader[:32],
+        **extra,
+    )

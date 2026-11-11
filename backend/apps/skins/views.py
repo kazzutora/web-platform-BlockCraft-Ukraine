@@ -117,7 +117,7 @@ class SkinViewSet(
     @action(detail=True, methods=["get"])
     def download(self, request: Request, pk: str) -> FileResponse:
         skin = self.get_object()
-        services.record_download(skin=skin)
+        services.record_download(skin=skin, user=request.user)
         return FileResponse(
             skin.texture.open("rb"),
             as_attachment=True,

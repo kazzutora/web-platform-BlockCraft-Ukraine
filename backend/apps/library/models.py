@@ -1,6 +1,8 @@
 import secrets
 
 from django.conf import settings
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
 
 from apps.core.models import Engagement, GenericTarget, TimeStamped
@@ -88,13 +90,33 @@ class CollectionItem(GenericTarget):
 
 
 class Download(models.Model):
-    """A signed-in user took a file; used later to track updates of what they installed."""
+    """«Взяв»: a signed-in player took something (a file, a .mrpack, an address, a PNG).
+
+    Feeds «Взяв» in /me and the trends; guests only move the counters (tech.md 6.7).
+    """
+
+    class Action(models.TextChoices):
+        DOWNLOAD = "download", "Завантажив файл"
+        EXPORT_MRPACK = "export_mrpack", "Завантажив .mrpack"
+        COPY_IP = "copy_ip", "Скопіював IP"
+        DOWNLOAD_PNG = "download_png", "Завантажив PNG"
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="downloads"
     )
+    content_type = models.ForeignKey(
+        ContentType, on_delete=models.CASCADE, related_name="+", null=True
+    )
+    object_id = models.PositiveBigIntegerField(null=True)
+    target = GenericForeignKey("content_type", "object_id")
+    action = models.CharField(max_length=16, choices=Action.choices, default=Action.DOWNLOAD)
+    #: For mods: the project and the exact file (trends count projects)
     project = models.ForeignKey(
-        "mods.Project", on_delete=models.CASCADE, related_name="user_downloads"
+        "mods.Project",
+        on_delete=models.CASCADE,
+        related_name="user_downloads",
+        null=True,
+        blank=True,
     )
     version = models.ForeignKey(
         "mods.ProjectVersion", on_delete=models.SET_NULL, null=True, related_name="+"
@@ -107,7 +129,11 @@ class Download(models.Model):
         verbose_name = "завантаження"
         verbose_name_plural = "завантаження"
         ordering = ["-created_at"]
-        indexes = [models.Index(fields=["user", "project"], name="library_download_user_proj")]
+        indexes = [
+            models.Index(fields=["user", "project"], name="library_download_user_proj"),
+            models.Index(fields=["user", "-created_at"], name="library_download_user_new"),
+            models.Index(fields=["content_type", "object_id"], name="library_download_target"),
+        ]
 
     def __str__(self) -> str:
-        return f"{self.user} ← {self.project}"
+        return f"{self.user} ← {self.content_type_id}#{self.object_id}"

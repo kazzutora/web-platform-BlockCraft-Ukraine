@@ -799,6 +799,53 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiError'
           description: ''
+  /api/v1/me/activity:
+    get:
+      operationId: me_activity
+      description: «Взяв» (files, .mrpack, IP, PNG) or «Поділився» (packs, collections,
+        reviews, translations, servers, added skins) with counts.
+      parameters:
+      - in: query
+        name: page
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+      - in: query
+        name: section
+        schema:
+          enum:
+          - took
+          - shared
+          type: string
+          default: took
+          minLength: 1
+        description: |-
+          * `took` - took
+          * `shared` - shared
+      tags:
+      - me
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActivityPage'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
   /api/v1/me/avatar:
     put:
       operationId: me_avatar_upload
@@ -2839,6 +2886,64 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiError'
           description: ''
+  /api/v1/reviews/{id}/reply:
+    put:
+      operationId: reviews_reply
+      description: The author of a community pack or the proven owner of a server
+        answers a review of it; empty text removes the answer.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - reviews
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewReplyRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ReviewReplyRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ReviewReplyRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
   /api/v1/reviews/{id}/vote:
     post:
       operationId: reviews_vote
@@ -3781,6 +3886,197 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiError'
           description: ''
+  /api/v1/translations:
+    get:
+      operationId: translations_list
+      description: Published translations of the object; the viewer's own pending
+        and rejected ones; for moderators every pending one.
+      parameters:
+      - in: query
+        name: id
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 96
+        required: true
+      - in: query
+        name: kind
+        schema:
+          enum:
+          - mod
+          - pack
+          - server
+          type: string
+          minLength: 1
+        description: |-
+          * `mod` - mod
+          * `pack` - pack
+          * `server` - server
+        required: true
+      tags:
+      - translations
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Translation'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+    post:
+      operationId: translations_propose
+      description: Goes to moderators; a second proposal of the same field replaces
+        the player's pending one.
+      tags:
+      - translations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TranslationProposeRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TranslationProposeRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TranslationProposeRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Translation'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '429':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+  /api/v1/translations/{id}/review:
+    post:
+      operationId: translations_review
+      description: 'Moderators only: approve (shown on the page with a byline) or
+        reject.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - translations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TranslationReviewRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TranslationReviewRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TranslationReviewRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Translation'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+  /api/v1/translations/queue:
+    get:
+      operationId: translations_queue
+      description: 'Moderators only: pending translations, oldest first.'
+      tags:
+      - translations
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/QueueItem'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
   /api/v1/users/{nickname}:
     get:
       operationId: users_retrieve
@@ -3808,8 +4104,129 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiError'
           description: ''
+  /api/v1/users/{nickname}/shared:
+    get:
+      operationId: users_shared
+      description: What the player shared, visible to everyone; empty for a private
+        profile.
+      parameters:
+      - in: path
+        name: nickname
+        schema:
+          type: string
+        required: true
+      - in: query
+        name: page
+        schema:
+          type: integer
+      tags:
+      - users
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActivityPage'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
 components:
   schemas:
+    ActivityItem:
+      type: object
+      description: One row of «Взяв» or «Поділився».
+      properties:
+        type:
+          $ref: '#/components/schemas/ActivityItemTypeEnum'
+        kind:
+          type: string
+          nullable: true
+        id:
+          type: string
+        title:
+          type: string
+        image:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        status:
+          type: string
+          nullable: true
+        action:
+          type: string
+          nullable: true
+        stars:
+          type: integer
+          nullable: true
+        text:
+          type: string
+          nullable: true
+        game_version:
+          type: string
+        loader:
+          type: string
+      required:
+      - action
+      - created_at
+      - game_version
+      - id
+      - image
+      - kind
+      - loader
+      - stars
+      - status
+      - text
+      - title
+      - type
+    ActivityItemTypeEnum:
+      enum:
+      - took
+      - pack
+      - collection
+      - review
+      - translation
+      - server
+      - skin
+      type: string
+      description: |-
+        * `took` - took
+        * `pack` - pack
+        * `collection` - collection
+        * `review` - review
+        * `translation` - translation
+        * `server` - server
+        * `skin` - skin
+    ActivityPage:
+      type: object
+      properties:
+        count:
+          type: integer
+        next_page:
+          type: integer
+          nullable: true
+        counts:
+          allOf:
+          - $ref: '#/components/schemas/SharedCounts'
+          nullable: true
+          description: Only for «Поділився».
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ActivityItem'
+      required:
+      - count
+      - counts
+      - next_page
+      - results
     AddItemRequest:
       type: object
       description: '`{kind, id}`: id is a slug or a number depending on the kind.'
@@ -3868,6 +4285,15 @@ components:
     BlankEnum:
       enum:
       - ''
+    Byline:
+      type: object
+      description: Who translated it («переклав @нік»); apps.accounts would import
+        this module back.
+      properties:
+        nickname:
+          type: string
+      required:
+      - nickname
     Category:
       type: object
       properties:
@@ -4220,6 +4646,14 @@ components:
       - a
       - b
       - declared_by
+    DecisionEnum:
+      enum:
+      - approve
+      - reject
+      type: string
+      description: |-
+        * `approve` - approve
+        * `reject` - reject
     Dependency:
       type: object
       properties:
@@ -4972,8 +5406,9 @@ components:
           title: Назва
         summary:
           type: string
+          nullable: true
           readOnly: true
-          title: Коротко
+          description: Ukrainian (an approved translation) when there is one.
         origin:
           allOf:
           - $ref: '#/components/schemas/OriginEnum'
@@ -5154,16 +5589,26 @@ components:
       enum:
       - hidden
       - restored
-      - review
       - warning
       - pack_attention
+      - review_on_your_pack
+      - review_on_your_server
+      - review_reply
+      - server_verified
+      - translation_published
+      - translation_rejected
       type: string
       description: |-
         * `hidden` - Роботу приховано після скарг
         * `restored` - Роботу повернуто
-        * `review` - Новий відгук
         * `warning` - Попередження
         * `pack_attention` - Збірка потребує уваги
+        * `review_on_your_pack` - Відгук на мою збірку
+        * `review_on_your_server` - Відгук на мій сервер
+        * `review_reply` - Відповідь на мій відгук
+        * `server_verified` - Сервер підтверджено
+        * `translation_published` - Переклад схвалено
+        * `translation_rejected` - Переклад відхилено
     NotificationsPage:
       type: object
       properties:
@@ -5235,8 +5680,9 @@ components:
           title: Назва
         summary:
           type: string
+          nullable: true
           readOnly: true
-          title: Коротко
+          description: Ukrainian (an approved translation) when there is one.
         origin:
           allOf:
           - $ref: '#/components/schemas/OriginEnum'
@@ -5354,8 +5800,9 @@ components:
           title: Назва
         summary:
           type: string
+          nullable: true
           readOnly: true
-          title: Коротко
+          description: Ukrainian (an approved translation) when there is one.
         origin:
           allOf:
           - $ref: '#/components/schemas/OriginEnum'
@@ -5429,6 +5876,24 @@ components:
           type: string
           readOnly: true
           title: Опис (з Modrinth)
+        summary_uk:
+          type: string
+          readOnly: true
+          title: Коротко українською
+        summary_uk_by:
+          allOf:
+          - $ref: '#/components/schemas/UserBrief'
+          readOnly: true
+          nullable: true
+        body_uk_html:
+          type: string
+          readOnly: true
+          title: Опис українською
+        body_uk_by:
+          allOf:
+          - $ref: '#/components/schemas/UserBrief'
+          readOnly: true
+          nullable: true
         notes_md:
           type: string
           readOnly: true
@@ -5520,6 +5985,8 @@ components:
           readOnly: true
       required:
       - author
+      - body_uk_by
+      - body_uk_html
       - compat
       - compat_checked_at
       - compat_status
@@ -5556,6 +6023,8 @@ components:
       - source_file_url
       - status
       - summary
+      - summary_uk
+      - summary_uk_by
       - title
       - total_size
       - updated_at
@@ -6348,10 +6817,24 @@ components:
           readOnly: true
           title: Короткий опис українською
           description: Зі схваленого перекладу; показується замість англійського.
+        summary_uk_by:
+          allOf:
+          - $ref: '#/components/schemas/Byline'
+          readOnly: true
+          nullable: true
         body_html:
           type: string
           readOnly: true
           title: Опис (HTML, очищений)
+        body_uk_html:
+          type: string
+          readOnly: true
+          title: Опис українською
+        body_uk_by:
+          allOf:
+          - $ref: '#/components/schemas/Byline'
+          readOnly: true
+          nullable: true
         gallery:
           type: array
           items:
@@ -6395,6 +6878,8 @@ components:
           readOnly: true
       required:
       - body_html
+      - body_uk_by
+      - body_uk_html
       - categories
       - client_side
       - downloads
@@ -6422,6 +6907,7 @@ components:
       - summary
       - summary_en
       - summary_uk
+      - summary_uk_by
       - title
       - updated_at
     ProjectRef:
@@ -6588,6 +7074,53 @@ components:
       description: |-
         * `public` - public
         * `link` - link
+    QueueItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        field:
+          allOf:
+          - $ref: '#/components/schemas/TranslationFieldEnum'
+          readOnly: true
+          title: Що перекладено
+        text:
+          type: string
+          readOnly: true
+          title: Переклад
+        status:
+          allOf:
+          - $ref: '#/components/schemas/TranslationStatusEnum'
+          readOnly: true
+        author:
+          allOf:
+          - $ref: '#/components/schemas/UserBrief'
+          readOnly: true
+        reject_reason:
+          type: string
+          readOnly: true
+          title: Чому відхилено
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        kind:
+          type: string
+          readOnly: true
+        target_id:
+          type: string
+          readOnly: true
+      required:
+      - author
+      - created_at
+      - field
+      - id
+      - kind
+      - reject_reason
+      - status
+      - target_id
+      - text
     ReasonEnum:
       enum:
       - inappropriate
@@ -6612,11 +7145,27 @@ components:
           maxItems: 500
       required:
       - item_ids
+    ReportCreateKindEnum:
+      enum:
+      - collection
+      - mod
+      - skin
+      - server
+      - pack
+      - review
+      type: string
+      description: |-
+        * `collection` - collection
+        * `mod` - mod
+        * `skin` - skin
+        * `server` - server
+        * `pack` - pack
+        * `review` - review
     ReportCreateRequest:
       type: object
       properties:
         kind:
-          $ref: '#/components/schemas/KindEnum'
+          $ref: '#/components/schemas/ReportCreateKindEnum'
         id:
           type: string
           minLength: 1
@@ -6811,16 +7360,46 @@ components:
           description: 'True: «корисно», False: «не корисно», null: no vote (annotated
             by the view).'
           readOnly: true
+        reply_text:
+          type: string
+          readOnly: true
+          title: Відповідь
+        reply_by:
+          allOf:
+          - $ref: '#/components/schemas/UserBrief'
+          readOnly: true
+          nullable: true
+        replied_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        can_reply:
+          type: boolean
+          readOnly: true
+          description: The viewer is the author or owner of what is reviewed.
       required:
+      - can_reply
       - created_at
       - helpful_count
       - id
       - is_mine
       - my_vote
+      - replied_at
+      - reply_by
+      - reply_text
       - stars
       - text
       - updated_at
       - user
+    ReviewReplyRequest:
+      type: object
+      properties:
+        text:
+          type: string
+          maxLength: 500
+      required:
+      - text
     ReviewSummary:
       type: object
       properties:
@@ -7103,7 +7682,7 @@ components:
         summary:
           type: string
           readOnly: true
-          title: Коротко
+          description: The owner's words, else the approved translation, else Modrinth's.
         address:
           type: string
           readOnly: true
@@ -7247,7 +7826,7 @@ components:
         summary:
           type: string
           readOnly: true
-          title: Коротко
+          description: The owner's words, else the approved translation, else Modrinth's.
         address:
           type: string
           readOnly: true
@@ -7348,6 +7927,24 @@ components:
           type: string
           readOnly: true
           title: Опис (з джерела)
+        summary_uk:
+          type: string
+          readOnly: true
+          title: Коротко українською
+        summary_uk_by:
+          allOf:
+          - $ref: '#/components/schemas/UserBrief'
+          readOnly: true
+          nullable: true
+        body_uk_html:
+          type: string
+          readOnly: true
+          title: Опис українською
+        body_uk_by:
+          allOf:
+          - $ref: '#/components/schemas/UserBrief'
+          readOnly: true
+          nullable: true
         description_uk_md:
           type: string
           readOnly: true
@@ -7403,6 +8000,8 @@ components:
       - banner_url
       - bedrock_host
       - bedrock_port
+      - body_uk_by
+      - body_uk_html
       - categories
       - content_kind
       - country
@@ -7435,9 +8034,33 @@ components:
       - slug
       - source
       - summary
+      - summary_uk
+      - summary_uk_by
       - supported_versions
       - verify_code
       - website_url
+    SharedCounts:
+      type: object
+      properties:
+        packs:
+          type: integer
+        collections:
+          type: integer
+        reviews:
+          type: integer
+        translations:
+          type: integer
+        servers:
+          type: integer
+        skins:
+          type: integer
+      required:
+      - collections
+      - packs
+      - reviews
+      - servers
+      - skins
+      - translations
     SkinAddRequest:
       type: object
       description: Either a Java nickname (Mojang) or a MineSkin link / UUID.
@@ -7796,6 +8419,105 @@ components:
       - period
       - servers
       - skins
+    Translation:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        field:
+          allOf:
+          - $ref: '#/components/schemas/TranslationFieldEnum'
+          readOnly: true
+          title: Що перекладено
+        text:
+          type: string
+          readOnly: true
+          title: Переклад
+        status:
+          allOf:
+          - $ref: '#/components/schemas/TranslationStatusEnum'
+          readOnly: true
+        author:
+          allOf:
+          - $ref: '#/components/schemas/UserBrief'
+          readOnly: true
+        reject_reason:
+          type: string
+          readOnly: true
+          title: Чому відхилено
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - author
+      - created_at
+      - field
+      - id
+      - reject_reason
+      - status
+      - text
+    TranslationFieldEnum:
+      enum:
+      - summary
+      - description
+      type: string
+      description: |-
+        * `summary` - Короткий опис
+        * `description` - Опис
+    TranslationProposeKindEnum:
+      enum:
+      - mod
+      - pack
+      - server
+      type: string
+      description: |-
+        * `mod` - mod
+        * `pack` - pack
+        * `server` - server
+    TranslationProposeRequest:
+      type: object
+      properties:
+        kind:
+          $ref: '#/components/schemas/TranslationProposeKindEnum'
+        id:
+          type: string
+          minLength: 1
+          maxLength: 96
+        field:
+          $ref: '#/components/schemas/TranslationFieldEnum'
+        text:
+          type: string
+          minLength: 1
+          maxLength: 20000
+      required:
+      - field
+      - id
+      - kind
+      - text
+    TranslationReviewRequest:
+      type: object
+      properties:
+        decision:
+          $ref: '#/components/schemas/DecisionEnum'
+        reason:
+          type: string
+          maxLength: 280
+      required:
+      - decision
+    TranslationStatusEnum:
+      enum:
+      - pending
+      - published
+      - rejected
+      - superseded
+      type: string
+      description: |-
+        * `pending` - Чекає модератора
+        * `published` - Опубліковано
+        * `rejected` - Відхилено
+        * `superseded` - Замінено новішим
     UnknownFile:
       type: object
       properties:

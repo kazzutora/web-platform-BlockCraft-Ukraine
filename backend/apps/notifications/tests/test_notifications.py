@@ -24,15 +24,17 @@ def test_first_review_notifies_the_owner_and_updates_do_not():
     social.upsert_review(user=reviewer, kind="server", identifier=server.slug, stars=4, text="Ок")
     social.upsert_review(user=reviewer, kind="server", identifier=server.slug, stars=5)
 
-    assert list(Notification.objects.values_list("user", "type")) == [(server.owner_id, "review")]
+    assert list(Notification.objects.values_list("user", "type")) == [
+        (server.owner_id, "review_on_your_server")
+    ]
 
 
 def test_switched_off_types_are_not_saved():
     user = UserFactory()
-    UserSettings.objects.filter(user=user).update(notify_prefs={"review": False})
+    UserSettings.objects.filter(user=user).update(notify_prefs={"review_on_your_pack": False})
     user.refresh_from_db()
 
-    notify(user=user, type="review", actor="x")
+    notify(user=user, type="review_on_your_pack", actor="x")
     notify(user=user, type="warning", reason="x")
 
     assert list(Notification.objects.values_list("type", flat=True)) == ["warning"]
@@ -41,7 +43,9 @@ def test_switched_off_types_are_not_saved():
 def test_list_unread_and_mark_read():
     user = UserFactory()
     for n in range(23):
-        Notification.objects.create(user=user, type="review", payload={"title": f"Скін {n}"})
+        Notification.objects.create(
+            user=user, type="review_on_your_pack", payload={"title": f"Скін {n}"}
+        )
     client = client_for(user)
 
     page = client.get("/api/v1/me/notifications").json()
@@ -59,7 +63,7 @@ def test_list_unread_and_mark_read():
 
 
 def test_notifications_are_private(api_client):
-    Notification.objects.create(user=UserFactory(), type="review")
+    Notification.objects.create(user=UserFactory(), type="review_on_your_pack")
 
     assert api_client.get("/api/v1/me/notifications").status_code == 401
     assert client_for(UserFactory()).get("/api/v1/me/notifications").json()["results"] == []

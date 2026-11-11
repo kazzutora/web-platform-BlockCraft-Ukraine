@@ -18,6 +18,17 @@ class Review(GenericTarget, TimeStamped):
     )
     text = models.TextField(max_length=1000, blank=True)
     helpful_count = models.PositiveIntegerField(default=0)
+    #: The author of the pack or the proven owner of the server answers, once (editable)
+    reply_text = models.TextField("відповідь", max_length=500, blank=True)
+    reply_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="+",
+        verbose_name="хто відповів",
+    )
+    replied_at = models.DateTimeField(null=True, blank=True)
     status = models.CharField(
         max_length=16, choices=Status.choices, default=Status.PUBLISHED, db_index=True
     )

@@ -64,6 +64,9 @@ class PackBriefSerializer(serializers.ModelSerializer):
 class PackCardSerializer(serializers.ModelSerializer):
     """Catalog card: cover (or the first icons), target, compatibility and counters."""
 
+    summary = serializers.SerializerMethodField(
+        help_text="Ukrainian (an approved translation) when there is one."
+    )
     author = UserBriefSerializer(read_only=True)
     cover_url = serializers.SerializerMethodField()
     icons = serializers.SerializerMethodField()
@@ -109,6 +112,11 @@ class PackCardSerializer(serializers.ModelSerializer):
         return source_ref(Source.MODRINTH, pack.external_url)
 
     @extend_schema_field(serializers.CharField(allow_null=True))
+    @extend_schema_field(serializers.CharField())
+    @extend_schema_field(serializers.CharField())
+    def get_summary(self, pack: Pack) -> str:
+        return pack.summary_uk or pack.summary
+
     def get_cover_url(self, pack: Pack) -> str | None:
         if pack.cover:
             return pack.cover.url
@@ -140,6 +148,8 @@ class PackCardSerializer(serializers.ModelSerializer):
 
 
 class PackDetailSerializer(PackCardSerializer):
+    summary_uk_by = UserBriefSerializer(read_only=True, allow_null=True)
+    body_uk_by = UserBriefSerializer(read_only=True, allow_null=True)
     forked_from = PackBriefSerializer(read_only=True, allow_null=True)
     items = serializers.SerializerMethodField()
     external_files = ExternalFileSerializer(many=True, read_only=True)
@@ -157,6 +167,10 @@ class PackDetailSerializer(PackCardSerializer):
         fields = [
             *PackCardSerializer.Meta.fields,
             "description_html",
+            "summary_uk",
+            "summary_uk_by",
+            "body_uk_html",
+            "body_uk_by",
             "notes_md",
             "notes_html",
             "loader_version",

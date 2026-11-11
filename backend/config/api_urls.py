@@ -15,4 +15,5 @@ urlpatterns = [
     path("", include("apps.moderation.urls")),
     path("", include("apps.library.urls")),
     path("", include("apps.social.urls")),
+    path("", include("apps.translations.urls")),
 ]

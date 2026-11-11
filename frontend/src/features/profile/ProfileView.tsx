@@ -5,7 +5,7 @@ import { CardGrid } from "@/components/ui/CardGrid";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Tabs } from "@/components/ui/Tabs";
 import { CollectionCard } from "@/features/library/CollectionCard";
-import { SkinCard } from "@/features/skins/SkinCard";
+import { ActivityRow } from "@/features/activity/ActivityRow";
 
 import { type PublicProfile, getProfileWorks } from "./api";
 import { ProfileSkin } from "./ProfileSkin";
@@ -16,10 +16,10 @@ const copy = {
   private: "Закритий профіль",
   privateText: "Гравець вирішив не показувати свій профіль.",
   tabsLabel: "Розділи профілю",
-  tabs: { works: "Скіни", collections: "Колекції" },
+  tabs: { shared: "Поділився", collections: "Добірки" },
   empty: {
-    works: "Гравець ще не опублікував жодного скіна.",
-    collections: "Публічних колекцій поки немає.",
+    shared: "Гравець ще нічим не поділився.",
+    collections: "Публічних добірок поки немає.",
   },
 };
 
@@ -37,6 +37,7 @@ export async function ProfileView({ profile }: { profile: PublicProfile }) {
   }
 
   const works = await getProfileWorks(profile.nickname);
+  const shared = works.shared?.results ?? [];
 
   return (
     <Container className="flex flex-col gap-16 py-12 md:py-16">
@@ -64,18 +65,18 @@ export async function ProfileView({ profile }: { profile: PublicProfile }) {
         label={copy.tabsLabel}
         items={[
           {
-            value: "works",
-            label: works.skins.length
-              ? `${copy.tabs.works} · ${works.skins.length}`
-              : copy.tabs.works,
-            content: works.skins.length ? (
-              <CardGrid>
-                {works.skins.map((skin, index) => (
-                  <SkinCard key={skin.id} skin={skin} eager={index < 4} />
+            value: "shared",
+            label: shared.length
+              ? `${copy.tabs.shared} · ${works.shared?.count}`
+              : copy.tabs.shared,
+            content: shared.length ? (
+              <ul className="flex max-w-3xl flex-col border-t border-line">
+                {shared.map((item) => (
+                  <ActivityRow key={`${item.type}-${item.kind}-${item.id}`} item={item} />
                 ))}
-              </CardGrid>
+              </ul>
             ) : (
-              <EmptyState title={copy.empty.works} illustration="skins" />
+              <EmptyState title={copy.empty.shared} illustration="packs" />
             ),
           },
           {

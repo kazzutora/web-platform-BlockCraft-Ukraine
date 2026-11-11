@@ -55,7 +55,7 @@ export const emptyPack: PackFormValues = {
 export function valuesOf(pack: PackDetail): PackFormValues {
   return {
     title: pack.title,
-    summary: pack.summary,
+    summary: pack.summary ?? "",
     game_version: pack.game_version,
     loader: pack.loader,
     loader_version: pack.loader_version,

@@ -1,3 +1,5 @@
+from dataclasses import asdict
+
 from django.db.models import BooleanField, Exists, OuterRef, Value
 from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import status
@@ -20,9 +22,11 @@ from apps.servers.selectors import catalog as servers_catalog
 from apps.skins.models import Skin
 from apps.skins.selectors import catalog as skins_catalog
 
-from . import selectors, services
+from . import activity, selectors, services
 from .models import Collection, Favorite
 from .serializers import (
+    ActivityPageSerializer,
+    ActivityQuerySerializer,
     AddItemSerializer,
     CollectionDetailSerializer,
     CollectionSerializer,
@@ -350,4 +354,72 @@ class MyCollectionsView(APIView):
         )
         return Response(
             MyCollectionSerializer(queryset, many=True, context={"request": request}).data
+        )
+
+
+ACTIVITY_PAGE = 24
+
+
+def _activity_page(items, *, page: int, counts=None) -> dict:
+    start = (page - 1) * ACTIVITY_PAGE
+    return {
+        "count": len(items),
+        "next_page": page + 1 if start + ACTIVITY_PAGE < len(items) else None,
+        "counts": counts,
+        "results": [asdict(item) for item in items[start : start + ACTIVITY_PAGE]],
+    }
+
+
+class MyActivityView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(
+        operation_id="me_activity",
+        parameters=[ActivityQuerySerializer],
+        responses={200: ActivityPageSerializer, **error_responses(400, 401)},
+        description="«Взяв» (files, .mrpack, IP, PNG) or «Поділився» (packs, collections, "
+        "reviews, translations, servers, added skins) with counts.",
+    )
+    def get(self, request: Request) -> Response:
+        query = ActivityQuerySerializer(data=request.query_params)
+        query.is_valid(raise_exception=True)
+        page = query.validated_data["page"]
+        if query.validated_data["section"] == "took":
+            start = (page - 1) * ACTIVITY_PAGE
+            rows = activity.took(request.user)
+            count = rows.count()
+            items = activity.took_items(rows[start : start + ACTIVITY_PAGE])
+            data = {
+                "count": count,
+                "next_page": page + 1 if start + ACTIVITY_PAGE < count else None,
+                "counts": None,
+                "results": [asdict(item) for item in items],
+            }
+        else:
+            items, counts = activity.shared(request.user, public=False)
+            data = _activity_page(items, page=page, counts=counts)
+        return Response(ActivityPageSerializer(data).data)
+
+
+class UserSharedView(APIView):
+    permission_classes = [AllowAny]
+
+    @extend_schema(
+        operation_id="users_shared",
+        parameters=[OpenApiParameter("page", int, required=False)],
+        responses={200: ActivityPageSerializer, **error_responses(404)},
+        description="What the player shared, visible to everyone; empty for a private profile.",
+    )
+    def get(self, request: Request, nickname: str) -> Response:
+        from apps.accounts import selectors as accounts
+
+        owner = accounts.get_profile_user(nickname=nickname)
+        query = ActivityQuerySerializer(data={"page": request.query_params.get("page", 1)})
+        query.is_valid(raise_exception=True)
+        page = query.validated_data["page"]
+        if not accounts.can_view_full_profile(viewer=request.user, owner=owner):
+            return Response(ActivityPageSerializer(_activity_page([], page=page)).data)
+        items, counts = activity.shared(owner, public=owner.pk != request.user.pk)
+        return Response(
+            ActivityPageSerializer(_activity_page(items, page=page, counts=counts)).data
         )

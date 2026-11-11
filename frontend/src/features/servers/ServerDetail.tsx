@@ -15,6 +15,8 @@ import { SaveToggle } from "@/features/library/SaveToggle";
 import { loaderName } from "@/features/mods/format";
 import { ReportButton } from "@/features/moderation/ReportButton";
 import { Reviews } from "@/features/social/Reviews";
+import { translationsCopy } from "@/features/translations/copy";
+import { TranslationBlock } from "@/features/translations/TranslationBlock";
 import { cn } from "@/lib/cn";
 
 import { getJoin, getServer, getStats } from "./api";
@@ -89,6 +91,11 @@ export async function ServerDetail({ slug }: { slug: string }) {
               <h1 className="text-h1 break-words">{server.name}</h1>
             </div>
             {server.summary && <p className="max-w-prose text-muted">{server.summary}</p>}
+            {!server.owner && server.summary_uk_by && (
+              <p className="text-meta text-muted">
+                {translationsCopy.summaryBy(server.summary_uk_by.nickname)}
+              </p>
+            )}
             <div className="flex flex-wrap items-center gap-3">
               <code className="border border-line px-3 py-2 font-mono text-base break-all">
                 {server.address}
@@ -168,11 +175,14 @@ export async function ServerDetail({ slug }: { slug: string }) {
                         />
                       </section>
                     )}
-                    {server.description_html ? (
-                      // Sanitized (nh3) when synced from Modrinth
-                      <div
-                        className="rich-text"
-                        dangerouslySetInnerHTML={{ __html: server.description_html }}
+                    {server.source ? (
+                      <TranslationBlock
+                        kind="server"
+                        id={server.slug}
+                        originalHtml={server.description_html}
+                        ukrainianHtml={server.body_uk_html}
+                        translator={server.body_uk_by?.nickname ?? null}
+                        noDescription={copy.noDescription}
                       />
                     ) : (
                       !server.description_uk_html && (

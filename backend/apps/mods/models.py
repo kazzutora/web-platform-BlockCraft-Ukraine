@@ -65,6 +65,24 @@ class Project(TimeStamped, Sourced, Engagement):
         blank=True,
         help_text="Зі схваленого перекладу; показується замість англійського.",
     )
+    summary_uk_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="+",
+        verbose_name="переклав короткий опис",
+    )
+    #: The approved Ukrainian translation of the description (markdown → sanitized HTML)
+    body_uk_html = models.TextField("опис українською", blank=True, editable=False)
+    body_uk_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="+",
+        verbose_name="переклав опис",
+    )
     body_html = models.TextField("опис (HTML, очищений)", blank=True, editable=False)
     icon_url = models.URLField(max_length=500, blank=True)
     gallery = models.JSONField(default=list, blank=True)

@@ -20,3 +20,9 @@ export const editionOptions: ChoiceOption<Edition>[] = [
   { value: "java", label: "Java" },
   { value: "bedrock", label: "Bedrock" },
 ];
+
+/** «1.21.1 · Fabric», «1.21.1 · Без модів»: «Моя гра» in a sentence (server and client). */
+export function gameName({ game_version, loader }: { game_version: string; loader: string }) {
+  const label = loaderOptions.find((option) => option.value === loader)?.label ?? "";
+  return [game_version, label].filter(Boolean).join(" · ");
+}

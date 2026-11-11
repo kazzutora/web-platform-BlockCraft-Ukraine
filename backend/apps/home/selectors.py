@@ -1,26 +1,35 @@
 """Home page blocks and tops: which objects to show is cached, viewer state is not."""
 
 from collections.abc import Callable
-from datetime import timedelta
+from datetime import date, timedelta
 
 from django.core.cache import cache
 from django.db.models import Count, F, OuterRef, QuerySet, Subquery, Value
 from django.db.models.functions import Coalesce
 from django.utils import timezone
 
+from apps.core.game import Loader
 from apps.core.kinds import Viewer, get_kind
 from apps.library.models import Download, Favorite
 from apps.mods import selectors as mods
+from apps.mods.models import ProjectType
 from apps.packs import selectors as packs
+from apps.packs.choices import PackLoader
 from apps.servers import selectors as servers
 from apps.skins import selectors as skins
 from apps.social.models import Review
 
 HOME_TTL = 5 * 60
+DAY_TTL = 25 * 60 * 60
 TOP_TTL = 10 * 60
 TOP_LIMIT = 24
+# The blocks of tech.md 10.4
 FOR_YOU_LIMIT = 8
+PACKS_LIMIT = 4
 ONLINE_LIMIT = 5
+SKINS_LIMIT = 6
+SKIN_OF_DAY_POOL = 30
+HOME_LANGUAGE = "uk"
 
 
 def _cached_ids(key: str, ttl: int, build: Callable[[], QuerySet]) -> list[int]:
@@ -37,36 +46,47 @@ def _in_order(queryset: QuerySet, ids: list[int]) -> list:
 
 
 def for_you(*, viewer: Viewer, game_version: str = "", loader: str = "") -> list:
-    """Popular mods for the player's version and loader; without a profile — this week's best."""
+    """Popular mods for «Моя гра» (the catalog's rule); without it — this week's best.
+
+    With a mod loader only mods are shown; a vanilla game gets what runs without one
+    (resource packs, shaders, datapacks, mods that ship as datapacks).
+    """
 
     def build() -> QuerySet:
         queryset = mods.catalog()
         if game_version:
             queryset = queryset.filter(game_versions__contains=[game_version])
-        if loader and loader != "vanilla":
-            queryset = queryset.filter(project_type="mod", loaders__contains=[loader])
+        if loader:
+            queryset = queryset.filter(mods.for_loader(loader))
+            if loader != Loader.VANILLA:
+                queryset = queryset.filter(project_type=ProjectType.MOD)
         return queryset.order_by("-trend_score", "-modrinth_downloads")[:FOR_YOU_LIMIT]
 
     key = f"home:for-you:{game_version}:{loader}"
     return _in_order(mods.catalog(viewer), _cached_ids(key, HOME_TTL, build))
 
 
-def skin_of_week(*, viewer: Viewer):
-    """The skin with the highest trend among those published in the last 7 days (or any)."""
+def ready_packs(*, viewer: Viewer, game_version: str = "", loader: str = "") -> list:
+    """«Готові збірки»: for «Моя гра» like the packs catalog (vanilla — any pack loader)."""
 
     def build() -> QuerySet:
-        recent = skins.catalog().filter(created_at__gte=timezone.now() - timedelta(days=7))
-        source = recent if recent.exists() else skins.catalog()
-        return source.order_by("-trend_score", "-favorites_count", "-created_at")[:1]
+        queryset = packs.catalog()
+        if game_version:
+            queryset = queryset.filter(game_version=game_version)
+        if loader in PackLoader.values:
+            queryset = queryset.filter(loader=loader)
+        return queryset.order_by("-trend_score", "-score", "-modrinth_downloads")[:PACKS_LIMIT]
 
-    found = _in_order(skins.catalog(viewer), _cached_ids("home:skin-of-week", HOME_TTL, build))
-    return found[0] if found else None
+    key = f"home:packs:{game_version}:{loader}"
+    return _in_order(packs.catalog(viewer), _cached_ids(key, HOME_TTL, build))
 
 
 def servers_online(*, viewer: Viewer) -> list:
+    """«Сервери онлайн · українською»: Ukrainian-speaking servers up now, busiest first."""
+
     def build() -> QuerySet:
         return (
-            servers.with_live(servers.catalog())
+            servers.with_live(servers.catalog().filter(languages__contains=[HOME_LANGUAGE]))
             .filter(live_online=True)
             .order_by(F("live_players").desc(nulls_last=True))[:ONLINE_LIMIT]
         )
@@ -74,25 +94,34 @@ def servers_online(*, viewer: Viewer) -> list:
     return _in_order(servers.catalog(viewer), _cached_ids("home:servers-online", HOME_TTL, build))
 
 
-def popular_packs(*, viewer: Viewer, limit: int = 4) -> list:
+def skin_of_day(*, viewer: Viewer, today: date | None = None):
+    """«Скін дня»: one of the most liked skins, a different one each day (same for everyone)."""
+    today = today or timezone.localdate()
+
     def build() -> QuerySet:
-        return packs.catalog().order_by("-trend_score", "-score", "-modrinth_downloads")[:limit]
+        # The pool in a stable order: a trend that moves does not shift today's pick
+        pool = sorted(
+            skins.catalog()
+            .order_by("-trend_score", "-favorites_count", "-downloads_count", "-created_at")
+            .values_list("pk", flat=True)[:SKIN_OF_DAY_POOL]
+        )
+        picked = pool[today.toordinal() % len(pool)] if pool else None
+        return skins.catalog().filter(pk=picked)
 
-    return _in_order(packs.catalog(viewer), _cached_ids("home:packs", HOME_TTL, build))
+    # The key names the day and outlives it: one pick for everyone all day long
+    key = f"home:skin-of-day:{today.isoformat()}"
+    found = _in_order(skins.catalog(viewer), _cached_ids(key, DAY_TTL, build))
+    return found[0] if found else None
 
 
-def new_skins(*, viewer: Viewer, limit: int = 4) -> list:
+def more_skins(*, viewer: Viewer, without: int | None) -> list:
+    """Six skins next to the skin of the day: the newest ones."""
+
     def build() -> QuerySet:
-        return skins.catalog().order_by("-created_at")[:limit]
+        return skins.catalog().order_by("-created_at")[: SKINS_LIMIT + 1]
 
-    return _in_order(skins.catalog(viewer), _cached_ids("home:new-skins", HOME_TTL, build))
-
-
-def new_servers(*, viewer: Viewer, limit: int = 3) -> list:
-    def build() -> QuerySet:
-        return servers.catalog().order_by("-created_at")[:limit]
-
-    return _in_order(servers.catalog(viewer), _cached_ids("home:new-servers", HOME_TTL, build))
+    ids = [pk for pk in _cached_ids("home:skins", HOME_TTL, build) if pk != without]
+    return _in_order(skins.catalog(viewer), ids[:SKINS_LIMIT])
 
 
 # Tops

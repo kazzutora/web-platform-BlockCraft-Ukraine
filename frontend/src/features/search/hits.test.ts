@@ -17,6 +17,7 @@ const base: SearchHit = {
   color_bucket: null,
   address: null,
   items_count: null,
+  fits_my_game: null,
 };
 
 describe("search hits", () => {
@@ -44,5 +45,9 @@ describe("search hits", () => {
         items_count: 51,
       }),
     ).toBe("Збірка · 1.21.1 · NeoForge · 51 мод");
+    expect(hitMeta({ ...base, source: "modrinth" })).toBe("Мод · 26.3 · Fabric, Quilt · Modrinth");
+    expect(hitMeta({ ...base, kind: "skin", author: null, source: "mineskin" })).toBe(
+      "Скін · MineSkin",
+    );
   });
 });

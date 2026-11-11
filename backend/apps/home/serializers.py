@@ -9,7 +9,7 @@ from apps.skins.serializers import SkinCardSerializer
 class ForYouSerializer(serializers.Serializer):
     basis = serializers.ChoiceField(
         choices=["profile", "popular"],
-        help_text="`profile`: for the player's version and loader; `popular`: this week's best.",
+        help_text="`profile`: for «Моя гра» (mods and packs fit it); `popular`: this week's best.",
     )
     game_version = serializers.CharField(allow_blank=True)
     loader = serializers.CharField(allow_blank=True)
@@ -18,11 +18,10 @@ class ForYouSerializer(serializers.Serializer):
 
 class HomeSerializer(serializers.Serializer):
     for_you = ForYouSerializer()
-    packs = PackCardSerializer(many=True)
-    skin_of_week = SkinCardSerializer(allow_null=True)
-    servers_online = ServerCardSerializer(many=True)
-    new_skins = SkinCardSerializer(many=True)
-    new_servers = ServerCardSerializer(many=True)
+    packs = PackCardSerializer(many=True, help_text="«Готові збірки»: for «Моя гра» when chosen.")
+    servers_online = ServerCardSerializer(many=True, help_text="Ukrainian-speaking, online now.")
+    skin_of_day = SkinCardSerializer(allow_null=True)
+    skins = SkinCardSerializer(many=True, help_text="The newest, without the skin of the day.")
 
 
 class TopQuerySerializer(serializers.Serializer):

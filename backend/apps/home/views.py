@@ -23,33 +23,31 @@ class HomeView(APIView):
     @extend_schema(
         operation_id="home",
         responses={200: HomeSerializer},
-        description="Home page blocks. Which objects to show is cached for 5 minutes.",
+        description=(
+            "Home page blocks (tech.md 10.4) for «Моя гра» of the viewer: mods and packs that "
+            "fit it; without it — this week's popular. Which objects to show is cached."
+        ),
     )
     def get(self, request: Request) -> Response:
         viewer = request.user
         game_version, loader = _game_profile(request)
-        personal = bool(game_version or (loader and loader != "vanilla"))
+        personal = bool(game_version or loader)
+        game = {"game_version": game_version, "loader": loader} if personal else {}
         online = selectors.servers_online(viewer=viewer)
-        new_servers = selectors.new_servers(viewer=viewer)
+        skin = selectors.skin_of_day(viewer=viewer)
         data = {
             "for_you": {
                 "basis": "profile" if personal else "popular",
                 "game_version": game_version,
                 "loader": loader,
-                "mods": selectors.for_you(viewer=viewer, game_version=game_version, loader=loader)
-                if personal
-                else selectors.for_you(viewer=viewer),
+                "mods": selectors.for_you(viewer=viewer, **game),
             },
-            "packs": selectors.popular_packs(viewer=viewer),
-            "skin_of_week": selectors.skin_of_week(viewer=viewer),
+            "packs": selectors.ready_packs(viewer=viewer, **game),
             "servers_online": online,
-            "new_skins": selectors.new_skins(viewer=viewer),
-            "new_servers": new_servers,
+            "skin_of_day": skin,
+            "skins": selectors.more_skins(viewer=viewer, without=skin.pk if skin else None),
         }
-        context = {
-            "request": request,
-            "live": live_status.get_many(s.pk for s in [*online, *new_servers]),
-        }
+        context = {"request": request, "live": live_status.get_many(s.pk for s in online)}
         return Response(HomeSerializer(data, context=context).data)
 
 

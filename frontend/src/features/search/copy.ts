@@ -7,7 +7,15 @@ export const searchCopy = {
   placeholder: "Моди, збірки, скіни, сервери…",
   label: "Що шукаємо?",
   submit: "Шукати",
-  hint: "Підійде й з помилкою: «sodim» знайде Sodium.",
+  hint: "Можна з помилкою чи українською: «sodim» і «содіум» знайдуть Sodium, «шейдери» — шейдери.",
+  notForGame: (game: string) => (game ? `не для ${game}` : "не для «Моєї гри»"),
+  onlyMine: (game: string) => `Лише для ${game}`,
+  mineLabel: "Що показувати",
+  /** Names of the `source` codes of the index. */
+  sources: { modrinth: "Modrinth", mineskin: "MineSkin", mojang: "Mojang" } as Record<
+    string,
+    string
+  >,
   empty: (q: string) => `За запитом «${q}» нічого не знайшли.`,
   start: "Почни вводити — підкажемо.",
   loading: "Шукаємо…",

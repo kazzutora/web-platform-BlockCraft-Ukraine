@@ -16,7 +16,7 @@ import { queryKeys } from "@/lib/query-keys";
 import type { GameContext } from "./context";
 import { type MyGame, saveGameCookie } from "./cookie";
 import { gameCopy } from "./copy";
-import { type Loader, loaderOptions } from "./labels";
+import { gameName, type Loader, loaderOptions } from "./labels";
 import { useGameVersions } from "./useGameVersions";
 
 const copy = gameCopy.chip;
@@ -26,7 +26,7 @@ function loaderLabel(loader: string): string {
 }
 
 export function gameLabel({ game_version, loader }: MyGame): string {
-  return [game_version, loaderLabel(loader)].filter(Boolean).join(" · ");
+  return gameName({ game_version, loader });
 }
 
 type GameChipProps = { initial: GameContext; signedIn: boolean };

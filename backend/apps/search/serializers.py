@@ -7,6 +7,9 @@ class SearchQuerySerializer(serializers.Serializer):
     q = serializers.CharField(max_length=100, trim_whitespace=True)
     kind = serializers.ChoiceField(choices=KIND_ORDER, required=False)
     page = serializers.IntegerField(min_value=1, default=1)
+    mine = serializers.BooleanField(
+        default=False, help_text="Only mods and packs that fit «Моя гра»."
+    )
 
 
 class SearchHitSerializer(serializers.Serializer):
@@ -25,6 +28,11 @@ class SearchHitSerializer(serializers.Serializer):
     color_bucket = serializers.CharField(allow_null=True)
     address = serializers.CharField(allow_null=True, required=False, default=None)
     items_count = serializers.IntegerField(allow_null=True, required=False, default=None)
+    source = serializers.CharField(allow_null=True, required=False, default=None)
+    languages = serializers.ListField(child=serializers.CharField(), required=False, default=list)
+    fits_my_game = serializers.BooleanField(
+        allow_null=True, help_text="Mods and packs: fits «Моя гра»; null — not chosen or no game."
+    )
 
 
 class SearchGroupSerializer(serializers.Serializer):

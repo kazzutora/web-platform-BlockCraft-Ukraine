@@ -235,7 +235,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Home page blocks. Which objects to show is cached for 5 minutes. */
+        /** @description Home page blocks (tech.md 10.4) for «Моя гра» of the viewer: mods and packs that fit it; without it — this week's popular. Which objects to show is cached. */
         get: operations["home"];
         put?: never;
         post?: never;
@@ -940,7 +940,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Typo-tolerant search over mods, skins, servers and public collections: groups of 5, or with `kind` one page of 24. */
+        /** @description Typo-tolerant search over mods, packs, skins, servers and public collections: groups of 5, or with `kind` one page of 24. Ukrainian words and Cyrillic spellings of Latin names work too; `mine=1` keeps what fits «Моя гра». */
         get: operations["search"];
         put?: never;
         post?: never;
@@ -1526,7 +1526,7 @@ export interface components {
         FolderEnum: "mods" | "resourcepacks" | "shaderpacks" | "datapacks";
         ForYou: {
             /**
-             * @description `profile`: for the player's version and loader; `popular`: this week's best.
+             * @description `profile`: for «Моя гра» (mods and packs fit it); `popular`: this week's best.
              *
              *     * `profile` - profile
              *     * `popular` - popular
@@ -1603,11 +1603,13 @@ export interface components {
         };
         Home: {
             for_you: components["schemas"]["ForYou"];
+            /** @description «Готові збірки»: for «Моя гра» when chosen. */
             packs: components["schemas"]["PackCard"][];
-            skin_of_week: components["schemas"]["SkinCard"] | null;
+            /** @description Ukrainian-speaking, online now. */
             servers_online: components["schemas"]["ServerCard"][];
-            new_skins: components["schemas"]["SkinCard"][];
-            new_servers: components["schemas"]["ServerCard"][];
+            skin_of_day: components["schemas"]["SkinCard"] | null;
+            /** @description The newest, without the skin of the day. */
+            skins: components["schemas"]["SkinCard"][];
         };
         IdentifyRequestRequest: {
             /** @default sha1 */
@@ -2640,6 +2642,10 @@ export interface components {
             color_bucket: string | null;
             address?: string | null;
             items_count?: number | null;
+            source?: string | null;
+            languages?: string[];
+            /** @description Mods and packs: fits «Моя гра»; null — not chosen or no game. */
+            fits_my_game: boolean | null;
         };
         SearchResponse: {
             q: string;
@@ -5970,6 +5976,8 @@ export interface operations {
                  *     * `collection` - collection
                  */
                 kind?: "mod" | "pack" | "skin" | "server" | "collection";
+                /** @description Only mods and packs that fit «Моя гра». */
+                mine?: boolean;
                 page?: number;
                 q: string;
             };

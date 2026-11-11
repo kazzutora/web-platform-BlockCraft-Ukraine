@@ -41,6 +41,7 @@ describe("getGameContext", () => {
 
   it("prefers the profile once it has a choice", async () => {
     jar.set("sessionid", "x");
+    jar.set("bc_signed_in", "1");
     jar.set("bc_game", "1.21.1:fabric");
     getMyGame.mockResolvedValue({ data: { game_version: "26.3", loader: "neoforge" } });
 
@@ -53,6 +54,7 @@ describe("getGameContext", () => {
 
   it("falls back to the cookie for an empty profile or an expired session", async () => {
     jar.set("sessionid", "x");
+    jar.set("bc_signed_in", "1");
     jar.set("bc_game", ":quilt");
     getMyGame.mockResolvedValueOnce({ data: { game_version: null, loader: "" } });
     expect((await getGameContext()).source).toBe("cookie");

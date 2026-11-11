@@ -1,8 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 
+import { looksSignedIn, SESSION_COOKIE } from "@/lib/session";
 import { SESSION_HINT_COOKIE } from "@/lib/session-hint";
-
-const SESSION_COOKIE = "sessionid";
 
 /** Pages for signed-in users; guests go to /login and come back afterwards. */
 const PROTECTED = [
@@ -18,11 +17,11 @@ const PROTECTED = [
 const GUEST_ONLY = [/^\/login$/, /^\/register$/];
 
 /**
- * Checks only that the session cookie exists — enough for redirects; the API still
- * verifies the session on every request.
+ * Checks only cookies — enough for redirects; the API still verifies the session on every
+ * request (see lib/session.ts for why the session cookie alone does not count).
  */
 export function proxy(request: NextRequest) {
-  const signedIn = request.cookies.has(SESSION_COOKIE);
+  const signedIn = looksSignedIn(request.cookies);
   const { pathname, search } = request.nextUrl;
 
   let response: NextResponse;
@@ -38,15 +37,8 @@ export function proxy(request: NextRequest) {
     response = NextResponse.next();
   }
 
-  // Readable mirror of the HttpOnly session cookie for client code (lib/session-hint.ts)
-  const hinted = request.cookies.get(SESSION_HINT_COOKIE)?.value === "1";
-  if (signedIn && !hinted) {
-    response.cookies.set(SESSION_HINT_COOKIE, "1", {
-      path: "/",
-      maxAge: 60 * 60 * 24 * 14,
-      sameSite: "lax",
-    });
-  } else if (!signedIn && request.cookies.has(SESSION_HINT_COOKIE)) {
+  // No session — no hint (signed out elsewhere, the session expired)
+  if (!request.cookies.has(SESSION_COOKIE) && request.cookies.has(SESSION_HINT_COOKIE)) {
     response.cookies.delete(SESSION_HINT_COOKIE);
   }
   return response;

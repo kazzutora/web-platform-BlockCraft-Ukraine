@@ -15,8 +15,8 @@ export const sections: NavItem[] = [
 export const tabBar: TabBarItem[] = [
   { href: "/", label: "Головна", icon: "home" },
   { href: "/search", label: "Пошук", icon: "search" },
-  { href: "/packs/new", label: "Зібрати", icon: "plus" },
-  { href: "/me/saved", label: "Обране", icon: "bookmark" },
+  { href: "/share", label: "Поділитися", icon: "share" },
+  { href: "/me", label: "Моє", icon: "user" },
 ];
 
 export function isActive(pathname: string, href: string): boolean {

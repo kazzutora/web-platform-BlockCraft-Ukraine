@@ -16,12 +16,22 @@ def notify(*, user: User | None, type: str, target: Model | None = None, **paylo
     if prefs.get(type) is False:
         return
     if target is not None:
-        kind = kinds.kind_for_model(type_of(target))
-        title = getattr(target, "title", None) or getattr(target, "name", "")
-        payload = {"kind": kind.name, "id": kind.identifier(target), "title": title, **payload}
+        payload = {**about(target), **payload}
     if "excerpt" in payload:
         payload["excerpt"] = payload["excerpt"][:EXCERPT_LENGTH]
     Notification.objects.create(user=user, type=type, payload=payload)
+
+
+def about(target: Model) -> dict:
+    """What the text and the link need; a review points at what it reviews."""
+    from apps.social.models import Review
+
+    if isinstance(target, Review):
+        reviewed = about(target.target) if target.target is not None else {}
+        return {**reviewed, "excerpt": target.text, "review": target.pk}
+    kind = kinds.kind_for_model(type_of(target))
+    title = getattr(target, "title", None) or getattr(target, "name", "")
+    return {"kind": kind.name, "id": kind.identifier(target), "title": title}
 
 
 def type_of(obj: Model) -> type[Model]:

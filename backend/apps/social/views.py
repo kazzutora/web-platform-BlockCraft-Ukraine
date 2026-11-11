@@ -15,6 +15,7 @@ from apps.core.throttling import WriteScopedRateThrottle
 from . import selectors, services
 from .models import Review, ReviewVote
 from .serializers import (
+    ReviewReplySerializer,
     ReviewSerializer,
     ReviewsPageSerializer,
     ReviewsQuerySerializer,
@@ -87,7 +88,11 @@ class ReviewsView(_ReadOpen):
             "next_page": page + 1 if start + REVIEWS_PAGE_SIZE < count else None,
             "results": results,
         }
-        return Response(ReviewsPageSerializer(payload, context={"request": request}).data)
+        context = {
+            "request": request,
+            "can_reply": services.can_reply(kind=kind, target=target, user=request.user),
+        }
+        return Response(ReviewsPageSerializer(payload, context=context).data)
 
     @extend_schema(
         operation_id="reviews_upsert",
@@ -124,6 +129,28 @@ class ReviewDetailView(APIView):
     def delete(self, request: Request, pk: int) -> Response:
         services.delete_review(review=get_object_or_404(Review, pk=pk), user=request.user)
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class ReviewReplyView(APIView):
+    permission_classes = [IsAuthenticated]
+    throttle_scope = "review_replies"
+
+    @extend_schema(
+        operation_id="reviews_reply",
+        request=ReviewReplySerializer,
+        responses={200: ReviewSerializer, **error_responses(400, 401, 403, 404)},
+        description="The author of a community pack or the proven owner of a server answers "
+        "a review of it; empty text removes the answer.",
+    )
+    def put(self, request: Request, pk: int) -> Response:
+        data = ReviewReplySerializer(data=request.data)
+        data.is_valid(raise_exception=True)
+        review = get_object_or_404(
+            Review.objects.select_related("user"), pk=pk, status=Review.Status.PUBLISHED
+        )
+        services.reply_to_review(review=review, user=request.user, text=data.validated_data["text"])
+        context = {"request": request, "can_reply": True}
+        return Response(ReviewSerializer(review, context=context).data)
 
 
 class ReviewVoteView(APIView):

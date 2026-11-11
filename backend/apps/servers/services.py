@@ -19,6 +19,8 @@ from apps.core.models import Source
 from apps.moderation import services as moderation
 from apps.moderation import words
 from apps.mods.markdown import render_markdown
+from apps.notifications.models import Notification
+from apps.notifications.services import notify
 from apps.sources.clients import ping as clients
 from apps.sources.clients.modrinth import ModrinthNotFoundError
 from apps.sources.clients.modrinth_v3 import ModrinthV3Client
@@ -169,6 +171,11 @@ def verify(*, server_id: int, user_id: int, probe: Callable | None = None) -> st
         # save(), not update(): the search index listens to post_save
         server.save(update_fields=["is_verified", "owner", "claimant", "claimed_at", "updated_at"])
         state = "verified"
+        notify(
+            user=User.objects.filter(pk=user_id).first(),
+            type=Notification.Type.SERVER_VERIFIED,
+            target=server,
+        )
     else:
         state = "missing"
     status.set_verification(server.pk, user_id, state)
@@ -254,8 +261,12 @@ def delete_server(*, server: Server, user: User) -> None:
     server.delete()
 
 
-def record_ip_copy(*, server: Server) -> None:
+def record_ip_copy(*, server: Server, user: User | None = None) -> None:
+    from apps.library.models import Download
+    from apps.library.services import record_took
+
     bump(server, "ip_copies_count")
+    record_took(user=user, target=server, action=Download.Action.COPY_IP)
 
 
 # Modrinth

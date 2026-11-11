@@ -19,6 +19,11 @@ from apps.notifications.services import notify
 from .models import Review, ReviewVote
 
 BAYES_WEIGHT = 10  # C in score = (C·m + Σstars) / (C + n)
+#: Who hears about a new review: authors of packs, owners of servers (mods have neither)
+REVIEW_NOTICES = {
+    "pack": Notification.Type.REVIEW_ON_YOUR_PACK,
+    "server": Notification.Type.REVIEW_ON_YOUR_SERVER,
+}
 
 
 # Reviews
@@ -52,15 +57,53 @@ def upsert_review(
         defaults={"stars": stars, "text": text.strip()},
     )
     recompute_rating(content_type=kind_obj.content_type, object_id=target.pk)
-    if created:
-        notify(
-            user=owner,
-            type=Notification.Type.REVIEW,
-            target=target,
-            actor=user.nickname,
-            excerpt=review.text,
-        )
+    notice = REVIEW_NOTICES.get(kind_obj.name)
+    if created and notice and _answerer(kind_obj, target) is not None:
+        notify(user=owner, type=notice, target=target, actor=user.nickname, excerpt=review.text)
     return review, created
+
+
+def can_reply(*, kind: kinds.Kind, target, user) -> bool:
+    owner = _answerer(kind, target)
+    return bool(owner is not None and user.is_authenticated and owner.pk == user.pk)
+
+
+def _answerer(kind: kinds.Kind, target) -> User | None:
+    """Who may answer reviews: the author of a community pack, the proven owner of a server."""
+    if kind.name == "pack" and target.origin != "community":
+        return None  # a Modrinth modpack has no author here
+    if kind.name == "server" and not target.is_verified:
+        return None
+    return kind.owner_of(target) if kind.name in REVIEW_NOTICES else None
+
+
+@transaction.atomic
+def reply_to_review(*, review: Review, user: User, text: str) -> Review:
+    """The author of a community pack or the proven owner of a server answers a review
+    of their work (one answer, editable; empty removes it). The reviewer is told once."""
+    kind = kinds.kind_for_model(review.content_type.model_class())
+    owner = _answerer(kind, review.target) if review.target is not None else None
+    if owner is None or owner.pk != user.pk:
+        raise DomainError(
+            code="forbidden", message="Відповідати може лише автор чи власник.", status=403
+        )
+    moderation.ensure_can_publish(user)
+    text = text.strip()
+    words.check(text=text)
+    first = not review.reply_text and bool(text)
+    review.reply_text = text
+    review.reply_by = user if text else None
+    review.replied_at = timezone.now() if text else None
+    review.save(update_fields=["reply_text", "reply_by", "replied_at", "updated_at"])
+    if first:
+        notify(
+            user=review.user,
+            type=Notification.Type.REVIEW_REPLY,
+            target=review.target,
+            actor=user.nickname,
+            excerpt=text,
+        )
+    return review
 
 
 @transaction.atomic
@@ -181,6 +224,10 @@ def forget_target(*, kind: kinds.Kind, object_id: int) -> None:
     items.delete()
     Favorite.objects.filter(**target).delete()
     Review.objects.filter(**target).delete()
+    Download.objects.filter(**target).delete()
+    from apps.translations.models import Translation
+
+    Translation.objects.filter(**target).delete()
 
 
 def recount_targets(targets: set[tuple[int, int]]) -> None:

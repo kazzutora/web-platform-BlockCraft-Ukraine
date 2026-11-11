@@ -17,7 +17,7 @@ class PacksConfig(AppConfig):
                 model_label="packs.Pack",
                 lookup_field="slug",
                 rating="review",
-                actions=frozenset({"favorite", "review", "collect", "report"}),
+                actions=frozenset({"favorite", "review", "collect", "report", "translate"}),
                 owner_field="author",
                 # Saved, reviewed and reported only when anyone may open it
                 visible=lambda viewer: listed(),

@@ -17,7 +17,7 @@ class ServersConfig(AppConfig):
                 model_label="servers.Server",
                 lookup_field="slug",
                 rating="review",
-                actions=frozenset({"favorite", "review", "collect", "report"}),
+                actions=frozenset({"favorite", "review", "collect", "report", "translate"}),
                 owner_field="owner",
                 visible=lambda viewer: Server.objects.listed(),
             )

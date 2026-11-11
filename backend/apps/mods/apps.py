@@ -15,6 +15,6 @@ class ModsConfig(AppConfig):
                 model_label="mods.Project",
                 lookup_field="slug",
                 rating="review",
-                actions=frozenset({"favorite", "review", "collect", "report"}),
+                actions=frozenset({"favorite", "review", "collect", "report", "translate"}),
             )
         )

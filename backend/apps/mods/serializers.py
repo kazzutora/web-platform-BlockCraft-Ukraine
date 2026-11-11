@@ -84,7 +84,15 @@ class GalleryImageSerializer(serializers.Serializer):
     featured = serializers.BooleanField()
 
 
+class BylineSerializer(serializers.Serializer):
+    """Who translated it («переклав @нік»); apps.accounts would import this module back."""
+
+    nickname = serializers.CharField()
+
+
 class ProjectDetailSerializer(ProjectCardSerializer):
+    summary_uk_by = BylineSerializer(read_only=True, allow_null=True)
+    body_uk_by = BylineSerializer(read_only=True, allow_null=True)
     summary_en = serializers.CharField(source="summary", read_only=True)
     gallery = GalleryImageSerializer(many=True, read_only=True)
     needs_translation = serializers.SerializerMethodField()
@@ -96,7 +104,10 @@ class ProjectDetailSerializer(ProjectCardSerializer):
             *ProjectCardSerializer.Meta.fields,
             "summary_en",
             "summary_uk",
+            "summary_uk_by",
             "body_html",
+            "body_uk_html",
+            "body_uk_by",
             "gallery",
             "game_versions",
             "client_side",

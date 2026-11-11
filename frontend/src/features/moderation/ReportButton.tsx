@@ -13,7 +13,7 @@ import { api } from "@/lib/api/client";
 import { generalError } from "@/lib/api/errors";
 import type { components } from "@/lib/api/schema";
 
-type ReportKind = components["schemas"]["KindEnum"];
+type ReportKind = components["schemas"]["ReportCreateRequest"]["kind"];
 type Reason = components["schemas"]["ReasonEnum"];
 
 const copy = {

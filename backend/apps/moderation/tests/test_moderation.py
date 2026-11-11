@@ -201,3 +201,47 @@ def test_banned_words_in_bio_and_titles(auth_client):
 
 def test_kind_names_are_stable():
     assert get_kind("skin").name == "skin"
+
+
+def test_a_review_is_reported_hidden_and_stops_counting():
+    from apps.mods.tests.factories import ProjectFactory
+    from apps.social import services as social
+    from apps.social.models import Review
+
+    project = ProjectFactory(slug="sodium")
+    author = UserFactory()
+    review, _ = social.upsert_review(user=author, kind="mod", identifier="sodium", stars=1)
+    assert report(author, "review", review.pk).json()["code"] == "own_object"
+
+    for _ in range(5):
+        assert report(UserFactory(), "review", review.pk).status_code == 201
+
+    review.refresh_from_db()
+    project.refresh_from_db()
+    assert review.status == Review.Status.HIDDEN
+    assert project.rating_count == 0
+
+
+def test_an_accepted_report_on_a_review_tells_its_author():
+    from apps.mods.tests.factories import ProjectFactory
+    from apps.social import services as social
+
+    ProjectFactory(slug="sodium")
+    author = UserFactory()
+    review, _ = social.upsert_review(user=author, kind="mod", identifier="sodium", stars=1)
+    report(UserFactory(), "review", review.pk)
+
+    services.accept_reports(reports=Report.objects.all(), moderator=UserFactory())
+
+    note = Notification.objects.get(user=author)
+    assert (note.type, note.payload["kind"], note.payload["id"]) == ("hidden", "mod", "sodium")
+
+
+def test_a_hidden_imported_skin_is_hidden_not_deleted():
+    skin = SkinFactory()
+    report(UserFactory(), "skin", skin.pk)
+
+    services.accept_reports(reports=Report.objects.all(), moderator=UserFactory())
+
+    skin.refresh_from_db()
+    assert skin.is_hidden

@@ -5,6 +5,8 @@ from . import views
 urlpatterns = [
     path("favorites", views.FavoriteView.as_view(), name="favorites"),
     path("me/saved", views.SavedView.as_view(), name="me-saved"),
+    path("me/activity", views.MyActivityView.as_view(), name="me-activity"),
+    path("users/<str:nickname>/shared", views.UserSharedView.as_view(), name="user-shared"),
     path("me/collections", views.MyCollectionsView.as_view(), name="me-collections"),
     path("collections", views.CollectionListView.as_view(), name="collections"),
     path("collections/<int:pk>", views.CollectionDetailView.as_view(), name="collection"),

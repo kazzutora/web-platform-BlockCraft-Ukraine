@@ -332,10 +332,11 @@ class PackViewSet(
     def export(self, request: Request, slug: str) -> HttpResponse:
         pack = self.get_object()
         if pack.is_modrinth and pack.source_file_url:
-            services.record_download(pack=pack)
+            services.record_download(pack=pack, user=request.user)
             return HttpResponseRedirect(pack.source_file_url)
         response = HttpResponse(
-            services.export_mrpack(pack=pack), content_type="application/x-modrinth-modpack+zip"
+            services.export_mrpack(pack=pack, user=request.user),
+            content_type="application/x-modrinth-modpack+zip",
         )
         response["Content-Disposition"] = f'attachment; filename="{pack.slug}.mrpack"'
         return response

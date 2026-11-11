@@ -29,6 +29,9 @@ class LiveStatusSerializer(serializers.Serializer):
 class ServerCardSerializer(serializers.ModelSerializer):
     """Catalog row: name, address, what is needed to join and live online (context `live`)."""
 
+    summary = serializers.SerializerMethodField(
+        help_text="The owner's words, else the approved translation, else Modrinth's."
+    )
     address = serializers.CharField(read_only=True)
     edition = serializers.CharField(read_only=True)
     live = serializers.SerializerMethodField()
@@ -65,6 +68,12 @@ class ServerCardSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = fields
 
+    @extend_schema_field(serializers.CharField())
+    def get_summary(self, server: Server) -> str:
+        if server.owner_id:
+            return server.summary
+        return server.summary_uk or server.summary
+
     @extend_schema_field(LiveStatusSerializer(allow_null=True))
     def get_live(self, server: Server) -> dict | None:
         live = self.context.get("live", {}).get(server.pk)
@@ -85,6 +94,8 @@ class ServerCardSerializer(serializers.ModelSerializer):
 
 
 class ServerDetailSerializer(ServerCardSerializer):
+    summary_uk_by = UserBriefSerializer(read_only=True, allow_null=True)
+    body_uk_by = UserBriefSerializer(read_only=True, allow_null=True)
     owner = UserBriefSerializer(read_only=True, allow_null=True)
     is_mine = serializers.SerializerMethodField(help_text="The viewer owns it (code proved).")
     is_claimed_by_me = serializers.SerializerMethodField(
@@ -101,6 +112,10 @@ class ServerDetailSerializer(ServerCardSerializer):
             "bedrock_host",
             "bedrock_port",
             "description_html",
+            "summary_uk",
+            "summary_uk_by",
+            "body_uk_html",
+            "body_uk_by",
             "description_uk_md",
             "description_uk_html",
             "discord_url",

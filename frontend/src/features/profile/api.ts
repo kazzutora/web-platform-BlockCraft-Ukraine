@@ -14,12 +14,12 @@ export async function getPublicProfile(nickname: string): Promise<PublicProfile 
   return data;
 }
 
-/** The player's published skins and public collections for the profile tabs. */
+/** What the player shared (anyone may see) and their public collections. */
 export async function getProfileWorks(nickname: string) {
   const client = await getServerClient();
-  const [skins, collections] = await Promise.all([
-    client.GET("/api/v1/skins", { params: { query: { author: nickname, sort: "new" } } }),
+  const [shared, collections] = await Promise.all([
+    client.GET("/api/v1/users/{nickname}/shared", { params: { path: { nickname } } }),
     client.GET("/api/v1/collections", { params: { query: { owner: nickname } } }),
   ]);
-  return { skins: skins.data?.results ?? [], collections: collections.data?.results ?? [] };
+  return { shared: shared.data ?? null, collections: collections.data?.results ?? [] };
 }

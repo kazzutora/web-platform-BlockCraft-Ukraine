@@ -29,13 +29,16 @@ ALLOWED_ATTRIBUTES = {
 }
 
 
-def render_markdown(source: str) -> str:
-    """Markdown → HTML without scripts, styles, iframes or event handlers."""
+def render_markdown(source: str, *, images: bool = True) -> str:
+    """Markdown → HTML without scripts, styles, iframes or event handlers.
+
+    `images=False` for text written by players here: an image from any host would track
+    the IP of every reader."""
     if not source:
         return ""
     html = nh3.clean(
         _markdown.render(source),
-        tags=ALLOWED_TAGS,
+        tags=ALLOWED_TAGS if images else ALLOWED_TAGS - {"img"},
         attributes=ALLOWED_ATTRIBUTES,
         url_schemes={"http", "https", "mailto"},
         link_rel="noopener noreferrer nofollow",

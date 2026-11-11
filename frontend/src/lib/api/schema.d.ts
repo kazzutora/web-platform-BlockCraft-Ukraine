@@ -282,6 +282,23 @@ export interface paths {
         patch: operations["me_update"];
         trace?: never;
     };
+    "/api/v1/me/activity": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description «Взяв» (files, .mrpack, IP, PNG) or «Поділився» (packs, collections, reviews, translations, servers, added skins) with counts. */
+        get: operations["me_activity"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/me/avatar": {
         parameters: {
             query?: never;
@@ -883,6 +900,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/reviews/{id}/reply": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** @description The author of a community pack or the proven owner of a server answers a review of it; empty text removes the answer. */
+        put: operations["reviews_reply"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/reviews/{id}/vote": {
         parameters: {
             query?: never;
@@ -1144,6 +1178,58 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/translations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Published translations of the object; the viewer's own pending and rejected ones; for moderators every pending one. */
+        get: operations["translations_list"];
+        put?: never;
+        /** @description Goes to moderators; a second proposal of the same field replaces the player's pending one. */
+        post: operations["translations_propose"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/translations/{id}/review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Moderators only: approve (shown on the page with a byline) or reject. */
+        post: operations["translations_review"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/translations/queue": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Moderators only: pending translations, oldest first. */
+        get: operations["translations_queue"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/users/{nickname}": {
         parameters: {
             query?: never;
@@ -1160,10 +1246,61 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/users/{nickname}/shared": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description What the player shared, visible to everyone; empty for a private profile. */
+        get: operations["users_shared"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** @description One row of «Взяв» or «Поділився». */
+        ActivityItem: {
+            type: components["schemas"]["ActivityItemTypeEnum"];
+            kind: string | null;
+            id: string;
+            title: string;
+            image: string | null;
+            /** Format: date-time */
+            created_at: string;
+            status: string | null;
+            action: string | null;
+            stars: number | null;
+            text: string | null;
+            game_version: string;
+            loader: string;
+        };
+        /**
+         * @description * `took` - took
+         *     * `pack` - pack
+         *     * `collection` - collection
+         *     * `review` - review
+         *     * `translation` - translation
+         *     * `server` - server
+         *     * `skin` - skin
+         * @enum {string}
+         */
+        ActivityItemTypeEnum: "took" | "pack" | "collection" | "review" | "translation" | "server" | "skin";
+        ActivityPage: {
+            count: number;
+            next_page: number | null;
+            /** @description Only for «Поділився». */
+            counts: components["schemas"]["SharedCounts"] | null;
+            results: components["schemas"]["ActivityItem"][];
+        };
         /** @description `{kind, id}`: id is a slug or a number depending on the kind. */
         AddItemRequest: {
             kind: components["schemas"]["KindEnum"];
@@ -1195,6 +1332,10 @@ export interface components {
         BasisEnum: "profile" | "popular";
         /** @enum {unknown} */
         BlankEnum: "";
+        /** @description Who translated it («переклав @нік»); apps.accounts would import this module back. */
+        Byline: {
+            nickname: string;
+        };
         Category: {
             slug: string;
             name: string;
@@ -1330,6 +1471,12 @@ export interface components {
             b: string;
             declared_by: string;
         };
+        /**
+         * @description * `approve` - approve
+         *     * `reject` - reject
+         * @enum {string}
+         */
+        DecisionEnum: "approve" | "reject";
         Dependency: {
             project_id: string;
             dependency_type: components["schemas"]["DependencyTypeEnum"];
@@ -1649,8 +1796,8 @@ export interface components {
             readonly slug: string;
             /** Назва */
             readonly title: string;
-            /** Коротко */
-            readonly summary: string;
+            /** @description Ukrainian (an approved translation) when there is one. */
+            readonly summary: string | null;
             /** Звідки */
             readonly origin: components["schemas"]["OriginEnum"];
             readonly author: components["schemas"]["UserBrief"];
@@ -1712,12 +1859,17 @@ export interface components {
         /**
          * @description * `hidden` - Роботу приховано після скарг
          *     * `restored` - Роботу повернуто
-         *     * `review` - Новий відгук
          *     * `warning` - Попередження
          *     * `pack_attention` - Збірка потребує уваги
+         *     * `review_on_your_pack` - Відгук на мою збірку
+         *     * `review_on_your_server` - Відгук на мій сервер
+         *     * `review_reply` - Відповідь на мій відгук
+         *     * `server_verified` - Сервер підтверджено
+         *     * `translation_published` - Переклад схвалено
+         *     * `translation_rejected` - Переклад відхилено
          * @enum {string}
          */
-        NotificationTypeEnum: "hidden" | "restored" | "review" | "warning" | "pack_attention";
+        NotificationTypeEnum: "hidden" | "restored" | "warning" | "pack_attention" | "review_on_your_pack" | "review_on_your_server" | "review_reply" | "server_verified" | "translation_published" | "translation_rejected";
         NotificationsPage: {
             unread_count: number;
             results: components["schemas"]["Notification"][];
@@ -1748,8 +1900,8 @@ export interface components {
             readonly slug: string;
             /** Назва */
             readonly title: string;
-            /** Коротко */
-            readonly summary: string;
+            /** @description Ukrainian (an approved translation) when there is one. */
+            readonly summary: string | null;
             /** Звідки */
             readonly origin: components["schemas"]["OriginEnum"];
             readonly author: components["schemas"]["UserBrief"];
@@ -1788,8 +1940,8 @@ export interface components {
             readonly slug: string;
             /** Назва */
             readonly title: string;
-            /** Коротко */
-            readonly summary: string;
+            /** @description Ukrainian (an approved translation) when there is one. */
+            readonly summary: string | null;
             /** Звідки */
             readonly origin: components["schemas"]["OriginEnum"];
             readonly author: components["schemas"]["UserBrief"];
@@ -1816,6 +1968,12 @@ export interface components {
             readonly fits_my_game: boolean | null;
             /** Опис (з Modrinth) */
             readonly description_html: string;
+            /** Коротко українською */
+            readonly summary_uk: string;
+            readonly summary_uk_by: components["schemas"]["UserBrief"] | null;
+            /** Опис українською */
+            readonly body_uk_html: string;
+            readonly body_uk_by: components["schemas"]["UserBrief"] | null;
             /** Поради автора */
             readonly notes_md: string;
             readonly notes_html: string;
@@ -2187,8 +2345,12 @@ export interface components {
              * @description Зі схваленого перекладу; показується замість англійського.
              */
             readonly summary_uk: string;
+            readonly summary_uk_by: components["schemas"]["Byline"] | null;
             /** Опис (HTML, очищений) */
             readonly body_html: string;
+            /** Опис українською */
+            readonly body_uk_html: string;
+            readonly body_uk_by: components["schemas"]["Byline"] | null;
             readonly gallery: components["schemas"]["GalleryImage"][];
             readonly game_versions: string[];
             /** На клієнті */
@@ -2280,6 +2442,21 @@ export interface components {
          * @enum {string}
          */
         PublishVisibilityEnum: "public" | "link";
+        QueueItem: {
+            readonly id: number;
+            /** Що перекладено */
+            readonly field: components["schemas"]["TranslationFieldEnum"];
+            /** Переклад */
+            readonly text: string;
+            readonly status: components["schemas"]["TranslationStatusEnum"];
+            readonly author: components["schemas"]["UserBrief"];
+            /** Чому відхилено */
+            readonly reject_reason: string;
+            /** Format: date-time */
+            readonly created_at: string;
+            readonly kind: string;
+            readonly target_id: string;
+        };
         /**
          * @description * `inappropriate` - Неприйнятний вміст
          *     * `spam` - Спам або реклама
@@ -2292,8 +2469,18 @@ export interface components {
         ReorderRequest: {
             item_ids: number[];
         };
+        /**
+         * @description * `collection` - collection
+         *     * `mod` - mod
+         *     * `skin` - skin
+         *     * `server` - server
+         *     * `pack` - pack
+         *     * `review` - review
+         * @enum {string}
+         */
+        ReportCreateKindEnum: "collection" | "mod" | "skin" | "server" | "pack" | "review";
         ReportCreateRequest: {
-            kind: components["schemas"]["KindEnum"];
+            kind: components["schemas"]["ReportCreateKindEnum"];
             id: string;
             reason: components["schemas"]["ReasonEnum"];
             comment?: string;
@@ -2358,6 +2545,16 @@ export interface components {
             readonly is_mine: boolean;
             /** @description True: «корисно», False: «не корисно», null: no vote (annotated by the view). */
             readonly my_vote: boolean | null;
+            /** Відповідь */
+            readonly reply_text: string;
+            readonly reply_by: components["schemas"]["UserBrief"] | null;
+            /** Format: date-time */
+            readonly replied_at: string | null;
+            /** @description The viewer is the author or owner of what is reviewed. */
+            readonly can_reply: boolean;
+        };
+        ReviewReplyRequest: {
+            text: string;
         };
         ReviewSummary: {
             /** Format: double */
@@ -2465,7 +2662,7 @@ export interface components {
             readonly slug: string;
             /** Назва */
             readonly name: string;
-            /** Коротко */
+            /** @description The owner's words, else the approved translation, else Modrinth's. */
             readonly summary: string;
             readonly address: string;
             readonly edition: string;
@@ -2512,7 +2709,7 @@ export interface components {
             readonly slug: string;
             /** Назва */
             readonly name: string;
-            /** Коротко */
+            /** @description The owner's words, else the approved translation, else Modrinth's. */
             readonly summary: string;
             readonly address: string;
             readonly edition: string;
@@ -2551,6 +2748,12 @@ export interface components {
             readonly bedrock_port: number;
             /** Опис (з джерела) */
             readonly description_html: string;
+            /** Коротко українською */
+            readonly summary_uk: string;
+            readonly summary_uk_by: components["schemas"]["UserBrief"] | null;
+            /** Опис українською */
+            readonly body_uk_html: string;
+            readonly body_uk_by: components["schemas"]["UserBrief"] | null;
             /** Опис українською */
             readonly description_uk_md: string;
             readonly description_uk_html: string;
@@ -2570,6 +2773,14 @@ export interface components {
             readonly verify_code: string | null;
             /** Format: date-time */
             readonly created_at: string;
+        };
+        SharedCounts: {
+            packs: number;
+            collections: number;
+            reviews: number;
+            translations: number;
+            servers: number;
+            skins: number;
         };
         /** @description Either a Java nickname (Mojang) or a MineSkin link / UUID. */
         SkinAddRequest: {
@@ -2709,6 +2920,50 @@ export interface components {
             skins: components["schemas"]["SkinCard"][];
             servers: components["schemas"]["ServerCard"][];
         };
+        Translation: {
+            readonly id: number;
+            /** Що перекладено */
+            readonly field: components["schemas"]["TranslationFieldEnum"];
+            /** Переклад */
+            readonly text: string;
+            readonly status: components["schemas"]["TranslationStatusEnum"];
+            readonly author: components["schemas"]["UserBrief"];
+            /** Чому відхилено */
+            readonly reject_reason: string;
+            /** Format: date-time */
+            readonly created_at: string;
+        };
+        /**
+         * @description * `summary` - Короткий опис
+         *     * `description` - Опис
+         * @enum {string}
+         */
+        TranslationFieldEnum: "summary" | "description";
+        /**
+         * @description * `mod` - mod
+         *     * `pack` - pack
+         *     * `server` - server
+         * @enum {string}
+         */
+        TranslationProposeKindEnum: "mod" | "pack" | "server";
+        TranslationProposeRequest: {
+            kind: components["schemas"]["TranslationProposeKindEnum"];
+            id: string;
+            field: components["schemas"]["TranslationFieldEnum"];
+            text: string;
+        };
+        TranslationReviewRequest: {
+            decision: components["schemas"]["DecisionEnum"];
+            reason?: string;
+        };
+        /**
+         * @description * `pending` - Чекає модератора
+         *     * `published` - Опубліковано
+         *     * `rejected` - Відхилено
+         *     * `superseded` - Замінено новішим
+         * @enum {string}
+         */
+        TranslationStatusEnum: "pending" | "published" | "rejected" | "superseded";
         UnknownFile: {
             hash: string;
             name: string;
@@ -3609,6 +3864,48 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Me"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    me_activity: {
+        parameters: {
+            query?: {
+                page?: number;
+                /**
+                 * @description * `took` - took
+                 *     * `shared` - shared
+                 */
+                section?: "took" | "shared";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ActivityPage"];
                 };
             };
             400: {
@@ -5552,6 +5849,65 @@ export interface operations {
             };
         };
     };
+    reviews_reply: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReviewReplyRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["ReviewReplyRequest"];
+                "multipart/form-data": components["schemas"]["ReviewReplyRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Review"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
     reviews_vote: {
         parameters: {
             query?: never;
@@ -6373,6 +6729,200 @@ export interface operations {
             };
         };
     };
+    translations_list: {
+        parameters: {
+            query: {
+                id: string;
+                /**
+                 * @description * `mod` - mod
+                 *     * `pack` - pack
+                 *     * `server` - server
+                 */
+                kind: "mod" | "pack" | "server";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Translation"][];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    translations_propose: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TranslationProposeRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["TranslationProposeRequest"];
+                "multipart/form-data": components["schemas"]["TranslationProposeRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Translation"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    translations_review: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TranslationReviewRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["TranslationReviewRequest"];
+                "multipart/form-data": components["schemas"]["TranslationReviewRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Translation"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    translations_queue: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QueueItem"][];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
     users_retrieve: {
         parameters: {
             query?: never;
@@ -6390,6 +6940,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PublicProfile"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    users_shared: {
+        parameters: {
+            query?: {
+                page?: number;
+            };
+            header?: never;
+            path: {
+                nickname: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ActivityPage"];
                 };
             };
             404: {

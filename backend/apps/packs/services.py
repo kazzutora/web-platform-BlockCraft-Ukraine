@@ -538,18 +538,28 @@ def mrpack_index(pack: Pack) -> dict:
     }
 
 
-def export_mrpack(*, pack: Pack) -> bytes:
+def export_mrpack(*, pack: Pack, user=None) -> bytes:
     """The .mrpack (a zip with the index only) and +1 to the pack's downloads."""
     index = mrpack_index(pack)
     buffer = BytesIO()
     with zipfile.ZipFile(buffer, "w", compression=zipfile.ZIP_DEFLATED) as archive:
         archive.writestr("modrinth.index.json", json.dumps(index, ensure_ascii=False, indent=2))
-    record_download(pack=pack)
+    record_download(pack=pack, user=user)
     return buffer.getvalue()
 
 
-def record_download(*, pack: Pack) -> None:
+def record_download(*, pack: Pack, user=None) -> None:
+    from apps.library.models import Download
+    from apps.library.services import record_took
+
     bump(pack, "downloads_count")
+    record_took(
+        user=user,
+        target=pack,
+        action=Download.Action.EXPORT_MRPACK,
+        game_version=pack.game_version,
+        loader=pack.loader,
+    )
 
 
 # Modrinth modpacks

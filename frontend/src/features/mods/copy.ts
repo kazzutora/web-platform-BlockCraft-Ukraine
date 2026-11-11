@@ -87,7 +87,5 @@ export const modsCopy = {
     beta: "бета",
     alpha: "альфа",
     noSimilar: "Схожих проєктів поки немає.",
-    translationBanner: "Опису українською ще немає — допоможи",
-    translationAction: "Додати переклад",
   },
 };

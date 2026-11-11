@@ -149,7 +149,11 @@ class CollectionItemSerializer(serializers.ModelSerializer):
     @extend_schema_field(PackCardSerializer(allow_null=True))
     def get_pack(self, item: CollectionItem) -> dict | None:
         target = item.target
-        if isinstance(target, Pack) and target.status == Pack.Status.PUBLISHED:
+        if (
+            isinstance(target, Pack)
+            and target.status == Pack.Status.PUBLISHED
+            and target.visibility == "public"
+        ):
             return PackCardSerializer(target, context=self.context).data
         return None
 
@@ -229,3 +233,43 @@ class SavedItemSerializer(serializers.Serializer):
     server = ServerCardSerializer(allow_null=True)
     pack = PackCardSerializer(allow_null=True)
     collection = CollectionSerializer(allow_null=True)
+
+
+class ActivityItemSerializer(serializers.Serializer):
+    """One row of «Взяв» or «Поділився»."""
+
+    type = serializers.ChoiceField(
+        choices=["took", "pack", "collection", "review", "translation", "server", "skin"]
+    )
+    kind = serializers.CharField(allow_null=True)
+    id = serializers.CharField()
+    title = serializers.CharField(allow_blank=True)
+    image = serializers.CharField(allow_null=True)
+    created_at = serializers.DateTimeField()
+    status = serializers.CharField(allow_null=True)
+    action = serializers.CharField(allow_null=True)
+    stars = serializers.IntegerField(allow_null=True)
+    text = serializers.CharField(allow_null=True)
+    game_version = serializers.CharField(allow_blank=True)
+    loader = serializers.CharField(allow_blank=True)
+
+
+class SharedCountsSerializer(serializers.Serializer):
+    packs = serializers.IntegerField()
+    collections = serializers.IntegerField()
+    reviews = serializers.IntegerField()
+    translations = serializers.IntegerField()
+    servers = serializers.IntegerField()
+    skins = serializers.IntegerField()
+
+
+class ActivityPageSerializer(serializers.Serializer):
+    count = serializers.IntegerField()
+    next_page = serializers.IntegerField(allow_null=True)
+    counts = SharedCountsSerializer(allow_null=True, help_text="Only for «Поділився».")
+    results = ActivityItemSerializer(many=True)
+
+
+class ActivityQuerySerializer(serializers.Serializer):
+    section = serializers.ChoiceField(choices=["took", "shared"], default="took")
+    page = serializers.IntegerField(min_value=1, default=1)

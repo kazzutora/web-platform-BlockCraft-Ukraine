@@ -1,5 +1,6 @@
 import secrets
 
+from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.db.models import Q
@@ -52,6 +53,26 @@ class Pack(TimeStamped, Authored, Publishable, Engagement):
     #: A mosaic of the first item icons, drawn by `packs.render_cover`; players upload nothing
     cover = models.ImageField("обкладинка", upload_to=cover_upload_to, blank=True)
     summary = models.CharField("коротко", max_length=280, blank=True)
+    #: From an approved translation (translations app), shown instead of `summary`
+    summary_uk = models.CharField("коротко українською", max_length=300, blank=True)
+    summary_uk_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="+",
+        verbose_name="переклав короткий опис",
+    )
+    #: The approved Ukrainian translation of the description (markdown → sanitized HTML)
+    body_uk_html = models.TextField("опис українською", blank=True, editable=False)
+    body_uk_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="+",
+        verbose_name="переклав опис",
+    )
     description_html = models.TextField("опис (з Modrinth)", blank=True, editable=False)
     # A supported sources.GameVersion; packs keep the string to survive version cleanups
     game_version = models.CharField("версія гри", max_length=32)

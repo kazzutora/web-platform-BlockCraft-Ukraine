@@ -16,6 +16,7 @@ import { FormError } from "@/features/auth/FormError";
 import { useMe } from "@/features/auth/useMe";
 import { useRequireAuth } from "@/features/auth/useRequireAuth";
 import type { Kind } from "@/features/library/types";
+import { ReportButton } from "@/features/moderation/ReportButton";
 import { formatDate } from "@/features/mods/format";
 import { api } from "@/lib/api/client";
 import { fieldErrors, generalError } from "@/lib/api/errors";
@@ -24,6 +25,7 @@ import { cn } from "@/lib/cn";
 import { queryKeys } from "@/lib/query-keys";
 
 import { socialCopy } from "./copy";
+import { ReviewReply } from "./ReviewReply";
 
 const copy = socialCopy.reviews;
 
@@ -256,6 +258,7 @@ function ReviewItem({ review, kind, id }: { review: Review; kind: Kind; id: stri
         <span className="text-meta text-muted">{formatDate(review.updated_at)}</span>
       </div>
       {review.text && <p className="max-w-prose whitespace-pre-line">{review.text}</p>}
+      <ReviewReply review={review} />
       <div className="flex flex-wrap items-center gap-2">
         {review.is_mine ? (
           <Button
@@ -287,6 +290,7 @@ function ReviewItem({ review, kind, id }: { review: Review; kind: Kind; id: stri
                 )}
               </button>
             ))}
+            <ReportButton kind="review" id={String(review.id)} />
           </>
         )}
       </div>

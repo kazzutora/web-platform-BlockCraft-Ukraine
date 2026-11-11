@@ -15,6 +15,7 @@ from apps.core.counters import bump
 from apps.core.exceptions import DomainError
 from apps.core.models import Source
 from apps.library.models import Download
+from apps.library.services import record_took
 from apps.sources.clients.modrinth import ModrinthClient
 from apps.sources.runs import SyncCounter
 
@@ -216,11 +217,12 @@ def record_download(
     loader: str = "",
 ) -> None:
     bump(project, "downloads_count")
-    if user is not None and user.is_authenticated:
-        Download.objects.create(
-            user=user,
-            project=project,
-            version=version,
-            game_version=game_version[:32],
-            loader=loader[:32],
-        )
+    record_took(
+        user=user,
+        target=project,
+        action=Download.Action.DOWNLOAD,
+        game_version=game_version,
+        loader=loader,
+        project=project,
+        version=version,
+    )

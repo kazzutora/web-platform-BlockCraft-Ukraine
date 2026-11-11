@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 
 import { getServerClient } from "@/lib/api/server-client";
+import { looksSignedIn } from "@/lib/session";
 
 import { GAME_COOKIE, type MyGame, parseGameCookie } from "./cookie";
 import { getGameVersions } from "./meta";
@@ -19,7 +20,7 @@ const NONE: GameContext = { game_version: "", loader: "", source: "none" };
  */
 export async function getGameContext(): Promise<GameContext> {
   const jar = await cookies();
-  if (jar.has("sessionid")) {
+  if (looksSignedIn(jar)) {
     const client = await getServerClient();
     const { data } = await client.GET("/api/v1/me/game");
     if (data && (data.game_version || data.loader)) {

@@ -1,0 +1,12 @@
+{% extends "account/email/base_message.txt" %}
+{% load account %}
+
+{% block content %}{% autoescape off %}{% user_display user as user_display %}Гравець {{ user_display }} вказав цю пошту для акаунта на {{ current_site.domain }}.
+
+{% if code %}Код підтвердження — введи його у відкритій вкладці браузера:
+
+{{ code }}{% else %}Щоб підтвердити пошту, перейди за посиланням:
+
+{{ activate_url }}{% endif %}
+
+Якщо це був не ти, просто проігноруй цей лист.{% endautoescape %}{% endblock content %}

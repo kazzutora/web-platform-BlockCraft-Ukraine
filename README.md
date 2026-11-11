@@ -32,6 +32,7 @@ make up
 - http://localhost:8080/api/docs/ — Swagger UI, схема — `/api/schema/`
 - http://localhost:8080/api/v1/health — перевірка БД і Redis
 - http://localhost:8080/admin/ — адмінка (`make createsuperuser`)
+- http://localhost:8025 — Mailpit: усі листи сайту в розробці (підтвердження пошти, скидання пароля)
 
 Міграції застосовуються автоматично під час старту бекенду. Каталог наповнює `make sync s=modrinth` (≈ 500 проєктів з Modrinth, кілька хвилин; далі — щоночі через Celery beat); кожен запуск видно в адмінці → «Синхронізації». Зупинити — `make down`.
 
@@ -50,7 +51,7 @@ pnpm dev               # сайт однаково відкривається н
 
 ### Пошта й вхід через Discord / Google
 
-- У dev листи (підтвердження пошти, скидання пароля) не надсилаються, а друкуються в лог бекенду: `make logs` → посилання `http://localhost:8080/verify-email/…`.
+- У dev листи нікуди не надсилаються: їх ловить Mailpit — http://localhost:8025 (посилання `http://localhost:8080/verify-email/…`, `…/password-reset/…`). Тексти листів — `backend/templates/account/email/`.
 - Кнопки Discord і Google з'являються, щойно в `.env` заповнені `DISCORD_CLIENT_ID` / `DISCORD_CLIENT_SECRET` або `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` (після зміни — `make down && make up`). Redirect URI в налаштуваннях застосунку провайдера:
   - Discord: `http://localhost:8080/accounts/discord/login/callback/`
   - Google: `http://localhost:8080/accounts/google/login/callback/`

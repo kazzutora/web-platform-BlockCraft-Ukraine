@@ -1,0 +1,9 @@
+{% extends "account/email/base_message.txt" %}
+
+{% block content %}{% autoescape off %}Хтось (можливо, ти) намагався зареєструватися з поштою {{ email }}.
+
+Але акаунт із цією поштою вже є. Якщо забув пароль, віднови його тут:
+
+{{ password_reset_url }}
+
+Якщо це був не ти, просто проігноруй цей лист.{% endautoescape %}{% endblock content %}

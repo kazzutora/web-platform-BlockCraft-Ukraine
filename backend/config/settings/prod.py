@@ -20,12 +20,7 @@ CSRF_COOKIE_SECURE = True
 DATABASES["default"]["CONN_MAX_AGE"] = env.int("DB_CONN_MAX_AGE", default=60)
 DATABASES["default"]["CONN_HEALTH_CHECKS"] = True
 
-# SMTP from the environment: EMAIL_HOST, EMAIL_PORT, EMAIL_HOST_USER, EMAIL_HOST_PASSWORD
-EMAIL_HOST = env("EMAIL_HOST", default="localhost")
-EMAIL_PORT = env.int("EMAIL_PORT", default=587)
-EMAIL_HOST_USER = env("EMAIL_HOST_USER", default="")
-EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", default="")
-EMAIL_USE_TLS = env.bool("EMAIL_USE_TLS", default=True)
+# SMTP from the environment (base.py): EMAIL_HOST, EMAIL_PORT, EMAIL_HOST_USER, EMAIL_HOST_PASSWORD
 
 # Everything to stdout: `docker compose logs` collects it
 LOGGING = {

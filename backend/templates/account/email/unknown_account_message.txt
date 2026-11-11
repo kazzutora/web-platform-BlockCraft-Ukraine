@@ -1,0 +1,9 @@
+{% extends "account/email/base_message.txt" %}
+
+{% block content %}{% autoescape off %}Хтось (можливо, ти) намагався увійти чи відновити пароль з поштою {{ email }}, але акаунта з такою поштою в нас немає.
+
+Якщо це був ти, зареєструйся тут:
+
+{{ signup_url }}
+
+Якщо ні — просто проігноруй цей лист.{% endautoescape %}{% endblock content %}

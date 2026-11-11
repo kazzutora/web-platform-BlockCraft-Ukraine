@@ -1,0 +1,11 @@
+{% extends "account/email/base_message.txt" %}
+
+{% block content %}{% autoescape off %}У твоєму акаунті щойно змінилося ось що:
+
+{% block notification_message %}{% endblock notification_message %}
+
+Якщо це був не ти, одразу зміни пароль. Звідки прийшла зміна:
+
+- IP-адреса: {{ ip }}
+- Браузер: {{ user_agent }}
+- Час: {{ timestamp }}{% endautoescape %}{% endblock content %}

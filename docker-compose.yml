@@ -9,6 +9,11 @@ x-backend: &backend
   environment:
     # `ACCOUNT_EMAIL_VERIFICATION=none docker compose up -d` for the e2e tests
     ACCOUNT_EMAIL_VERIFICATION: ${ACCOUNT_EMAIL_VERIFICATION:-mandatory}
+    # Every email of the site lands in Mailpit: http://localhost:8025
+    EMAIL_BACKEND: django.core.mail.backends.smtp.EmailBackend
+    EMAIL_HOST: mailpit
+    EMAIL_PORT: "1025"
+    EMAIL_USE_TLS: "0"
   volumes:
     - ./backend:/app
     - media:/app/media
@@ -48,6 +53,14 @@ services:
       MEILI_NO_ANALYTICS: "true"
     volumes:
       - meilidata:/meili_data
+
+  # A mailbox for development: catches every email, sends none (web UI on :8025)
+  mailpit:
+    image: axllent/mailpit:v1.27.0
+    ports:
+      - "8025:8025"
+    environment:
+      MP_MAX_MESSAGES: "500"
 
   backend:
     <<: *backend

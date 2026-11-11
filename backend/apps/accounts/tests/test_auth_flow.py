@@ -138,3 +138,42 @@ def test_config_lists_only_configured_providers(api_client):
     data = response.json()["data"]
     assert data["account"]["login_methods"] == ["email"]
     assert data["socialaccount"]["providers"] == []
+
+
+# Our own Ukrainian emails (templates/account/email): allauth's «uk» has Russian in places
+
+RUSSIAN = re.compile(r"[ыэъё]|Вас приветствует|учетн", re.IGNORECASE)
+
+
+def assert_ukrainian(message, subject: str) -> None:
+    assert message.subject == f"BlockCraft · {subject}"
+    assert not RUSSIAN.search(message.subject + message.body)
+    assert "Привіт від" in message.body
+
+
+def test_confirmation_email_is_ukrainian(api_client, mailoutbox):
+    signup(api_client)
+
+    assert_ukrainian(mailoutbox[0], "Підтвердь пошту")
+    assert "Гравець Steve_UA вказав цю пошту" in mailoutbox[0].body
+
+
+def test_signing_up_with_a_taken_email_says_so_in_ukrainian(api_client, mailoutbox):
+    user = UserFactory()
+
+    signup(api_client, email=user.email, username="Someone_Else")
+
+    assert_ukrainian(mailoutbox[-1], "Акаунт із цією поштою вже є")
+    assert "http://localhost:8080/password-reset" in mailoutbox[-1].body
+
+
+def test_password_reset_emails_are_ukrainian(api_client, mailoutbox):
+    user = UserFactory()
+
+    api_client.post(f"{AUTH}/password/request", {"email": user.email}, format="json")
+    api_client.post(f"{AUTH}/password/request", {"email": "nobody@example.com"}, format="json")
+
+    assert_ukrainian(mailoutbox[0], "Скидання пароля")
+    assert f"Твій нік: {user.nickname}." in mailoutbox[0].body
+    assert_ukrainian(mailoutbox[1], "Акаунта з цією поштою немає")
+    assert "http://localhost:8080/register" in mailoutbox[1].body

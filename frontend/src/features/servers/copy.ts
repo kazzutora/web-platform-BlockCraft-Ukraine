@@ -1,41 +1,48 @@
 import type { PluralForms } from "@/lib/plural";
 
-import type { Edition, Language, Mode, VerificationState } from "./types";
+import type { ContentKind, VerificationState } from "./types";
+
+const languageNames = new Intl.DisplayNames(["uk"], { type: "language" });
+const regionNames = new Intl.DisplayNames(["uk"], { type: "region" });
+
+/** «uk» → «українська»; unknown codes stay as they are. */
+export function languageName(code: string): string {
+  try {
+    return languageNames.of(code) ?? code;
+  } catch {
+    return code;
+  }
+}
+
+/** «UA» → «Україна». */
+export function countryName(code: string): string {
+  try {
+    return regionNames.of(code.toUpperCase()) ?? code;
+  } catch {
+    return code;
+  }
+}
 
 export const serversCopy = {
   title: "Сервери",
+  description:
+    "Реальні сервери Minecraft з Modrinth і від їхніх власників: мова, онлайн і що потрібно, щоб зайти.",
   label: "Сервер",
   plural: { one: "сервер", few: "сервери", many: "серверів" } satisfies PluralForms,
-  add: "Додати сервер",
+  add: "Додати свій сервер",
   empty: "Таких серверів ще немає. Спробуй прибрати частину фільтрів.",
-  editions: { java: "Java", bedrock: "Bedrock", both: "Java і Bedrock" } satisfies Record<
-    Edition,
-    string
-  >,
-  languages: { uk: "Українська", multi: "Кілька мов", en: "Англійська" } satisfies Record<
-    Language,
-    string
-  >,
-  modes: {
-    survival: "Виживання",
-    smp: "SMP",
-    creative: "Творчий",
-    anarchy: "Анархія",
-    rp: "Рольова гра",
-    minigames: "Мініігри",
-    skyblock: "SkyBlock",
-    pvp: "PvP",
-    modded: "З модами",
-    hardcore: "Хардкор",
-  } satisfies Record<Mode, string>,
+  kinds: { vanilla: "Без модів", modded: "З модами" } satisfies Record<ContentKind, string>,
+  editions: { java: "Java", bedrock: "Bedrock", both: "Java і Bedrock" } as Record<string, string>,
   filters: {
-    mode: "Режим",
-    edition: "Видання",
-    anyEdition: "Будь-яке",
     language: "Мова",
-    anyLanguage: "Будь-яка",
+    allLanguages: "Усі мови",
+    country: "Країна",
+    anyCountry: "Будь-яка країна",
+    kind: "Що потрібно",
+    version: "Версія",
+    anyVersion: "Будь-яка версія",
+    category: "Режим",
     online: "Зараз онлайн",
-    whitelist: "З вайтлістом",
     sort: "Сортування",
     sorts: [
       { value: "popular", label: "Популярні" },
@@ -43,6 +50,10 @@ export const serversCopy = {
       { value: "new", label: "Нові" },
       { value: "top", label: "Найкращі" },
     ],
+  },
+  card: {
+    pack: "потрібна збірка",
+    source: (name: string, source: string) => `${name} на ${source}`,
   },
   live: {
     online: (players: number, max: number) => `${players} / ${max}`,
@@ -55,26 +66,43 @@ export const serversCopy = {
   copyIp: "Скопіювати IP",
   copied: (address: string) => `Скопійовано: ${address}`,
   copyFailed: "Не вдалося скопіювати. Виділи адресу вручну.",
-  verified: "Перевірено",
-  whitelist: "Вайтліст",
+  verified: "Власник підтвердив",
+  join: {
+    title: "Щоб зайти",
+    version: (version: string) => `Версія ${version}`,
+    versions: (list: string) => `Підходять: ${list}`,
+    anyVersion: "Версію сервер не вказав — спробуй найновішу.",
+    pack: "Потрібна збірка",
+    packPending: "Збірку для входу ще завантажуємо з Modrinth — зазирни за кілька хвилин.",
+    packMissing: "Сервер з модами, але збірку для входу не вказано. Подробиці — в описі.",
+    takePack: "Взяти збірку",
+    fits: "Твоя гра підходить.",
+    notFits: (game: string) => `«Моя гра» (${game}) не підходить: обери цю версію в лаунчері.`,
+    notFitsPack: "Збірка під іншу гру, ніж «Моя гра», — лаунчер поставить усе сам.",
+    howTo: "Minecraft → «Мережева гра» → «Додати сервер» → встав адресу.",
+  },
   detail: {
     tabsLabel: "Розділи сервера",
     tabs: { about: "Про сервер", stats: "Онлайн", reviews: "Відгуки" },
-    noDescription: "Власник ще не додав опису.",
+    noDescription: "Опису поки немає.",
+    ownerDescription: "Від власника",
     discord: "Discord",
     website: "Сайт",
-    versions: "Версії",
+    country: "Країна",
+    languages: "Мови",
+    categories: "Режими й особливості",
     owner: "Власник",
     reviewsHint: "Свій відгук можна оновити: новий замінить попередній.",
-    pending: "Сервер на модерації: він з’явиться в каталозі після перевірки.",
-    rejected: (reason: string) => `Сервер відхилено${reason ? `: ${reason}` : "."}`,
+    waiting: "Сервер чекає підтвердження: у каталозі його ще немає. Додай код у MOTD.",
+    source: (name: string, source: string) => `${name} на ${source}`,
     edit: "Редагувати",
     delete: "Видалити",
     deleteTitle: "Видалити сервер?",
-    deleteText: "Він зникне з каталогу, колекцій і обраного разом зі статистикою.",
+    deleteText: "Він зникне з каталогу, добірок і обраного разом зі статистикою.",
     cancel: "Скасувати",
     deleted: "Сервер видалено",
     error: "Не вдалося. Спробуй ще раз.",
+    claim: "Це мій сервер",
   },
   stats: {
     ranges: [
@@ -100,60 +128,56 @@ export const serversCopy = {
     states: {
       idle: "",
       checking: "Перевіряємо MOTD…",
-      verified: "Готово: сервер позначено як перевірений.",
+      verified: "Готово: тепер ти власник сервера.",
       missing: "Коду в MOTD не знайшли. Перевір, що зберіг зміни, і спробуй ще раз.",
       offline: "Сервер не відповідає. Переконайся, що він увімкнений.",
     } satisfies Record<VerificationState, string>,
   },
-  banner: {
-    label: "Банер",
-    hint: "PNG, JPEG або WebP до 2 МБ; обріжемо до 1200×300.",
-    choose: "Завантажити банер",
-    remove: "Прибрати банер",
-    error: "Не вдалося завантажити банер.",
+  addForm: {
+    title: "Мій сервер",
+    lead: "Сервер мусить відповісти на пінг. Потім підтвердиш, що він твій, кодом у MOTD, і зможеш написати опис українською та вказати збірку для входу. Якщо сервер уже є в каталозі з Modrinth — так само станеш його власником.",
+    address: "Адреса",
+    addressHint: "Як у Minecraft: play.example.com або IP; порт — через двокрапку.",
+    edition: "Видання",
+    submit: "Перевірити й додати",
+    done: "Сервер відповів. Тепер додай код у MOTD.",
+    error: "Не вдалося додати сервер.",
+    required: "Вкажи адресу сервера.",
   },
   form: {
-    newTitle: "Новий сервер",
     editTitle: "Редагувати сервер",
     name: "Назва",
-    host: "Адреса",
-    hostHint: "Як у Minecraft: play.example.com або IP; порт можна через двокрапку.",
-    port: "Порт",
-    portHint: "Порожнє — 25565 для Java, 19132 для Bedrock.",
-    edition: "Видання",
-    modes: "Режими",
-    modesHint: "До п’яти.",
-    versions: "Версії",
-    versionsHint: "Наприклад, 1.20–1.21",
-    language: "Мова",
-    description: "Опис",
-    descriptionHint: "До 500 символів.",
+    summary: "Коротко",
+    summaryHint: "Один-два речення для каталогу, до 280 символів.",
+    description: "Опис українською",
+    descriptionHint: "Markdown, до 5000 символів. Показуємо над описом з Modrinth.",
     discord: "Запрошення в Discord",
     website: "Сайт",
-    whitelist: "Потрібен вайтліст",
-    submitNew: "Додати сервер",
-    submitEdit: "Зберегти",
-    published: "Сервер додано",
-    pending: "Сервер надіслано на модерацію",
+    pack: "Збірка для входу",
+    packHint:
+      "Почни вводити — підкажемо твої збірки, опубліковані для всіх; або slug модпака з Modrinth (з адреси /packs/…). Порожнє — збірку знову бере Modrinth.",
+    languages: "Мови",
+    languagesHint: "Коди через кому: uk, en.",
+    country: "Країна",
+    countryHint: "Двобуквений код: UA, PL. Порожнє — не вказано.",
+    kind: "Що потрібно",
+    versions: "Версії",
+    versionsHint: "Через кому: 1.21.1, 1.21.4.",
+    recommended: "Рекомендована версія",
+    fromSource:
+      "Назву, мови, країну й версії сервера з Modrinth змінюють на Modrinth — ми синхронізуємо їх кожні 6 годин.",
+    submit: "Зберегти",
     saved: "Зміни збережено",
     error: "Не вдалося зберегти сервер.",
     errors: {
-      name: "Дай серверу назву.",
-      host: "Вкажи адресу сервера.",
-      port: "Порт — число від 1 до 65535.",
-      modes: "Обери від одного до п’яти режимів.",
       url: "Посилання має починатися з https://",
+      languages: "Коди мов — дві латинські літери через кому.",
+      country: "Код країни — дві латинські літери.",
     },
   },
   mine: {
     title: "Мої сервери",
     empty: "Серверів поки немає — додай свій.",
-    status: {
-      draft: "Чернетка",
-      pending: "На модерації",
-      published: "Опубліковано",
-      rejected: "Відхилено",
-      hidden: "Приховано",
-    },
+    waiting: "Чекає коду в MOTD",
   },
 };

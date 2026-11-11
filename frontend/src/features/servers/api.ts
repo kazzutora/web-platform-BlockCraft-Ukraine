@@ -28,3 +28,12 @@ export async function getStats(slug: string, range: StatsRange = "24h") {
   });
   return data ?? null;
 }
+
+/** «Щоб зайти»: the version or the pack, and whether «Моя гра» fits. */
+export async function getJoin(slug: string) {
+  const client = await getServerClient();
+  const { data } = await client.GET("/api/v1/servers/{slug}/join", {
+    params: { path: { slug } },
+  });
+  return data ?? null;
+}

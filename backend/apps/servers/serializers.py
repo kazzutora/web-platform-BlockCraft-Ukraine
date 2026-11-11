@@ -4,9 +4,13 @@ from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
 from apps.accounts.serializers import UserBriefSerializer
+from apps.core.models import Source
+from apps.packs.serializers import PackCardSerializer
+from apps.sources.attribution import SourceRef, SourceRefSerializer, source_ref
 
-from .choices import MAX_MODES, Edition, Language, Mode
-from .models import Server
+from . import selectors
+from .models import ContentKind, Server
+from .services import claim_code
 
 DISCORD_HOSTS = {"discord.gg", "discord.com", "www.discord.com", "discordapp.com"}
 
@@ -23,39 +27,43 @@ class LiveStatusSerializer(serializers.Serializer):
 
 
 class ServerCardSerializer(serializers.ModelSerializer):
-    """Catalog row: name, modes, address and live online from Redis (context `live`)."""
+    """Catalog row: name, address, what is needed to join and live online (context `live`)."""
 
     address = serializers.CharField(read_only=True)
-    banner_url = serializers.SerializerMethodField()
+    edition = serializers.CharField(read_only=True)
     live = serializers.SerializerMethodField()
     # Viewer state from social.selectors.with_viewer_state (false/null for guests)
     is_favorited = serializers.SerializerMethodField()
     my_review_stars = serializers.SerializerMethodField()
+    source = serializers.SerializerMethodField()
 
     class Meta:
         model = Server
         fields = [
             "slug",
             "name",
+            "summary",
             "address",
             "edition",
-            "modes",
-            "versions_label",
-            "language",
-            "has_whitelist",
-            "is_verified",
+            "country",
+            "languages",
+            "categories",
+            "content_kind",
+            "supported_versions",
+            "recommended_version",
+            "icon_url",
             "banner_url",
+            "is_verified",
+            "modrinth_plays",
             "rating_avg",
             "rating_count",
             "favorites_count",
             "is_favorited",
             "my_review_stars",
             "live",
+            "source",
         ]
         read_only_fields = fields
-
-    def get_banner_url(self, server: Server) -> str | None:
-        return server.banner.url if server.banner else None
 
     @extend_schema_field(LiveStatusSerializer(allow_null=True))
     def get_live(self, server: Server) -> dict | None:
@@ -68,66 +76,127 @@ class ServerCardSerializer(serializers.ModelSerializer):
     def get_my_review_stars(self, server: Server) -> int | None:
         return getattr(server, "my_review_stars", None)
 
+    @extend_schema_field(SourceRefSerializer(allow_null=True))
+    def get_source(self, server: Server) -> SourceRef | None:
+        """Modrinth servers link back; a server added by its owner has only the owner."""
+        if server.source != Source.MODRINTH:
+            return None
+        return source_ref(Source.MODRINTH, server.external_url)
+
 
 class ServerDetailSerializer(ServerCardSerializer):
-    author = UserBriefSerializer(read_only=True)
-    is_mine = serializers.SerializerMethodField()
+    owner = UserBriefSerializer(read_only=True, allow_null=True)
+    is_mine = serializers.SerializerMethodField(help_text="The viewer owns it (code proved).")
+    is_claimed_by_me = serializers.SerializerMethodField(
+        help_text="The viewer asked to own it and has to put the code into the MOTD."
+    )
     verify_code = serializers.SerializerMethodField()
+    required_pack = serializers.SerializerMethodField()
 
     class Meta(ServerCardSerializer.Meta):
         fields = [
             *ServerCardSerializer.Meta.fields,
-            "host",
-            "port",
-            "description",
+            "java_host",
+            "java_port",
+            "bedrock_host",
+            "bedrock_port",
+            "description_html",
+            "description_uk_md",
+            "description_uk_html",
             "discord_url",
             "website_url",
-            "author",
+            "required_pack",
+            "owner",
             "ip_copies_count",
             "last_online_at",
-            "status",
-            "rejection_reason",
             "is_mine",
+            "is_claimed_by_me",
             "verify_code",
             "created_at",
         ]
         read_only_fields = fields
 
-    def _is_mine(self, server: Server) -> bool:
+    def _viewer(self):
         request = self.context.get("request")
-        return bool(
-            request and request.user.is_authenticated and server.author_id == request.user.pk
-        )
+        return request.user if request and request.user.is_authenticated else None
 
     def get_is_mine(self, server: Server) -> bool:
-        return self._is_mine(server)
+        viewer = self._viewer()
+        return bool(viewer and server.owner_id == viewer.pk)
 
+    def get_is_claimed_by_me(self, server: Server) -> bool:
+        viewer = self._viewer()
+        return bool(viewer and server.claimant_id == viewer.pk)
+
+    @extend_schema_field(serializers.CharField(allow_null=True))
     def get_verify_code(self, server: Server) -> str | None:
-        """Only the owner sees the code for the MOTD."""
-        return server.verify_code if self._is_mine(server) and not server.is_verified else None
+        """Only whoever claims the server sees their own code for the MOTD."""
+        viewer = self._viewer()
+        if viewer is None or not self.get_is_claimed_by_me(server):
+            return None
+        return claim_code(server.pk, viewer.pk)
+
+    @extend_schema_field(PackCardSerializer(allow_null=True))
+    def get_required_pack(self, server: Server) -> dict | None:
+        pack = selectors.pack_for_joining(server)
+        if pack is None:
+            return None
+        return PackCardSerializer(pack, context=self.context).data
+
+
+class ServerAddSerializer(serializers.Serializer):
+    address = serializers.CharField(max_length=260, help_text="play.example.com, an IP, host:port")
+    edition = serializers.ChoiceField(choices=["java", "bedrock"], default="java")
 
 
 class ServerWriteSerializer(serializers.Serializer):
-    name = serializers.CharField(max_length=60)
-    host = serializers.CharField(max_length=260, help_text="play.example.com, an IP or host:port")
-    port = serializers.IntegerField(
-        required=False, allow_null=True, help_text="Empty: 25565 (Java) or 19132 (Bedrock)."
-    )
-    edition = serializers.ChoiceField(choices=Edition.choices)
-    modes = serializers.ListField(
-        child=serializers.ChoiceField(choices=Mode.choices), min_length=1, max_length=MAX_MODES
-    )
-    versions_label = serializers.CharField(max_length=32, required=False, allow_blank=True)
-    language = serializers.ChoiceField(choices=Language.choices)
-    description = serializers.CharField(max_length=500, required=False, allow_blank=True)
+    """What an owner may change; name, languages… only for servers added here."""
+
+    name = serializers.CharField(max_length=80, required=False)
+    summary = serializers.CharField(max_length=280, required=False, allow_blank=True)
+    description_uk_md = serializers.CharField(max_length=5000, required=False, allow_blank=True)
     discord_url = serializers.URLField(required=False, allow_blank=True)
     website_url = serializers.URLField(required=False, allow_blank=True)
-    has_whitelist = serializers.BooleanField(required=False, default=False)
+    required_pack = serializers.CharField(
+        max_length=96, required=False, allow_blank=True, help_text="Pack slug; empty clears."
+    )
+    languages = serializers.ListField(
+        child=serializers.RegexField(r"^[a-z]{2}$"), required=False, max_length=10
+    )
+    country = serializers.RegexField(r"^[A-Za-z]{2}$|^$", required=False, allow_blank=True)
+    categories = serializers.ListField(
+        child=serializers.CharField(max_length=48), required=False, max_length=10
+    )
+    content_kind = serializers.ChoiceField(choices=ContentKind.choices, required=False)
+    supported_versions = serializers.ListField(
+        child=serializers.CharField(max_length=32), required=False, max_length=20
+    )
+    recommended_version = serializers.CharField(max_length=32, required=False, allow_blank=True)
 
     def validate_discord_url(self, value: str) -> str:
         if value and urlparse(value).hostname not in DISCORD_HOSTS:
             raise serializers.ValidationError("Посилання має вести на discord.gg або discord.com.")
         return value
+
+    def validate_country(self, value: str) -> str:
+        return value.upper()
+
+
+class JoinSerializer(serializers.Serializer):
+    """«Щоб зайти»: the address, and either a game version or a pack to take."""
+
+    address = serializers.CharField()
+    edition = serializers.CharField()
+    kind = serializers.ChoiceField(choices=ContentKind.choices)
+    versions = serializers.ListField(child=serializers.CharField())
+    recommended_version = serializers.CharField(allow_blank=True)
+    pack = PackCardSerializer(allow_null=True)
+    pack_pending = serializers.BooleanField(
+        help_text="Modded, and the pack is still being imported from Modrinth."
+    )
+    fits_my_game = serializers.BooleanField(
+        allow_null=True, help_text="The viewer's «Моя гра» can join as it is; null — unknown."
+    )
 
 
 class StatsQuerySerializer(serializers.Serializer):
@@ -149,10 +218,6 @@ class StatsSerializer(serializers.Serializer):
 
 class VerificationSerializer(serializers.Serializer):
     state = serializers.ChoiceField(choices=["idle", "checking", "verified", "missing", "offline"])
-
-
-class BannerUploadSerializer(serializers.Serializer):
-    banner = serializers.FileField(help_text="PNG, JPEG or WebP up to 2 MB; cropped to 1200×300.")
 
 
 class IpCopiesSerializer(serializers.Serializer):

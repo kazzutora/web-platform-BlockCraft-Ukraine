@@ -22,7 +22,7 @@ def thumbnail_of(target) -> str | None:
         image = target.preview or target.file
         return image.url if image else None
     if isinstance(target, Server):
-        return target.banner.url if target.banner else None
+        return target.icon_url or target.banner_url or None
     if isinstance(target, Pack) and target.cover:
         return target.cover.url
     return getattr(target, "icon_url", None) or None
@@ -142,7 +142,7 @@ class CollectionItemSerializer(serializers.ModelSerializer):
     @extend_schema_field(ServerCardSerializer(allow_null=True))
     def get_server(self, item: CollectionItem) -> dict | None:
         target = item.target
-        if isinstance(target, Server) and target.status == Server.Status.PUBLISHED:
+        if isinstance(target, Server) and target.is_listed:
             return ServerCardSerializer(target, context=self.context).data
         return None
 

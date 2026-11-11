@@ -654,15 +654,22 @@ def index_files(*, client: ModrinthClient | None, index: MrpackIndex) -> IndexFi
     return IndexFiles(refs, external)
 
 
-def import_modpack(*, client: ModrinthClient, data: ModrinthProject) -> Pack | None:
+def import_modpack(
+    *, client: ModrinthClient, data: ModrinthProject, version: ModrinthVersion | None = None
+) -> Pack | None:
     """Creates or refreshes the pack of a Modrinth modpack; None if unsupported.
 
     Only the index of the modpack's .mrpack is read, to learn its files; nothing is stored,
-    players download the original from Modrinth (`source_file_url`).
+    players download the original from Modrinth (`source_file_url`). `version` pins one
+    (a server names the exact pack to join with); otherwise the newest release is taken.
     """
-    version = pick_modpack_version(
-        client.get_versions(data.id, game_versions=supported_game_versions())
+    # A pinned version passes the same checks: a loader and a game version we support
+    candidates = (
+        [version]
+        if version is not None
+        else client.get_versions(data.id, game_versions=supported_game_versions())
     )
+    version = pick_modpack_version(candidates)
     if version is None or version.primary_file is None:
         return None
     pack = Pack.objects.filter(origin=Origin.MODRINTH, external_id=data.id).first()

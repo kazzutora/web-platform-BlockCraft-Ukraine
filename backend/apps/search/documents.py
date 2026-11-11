@@ -104,12 +104,16 @@ def server_document(server: Server) -> dict:
         server.slug,
         server,
         title=server.name,
-        summary=server.description[:300],
-        tags=[server.host, server.versions_label],
-        modes=server.modes,
-        popularity=10 * server.favorites_count + 5 * server.rating_count + server.ip_copies_count,
-        author=server.author.nickname,
-        image=server.banner.url if server.banner else None,
+        summary=(server.summary or "")[:300],
+        tags=[server.java_host or server.bedrock_host, *server.supported_versions],
+        game_versions=server.supported_versions,
+        modes=server.categories,
+        popularity=10 * server.favorites_count
+        + 5 * server.rating_count
+        + server.ip_copies_count
+        + server.modrinth_plays // 10,
+        author=server.owner.nickname if server.owner_id else None,
+        image=server.icon_url or server.banner_url or None,
         address=server.address,
     )
 
@@ -164,7 +168,7 @@ SOURCES: dict[str, Source] = {
         lambda: listed_packs().select_related("author").prefetch_related("items__project"),
         pack_document,
     ),
-    "server": Source(lambda: Server.objects.published().select_related("author"), server_document),
+    "server": Source(lambda: Server.objects.listed().select_related("owner"), server_document),
     "collection": Source(
         lambda: Collection.objects.filter(
             visibility=Collection.Visibility.PUBLIC, items_count__gt=0

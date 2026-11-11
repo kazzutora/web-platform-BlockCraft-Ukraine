@@ -5,7 +5,7 @@ import pytest
 from django.core.cache import cache
 
 from apps.servers import services, status, validators
-from apps.servers.models import Server, ServerSnapshot
+from apps.servers.models import ServerSnapshot
 from apps.servers.tasks import ping_all
 from apps.sources.clients import ping as clients
 
@@ -122,9 +122,9 @@ def test_ping_many_limits_concurrency():
 
 
 def test_ping_all_stores_status_snapshots_and_last_online():
-    up = ServerFactory(host="up.example.com")
-    down = ServerFactory(host="down.example.com")
-    ServerFactory(host="hidden.example.com", status=Server.Status.HIDDEN)
+    up = ServerFactory(java_host="up.example.com")
+    down = ServerFactory(java_host="down.example.com")
+    ServerFactory(java_host="hidden.example.com", is_hidden=True)
 
     count = services.ping_all(probe=fake_probe({"up.example.com": online(players=25)}))
 

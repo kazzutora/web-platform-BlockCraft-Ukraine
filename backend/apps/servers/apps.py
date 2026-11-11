@@ -9,6 +9,8 @@ class ServersConfig(AppConfig):
     def ready(self) -> None:
         from apps.core import kinds
 
+        from .models import Server
+
         kinds.register(
             kinds.Kind(
                 name="server",
@@ -16,6 +18,7 @@ class ServersConfig(AppConfig):
                 lookup_field="slug",
                 rating="review",
                 actions=frozenset({"favorite", "review", "collect", "report"}),
-                owner_field="author",
+                owner_field="owner",
+                visible=lambda viewer: Server.objects.listed(),
             )
         )

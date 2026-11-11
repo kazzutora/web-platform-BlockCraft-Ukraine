@@ -56,8 +56,9 @@ class JavaServer(BaseModel):
     address: str
     content: Content
     ping: Ping | None = None
-    verified_plays_2w: int = 0
-    verified_plays_4w: int = 0
+    #: null until Modrinth has counted any plays (project_server_no_plays.json)
+    verified_plays_2w: int | None = 0
+    verified_plays_4w: int | None = 0
 
 
 class MinecraftServer(BaseModel):

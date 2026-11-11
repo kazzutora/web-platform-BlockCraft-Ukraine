@@ -236,9 +236,8 @@ SPECTACULAR_SETTINGS = {
         "CheckStatusEnum": ["ok", "error"],
         # Same field names with different choices in several apps
         "EditionEnum": "apps.core.game.Edition",
-        "ServerEditionEnum": "apps.servers.choices.Edition",
         "LanguageEnum": "apps.accounts.models.UserSettings.Language",
-        "ServerLanguageEnum": "apps.servers.choices.Language",
+        "ServerContentKindEnum": "apps.servers.models.ContentKind",
         "LoaderEnum": "apps.core.game.Loader",
         "PackLoaderEnum": "apps.packs.choices.PackLoader",
         "SkinStyleEnum": "apps.skins.styles.Style",
@@ -286,6 +285,14 @@ CELERY_BEAT_SCHEDULE: dict[str, dict] = {
     },
     "social-recalc-scores": {"task": "social.recalc_scores", "schedule": crontab(minute=15)},
     "servers-ping-all": {"task": "servers.ping_all", "schedule": crontab(minute="*/5")},
+    "servers-sync-modrinth": {
+        "task": "servers.sync_modrinth",
+        "schedule": crontab(hour="*/6", minute=10),
+    },
+    "servers-cleanup-snapshots": {
+        "task": "servers.cleanup_snapshots",
+        "schedule": crontab(hour=4, minute=30),
+    },
     "social-recalc-trends": {"task": "social.recalc_trends", "schedule": crontab(minute=45)},
     "search-reindex-all": {"task": "search.reindex_all", "schedule": crontab(hour=5, minute=30)},
     "moderation-lift-expired-bans": {

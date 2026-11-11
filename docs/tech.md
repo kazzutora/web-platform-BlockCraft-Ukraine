@@ -157,7 +157,7 @@ blockcraft/
 
 ### 6.5 servers — v1: пінг, знімки, верифікація лишити; модель переробити
 
-- `Server` (TimeStamped, Sourced[`modrinth` | `owner`], Engagement): `name`, `slug`, `java_host`, `java_port` (25565), `bedrock_host`, `bedrock_port` (19132), `country` (ISO 3166-1 alpha-2), `languages` (Array ISO 639-1), `categories` (Array, з Modrinth: режими й особливості; українські назви — фікстура), `content_kind` (vanilla / modded), `supported_versions` (Array), `recommended_version`, `required_pack` (FK packs.Pack, nullable), `summary`, `description_html`, `description_uk_html`, `icon_url`, `banner_url` (URL з джерела; власних завантажень банера немає), `discord_url`, `website_url`, `owner` (FK User, nullable), `is_verified`, `verify_code`, `last_online_at`, `ip_copies_count`.
+- `Server` (TimeStamped, Sourced[`modrinth` | `owner`], Engagement): `name`, `slug`, `java_host`, `java_port` (25565), `bedrock_host`, `bedrock_port` (19132), `country` (ISO 3166-1 alpha-2), `languages` (Array ISO 639-1), `categories` (Array slug-ів з Modrinth: режими й особливості; українські назви й групи — `servers/categories.py`, віддаються в `/meta`), `content_kind` (vanilla / modded), `supported_versions` (Array), `recommended_version`, `required_pack` (FK packs.Pack, nullable), `summary`, `description_html`, `description_uk_html`, `icon_url`, `banner_url` (URL з джерела; власних завантажень банера немає), `discord_url`, `website_url`, `owner` (FK User, nullable), `claimant` + `claimed_at` (останній, хто заявив сервер; код для MOTD у кожного гравця свій — HMAC від сервера й гравця), `is_verified`, `pack_chosen_by_owner` (збірку обрав власник — синхронізація її не чіпає), `last_online_at`, `modrinth_plays` (`verified_plays_2w`), `modpack_project_id` + `modpack_version_id` (модпак, який називає Modrinth; `required_pack` з нього імпортує окрема задача), `ip_copies_count`. Опис власника — `description_uk_md` → `description_uk_html` (nh3). У каталозі (`listed()`) — сервери з Modrinth і підтверджені власниками; непідтверджені бачить лише той, хто їх заявив.
   - Для `source=owner`: `external_id` — нормалізована адреса `host:port`.
 - `ServerSnapshot` — як у v1 (`server`, `ts`, `is_online`, `players_online`, `players_max`, `latency_ms`, `version_name`), 30 днів сирих знімків.
 
@@ -202,7 +202,7 @@ blockcraft/
 | Метод і шлях | Опис | Етап |
 | --- | --- | --- |
 | `GET /health`, `GET /csrf` | як у v1 | — |
-| `GET /meta` | підтримувані версії гри, лоадери, категорії (R1); мови й країни серверів — R5 | R1 |
+| `GET /meta` | підтримувані версії гри, лоадери, категорії (R1); мови, країни, категорії серверів і мова каталогу за замовчуванням (`server_default_language`) — R5 | R1 |
 | `GET /sources` | джерела: назва, опис, сайт, умови, остання синхронізація (статус, час, лічильники) | R1 |
 | `GET/PUT/PATCH /me/game` | «Моя гра» гравця (гість — cookie `bc_game`, без ендпоінта); замінює v1 `/me/game-profile` | R1 |
 | `/me`, `/me/avatar`, `/me/settings`, `/me/onboarding`, `/me/export`, `DELETE /me` | як у v1 | — |
@@ -234,7 +234,7 @@ blockcraft/
 | `GET /servers/{slug}/join` | що потрібно для входу: версія або збірка + її статус під «Мою гру» | R5 |
 | `POST /servers` `{address, edition}` | власник додає реальний сервер → чернетка + код (сервер мусить відповісти на пінг) | R5 |
 | `POST/GET /servers/{slug}/verify` | перевірка коду в MOTD (v1); успіх робить гравця власником | R5 |
-| `PATCH /servers/{slug}` | власник: опис українською, Discord, сайт, `required_pack` | R5 |
+| `PATCH /servers/{slug}` | власник: опис українською, коротко, Discord, сайт, `required_pack`; для доданих тут — ще назва, мови, країна, версії, тип | R5 |
 | `POST /servers/{slug}/copy-ip`, `GET /me/servers` | як у v1 | — |
 | `GET /skins?color=&model=&source=&q=&sort=`, `GET /skins/{id}`, `/download`, `/similar` | скіни | R6 |
 | `GET /skins/lookup?nickname=` | Mojang, без збереження (v1) | R6 |

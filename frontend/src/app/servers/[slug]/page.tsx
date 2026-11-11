@@ -14,9 +14,8 @@ export async function generateMetadata({
   if (!server) return {};
   return {
     title: `${server.name} — ${serversCopy.label.toLowerCase()} Minecraft`,
-    description:
-      server.description || `${server.address} · ${serversCopy.editions[server.edition]}`,
-    ...(server.status === "published" ? {} : { robots: { index: false } }),
+    description: server.summary || `${server.address} · ${serversCopy.kinds[server.content_kind]}`,
+    ...(server.source !== null || server.is_verified ? {} : { robots: { index: false } }),
   };
 }
 

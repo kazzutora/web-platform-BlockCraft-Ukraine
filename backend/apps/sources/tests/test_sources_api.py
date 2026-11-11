@@ -40,6 +40,7 @@ def test_every_registered_source_is_listed_even_before_any_sync(api_client):
         "catalog",
         "versions",
         "modpacks",
+        "servers",
     ]
     assert body["mojang"]["jobs"] == []
 

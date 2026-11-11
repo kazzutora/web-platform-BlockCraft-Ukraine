@@ -18,13 +18,13 @@ def client_for(user) -> APIClient:
 
 
 def test_first_review_notifies_the_owner_and_updates_do_not():
-    server = ServerFactory()
+    server = ServerFactory(owned=True)
     reviewer = UserFactory()
 
     social.upsert_review(user=reviewer, kind="server", identifier=server.slug, stars=4, text="Ок")
     social.upsert_review(user=reviewer, kind="server", identifier=server.slug, stars=5)
 
-    assert list(Notification.objects.values_list("user", "type")) == [(server.author_id, "review")]
+    assert list(Notification.objects.values_list("user", "type")) == [(server.owner_id, "review")]
 
 
 def test_switched_off_types_are_not_saved():

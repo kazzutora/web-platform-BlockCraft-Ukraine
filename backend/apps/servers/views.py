@@ -2,12 +2,12 @@ from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import generics, mixins, status, viewsets
 from rest_framework.decorators import action
-from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 
 from apps.core.cache import for_guests
+from apps.core.game import game_context
 from apps.core.pagination import CatalogPagination
 from apps.core.schema import error_responses
 
@@ -16,8 +16,9 @@ from . import status as live_status
 from .filters import ServerFilter
 from .models import Server
 from .serializers import (
-    BannerUploadSerializer,
     IpCopiesSerializer,
+    JoinSerializer,
+    ServerAddSerializer,
     ServerCardSerializer,
     ServerDetailSerializer,
     ServerWriteSerializer,
@@ -26,28 +27,29 @@ from .serializers import (
     VerificationSerializer,
 )
 
-WRITE_ACTIONS = {"create", "partial_update", "destroy", "banner", "verify"}
-THROTTLE_SCOPES = {"create": "uploads", "banner": "uploads", "copy_ip": "copy_ip"}
+WRITE_ACTIONS = {"create", "partial_update", "destroy", "verify"}
+THROTTLE_SCOPES = {"create": "uploads", "copy_ip": "copy_ip", "verify": "uploads"}
 
 
 @extend_schema_view(
-    list=extend_schema(operation_id="servers_list", summary="Catalog of published servers"),
+    list=extend_schema(operation_id="servers_list", summary="Catalog of listed servers"),
     retrieve=extend_schema(
         operation_id="servers_retrieve",
         responses={200: ServerDetailSerializer, **error_responses(404)},
-        description="Published servers for everyone; the owner also sees pending ones.",
+        description="Listed servers for everyone; whoever claims one also sees it unproved.",
     ),
     create=extend_schema(
         operation_id="servers_create",
-        request=ServerWriteSerializer,
+        request=ServerAddSerializer,
         responses={201: ServerDetailSerializer, **error_responses(400, 401)},
-        description="A new author's first three works wait for moderation (`pending`).",
+        description="«Мій сервер»: the address must answer a ping; returns the server with a "
+        "code for the MOTD. A server already listed (from Modrinth) is claimed the same way.",
     ),
     partial_update=extend_schema(
         operation_id="servers_update",
         request=ServerWriteSerializer(partial=True),
         responses={200: ServerDetailSerializer, **error_responses(400, 401, 403, 404)},
-        description="Changing host, port or edition resets the verification.",
+        description="The owner: Ukrainian description, links, the pack to join with.",
     ),
     destroy=extend_schema(
         operation_id="servers_delete", responses={204: None, **error_responses(401, 403, 404)}
@@ -60,13 +62,11 @@ class ServerViewSet(
     mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
 ):
-    """No PUT on the server itself: edits are PATCH, PUT is the banner upload."""
-
     lookup_field = "slug"
     pagination_class = CatalogPagination
     filter_backends = [DjangoFilterBackend]
     filterset_class = ServerFilter
-    http_method_names = ["get", "post", "put", "patch", "delete", "head", "options"]
+    http_method_names = ["get", "post", "patch", "delete", "head", "options"]
     throttle_scope: str | None = None
 
     def get_permissions(self):
@@ -77,7 +77,9 @@ class ServerViewSet(
         return [AllowAny()]
 
     def get_throttles(self):
-        self.throttle_scope = THROTTLE_SCOPES.get(self.action)
+        # Polling the outcome (GET verify) is free; queuing a ping is not
+        polling = self.action == "verify" and self.request.method == "GET"
+        self.throttle_scope = None if polling else THROTTLE_SCOPES.get(self.action)
         return super().get_throttles()
 
     def get_queryset(self):
@@ -103,15 +105,15 @@ class ServerViewSet(
             )
 
         # Guests share a page for a minute: the pings themselves come every five
-        return for_guests(request, build)
+        return for_guests(request, build, vary=selectors.default_language())
 
     def retrieve(self, request: Request, *args, **kwargs) -> Response:
         return self._detail(self.get_object())
 
     def create(self, request: Request, *args, **kwargs) -> Response:
-        data = ServerWriteSerializer(data=request.data)
+        data = ServerAddSerializer(data=request.data)
         data.is_valid(raise_exception=True)
-        server = services.create_server(author=request.user, data=data.validated_data)
+        server = services.add_server(user=request.user, **data.validated_data)
         return self._detail(server, status_code=status.HTTP_201_CREATED)
 
     def partial_update(self, request: Request, *args, **kwargs) -> Response:
@@ -161,32 +163,28 @@ class ServerViewSet(
         if request.method == "POST":
             state = services.request_verification(server=server, user=request.user)
             return Response({"state": state}, status=status.HTTP_202_ACCEPTED)
-        state = "verified" if server.is_verified else live_status.get_verification(server.pk)
+        if server.is_verified and server.owner_id == request.user.pk:
+            state = "verified"
+        elif request.user.is_authenticated:
+            state = live_status.get_verification(server.pk, request.user.pk)
+        else:
+            state = None
         return Response({"state": state or "idle"})
 
     @extend_schema(
-        methods=["PUT"],
-        operation_id="servers_banner_upload",
-        request={"multipart/form-data": BannerUploadSerializer},
-        responses={200: ServerDetailSerializer, **error_responses(400, 401, 403, 404)},
+        operation_id="servers_join",
+        responses={200: JoinSerializer, **error_responses(404)},
+        description="«Щоб зайти»: a game version, or the pack to take; whether «Моя гра» fits.",
     )
-    @extend_schema(
-        methods=["DELETE"],
-        operation_id="servers_banner_delete",
-        responses={200: ServerDetailSerializer, **error_responses(401, 403, 404)},
-    )
-    @action(detail=True, methods=["put", "delete"], parser_classes=[MultiPartParser])
-    def banner(self, request: Request, slug: str) -> Response:
+    @action(detail=True, methods=["get"])
+    def join(self, request: Request, slug: str) -> Response:
         server = self.get_object()
-        if request.method == "DELETE":
-            services.remove_banner(server=server, user=request.user)
-        else:
-            data = BannerUploadSerializer(data=request.data)
-            data.is_valid(raise_exception=True)
-            services.set_banner(
-                server=server, user=request.user, upload=data.validated_data["banner"]
-            )
-        return self._detail(server)
+        return Response(
+            JoinSerializer(
+                selectors.join(server=server, game=game_context(request)),
+                context={"request": request, "game": game_context(request)},
+            ).data
+        )
 
     @extend_schema(
         operation_id="servers_copy_ip",
@@ -213,9 +211,9 @@ class MyServersView(generics.ListAPIView):
     def get_queryset(self):
         return selectors.my_servers(self.request.user)
 
-    def get_serializer_context(self):
-        context = super().get_serializer_context()
-        context["live"] = live_status.get_many(
-            self.get_queryset().values_list("pk", flat=True)[:60]
+    def list(self, request: Request, *args, **kwargs) -> Response:
+        page = self.paginate_queryset(self.get_queryset())
+        context = {"request": request, "live": live_status.get_many(s.pk for s in page)}
+        return self.get_paginated_response(
+            ServerDetailSerializer(page, many=True, context=context).data
         )
-        return context

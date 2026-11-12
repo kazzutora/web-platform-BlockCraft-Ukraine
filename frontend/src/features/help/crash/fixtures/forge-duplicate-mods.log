@@ -1,0 +1,3 @@
+# Source: https://github.com/FiniteReality/embeddium/issues/489 (public GitHub issue, quoted verbatim)
+[main/ERROR]: Found duplicate mods:
+	Mod ID: 'rubidium' from mod files: xenon-1.20.1-0.3.1.jar, embeddium-0.3.30+mc1.20.1.jar

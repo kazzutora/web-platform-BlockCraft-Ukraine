@@ -1,0 +1,14 @@
+# Source: https://github.com/Mars-The-Planet/Nether-Wart-Blocks-to-Nether-Warts/issues/1 (public GitHub issue, quoted verbatim)
+Incompatible mods found!
+net.fabricmc.loader.impl.FormattedException: Some of your mods are incompatible with the game or each other!
+A potential solution has been determined, this may resolve your problem:
+	 - Replace mod 'Nether Wart Blocks to Nether Warts' (netherwartblock) 8 with any version that is compatible with:
+		 - minecraft 26.2
+More details:
+	 - Mod 'Nether Wart Blocks to Nether Warts' (netherwartblock) 8 requires any version of fabric, which is missing!
+	 - Mod 'Nether Wart Blocks to Nether Warts' (netherwartblock) 8 requires any version between 1.21 (inclusive) and 1.22- (exclusive) of 'Minecraft' (minecraft), but only the wrong version is present: 26.2!
+	at net.fabricmc.loader.impl.FormattedException.ofLocalized(FormattedException.java:51)
+	at net.fabricmc.loader.impl.FabricLoaderImpl.load(FabricLoaderImpl.java:202)
+	at net.fabricmc.loader.impl.launch.knot.Knot.init(Knot.java:142)
+	at net.fabricmc.loader.impl.launch.knot.Knot.launch(Knot.java:66)
+	at net.fabricmc.loader.impl.launch.knot.KnotClient.main(KnotClient.java:23)

@@ -653,6 +653,135 @@ paths:
               schema:
                 $ref: '#/components/schemas/Health'
           description: ''
+  /api/v1/help/crash:
+    post:
+      operationId: help_crash
+      description: The browser parses the log and sends only mod ids and names; this
+        answers which of them are in the catalog and the latest stable loader for
+        the log's game.
+      tags:
+      - help
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrashRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CrashRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CrashRequestRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CrashResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '429':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+  /api/v1/help/goals/pack:
+    post:
+      operationId: help_goals_pack
+      description: A private draft with the picked projects; open it in the constructor.
+      tags:
+      - help
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GoalsRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/GoalsRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/GoalsRequestRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SavedPack'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '429':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+  /api/v1/help/goals/preview:
+    post:
+      operationId: help_goals_preview
+      description: 'Real catalog projects for each goal that fit the game (default:
+        «Моя гра»), with dependencies and conflicts from the compat engine. `needs_mod_loader`
+        — the game has no mod loader.'
+      tags:
+      - help
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GoalsRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/GoalsRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/GoalsRequestRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GoalsPreview'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
+        '429':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: ''
   /api/v1/home:
     get:
       operationId: home
@@ -4656,6 +4785,65 @@ components:
       - a
       - b
       - declared_by
+    CrashMatch:
+      type: object
+      properties:
+        id:
+          type: string
+        project:
+          allOf:
+          - $ref: '#/components/schemas/ProjectCard'
+          nullable: true
+          description: null — not in our catalog.
+      required:
+      - id
+      - project
+    CrashModRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          minLength: 1
+          description: Mod id as the loader prints it.
+          maxLength: 64
+        name:
+          type: string
+          default: ''
+          maxLength: 120
+      required:
+      - id
+    CrashRequestRequest:
+      type: object
+      description: What the browser found in the log; the log itself is never sent.
+      properties:
+        mods:
+          type: array
+          items:
+            $ref: '#/components/schemas/CrashModRequest'
+        game_version:
+          type: string
+          maxLength: 32
+        loader:
+          oneOf:
+          - $ref: '#/components/schemas/PackLoaderEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+      required:
+      - mods
+    CrashResponse:
+      type: object
+      properties:
+        mods:
+          type: array
+          items:
+            $ref: '#/components/schemas/CrashMatch'
+        loader_release:
+          allOf:
+          - $ref: '#/components/schemas/LoaderRelease'
+          nullable: true
+          description: The latest stable loader for the game of the log.
+      required:
+      - loader_release
+      - mods
     DecisionEnum:
       enum:
       - approve
@@ -4881,6 +5069,72 @@ components:
         * `snapshot` - Снапшот
         * `beta` - Бета
         * `alpha` - Альфа
+    GoalChoice:
+      type: object
+      properties:
+        slot:
+          type: string
+        slug:
+          type: string
+          nullable: true
+          description: null — nothing fits the game.
+      required:
+      - slot
+      - slug
+    GoalsEnum:
+      enum:
+      - fps
+      - beauty
+      - maps
+      - inventory
+      type: string
+      description: |-
+        * `fps` - fps
+        * `beauty` - beauty
+        * `maps` - maps
+        * `inventory` - inventory
+    GoalsPreview:
+      type: object
+      properties:
+        target:
+          $ref: '#/components/schemas/Target'
+        choices:
+          type: array
+          items:
+            $ref: '#/components/schemas/GoalChoice'
+        resolution:
+          $ref: '#/components/schemas/Resolution'
+      required:
+      - choices
+      - resolution
+      - target
+    GoalsRequestRequest:
+      type: object
+      properties:
+        goals:
+          type: array
+          items:
+            $ref: '#/components/schemas/GoalsEnum'
+          maxItems: 4
+          minItems: 1
+        game_version:
+          type: string
+          description: Defaults to «Моя гра».
+          maxLength: 32
+        loader:
+          description: |-
+            Defaults to «Моя гра»; `vanilla` is refused with `needs_mod_loader`.
+
+            * `fabric` - Fabric
+            * `forge` - Forge
+            * `neoforge` - NeoForge
+            * `quilt` - Quilt
+            * `vanilla` - Vanilla
+          oneOf:
+          - $ref: '#/components/schemas/LoaderEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+      required:
+      - goals
     GpuLoadEnum:
       enum:
       - light
@@ -5195,6 +5449,19 @@ components:
         * `neoforge` - NeoForge
         * `quilt` - Quilt
         * `vanilla` - Vanilla
+    LoaderRelease:
+      type: object
+      properties:
+        loader:
+          type: string
+        game_version:
+          type: string
+        version:
+          type: string
+      required:
+      - game_version
+      - loader
+      - version
     LookupResult:
       type: object
       properties:
@@ -7568,6 +7835,13 @@ components:
       - saved_at
       - server
       - skin
+    SavedPack:
+      type: object
+      properties:
+        slug:
+          type: string
+      required:
+      - slug
     SearchGroup:
       type: object
       properties:

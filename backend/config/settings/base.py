@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "apps.notifications",
     "apps.moderation",
     "apps.translations",
+    "apps.help",
 ]
 
 MIDDLEWARE = [
@@ -229,6 +230,8 @@ REST_FRAMEWORK = {
         "copy_ip": "60/hour",
         "game": "120/hour",
         "compat": "30/min",
+        # Crash log and goal pack: their own budget, the pack constructor does not eat it
+        "help": "30/min",
         # The pack constructor saves every added or removed mod
         "pack_edits": "600/hour",
     },

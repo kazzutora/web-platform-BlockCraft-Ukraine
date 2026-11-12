@@ -1,0 +1,2 @@
+# Source: https://github.com/rirust/Bikes/issues/2 (public GitHub issue, quoted verbatim)
+net.fabricmc.loader.impl.FormattedException: java.lang.UnsupportedClassVersionError: net/minecraft/class_310 has been compiled by a more recent version of the Java Runtime (class file version 63.0), this version of the Java Runtime only recognizes class file versions up to 61.0

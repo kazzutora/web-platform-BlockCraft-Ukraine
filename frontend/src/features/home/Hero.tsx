@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Suspense } from "react";
 
 import { Button } from "@/components/ui/Button";
@@ -5,6 +6,7 @@ import { Icon } from "@/components/ui/Icon";
 import { Illustration } from "@/components/ui/Illustration";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { GameChipArea } from "@/features/game/GameChipArea";
+import { helpCopy } from "@/features/help/copy";
 
 import { homeCopy as copy } from "./copy";
 
@@ -42,6 +44,14 @@ export function Hero() {
           {copy.searchButton}
         </Button>
       </form>
+      <Link
+        href="/help"
+        className="inline-flex min-h-11 items-center gap-2 text-sm underline-offset-4 hover:underline"
+      >
+        <Icon name="warning" size={16} />
+        {helpCopy.hub.homeLink}
+        <Icon name="chevron-right" size={16} />
+      </Link>
     </section>
   );
 }

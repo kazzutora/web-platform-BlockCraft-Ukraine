@@ -1,0 +1,23 @@
+# Source: https://github.com/Syconn/Spaceward-Expansion/issues/13 (public GitHub issue, quoted verbatim)
+[18:38:22] [main/INFO]: Loading Minecraft 1.21.1 with Fabric Loader 0.17.2
+[18:38:22] [main/INFO]: Fabric is preparing JARs on first launch, this may take a few seconds...
+[18:38:22] [main/WARN]: Mod resolution failed
+[18:38:22] [main/INFO]: Immediate reason: [HARD_DEP_INCOMPATIBLE_PRESELECTED swe 1.2.3 {depends minecraft @ [1.21]}, ROOT_FORCELOAD_SINGLE swe 1.2.3]
+[18:38:22] [main/INFO]: Reason: [HARD_DEP swe 1.2.3 {depends minecraft @ [1.21]}]
+[18:38:22] [main/INFO]: Fix: add [], remove [], replace [[swe 1.2.3] -> add:swe 1 ([(-∞,∞)])]
+[18:38:22] [main/ERROR]: Incompatible mods found!
+net.fabricmc.loader.impl.FormattedException: Some of your mods are incompatible with the game or each other!
+A potential solution has been determined, this may resolve your problem:
+	 - Replace mod 'Spaceward Expansion' (swe) 1.2.3 with any version that is compatible with:
+		 - minecraft 1.21.1
+More details:
+	 - Mod 'Spaceward Expansion' (swe) 1.2.3 requires version 1.21 of 'Minecraft' (minecraft), but only the wrong version is present: 1.21.1!
+	at net.fabricmc.loader.impl.FormattedException.ofLocalized(FormattedException.java:51) ~[fabric-loader-0.17.2.jar:?]
+	at net.fabricmc.loader.impl.FabricLoaderImpl.load(FabricLoaderImpl.java:202) ~[fabric-loader-0.17.2.jar:?]
+	at net.fabricmc.loader.impl.launch.knot.Knot.init(Knot.java:142) ~[fabric-loader-0.17.2.jar:?]
+	at net.fabricmc.loader.impl.launch.knot.Knot.launch(Knot.java:66) [fabric-loader-0.17.2.jar:?]
+	at net.fabricmc.loader.impl.launch.knot.KnotClient.main(KnotClient.java:23) [fabric-loader-0.17.2.jar:?]
+	at org.prismlauncher.launcher.impl.StandardLauncher.launch(StandardLauncher.java:105) [NewLaunch.jar:?]
+	at org.prismlauncher.EntryPoint.listen(EntryPoint.java:129) [NewLaunch.jar:?]
+	at org.prismlauncher.EntryPoint.main(EntryPoint.java:70) [NewLaunch.jar:?]
+Process exited with code 1.

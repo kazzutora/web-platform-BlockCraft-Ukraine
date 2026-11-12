@@ -1,0 +1,3 @@
+# Source: https://github.com/Almana-mc/LogisticsNetworks/issues/180 (public GitHub issue, quoted verbatim)
+[main/ERROR] [net.neoforged.fml.loading.ModSorter/LOADING]: Unsupported installed optional dependencies:
+     Mod ID: 'buildinggadgets2', Requested by: 'logisticsnetworks', Expected range: '[1.3.8,1.4)', Actual version: '21.1.1'

@@ -319,7 +319,7 @@ def publish_pack(*, pack: Pack, user: User, visibility: str | None = None) -> Pa
     pack.save(
         update_fields=["status", "visibility", "rejection_reason", "published_at", "updated_at"]
     )
-    _queue_cover(pack)
+    queue_cover(pack)
     return pack
 
 
@@ -349,7 +349,7 @@ def add_item(*, pack: Pack, user: User, project_slug: str) -> PackItem:
         item = PackItem.objects.create(pack=pack, project=project, position=top + 1)
     rebuild(pack)
     _touch(pack)
-    _queue_cover(pack)
+    queue_cover(pack)
     item.refresh_from_db()
     return item
 
@@ -380,7 +380,7 @@ def remove_item(*, pack: Pack, user: User, project_slug: str) -> None:
     item.delete()
     rebuild(pack)
     _touch(pack)
-    _queue_cover(pack)
+    queue_cover(pack)
 
 
 def retarget_preview(*, pack: Pack, game_version: str, loader: str) -> operations.Retarget:
@@ -451,7 +451,7 @@ COVER_SIZE = 600
 COVER_ICONS = 4
 
 
-def _queue_cover(pack: Pack) -> None:
+def queue_cover(pack: Pack) -> None:
     from . import tasks
 
     transaction.on_commit(lambda: tasks.render_cover.delay(pack.pk))
@@ -924,5 +924,5 @@ def import_draft(*, author: User, data: dict) -> Pack:
             for position, project in enumerate(projects[:MAX_ITEMS], start=1)
         )
         rebuild(pack)
-    _queue_cover(pack)
+    queue_cover(pack)
     return pack

@@ -1,0 +1,20 @@
+# Source: https://github.com/victorkozhokin/emf-compat/issues/32 (public GitHub issue, quoted verbatim)
+[20:43:02] [main/INFO]: Loading Minecraft 26.1.2 with Fabric Loader 0.19.5
+[20:43:02] [main/INFO]: Mappings not present!
+[20:43:02] [ForkJoinPool-1-worker-9/WARN]: Mod punchy uses the version 2.7e which isn't compatible with Loader's extended semantic version format (Could not parse version number component '7e'!), SemVer is recommended for reliably evaluating dependencies and prioritizing newer version
+[20:43:02] [ForkJoinPool-1-worker-20/WARN]: Mod easy-building uses the version fabric-26.1.2-v1 which isn't compatible with Loader's extended semantic version format (Could not parse version number component 'fabric'!), SemVer is recommended for reliably evaluating dependencies and prioritizing newer version
+[20:43:02] [main/WARN]: Mod resolution failed
+[20:43:02] [main/INFO]: Immediate reason: [HARD_DEP_NO_CANDIDATE emf_compat_takeaseat 1.0.0 {depends seatify @ [*]}, ROOT_FORCELOAD_SINGLE emf_compat_takeaseat 1.0.0]
+[20:43:02] [main/INFO]: Reason: [HARD_DEP emf_compat_takeaseat 1.0.0 {depends seatify @ [*]}]
+[20:43:02] [main/INFO]: Fix: add [add:seatify 1 ([(-∞,∞)])], remove [], replace []
+[20:43:02] [main/ERROR]: Incompatible mods found!
+net.fabricmc.loader.impl.FormattedException: Some of your mods are incompatible with the game or each other!
+A potential solution has been determined, this may resolve your problem:
+	 - Install seatify, any version.
+More details:
+	 - Mod 'EMF Compat: Take a Seat' (emf_compat_takeaseat) 1.0.0 requires any version of seatify, which is missing!
+	at net.fabricmc.loader.impl.FormattedException.ofLocalized(FormattedException.java:51)
+	at net.fabricmc.loader.impl.FabricLoaderImpl.load(FabricLoaderImpl.java:202)
+	at net.fabricmc.loader.impl.launch.knot.Knot.init(Knot.java:142)
+	at net.fabricmc.loader.impl.launch.knot.Knot.launch(Knot.java:66)
+	at net.fabricmc.loader.impl.launch.knot.KnotClient.main(KnotClient.java:23)

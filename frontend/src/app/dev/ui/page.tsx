@@ -121,8 +121,8 @@ export default function DevUiPage() {
 
       <ShowcaseSection id="type" title="Типографіка">
         <p className="text-display">Display</p>
-        <p className="font-serif text-h1">Заголовок сторінки H1</p>
-        <p className="font-serif text-h2">Заголовок секції H2</p>
+        <p className="font-display text-h1">Заголовок сторінки H1</p>
+        <p className="font-display text-h2">Заголовок секції H2</p>
         <p className="caps text-muted">Для твоєї версії</p>
         <p className="max-w-prose">
           Основний текст: Inter 16 px, висота рядка 1.6, не більше 65 символів у рядку. Знайди моди

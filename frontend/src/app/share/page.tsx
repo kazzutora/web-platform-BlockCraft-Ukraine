@@ -23,7 +23,7 @@ export default function SharePage() {
               className="flex h-full flex-col gap-3 border border-line p-6 hover:border-text focus-visible:outline-2 focus-visible:outline-accent"
             >
               <Icon name={action.icon} size={24} />
-              <span className="font-serif text-h2">{action.title}</span>
+              <span className="font-display text-h2">{action.title}</span>
               <span className="text-sm text-muted">{action.text}</span>
             </Link>
           </li>

@@ -27,7 +27,7 @@ export function PackInstall({ files, external }: PackInstallProps) {
 
       {files.length > 0 && (
         <section aria-labelledby="manual-install" className="flex flex-col gap-3">
-          <h2 id="manual-install" className="font-serif text-h2">
+          <h2 id="manual-install" className="font-display text-h2">
             {copy.manual}
           </h2>
           <p className="text-muted">{copy.manualHint}</p>
@@ -64,7 +64,7 @@ export function PackInstall({ files, external }: PackInstallProps) {
 
       {external.length > 0 && (
         <section aria-labelledby="external-files" className="flex flex-col gap-3">
-          <h2 id="external-files" className="font-serif text-h2">
+          <h2 id="external-files" className="font-display text-h2">
             {packsCopy.detail.external}
           </h2>
           <p className="text-muted">{packsCopy.detail.externalHint}</p>

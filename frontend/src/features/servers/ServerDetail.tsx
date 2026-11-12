@@ -261,7 +261,7 @@ function OnlineCounter({ live: status }: { live: LiveStatus | null }) {
     <div className="flex flex-col gap-2 md:items-end md:text-right">
       <p className="flex items-center gap-3">
         <span aria-hidden className={cn("size-4", online ? "bg-accent" : "border border-muted")} />
-        <span className="font-serif text-display tabular-nums">
+        <span className="font-display text-display tabular-nums">
           {online ? status?.players_online : "—"}
         </span>
       </p>

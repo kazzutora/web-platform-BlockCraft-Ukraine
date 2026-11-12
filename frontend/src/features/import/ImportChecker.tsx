@@ -289,7 +289,7 @@ function Report({ files, result, index, onAgain }: ReportProps) {
     <div className="flex flex-col gap-12">
       <header className="flex flex-col gap-4">
         <p className="text-meta text-muted">{plural(files.length, copy.files)}</p>
-        <h2 className="font-serif text-h2">
+        <h2 className="font-display text-h2">
           {own ? copy.report.guess(targetLabel(own)) : copy.report.noGuess}
         </h2>
         {own && !index && result.identified > 0 && (
@@ -334,7 +334,7 @@ function Report({ files, result, index, onAgain }: ReportProps) {
         ) : null)}
 
       <section aria-labelledby="known-files" className="flex flex-col gap-4">
-        <h2 id="known-files" className="font-serif text-h2">
+        <h2 id="known-files" className="font-display text-h2">
           {copy.report.known} · {known.length}
         </h2>
         <ul className="flex flex-col divide-y divide-line border-y border-line">
@@ -373,7 +373,7 @@ function Report({ files, result, index, onAgain }: ReportProps) {
 
       {known.length > 0 && (
         <section aria-labelledby="other-target" className="flex flex-col gap-4">
-          <h2 id="other-target" className="font-serif text-h2">
+          <h2 id="other-target" className="font-display text-h2">
             {copy.report.updates}
           </h2>
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
@@ -405,7 +405,7 @@ function Report({ files, result, index, onAgain }: ReportProps) {
 
       {result.unknown.length > 0 && (
         <section aria-labelledby="unknown-files" className="flex flex-col gap-3">
-          <h2 id="unknown-files" className="font-serif text-h2">
+          <h2 id="unknown-files" className="font-display text-h2">
             {copy.report.unknown} · {result.unknown.length}
           </h2>
           <p className="text-muted">{copy.report.unknownHint}</p>

@@ -1,0 +1,21 @@
+# Source: https://github.com/enjarai/a-good-place/issues/34 (public GitHub issue, quoted verbatim)
+[14:07:37] [main/INFO]: Loading Minecraft 26.1 with Fabric Loader 0.19.2
+[14:07:37] [main/WARN]: Mod resolution failed
+[14:07:37] [main/INFO]: Immediate reason: [HARD_DEP_NO_CANDIDATE a_good_place 26.1-1.3.1 {depends fabric @ [*]}, ROOT_FORCELOAD_SINGLE a_good_place 26.1-1.3.1]
+[14:07:37] [main/INFO]: Reason: [HARD_DEP a_good_place 26.1-1.3.1 {depends fabric @ [*]}]
+[14:07:37] [main/INFO]: Fix: add [add:fabric 1 ([(-∞,∞)])], remove [], replace []
+[14:07:37] [main/ERROR]: Incompatible mods found!
+net.fabricmc.loader.impl.FormattedException: Some of your mods are incompatible with the game or each other!
+A potential solution has been determined, this may resolve your problem:
+         - Install fabric, any version.
+More details:
+         - Mod 'A Good Place' (a_good_place) 26.1-1.3.1 requires any version of fabric, which is missing!
+        at net.fabricmc.loader.impl.FormattedException.ofLocalized(FormattedException.java:51)
+        at net.fabricmc.loader.impl.FabricLoaderImpl.load(FabricLoaderImpl.java:202)
+        at net.fabricmc.loader.impl.launch.knot.Knot.init(Knot.java:142)
+        at net.fabricmc.loader.impl.launch.knot.Knot.launch(Knot.java:66)
+        at net.fabricmc.loader.impl.launch.knot.KnotClient.main(KnotClient.java:23)
+        at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source)
+        at java.base/java.lang.reflect.Method.invoke(Unknown Source)
+        at com.modrinth.theseus.MinecraftLaunch.relaunch(MinecraftLaunch.java:61)
+        at com.modrinth.theseus.MinecraftLaunch.main(MinecraftLaunch.java:28)

@@ -9,6 +9,7 @@ export const sections: NavItem[] = [
   { href: "/packs", label: "Збірки" },
   { href: "/skins", label: "Скіни" },
   { href: "/servers", label: "Сервери" },
+  { href: "/help", label: "Допомога" },
 ];
 
 /** Bottom bar on phones. */

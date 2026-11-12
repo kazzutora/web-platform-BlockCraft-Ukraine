@@ -16,4 +16,5 @@ urlpatterns = [
     path("", include("apps.library.urls")),
     path("", include("apps.social.urls")),
     path("", include("apps.translations.urls")),
+    path("", include("apps.help.urls")),
 ]

@@ -228,6 +228,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/help/crash": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description The browser parses the log and sends only mod ids and names; this answers which of them are in the catalog and the latest stable loader for the log's game. */
+        post: operations["help_crash"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/help/goals/pack": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description A private draft with the picked projects; open it in the constructor. */
+        post: operations["help_goals_pack"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/help/goals/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Real catalog projects for each goal that fit the game (default: «Моя гра»), with dependencies and conflicts from the compat engine. `needs_mod_loader` — the game has no mod loader. */
+        post: operations["help_goals_preview"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/home": {
         parameters: {
             query?: never;
@@ -1471,6 +1522,28 @@ export interface components {
             b: string;
             declared_by: string;
         };
+        CrashMatch: {
+            id: string;
+            /** @description null — not in our catalog. */
+            project: components["schemas"]["ProjectCard"] | null;
+        };
+        CrashModRequest: {
+            /** @description Mod id as the loader prints it. */
+            id: string;
+            /** @default  */
+            name: string;
+        };
+        /** @description What the browser found in the log; the log itself is never sent. */
+        CrashRequestRequest: {
+            mods: components["schemas"]["CrashModRequest"][];
+            game_version?: string;
+            loader?: components["schemas"]["PackLoaderEnum"] | components["schemas"]["BlankEnum"];
+        };
+        CrashResponse: {
+            mods: components["schemas"]["CrashMatch"][];
+            /** @description The latest stable loader for the game of the log. */
+            loader_release: components["schemas"]["LoaderRelease"] | null;
+        };
         /**
          * @description * `approve` - approve
          *     * `reject` - reject
@@ -1580,6 +1653,39 @@ export interface components {
          * @enum {string}
          */
         GameVersionVersionTypeEnum: "release" | "snapshot" | "beta" | "alpha";
+        GoalChoice: {
+            slot: string;
+            /** @description null — nothing fits the game. */
+            slug: string | null;
+        };
+        /**
+         * @description * `fps` - fps
+         *     * `beauty` - beauty
+         *     * `maps` - maps
+         *     * `inventory` - inventory
+         * @enum {string}
+         */
+        GoalsEnum: "fps" | "beauty" | "maps" | "inventory";
+        GoalsPreview: {
+            target: components["schemas"]["Target"];
+            choices: components["schemas"]["GoalChoice"][];
+            resolution: components["schemas"]["Resolution"];
+        };
+        GoalsRequestRequest: {
+            goals: components["schemas"]["GoalsEnum"][];
+            /** @description Defaults to «Моя гра». */
+            game_version?: string;
+            /**
+             * @description Defaults to «Моя гра»; `vanilla` is refused with `needs_mod_loader`.
+             *
+             *     * `fabric` - Fabric
+             *     * `forge` - Forge
+             *     * `neoforge` - NeoForge
+             *     * `quilt` - Quilt
+             *     * `vanilla` - Vanilla
+             */
+            loader?: components["schemas"]["LoaderEnum"] | components["schemas"]["BlankEnum"];
+        };
         /**
          * @description * `light` - Легкий
          *     * `medium` - Середній
@@ -1720,6 +1826,11 @@ export interface components {
          * @enum {string}
          */
         LoaderEnum: "fabric" | "forge" | "neoforge" | "quilt" | "vanilla";
+        LoaderRelease: {
+            loader: string;
+            game_version: string;
+            version: string;
+        };
         LookupResult: {
             nickname: string;
             uuid: string;
@@ -2620,6 +2731,9 @@ export interface components {
             server: components["schemas"]["ServerCard"] | null;
             pack: components["schemas"]["PackCard"] | null;
             collection: components["schemas"]["Collection"] | null;
+        };
+        SavedPack: {
+            slug: string;
         };
         SearchGroup: {
             kind: string;
@@ -3726,6 +3840,137 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Health"];
+                };
+            };
+        };
+    };
+    help_crash: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CrashRequestRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["CrashRequestRequest"];
+                "multipart/form-data": components["schemas"]["CrashRequestRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CrashResponse"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    help_goals_pack: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GoalsRequestRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["GoalsRequestRequest"];
+                "multipart/form-data": components["schemas"]["GoalsRequestRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SavedPack"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    help_goals_preview: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GoalsRequestRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["GoalsRequestRequest"];
+                "multipart/form-data": components["schemas"]["GoalsRequestRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GoalsPreview"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
                 };
             };
         };

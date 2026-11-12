@@ -1,0 +1,26 @@
+# Source: https://github.com/natanfudge/Crashy/issues/38 (public GitHub issue, quoted verbatim)
+Incompatible mod set!
+net.fabricmc.loader.impl.FormattedException: Mod resolution encountered an incompatible mod set!
+A potential solution has been determined:
+	 - Install fabric, version 0.43.1 or later.
+	 - Install fabric-command-api-v1, any version.
+	 - Replace mod 'SpruceUI' (spruceui) 3.2.0+1.17 and mod 'SpruceUI' (spruceui) 3.3.0+1.17 with mod 'SpruceUI' (spruceui), version 3.2.0 or later.
+Unmet dependency listing:
+	 - Mod 'GravityChanger' (gravitychanger) 0.3.0 requires any version of fabric, which is missing!
+	 - Mod 'InvMove' (invmove) 1.18-0.1.0 requires any version of fabric, which is missing!
+	 - Mod 'LambdaControls' (lambdacontrols) 1.7.1+1.17 requires version 0.36.0 or later of fabric, which is missing!
+	 - Mod 'LambdaControls' (lambdacontrols) 1.7.1+1.17 requires version 3.2.0 or later of mod 'SpruceUI' (spruceui), which can't be loaded due to other constraints!
+	 - Mod 'Ok Zoomer' (okzoomer) 5.0.0-beta.3+1.17.1 requires version 0.34.0 or later of fabric, which is missing!
+	 - Mod 'LibZoomer' (libzoomer) 0.3.0+1.17.1 requires version 0.37.0 or later of fabric, which is missing!
+	 - Mod 'Origins' (origins) 1.3.1 requires version 0.43.0 or later of fabric, which is missing!
+	 - Mod 'Apoli' (apoli) 2.2.2 requires version 0.43.0 or later of fabric, which is missing!
+	 - Mod 'Calio' (calio) 1.4.2 requires any version of fabric, which is missing!
+	 - Mod 'Pal' (playerabilitylib) 1.3.0 requires any version of fabric, which is missing!
+	 - Mod 'spark' (spark) 1.6.3 requires any version of fabric-command-api-v1, which is missing!
+	 - Mod 'Sword Blocking' (swordblocking) 1.1.0 requires any version of fabric, which is missing!
+	 - Mod 'TooManyOrigins' (toomanyorigins) 0.4.1 requires version 0.43.0 or later of fabric, which is missing!
+	 - Mod 'wthit' (wthit) 4.3.1 requires any version of fabric, which is missing!
+	 - Mod 'Xaero's Minimap' (xaerominimap) 21.22.3.1 requires version 0.43.1 or later of fabric, which is missing!
+	 - Mod 'Apugli' (apugli) 1.4.0 requires version 0.43.0 or later of fabric, which is missing!
+	at net.fabricmc.loader.impl.FabricLoaderImpl.load(FabricLoaderImpl.java:189)
+	at net.fabricmc.loader.impl.launch.knot.Knot.init(Knot.java:140)

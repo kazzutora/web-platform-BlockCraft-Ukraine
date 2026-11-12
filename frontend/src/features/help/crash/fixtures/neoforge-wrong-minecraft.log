@@ -1,0 +1,6 @@
+# Source: https://github.com/TartaricAcid/TouhouLittleMaid/issues/1211 (public GitHub issue, quoted verbatim)
+[11:44:57.062] [main/ERROR] [loading.ModSorter/LOADING]: Missing or unsupported mandatory dependencies:
+	Mod ID: 'minecraft', Requested by: 'touhou_little_maid', Expected range: '[1.21.1,1.21.2)', Actual version: '1.21'
+...
+[11:45:01.874] [Render thread/FATAL] [net.neoforged.fml.ModLoader/CORE]: Error during pre-loading phase: Mod touhou_little_maid requires minecraft 1.21.1 or above, and below 1.21.2
+Currently, minecraft is 1.21

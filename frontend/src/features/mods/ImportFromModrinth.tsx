@@ -90,7 +90,7 @@ export function ImportFromModrinth() {
 
   return (
     <section className="flex flex-col gap-4 border-t border-line pt-10">
-      <h2 className="font-serif text-h2">{copy.title}</h2>
+      <h2 className="font-display text-h2">{copy.title}</h2>
       <p className="max-w-prose text-muted">{copy.text}</p>
       <form onSubmit={submit} className="flex flex-col gap-3 sm:flex-row sm:items-start">
         <div className="min-w-0 flex-1">

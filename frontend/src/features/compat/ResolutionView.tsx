@@ -78,7 +78,7 @@ export function ResolutionView({
         />
       )}
       <header className="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between">
-        <h2 id="install-title" className="font-serif text-h2">
+        <h2 id="install-title" className="font-display text-h2">
           {title}
         </h2>
         <CompatStatus tone={status.tone}>{status.text}</CompatStatus>

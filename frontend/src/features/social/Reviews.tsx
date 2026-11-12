@@ -117,7 +117,7 @@ function Summary({ summary }: { summary: components["schemas"]["ReviewSummary"] 
   const max = Math.max(...Object.values(summary.distribution), 1);
   return (
     <div className="flex flex-col gap-4">
-      <p className="font-serif text-h1 leading-none tabular-nums">
+      <p className="font-display text-h1 leading-none tabular-nums">
         {summary.rating_avg.toLocaleString("uk-UA", { maximumFractionDigits: 1 })}
       </p>
       <StarRating value={summary.rating_avg} count={summary.rating_count} size={24} />

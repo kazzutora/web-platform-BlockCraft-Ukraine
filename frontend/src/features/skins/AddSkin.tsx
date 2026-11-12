@@ -88,7 +88,7 @@ export function AddSkin({ initialNickname = "" }: { initialNickname?: string }) 
         onSubmit={(event) => submit(event, { nickname: nickname.trim() })}
         className="flex flex-col gap-3"
       >
-        <h2 className="font-serif text-h2">{copy.nicknameTitle}</h2>
+        <h2 className="font-display text-h2">{copy.nicknameTitle}</h2>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
           <div className="min-w-0 flex-1">
             <Input
@@ -117,7 +117,7 @@ export function AddSkin({ initialNickname = "" }: { initialNickname?: string }) 
         onSubmit={(event) => submit(event, { mineskin: mineskin.trim() })}
         className="flex flex-col gap-3 border-t border-line pt-10"
       >
-        <h2 className="font-serif text-h2">{copy.mineskinTitle}</h2>
+        <h2 className="font-display text-h2">{copy.mineskinTitle}</h2>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
           <div className="min-w-0 flex-1">
             <Input

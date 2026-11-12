@@ -12,7 +12,7 @@ import { AuthPromptProvider } from "@/features/auth/AuthPromptProvider";
 import { cn } from "@/lib/cn";
 import "@/styles/globals.css";
 
-import { sans, serif } from "./fonts";
+import { display, mono, sans } from "./fonts";
 
 const copy = {
   title: "BlockCraft Ukraine",
@@ -30,7 +30,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="uk"
       suppressHydrationWarning
-      className={cn(serif.variable, sans.variable, "h-full antialiased")}
+      className={cn(display.variable, sans.variable, mono.variable, "h-full antialiased")}
     >
       <body className="flex min-h-full flex-col">
         <ThemeProvider>

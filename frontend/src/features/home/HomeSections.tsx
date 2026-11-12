@@ -146,7 +146,7 @@ export async function HomeSections() {
               />
             </div>
             <div className="flex flex-col gap-4">
-              <p className="text-h1">{skin.title}</p>
+              <p className="font-display text-h1 break-words">{skin.title}</p>
               <p className="text-muted">
                 {skin.source.name} · {skinsCopy.models[skin.model]}
               </p>

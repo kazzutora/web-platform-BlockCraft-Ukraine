@@ -82,7 +82,7 @@ export function GameChip({ initial, signedIn }: GameChipProps) {
           type="button"
           aria-label={current ? copy.label(current) : copy.empty}
           aria-busy={refreshing}
-          className="inline-flex h-9 max-w-32 items-center gap-1.5 border border-line px-2 text-meta font-medium whitespace-nowrap tabular-nums transition-colors hover:border-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent sm:max-w-none"
+          className="inline-flex h-9 max-w-28 items-center gap-1.5 border border-line px-2 text-meta font-medium whitespace-nowrap tabular-nums transition-colors hover:border-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent sm:max-w-none"
         >
           <span
             aria-hidden
@@ -92,7 +92,7 @@ export function GameChip({ initial, signedIn }: GameChipProps) {
           <span className="truncate">
             {initial.game_version ? (
               <>
-                {initial.game_version}
+                <span className="font-mono">{initial.game_version}</span>
                 {initial.loader && (
                   <span className="hidden sm:inline"> · {loaderLabel(initial.loader)}</span>
                 )}
@@ -107,7 +107,7 @@ export function GameChip({ initial, signedIn }: GameChipProps) {
     >
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-1">
-          <p className="font-serif text-2xl leading-tight">{copy.title}</p>
+          <p className="font-display text-2xl leading-tight">{copy.title}</p>
           <p className="text-sm text-muted">{copy.intro}</p>
         </div>
         <Select

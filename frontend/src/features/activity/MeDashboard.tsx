@@ -58,7 +58,7 @@ export function MeDashboard() {
       <div className="grid gap-12 lg:grid-cols-3">
         <section className="flex flex-col gap-4">
           <h2 className="caps font-sans">{copy.game}</h2>
-          <p className="font-serif text-h2">{label || "—"}</p>
+          <p className="font-display text-h2">{label || "—"}</p>
           {!label && <p className="text-muted">{copy.gameNone}</p>}
           <ButtonLink href="/me/settings" variant="secondary" className="self-start">
             {copy.gameChange}

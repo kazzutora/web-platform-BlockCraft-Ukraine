@@ -34,7 +34,7 @@ function Vanilla({ join, gameLabel }: { join: Join; gameLabel: string }) {
   const others = join.versions.filter((item) => item !== version);
   return (
     <div className="flex flex-col gap-3">
-      <p className="font-serif text-h2">{version ? copy.version(version) : copy.anyVersion}</p>
+      <p className="font-display text-h2">{version ? copy.version(version) : copy.anyVersion}</p>
       {others.length > 0 && (
         <p className="text-meta text-muted">{copy.versions(join.versions.join(", "))}</p>
       )}
@@ -57,7 +57,7 @@ function Modded({ join }: { join: Join }) {
         <PackCard pack={join.pack} />
       </div>
       <div className="flex flex-col items-start gap-4">
-        <p className="font-serif text-h2">{copy.pack}</p>
+        <p className="font-display text-h2">{copy.pack}</p>
         {join.fits_my_game === false && (
           <CompatStatus tone="warning">{copy.notFitsPack}</CompatStatus>
         )}

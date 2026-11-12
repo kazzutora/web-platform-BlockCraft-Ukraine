@@ -234,7 +234,7 @@ function About({ pack }: { pack: Pack }) {
   if (!html) return <p className="text-muted">{copy.noAbout}</p>;
   return (
     <div className="flex flex-col gap-4">
-      {pack.origin === "community" && <h2 className="font-serif text-h2">{copy.notes}</h2>}
+      {pack.origin === "community" && <h2 className="font-display text-h2">{copy.notes}</h2>}
       {/* Rendered from markdown and sanitized on the server (nh3) */}
       <div className="rich-text" dangerouslySetInnerHTML={{ __html: html }} />
     </div>

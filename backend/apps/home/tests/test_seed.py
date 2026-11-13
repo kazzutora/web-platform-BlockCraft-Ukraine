@@ -60,3 +60,19 @@ def test_demo_packs_are_built_from_catalog_files():
     assert pack.rating_count == 2
     demo.remove()
     assert not Pack.objects.exists()
+
+
+def test_demo_translations_wait_for_a_moderator_and_only_for_the_text_they_translate():
+    from apps.translations.models import Translation
+
+    english, _ = demo.TRANSLATIONS["sodium"]
+    ProjectFactory(slug="sodium", summary=english)
+    ProjectFactory(slug="lithium", summary="A newer summary on Modrinth")
+
+    summary = demo.create()
+
+    rows = Translation.objects.all()
+    assert summary.translations == 1
+    assert [(row.target.slug, row.status, row.field) for row in rows] == [
+        ("sodium", "pending", "summary")
+    ]

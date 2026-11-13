@@ -6,11 +6,14 @@ from django.db import models
 
 OUR_APPS = [
     "accounts",
+    "sources",
     "mods",
+    "packs",
     "skins",
     "servers",
     "library",
     "social",
+    "translations",
     "moderation",
     "notifications",
 ]

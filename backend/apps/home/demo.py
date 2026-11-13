@@ -51,12 +51,45 @@ REVIEWS = [
 ]
 
 
+#: Ukrainian summaries of real mods, by demo players, waiting for a moderator. Proposed only
+#: while the English summary on Modrinth is still this one: a translation of another text
+#: would be invented content.
+TRANSLATIONS = {
+    "sodium": (
+        "A high-performance rendering engine replacement for Minecraft, which greatly improves "
+        "frame rates and reduces micro-stutter.",
+        "Швидкий рушій рендерингу замість стандартного: значно більше FPS і менше мікрофризів.",
+    ),
+    "lithium": (
+        "No-compromises game logic optimization mod, useful for both single-player games and "
+        "multi-player servers.",
+        "Оптимізація ігрової логіки без компромісів — і для одиночної гри, і для серверів.",
+    ),
+    "iris": (
+        "A modern shader pack loader for Minecraft intended to be compatible with existing "
+        "OptiFine shader packs",
+        "Сучасний завантажувач шейдерів для Minecraft, сумісний із шейдерпаками для OptiFine.",
+    ),
+    "modmenu": (
+        "Adds a mod menu to view the list of mods you have installed.",
+        "Додає меню модів: видно список усього, що встановлено.",
+    ),
+    "xaeros-minimap": (
+        "Displays a map of the nearby world terrain, players, mobs, entities in the corner of "
+        "your screen. Lets you create waypoints which help you find the locations you've marked.",
+        "Мінікарта в куті екрана: місцевість поруч, гравці, моби й сутності. Можна ставити "
+        "мітки, щоб легко знаходити позначені місця.",
+    ),
+}
+
+
 @dataclass
 class Summary:
     users: int = 0
     collections: int = 0
     reviews: int = 0
     packs: int = 0
+    translations: int = 0
 
 
 def _email(nickname: str) -> str:
@@ -204,7 +237,27 @@ def create(*, seed: int = 42) -> Summary:
     players = _players(rng)
     summary = _library_and_social(rng, players)
     summary.packs = len(_packs(rng, players))
+    summary.translations = _translations(players)
     social.recalc_scores()
     social.recalc_trends()
     summary.users = len(players)
     return summary
+
+
+def _translations(players: list[User]) -> int:
+    """Pending Ukrainian summaries: what a moderator approves in the demo (product.md С7)."""
+    from apps.translations import services as translations
+
+    count = 0
+    for index, (slug, (english, ukrainian)) in enumerate(TRANSLATIONS.items()):
+        if not Project.objects.visible().filter(slug=slug, summary=english).exists():
+            continue
+        translations.propose(
+            user=players[index % len(players)],
+            kind="mod",
+            identifier=slug,
+            field="summary",
+            text=ukrainian,
+        )
+        count += 1
+    return count

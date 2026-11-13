@@ -9,6 +9,12 @@ export const packsCopy = {
   items: { one: "проєкт", few: "проєкти", many: "проєктів" } satisfies PluralForms,
   create: "Зібрати свою",
   empty: "Таких збірок ще немає. Спробуй прибрати частину фільтрів.",
+  noneForGame: (game: string) => `Під ${game} готових збірок поки немає.`,
+  buildOwn: "Зібрати під свою гру",
+  nearest: (game: string) => `Найближче з готових: ${game}`,
+  nearestHint:
+    "Збірка сама ставить свою версію гри: лаунчер (Modrinth App, Prism Launcher) створить для неї окремий профіль.",
+  nearestAll: (game: string) => `Усі збірки для ${game}`,
   origins: { modrinth: "З Modrinth", community: "Від гравців" },
   loaders: {
     fabric: "Fabric",

@@ -87,3 +87,18 @@ export function catalogHref(filters: PackFilters, change: Partial<PackFilters> =
   const query = params.toString();
   return query ? `/packs?${query}` : "/packs";
 }
+
+/**
+ * Versions next to `target` in the supported list (newest first), closest first and the
+ * newer one first on a tie: where to look when «Моя гра» has no ready packs.
+ */
+export function nearestVersions(target: string, versions: string[], limit = 8): string[] {
+  const at = versions.indexOf(target);
+  if (at < 0) return [];
+  return versions
+    .map((version, index) => ({ version, distance: Math.abs(index - at), newer: index < at }))
+    .filter((item) => item.version !== target)
+    .sort((a, b) => a.distance - b.distance || Number(b.newer) - Number(a.newer))
+    .slice(0, limit)
+    .map((item) => item.version);
+}

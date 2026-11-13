@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 
-import { catalogHref, parseFilters, toApiQuery, withGameDefaults } from "./filters";
+import {
+  catalogHref,
+  nearestVersions,
+  parseFilters,
+  toApiQuery,
+  withGameDefaults,
+} from "./filters";
 
 describe("pack catalog filters", () => {
   it("reads only known values from the URL", () => {
@@ -53,5 +59,22 @@ describe("pack catalog filters", () => {
     expect(catalogHref(filters, { loader: "quilt" })).toBe("/packs?version=26.3&loader=quilt");
     expect(catalogHref(parseFilters({}), { all: true })).toBe("/packs?all=1");
     expect(catalogHref(parseFilters({}))).toBe("/packs");
+  });
+});
+
+describe("nearestVersions", () => {
+  const versions = ["1.21.8", "1.21.7", "1.21.5", "1.21.4", "1.21.3", "1.21.1", "1.20.1"];
+
+  it("goes outwards from the target, the newer one first on a tie", () => {
+    expect(nearestVersions("1.21.4", versions, 4)).toEqual([
+      "1.21.5",
+      "1.21.3",
+      "1.21.7",
+      "1.21.1",
+    ]);
+  });
+
+  it("knows nothing about an unsupported version", () => {
+    expect(nearestVersions("1.8.9", versions)).toEqual([]);
   });
 });

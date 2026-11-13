@@ -14,7 +14,7 @@ export const homeCopy = {
   noPacksAtAll: "Готових збірок поки немає.",
   /** «Моя гра» is only «Без модів», no version. */
   vanillaGame: "гри без модів",
-  allVersionsPacks: "Збірки для всіх версій",
+  allVersionsPacks: "Найближчі готові збірки",
   check: {
     title: "Перевір свої моди",
     text: "Перетягни папку mods або .mrpack — покажемо, що оновити, чого бракує й що конфліктує. Файли лишаються в тебе.",

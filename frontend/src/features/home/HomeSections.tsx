@@ -95,7 +95,7 @@ export async function HomeSections() {
             title={personal ? copy.noPacks(game) : copy.noPacksAtAll}
             illustration="packs"
             action={
-              <ButtonLink href="/packs?all=1" variant="secondary">
+              <ButtonLink href="/packs" variant="secondary">
                 {copy.allVersionsPacks}
               </ButtonLink>
             }

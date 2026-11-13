@@ -27,7 +27,8 @@ class Command(BaseCommand):
         self.stdout.write(
             self.style.SUCCESS(
                 f"Demo: {summary.users} players, {summary.collections} collections, "
-                f"{summary.reviews} reviews, {summary.packs} packs "
+                f"{summary.reviews} reviews, {summary.packs} packs, "
+                f"{summary.translations} translations for moderators "
                 f"(password for all: {demo.PASSWORD})"
             )
         )
